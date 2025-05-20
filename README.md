@@ -30,14 +30,14 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 
 | Resource                                                                                                               | Description                                    |
 | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| [Proposal Document](https://drive.google.com/file/d/1MaFtYWnZ2zXstXiF1RS4HlPDrfohCJWV/view?usp=drive_link)             | Project overview and business rationale        |
-| [System Architecture](https://drive.google.com/file/d/1cYqBbYG7Q05_HZpL4xxfW74yTd5VWotS/view?usp=drive_link)           | Architectural overview                         |
-| [Technical Installation Manual](https://drive.google.com/file/d/1ZDje5oLLxuUHSR7mRGjzmekAQjT3vz9N/view?usp=drive_link) | System setup and configuration guide           |
-| [User Manual](https://drive.google.com/file/d/1joJ745H270WYZFsyDwDsgYrCYzvT7b7z/view?usp=drive_link)                   | How to use the platform                        |
-| [Database Schema](https://drive.google.com/file/d/16yyAfoXCBQyYV_wkpCMy29WbaI8auSaB/view?usp=drive_link)               | Entity relationship model and schema reference |
-| [Deployment Diagram](https://drive.google.com/file/d/113kGo7tnekoP_bN0uDI7ym5CjJaA8XVo/view?usp=drive_link)            | Hosting infrastructure breakdown               |
-| [Testing Strategy](https://drive.google.com/file/d/14GK1PMEEvC90tCRgq2vfsNMf0_90r7yg/view?usp=drive_link)              | Testing policies and procedures                |
-| [Project Board](https://github.com/orgs/COS301-SE-2025/projects)                                                       | Task management and team progress              |
+| [Proposal Document]()             | Project overview and business rationale        |
+| [System Architecture]()           | Architectural overview                         |
+| [Technical Installation Manual]() | System setup and configuration guide           |
+| [User Manual]()                   | How to use the platform                        |
+| [Database Schema]()               | Entity relationship model and schema reference |
+| [Deployment Diagram]()            | Hosting infrastructure breakdown               |
+| [Testing Strategy]()              | Testing policies and procedures                |
+| [Project Board]()                                                       | Task management and team progress              |
 
 <h1 align="center">Demo Resources</h1>
 
@@ -69,10 +69,10 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 
 | Member                  | Role                    | Bio                                                                                                            | GitHub                        | LinkedIn                          |
 | ----------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------- | --------------------------------- |
-| **Nikhil Govender**     | Lead Backend Engineer   | A versatile developer with a focus on backend systems and architecture. Passionate about clean, scalable code. | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
-| **Shayden Naidoo**      | Cybersecurity & Web Dev | Enthusiastic about secure systems and front-to-back development. Always learning.                              | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
-| **Corné de Lange**      | Full-Stack Developer    | Logical, structured thinker. Strong foundation in building and integrating maintainable codebases.             | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
-| **Tshegofatso Mahlase** | System Architect        | Expert in designing scalable, modular systems. Brings a full-stack perspective to problem-solving.             | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
-| **Samvit Prakash**      | Backend & Data Logic    | Backend-focused developer with internship experience in scalable architecture and system logic.                | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
+| **Nikhil Govender**     | Team lead, Back-end Engineer and Database Engineer  | A versatile developer with a focus on backend systems and architecture. Passionate about clean, scalable code. | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
+| **Shayden Naidoo**      | Backend Engineer, Businees Analyst and Dev ops| Enthusiastic about secure systems and front-to-back development. Always learning.                              | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
+| **Corné de Lange**      | Front-end Engineer   | Logical, structured thinker. Strong foundation in building and integrating maintainable codebases.             | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
+| **Tshegofatso Mahlase** | Front-end Engineer       | Expert in designing scalable, modular systems. Brings a full-stack perspective to problem-solving.             | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
+| **Samvit Prakash**      | Back-end Engineer and Database Engineer   | Backend-focused developer with internship experience in scalable architecture and system logic.                | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
 
 </div>
