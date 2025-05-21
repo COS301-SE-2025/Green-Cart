@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/assets/engimaX.png?raw=true" width="240" height="auto">
+  <img src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/assets/ChatGPT_Image_Apr_23__2025__05_30_35_AM-removebg-preview.png?raw=true" width="240" height="auto">
 
   <h1 align="center">GreenCart by EnigmaX</h1>
   <h3 align="center">A Capstone Project for <a href="https://www.bbd.co.za/">BBD</a></h3>
