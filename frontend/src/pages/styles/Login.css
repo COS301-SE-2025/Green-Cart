@@ -1,0 +1,32 @@
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    flex-direction: column;
+  }
+  
+  .login-form-container,
+  .login-display-container {
+    min-height: 50vh;
+  }
+  
+  .login-form {
+    padding: 30px 20px;
+  }
+  
+  .login-display-container {
+    padding: 20px;
+  }
+  
+  .logo {
+    max-width: 200px;
+  }
+  
+  .welcome-title {
+    font-size: 1.4rem;
+  }
+}
