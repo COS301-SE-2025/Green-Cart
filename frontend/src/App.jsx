@@ -12,9 +12,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/product/:id" element={<ViewProduct />} />
+        <Route path='/signup' element={<Signup />} />
         {/* 
           Login
-          Signup
           Cart
           Checkout
           Order History
