@@ -1,0 +1,214 @@
+.login-form-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(139, 195, 74, 0.8), rgba(76, 175, 80, 0.6));
+  background-image: url('/assets/background-blur.jpg');
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: overlay;
+  min-height: 100vh;
+  position: relative;
+}
+
+.login-form-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.login-form {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  padding: 40px;
+  border-radius: 0;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  z-index: 1;
+}
+
+.login-title {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  color: white;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  font-weight: 400;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: white;
+  font-size: 1rem;
+  backdrop-filter: blur(10px);
+}
+
+.form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-group input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  font-size: 0.9rem;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  color: white;
+  cursor: pointer;
+  position: relative;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  opacity: 0;
+  position: absolute;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  margin-right: 8px;
+  position: relative;
+  backdrop-filter: blur(10px);
+}
+
+.checkbox-container input:checked + .checkmark {
+  background: rgba(139, 195, 74, 0.8);
+}
+
+.checkbox-container input:checked + .checkmark::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+}
+
+.forgot-password {
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.sign-in-btn {
+  width: 100%;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+  transition: background 0.3s ease;
+}
+
+.sign-in-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.signup-section {
+  text-align: center;
+  color: white;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.signup-link {
+  color: white;
+  text-decoration: underline;
+}
+
+.divider {
+  text-align: center;
+  position: relative;
+  margin: 25px 0;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+  z-index: 0;
+}
+
+.divider span {
+  background: transparent;
+  padding: 0 15px;
+  position: relative;
+  z-index: 1;
+}
+
+.google-signin-btn {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.3s ease;
+}
+
+.google-signin-btn:hover {
+  background: white;
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+}
