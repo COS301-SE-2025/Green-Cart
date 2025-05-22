@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Dict
 from decimal import Decimal
 from datetime import datetime
 
@@ -17,3 +17,8 @@ class ProductResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class FetchAllProductsResponse(BaseModel):
+    status: int
+    message: str
+    data: Optional[List[ProductResponse]] = None
