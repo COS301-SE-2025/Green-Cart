@@ -1,17 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import LoginForm from './components/loginForm'
+import { Routes, Route } from 'react-router-dom'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import ViewProduct from './components/Product/ViewProduct'
+import Home from './pages/Home'
 
+//APP Will also be used to define the routes for the application
+function App() {
   return (
-    <>
-      <LoginForm />
-    </>
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/product/:id" element={<ViewProduct />} />
+        {/* 
+          Login
+          Signup
+          Cart
+          Checkout
+          Order History
+          etc...
+        */}
+      </Routes>
+    </div>
   )
 }
 
-export default App
+export default App;
