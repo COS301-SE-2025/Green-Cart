@@ -1,0 +1,27 @@
+# Ignore virtual environment
+venv/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore environment variable files
+.env
+
+# Ignore VSCode settings (optional)
+.vscode/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore compiled C files
+*.so
+
+# Ignore init dbs or database dumps (optional)
+*.sqlite3
+*.db
+
+# Ignore logs (optional)
+*.log
