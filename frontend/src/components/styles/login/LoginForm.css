@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, rgba(139, 195, 74, 0.8), rgba(76, 175, 80, 0.6));
-  background-image: url('/assets/background-blur.jpg');
+  background-image: url('../../../assets/splash.webp');
   background-size: cover;
   background-position: center;
   background-blend-mode: overlay;

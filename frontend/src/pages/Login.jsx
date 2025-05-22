@@ -1,9 +1,10 @@
 import React from 'react';
-import LoginForm from './LoginForm';
-import LoginDisplay from './LoginDisplay';
-import './LoginPage.css';
 
-const LoginPage = () => {
+import LoginForm from '../components/login/LoginForm';
+import LoginDisplay from '../components/login/LoginDisplay';
+import './styles/Login.css';
+
+const Login = () => {
   return (
     <div className="login-page">
       <LoginForm />
@@ -12,4 +13,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Login;
