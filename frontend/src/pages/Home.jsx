@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Product from '../components/Product/Product';
+import Product from '../components/product/Product';
 import './styles/Home.css';
 
 
