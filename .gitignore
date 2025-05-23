@@ -2,9 +2,12 @@
 venv/
 
 # Ignore Python cache files
-__pycache__/
-*.py[cod]
-*.pyo
+app/__pycache__/
+app/db/__pycache__/
+app/models/__pycache__/
+app/routes/__pycache__/
+app/schemas/__pycache__/
+app/services/__pycache__/
 
 # Ignore environment variable files
 .env
