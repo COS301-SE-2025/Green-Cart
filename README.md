@@ -50,24 +50,38 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 <h1 align="center">Technologies</h1>
 <div align="center">
 
-<p>Frontend</p>
-<img src="https://skillicons.dev/icons?i=figma,react,vite"/>
+  <p>Frontend</p>
+  <img src="https://skillicons.dev/icons?i=figma,react,vite"/>
 
-<p>Backend</p>
-<img src="https://skillicons.dev/icons?i=python"/>
+  <p>Backend</p>
+  <img src="https://skillicons.dev/icons?i=python"/> 
 
-<p>API & Security</p>
-<img src="https://skillicons.dev/icons?i=fastapi"/>
-<img src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/assets/icons/177059352-fe91dcd5-e17b-4103-88ae-70d6d396cf85.png?raw=true" width="40px"/>
-<img src="/path/to/jwt-icon.svg" width="40px"/>
+  <p>API & Security</p>
+  <div style="display: flex; justify-content: center; gap: 10px;">
+    <img src="https://skillicons.dev/icons?i=fastapi" />
+    <img 
+      src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/assets/icons/177059352-fe91dcd5-e17b-4103-88ae-70d6d396cf85.png?raw=true" 
+      width="50" height="50"
+      style="border-radius: 12px; background-color: #222; padding: 6px; box-sizing: border-box;"
+    />
+    <!-- OpenAPI -->
+    <img 
+      src="https://raw.githubusercontent.com/COS301-SE-2025/Green-Cart/f9fbd43f4f1b396cd897f8f2e4cb1826a5acd370/assets/icons/openapi-1.svg" 
+      width="50" height="50"
+      style="border-radius: 12px; background-color: #222; padding: 6px; box-sizing: border-box;"
+    />
+  </div>
 
-<p>Database & Versioning</p>
-<img src="https://skillicons.dev/icons?i=postgresql,liquibase"/>
+  <p>Database & Versioning</p>
+  <img src="https://skillicons.dev/icons?i=postgresql,liquibase"/>
 
-<p>CI/CD & Tools</p>
-<img src="https://skillicons.dev/icons?i=git,githubactions"/>
+  <p>CI/CD & Tools</p>
+  <img src="https://skillicons.dev/icons?i=git,githubactions"/>
 
 </div>
+
+
+
 
 
 <br>
