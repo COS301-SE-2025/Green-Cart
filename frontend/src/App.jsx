@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Splash from './pages/Splash';
 import Login from './pages/Login';
 import SearchResults from './pages/SearchResults';
+import Register from './pages/Register';
 import Navigation from './components/navigation/Navigation';
 import { SearchProvider } from './components/search/SearchProvider';
 
@@ -38,6 +39,8 @@ function App() {
             </React.Fragment>
           } />
           {/* Handle 404s */}
+          {/* Register */}
+          <Route path='/Register' element={<Register/>}/>
           <Route path="*" element={<Navigate to="/Home" replace />} />
         </Routes>
       </div>
