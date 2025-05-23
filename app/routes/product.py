@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 
 from app.db.session import get_db
-from app.schemas.product import ProductResponse, FetchAllProductsResponse, FetchAllProductsRequest, FetchProductRequest, FetchProductResponse
-from app.services.product_service import get_all_products, fetchAllProducts, fetchProduct
+from app.schemas.product import ProductResponse, FetchAllProductsResponse, FetchAllProductsRequest, FetchProductRequest, FetchProductResponse, SearchProductsRequest, SearchProductsResponse
+from app.services.product_service import get_all_products, fetchAllProducts, fetchProduct, searchProducts
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
@@ -19,3 +19,7 @@ def fetch_all_products(request: FetchAllProductsRequest, db: Session = Depends(g
 @router.post("/FetchProduct", response_model=FetchProductResponse)
 def fetch_product(request: FetchProductRequest, db: Session = Depends(get_db)):
     return fetchProduct(request.model_dump(), db)
+
+@router.post("/SearchProducts", response_model=SearchProductsResponse)
+def search_products(request: SearchProductsRequest, db: Session = Depends(get_db)):
+    return searchProducts(request.model_dump(), db)

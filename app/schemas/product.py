@@ -40,3 +40,17 @@ class FetchProductResponse(BaseModel):
     message: str
     data: Optional[ProductResponse] = None
     images: Optional[List[str]] = []
+
+class SearchProductsRequest(BaseModel):
+    apiKey: int
+    search: str
+    filter: Optional[Dict[str, str]] = None
+    sort: Optional[List[str]] = None
+    fromItem: int
+    count: int
+
+class SearchProductsResponse(BaseModel):
+    status: int
+    message: str
+    data: Optional[List[ProductResponse]] = []
+    images: Optional[List[str]] = []
