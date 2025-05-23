@@ -1,12 +1,39 @@
-.product-list {
-    display: flex;
-    flex-wrap: wrap;
-    /* justify-content: center; */
-    gap: 20px;
-    margin: 20px;
+
+.home {
+    /* max-width: 1200px; */
+    width: 65%;
+    margin: 0 auto;
     padding: 20px;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.home h1 {
+    font-size: 2rem;
+    color: #333;
+    margin: 1.5rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+/* Make section titles sticky when scrolling on mobile */
+@media (max-width: 768px) {
+    .home h1 {
+        position: sticky;
+        top: 0;
+        background: rgba(255, 255, 255, 0.95);
+        z-index: 10;
+        padding: 15px 0;
+        backdrop-filter: blur(5px);
+    }
     
+    .product-list {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
+    }
 }

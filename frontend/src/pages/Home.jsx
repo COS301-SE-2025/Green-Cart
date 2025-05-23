@@ -16,7 +16,8 @@ const products = [
     quantity: 10,
     brand: 'Brand 1',
     retailer: 'Retailer 1',
-    image: 'https://via.placeholder.com/150'
+    // image: 'https://via.placeholder.com/150'
+    image: 'https://picsum.photos/200/300'
   },
   {
     id: 2,
@@ -28,7 +29,7 @@ const products = [
     quantity: 1,
     brand: 'Brand 2',
     retailer: 'Retailer 2',
-    image: 'https://via.placeholder.com/150'
+    image: 'https://picsum.photos/200/300'
   },
   {
     id: 3,
@@ -40,19 +41,52 @@ const products = [
     quantity: 0,
     brand: 'Brand 3',
     retailer: 'Retailer 3',
-    image: 'https://via.placeholder.com/150'
+    image: 'https://picsum.photos/200/300'
   }
 ];
 
 export default function Home() {
+
+    // Mock api call to fetch products
+    // const fetchProducts = async () => {
+    //     try {
+    //         const response = await fetch('https://api.example.com/products');
+    //         if (!response.ok) {
+    //             throw new Error('Network response was not ok');
+    //         }
+    //         const data = await response.json();
+    //         setProducts(data);
+    //     } catch (error) {
+    //         console.error('Error fetching products:', error);
+
+    //     }
+    
+    // };
+
     return (
         <>
-            <h1>Product List</h1>
+          <div className='home'>
+            <h1>Just in</h1>
             <div className="product-list">
                 {products.map(product => (
                     <Product key={product.id} product={product} />
                 ))}
             </div>
+            <h1>Best Sellers</h1>
+            <div className="product-list">
+                {products.map(product => (
+                    <Product key={product.id} product={product} />
+                ))}
+            </div>
+
+            <h1>Featured</h1>
+            <div className="product-list">
+                {products.map(product => (
+                    <Product key={product.id} product={product} />
+                ))}
+            </div>
+          </div>
+            
         </>
     );
 }
