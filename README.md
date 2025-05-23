@@ -54,10 +54,10 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 <img src="https://skillicons.dev/icons?i=figma,react,vite"/>
 
 <p>Backend</p>
-<img src="https://skillicons.dev/icons?i=python,fastapi"/>
+<img src="https://skillicons.dev/icons?i=python"/>
 
 <p>API & Security</p>
-<img src="https://skillicons.dev/icons?i=openapi,jwt"/>
+<img src="https://skillicons.dev/icons?i=fastapi,openapi,jwt"/>
 
 <p>Database & Versioning</p>
 <img src="https://skillicons.dev/icons?i=postgresql,liquibase"/>
