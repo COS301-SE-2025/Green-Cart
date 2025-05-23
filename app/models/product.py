@@ -15,3 +15,10 @@ class Product(Base):
     category_id = Column(Integer, ForeignKey("categories.id"))
     retailer_id = Column(String(36))
     created_at = Column(DateTime, server_default=func.now())
+
+class Category(Base):
+    __tablename__ = "categories"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(Text, nullable=False)
+    description = Column(Text)

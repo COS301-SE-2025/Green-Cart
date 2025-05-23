@@ -21,4 +21,11 @@ class ProductResponse(BaseModel):
 class FetchAllProductsResponse(BaseModel):
     status: int
     message: str
-    data: Optional[List[ProductResponse]] = None
+    data: Optional[List[ProductResponse]] = []
+
+class FetchAllProductsRequest(BaseModel):
+    apiKey: int
+    filter: Optional[Dict[str, str]] = None
+    sort: Optional[List[str]] = None
+    fromItem: int
+    count: int
