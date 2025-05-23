@@ -3,7 +3,7 @@
 .splash-container {
   position: relative;
   min-height: 100vh;
-  background-image: url('../../assets/splash.webp');
+  background-image: url('../../assets/images/splash.webp');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -24,7 +24,7 @@
 }
 
 /* Navigation Styles */
-.navigation {
+.navigation_ {
   position: relative;
   z-index: 10;
   display: flex;

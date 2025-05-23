@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Product from '../components/product/Product';
+import Navigation from '../components/navigation/Navigation';
 import './styles/Home.css';
 
 
@@ -60,12 +61,13 @@ export default function Home() {
     //         console.error('Error fetching products:', error);
 
     //     }
-    
+
     // };
 
     return (
         <>
           <div className='home'>
+            
             <h1>Just in</h1>
             <div className="product-list">
                 {products.map(product => (
