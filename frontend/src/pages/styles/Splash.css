@@ -45,6 +45,7 @@
 
 .nav-link {
   color: white;
+  text-decoration: none;
   background: none;
   border: none;
   font-size: 1.125rem;
