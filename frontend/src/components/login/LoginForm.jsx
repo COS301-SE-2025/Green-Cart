@@ -85,7 +85,7 @@ const LoginForm = () => {
             className="google-signin-button"
             onClick={handleGoogleSignIn}
           >
-            <img src="/assets/google-icon.png" alt="Google" className="google-icon" />
+            <img src="./src/assets/icons/googleColored.png" alt="Google" className="google-icon" />
             Sign in with Google
           </button>
         </form>

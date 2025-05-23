@@ -6,7 +6,7 @@ const LoginDisplay = () => {
     <div className="login-display-container">
       <div className="login-display-content">
         <div className="brand-logo">
-          <img src="/src/assets/logo.png" alt="Green Cart" className="brand-logo-img" />
+          <img src="/src/assets/images/logo.png" alt="Green Cart" className="brand-logo-img" />
         </div>
         
         <div className="welcome-section">
