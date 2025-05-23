@@ -1,9 +1,11 @@
-
 .home {
-    /* max-width: 1200px; */
-    width: 65%;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+}
+
+.home-search-bar {
+    margin-bottom: 2rem;
 }
 
 .home h1 {
@@ -16,16 +18,29 @@
 
 .product-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Reduced from 280px */
+    gap: 20px; /* Reduced gap for tighter layout */
     margin-bottom: 40px;
+    justify-items: center; /* Center the cards in their grid cells */
+}
+
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 18px;
+    color: #666;
 }
 
 /* Make section titles sticky when scrolling on mobile */
 @media (max-width: 768px) {
+    .home {
+        max-width: 100%;
+        padding: 15px;
+    }
+    
     .home h1 {
         position: sticky;
-        top: 0;
+        top: 70px; /* Account for navigation height */
         background: rgba(255, 255, 255, 0.95);
         z-index: 10;
         padding: 15px 0;
@@ -33,7 +48,29 @@
     }
     
     .product-list {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* Smaller cards on mobile */
         gap: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .home {
+        padding: 10px;
+    }
+    
+    .product-list {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Even smaller on very small screens */
+        gap: 12px;
+    }
+}
+
+/* For larger screens, show more products per row */
+@media (min-width: 1400px) {
+    .home {
+        max-width: 1400px;
+    }
+    
+    .product-list {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
 }

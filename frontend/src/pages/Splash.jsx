@@ -28,7 +28,7 @@ const Splash = () => {
       <nav className="navigation_">
         <div className="nav-links">
           {[
-            { name: 'Sign-up', path: '/signup' },
+            { name: 'Sign-up', path: '/Register' },
             { name: 'Sign-in', path: '/Login' },
             { name: 'About', path: '/about' },
             { name: 'Contact', path: '/contact' }

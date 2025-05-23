@@ -1,0 +1,224 @@
+.register-form-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .register-form-container {
+    width: 60%;
+    max-height: 100vh;
+  }
+}
+
+.register-form-background {
+  position: absolute;
+  inset: 0;
+  background-image: url('../../../assets/images/splash.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.register-form-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.register-form-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 320px;
+  padding: 1.5rem;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.6s ease-in-out;
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.register-form-content.slide-out {
+  transform: translateX(-50px);
+  opacity: 0;
+}
+
+.register-form-content.slide-in {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+@media (max-width: 480px) {
+  .register-form-content {
+    max-width: 100%;
+    padding: 1.5rem;
+    max-height: 100vh;
+  }
+}
+
+.register-form-title {
+  font-size: 2.75rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .register-form-title {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-input:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.sign-up-button, .create-account-button {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  color: white;
+  padding: 0.75rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 0.8rem;
+  transition: background-color 0.2s ease;
+}
+
+.sign-up-button:hover, .create-account-button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.signin-link {
+  text-align: center;
+  color: white;
+  font-size: 0.85rem;
+  margin-top: 0.8rem;
+}
+
+.signin-link-text {
+  color: white;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.signin-link-text:hover {
+  text-decoration: none;
+}
+
+.divider {
+  text-align: center;
+  margin: 0.8rem 0;
+  position: relative;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.divider span {
+  background-color: transparent;
+  color: white;
+  padding: 0 1rem;
+  font-size: 0.85rem;
+  position: relative;
+  z-index: 1;
+}
+
+.google-signup-button {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #374151;
+  opacity: 85%;
+  padding: 0.75rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.google-signup-button:hover {
+  background-color: white;
+}
+
+.google-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.terms-text {
+  color: white;
+  font-size: 0.75rem;
+  text-align: center;
+  margin-top: 0.8rem;
+  line-height: 1.4;
+}
+
+.terms-link {
+  color: white;
+  text-decoration: underline;
+}
+
+.terms-link:hover {
+  text-decoration: none;
+}

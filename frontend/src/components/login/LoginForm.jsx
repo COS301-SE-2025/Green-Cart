@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/login/LoginForm.css';
+import { loginUser } from '../../user-services/loginService'; // External function
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -8,14 +9,20 @@ const LoginForm = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
-    // navigate('/dashboard'); // Example navigation after login
+    try {
+      const result = await loginUser(email, password);
+      console.log('Login success:', result);
+      localStorage.setItem('user', JSON.stringify(result));
+      navigate('/Home');
+    } catch (err) {
+      console.error('Login failed:', err.message);
+      alert(err.message);
+    }
   };
 
   const handleGoogleSignIn = () => {
-    // Handle Google sign in logic
     console.log('Google sign in clicked');
   };
 
@@ -23,10 +30,10 @@ const LoginForm = () => {
     <div className="login-form-container">
       <div className="login-form-background"></div>
       <div className="login-form-overlay"></div>
-      
+
       <div className="login-form-content">
         <h1 className="login-form-title">Sign in</h1>
-        
+
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">Email address</label>
@@ -38,7 +45,7 @@ const LoginForm = () => {
               required
             />
           </div>
-          
+
           <div className="form-group">
             <label className="form-label">Password</label>
             <input
@@ -49,7 +56,7 @@ const LoginForm = () => {
               required
             />
           </div>
-          
+
           <div className="form-options">
             <label className="checkbox-label">
               <input
@@ -64,28 +71,32 @@ const LoginForm = () => {
               forgot your password?
             </Link>
           </div>
-          
+
           <button type="submit" className="sign-in-button">
             sign in
           </button>
-          
+
           <div className="signup-link">
             Don't have an account?{' '}
             <Link to="/signup" className="signup-link-text">
               Sign up
             </Link>
           </div>
-          
+
           <div className="divider">
             <span>or</span>
           </div>
-          
-          <button 
-            type="button" 
+
+          <button
+            type="button"
             className="google-signin-button"
             onClick={handleGoogleSignIn}
           >
-            <img src="./src/assets/icons/googleColored.png" alt="Google" className="google-icon" />
+            <img
+              src="/src/assets/icons/googleColored.png"
+              alt="Google"
+              className="google-icon"
+            />
             Sign in with Google
           </button>
         </form>

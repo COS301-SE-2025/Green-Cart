@@ -1,0 +1,12 @@
+.register-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+  .register-container {
+    flex-direction: column;
+  }
+}
