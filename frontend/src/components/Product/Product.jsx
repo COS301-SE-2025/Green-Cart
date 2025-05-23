@@ -6,7 +6,7 @@ export default function Product({ product }) {
 
     const viewProduct = () => {
         //Redirect to product details page
-        navigate(`/product/${product.id}`);
+        navigate(`/Product/${product.id}`);
     };
 
     return (

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import CartIcon from "../../assets/icons/cart.png";  // cart icon
-import "../styles/navigation/navigation.css"; 
+import "../styles/navigation/Navigation.css"; 
 
 export default function Navigation() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -57,7 +57,7 @@ export default function Navigation() {
                         </button>
                     )}
                     
-                    <Link to="/" className="nav__logo">
+                    <Link to="/Home" className="nav__logo">
                         GREENCART
                     </Link>
 
@@ -87,7 +87,7 @@ export default function Navigation() {
                 <>
                     <div className={`nav__mobile-menu ${mobileMenuOpen ? 'active' : ''}`}>
                         <ul className="nav__links">
-                            <li><Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link></li>
+                            <li><Link to="/Home" onClick={() => setMobileMenuOpen(false)}>Home</Link></li>
                             <li><Link to="/about" onClick={() => setMobileMenuOpen(false)}>About Us</Link></li>
                             <li><Link to="/help" onClick={() => setMobileMenuOpen(false)}>Help Center</Link></li>
                             <li><Link to="/logout" onClick={() => setMobileMenuOpen(false)}>Logout</Link></li>
