@@ -5,13 +5,12 @@ import ViewProduct from './components/product/ViewProduct';
 import Home from './pages/Home';
 import Splash from './pages/Splash';
 import Login from './pages/Login';
-import Navigation from './components/navigation/Navigation'
+// import Navigation from './components/navigation/Navigation'
 
 //APP Will also be used to define the routes for the application
 function App() {
   return (
     <div className="App">
-      <Navigation />
       <Routes>
         {/* pages routes */}
         <Route path="/" element={<Splash />} />

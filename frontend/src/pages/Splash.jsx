@@ -25,7 +25,7 @@ const Splash = () => {
       <div className="overlay"></div>
       
       {/* Navigation Header */}
-      <nav className="navigation">
+      <nav className="navigation_">
         <div className="nav-links">
           {[
             { name: 'Sign-up', path: '/signup' },
