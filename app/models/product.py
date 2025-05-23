@@ -15,3 +15,17 @@ class Product(Base):
     category_id = Column(Integer, ForeignKey("categories.id"))
     retailer_id = Column(String(36))
     created_at = Column(DateTime, server_default=func.now())
+
+class Category(Base):
+    __tablename__ = "categories"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(Text, nullable=False)
+    description = Column(Text)
+
+class ProductImage(Base):
+    __tablename__ = "product_images"
+
+    id = Column(Integer, primary_key=True, index=True)
+    product_id = Column(Integer, ForeignKey("products.id"))
+    image_url = Column(Text, nullable=False)
