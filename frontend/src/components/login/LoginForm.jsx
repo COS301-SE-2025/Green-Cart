@@ -1,74 +1,94 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/login/LoginForm.css';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle login logic here
-    console.log('Login attempt:', { email, password, rememberMe });
+    // navigate('/dashboard'); // Example navigation after login
+  };
+
+  const handleGoogleSignIn = () => {
+    // Handle Google sign in logic
+    console.log('Google sign in clicked');
   };
 
   return (
     <div className="login-form-container">
-      <div className="login-form">
-        <h1 className="login-title">Sign in</h1>
+      <div className="login-form-background"></div>
+      <div className="login-form-overlay"></div>
+      
+      <div className="login-form-content">
+        <h1 className="login-form-title">Sign in</h1>
         
-        <form onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Email address</label>
+            <label className="form-label">Email address</label>
             <input
               type="email"
-              id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="form-input"
               required
             />
           </div>
           
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label className="form-label">Password</label>
             <input
               type="password"
-              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="form-input"
               required
             />
           </div>
           
           <div className="form-options">
-            <label className="checkbox-container">
+            <label className="checkbox-label">
               <input
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
+                className="checkbox-input"
               />
-              <span className="checkmark"></span>
-              remember me
+              <span>remember me</span>
             </label>
-            <a href="#" className="forgot-password">forgot your password?</a>
+            <Link to="/forgot-password" className="forgot-password-link">
+              forgot your password?
+            </Link>
           </div>
           
-          <button type="submit" className="sign-in-btn">sign in</button>
+          <button type="submit" className="sign-in-button">
+            sign in
+          </button>
+          
+          <div className="signup-link">
+            Don't have an account?{' '}
+            <Link to="/signup" className="signup-link-text">
+              Sign up
+            </Link>
+          </div>
+          
+          <div className="divider">
+            <span>or</span>
+          </div>
+          
+          <button 
+            type="button" 
+            className="google-signin-button"
+            onClick={handleGoogleSignIn}
+          >
+            <img src="/assets/google-icon.png" alt="Google" className="google-icon" />
+            Sign in with Google
+          </button>
         </form>
-        
-        <div className="signup-section">
-          <span>Don't have an account? </span>
-          <a href="#" className="signup-link">Sign up</a>
-        </div>
-        
-        <div className="divider">
-          <span>or</span>
-        </div>
-        
-        <button className="google-signin-btn">
-          <img src="/assets/google-icon.png" alt="Google" className="google-icon" />
-          Sign in with Google
-        </button>
       </div>
     </div>
   );

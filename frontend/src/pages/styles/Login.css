@@ -1,32 +1,12 @@
-.login-page {
+.login-container {
   display: flex;
-  min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
 }
 
-@media (max-width: 768px) {
-  .login-page {
+@media (max-width: 1024px) {
+  .login-container {
     flex-direction: column;
-  }
-  
-  .login-form-container,
-  .login-display-container {
-    min-height: 50vh;
-  }
-  
-  .login-form {
-    padding: 30px 20px;
-  }
-  
-  .login-display-container {
-    padding: 20px;
-  }
-  
-  .logo {
-    max-width: 200px;
-  }
-  
-  .welcome-title {
-    font-size: 1.4rem;
   }
 }

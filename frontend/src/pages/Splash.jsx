@@ -29,7 +29,7 @@ const Splash = () => {
         <div className="nav-links">
           {[
             { name: 'Sign-up', path: '/signup' },
-            { name: 'Sign-in', path: '/signin' },
+            { name: 'Sign-in', path: '/Login' },
             { name: 'About', path: '/about' },
             { name: 'Contact', path: '/contact' }
           ].map((item, index) => (

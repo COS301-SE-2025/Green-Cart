@@ -4,13 +4,15 @@ import '../styles/login/LoginDisplay.css';
 const LoginDisplay = () => {
   return (
     <div className="login-display-container">
-      <div className="login-display">
-        <div className="logo-container">
-          <img src="/assets/green-cart-logo.png" alt="Green Cart" className="logo" />
+      <div className="login-display-content">
+        <div className="brand-logo">
+          <img src="/src/assets/logo.png" alt="Green Cart" className="brand-logo-img" />
         </div>
         
-        <div className="welcome-content">
-          <h2 className="welcome-title">Welcome to Green Cart - where conscious shopping meets convenience.</h2>
+        <div className="welcome-section">
+          <h2 className="welcome-title">
+            Welcome to Green Cart - where conscious shopping meets convenience.
+          </h2>
           
           <p className="welcome-description">
             Discover eco-friendly products that support your lifestyle and the planet.
