@@ -22,3 +22,10 @@ class Category(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(Text, nullable=False)
     description = Column(Text)
+
+class ProductImage(Base):
+    __tablename__ = "product_images"
+
+    id = Column(Integer, primary_key=True, index=True)
+    product_id = Column(Integer, ForeignKey("products.id"))
+    image_url = Column(Text, nullable=False)

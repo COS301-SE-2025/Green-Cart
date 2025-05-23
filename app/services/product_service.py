@@ -1,12 +1,26 @@
 from sqlalchemy.orm import Session
-from app.models.product import Product, Category
+from app.models.product import Product, Category, ProductImage
 from fastapi import HTTPException
 
 def get_all_products(db: Session):
     return db.query(Product).all()
 
+def fetchProductImages(db: Session, product_id: int, limit: int = 1):
+    if limit == -1:
+        product = db.query(ProductImage).filter(ProductImage.product_id == product_id).all()    
+        return product
+
+    if limit < -1:
+        limit = 1
+
+    product = db.query(ProductImage).filter(ProductImage.product_id == product_id).limit(limit).all()
+
+    return product
+    
+
 def fetchAllProducts(request, db: Session):
     products = db.query(Product)
+    images= []
 
     if request.get("filter", {}) != None:
         filter = request.get("filter", {})
@@ -50,10 +64,36 @@ def fetchAllProducts(request, db: Session):
 
     products = products.offset(fromItem).limit(count).all()
 
+    for x in range(len(products)):
+        product = products[x]
+        image = fetchProductImages(db, product.id)
+        images.append(image[0].image_url)
+        
+
     return {
         "status": 200,
         "message": "Success",
-        "data": products
+        "data": products,
+        "images": images
     }
     
+def fetchProduct(request, db: Session):
+    product = db.query(Product).filter(Product.id == request.get("product_id")).first()
     
+    if product is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    images = []
+
+    imageResponse = fetchProductImages(db, product.id, -1)
+    
+    for x in range(len(imageResponse)):
+        image = imageResponse[x].image_url
+        images.append(image)
+
+    return {
+        "status": 200,
+        "message": "Success",
+        "data": product,
+        "images": images
+    }

@@ -22,6 +22,7 @@ class FetchAllProductsResponse(BaseModel):
     status: int
     message: str
     data: Optional[List[ProductResponse]] = []
+    images: Optional[List[str]] = []
 
 class FetchAllProductsRequest(BaseModel):
     apiKey: int
@@ -29,3 +30,13 @@ class FetchAllProductsRequest(BaseModel):
     sort: Optional[List[str]] = None
     fromItem: int
     count: int
+
+class FetchProductRequest(BaseModel):
+    apiKey: int
+    product_id: int
+
+class FetchProductResponse(BaseModel):
+    status: int
+    message: str
+    data: Optional[ProductResponse] = None
+    images: Optional[List[str]] = []
