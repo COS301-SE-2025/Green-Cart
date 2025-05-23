@@ -6,20 +6,23 @@ from dotenv import load_dotenv
 # Load from .env file
 load_dotenv()
 
-# Optional full override
+# Full connection string override (optional)
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# If DATABASE_URL is not provided, construct it from individual pieces
+# If not provided, construct from parts
 if not DATABASE_URL:
     DB_HOST = os.getenv("DB_HOST", "localhost")
     DB_PORT = os.getenv("DB_PORT", "5432")
     DB_USER = os.getenv("DB_USER", "postgres")
-    DB_PASS = os.getenv("DB_PASS")
+    
+    # Support both DB_PASS and DB_PASSWORD
+    DB_PASS = os.getenv("DB_PASS") or os.getenv("DB_PASSWORD")
+    
     DB_NAME = os.getenv("DB_NAME", "greencart")
 
-    if DB_PASS:  # password is set
+    if DB_PASS:
         DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    else:  # no password
+    else:
         DATABASE_URL = f"postgresql://{DB_USER}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # SQLAlchemy setup
