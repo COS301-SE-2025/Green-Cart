@@ -12,7 +12,7 @@ export default function SearchResults() {
   const [isSearching, setSearching ] = useState(null);
   const [results, setResults] = useState([]);
   const [images, setImages] = useState([]);
-  const [displayQuery, setDisplayQuery] = useState('');
+  const [displayQuery, setDisplayQuery] = useState(null);
   const [error, setError] = useState(null);
 
   async function search_products(){
