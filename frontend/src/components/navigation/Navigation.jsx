@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSearch } from "../search/SearchProvider";
 import CartIcon from "../../assets/icons/cart.png";
-import "../styles/navigation/Navigation.css"; 
+import "../styles/navigation/Navigation.css";
 
 export default function Navigation() {
     const navigate = useNavigate();
@@ -12,22 +12,22 @@ export default function Navigation() {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const isMobileView = windowWidth <= 480;
     const cartQuantity = 1;
-    
+
     // Track window size and close mobile menu when resizing
     useEffect(() => {
         const handleResize = () => {
             setWindowWidth(window.innerWidth);
-            
+
             // Close mobile menu when screen gets larger
             if (window.innerWidth > 480 && mobileMenuOpen) {
                 setMobileMenuOpen(false);
             }
         };
-        
+
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [mobileMenuOpen]);
-    
+
     // Prevent body scrolling when mobile menu is open
     useEffect(() => {
         if (mobileMenuOpen) {
@@ -35,13 +35,13 @@ export default function Navigation() {
         } else {
             document.body.style.overflow = '';
         }
-        
+
         // Cleanup function
         return () => {
             document.body.style.overflow = '';
         };
     }, [mobileMenuOpen]);
-    
+
     const toggleMobileMenu = () => {
         setMobileMenuOpen(!mobileMenuOpen);
     };
@@ -49,12 +49,12 @@ export default function Navigation() {
     const handleLogoClick = (e) => {
         e.preventDefault();
         console.log('Logo clicked - navigating to Home');
-        
+
         // Close mobile menu if open
         if (mobileMenuOpen) {
             setMobileMenuOpen(false);
         }
-        
+
         // Only clear search and navigate if not already on Home
         if (location.pathname !== '/Home') {
             clearSearch();
@@ -65,21 +65,28 @@ export default function Navigation() {
     const handleMobileMenuClick = (e) => {
         // Close mobile menu when clicking on a link
         setMobileMenuOpen(false);
-        
+
         // If it's the home link, also handle logo click logic
         if (e.target.textContent === 'Home') {
             handleLogoClick(e);
         }
     };
-    
+
+    const returnToLogin = (e) => {
+        e.preventDefault();
+        localStorage.removeItem("token"); // Optional: clear auth
+        navigate("/", { replace: true }); // ✅ Redirect to Splash
+    };
+
+
     return (
         <>
             <nav className="navigation">
                 <div className="nav__left">
                     {/* Mobile menu toggle button - only shown on mobile */}
                     {isMobileView && (
-                        <button 
-                            className={`nav__mobile-toggle ${mobileMenuOpen ? 'active' : ''}`} 
+                        <button
+                            className={`nav__mobile-toggle ${mobileMenuOpen ? 'active' : ''}`}
                             onClick={toggleMobileMenu}
                             aria-label="Toggle menu"
                             aria-expanded={mobileMenuOpen}
@@ -89,11 +96,11 @@ export default function Navigation() {
                             <span></span>
                         </button>
                     )}
-                    
+
                     {/* Logo - always visible */}
-                    <Link 
-                        to="/Home" 
-                        className="nav__logo" 
+                    <Link
+                        to="/Home"
+                        className="nav__logo"
                         onClick={handleLogoClick}
                         title="GreenCart - Go to Home"
                     >
@@ -102,26 +109,26 @@ export default function Navigation() {
 
                     {/* Left navigation links - hidden on mobile */}
                     <ul className="nav__links nav__links--left">
-                        <li><Link to="/about">About Us</Link></li> | 
+                        <li><Link to="/about">About Us</Link></li> |
                         <li><Link to="/help">Help Center</Link></li>
                     </ul>
                 </div>
 
                 {/* Right navigation links */}
                 <ul className="nav__links nav__links--right">
-                    <li><Link to="/logout">Logout</Link></li> 
-                    <li><Link to="/orders">Orders</Link></li> 
+                    <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li>
+                    <li><Link to="/orders">Orders</Link></li>
                     <li><Link to="/my-account">My Account</Link></li>
                     <li className="nav__cart">
-                        <Link 
-                            to="/cart" 
+                        <Link
+                            to="/cart"
                             aria-label={`Cart with ${cartQuantity} item${cartQuantity !== 1 ? 's' : ''}`}
                             title={`Shopping Cart (${cartQuantity} item${cartQuantity !== 1 ? 's' : ''})`}
                         >
-                            <img 
-                                src={CartIcon} 
-                                alt="Shopping Cart" 
-                                className="nav__cart-icon" 
+                            <img
+                                src={CartIcon}
+                                alt="Shopping Cart"
+                                className="nav__cart-icon"
                                 onError={(e) => {
                                     console.error('Cart icon failed to load:', e);
                                     e.target.style.display = 'none';
@@ -134,7 +141,7 @@ export default function Navigation() {
                     </li>
                 </ul>
             </nav>
-            
+
             {/* Mobile menu and overlay - only rendered on mobile */}
             {isMobileView && (
                 <>
@@ -142,7 +149,7 @@ export default function Navigation() {
                     <div className={`nav__mobile-menu ${mobileMenuOpen ? 'active' : ''}`}>
                         <ul className="nav__links">
                             <li>
-                                <Link 
+                                <Link
                                     to="/Home"
                                     onClick={handleMobileMenuClick}
                                 >
@@ -150,48 +157,48 @@ export default function Navigation() {
                                 </Link>
                             </li>
                             <li>
-                                <Link 
-                                    to="/about" 
+                                <Link
+                                    to="/about"
                                     onClick={handleMobileMenuClick}
                                 >
                                     About Us
                                 </Link>
                             </li>
                             <li>
-                                <Link 
-                                    to="/help" 
+                                <Link
+                                    to="/help"
                                     onClick={handleMobileMenuClick}
                                 >
                                     Help Center
                                 </Link>
                             </li>
                             <li>
-                                <Link 
-                                    to="/logout" 
-                                    onClick={handleMobileMenuClick}
+                                <Link
+                                    to="/logout"
+                                    onClick={returnToLogin}
                                 >
                                     Logout
                                 </Link>
                             </li>
                             <li>
-                                <Link 
-                                    to="/orders" 
+                                <Link
+                                    to="/orders"
                                     onClick={handleMobileMenuClick}
                                 >
                                     Orders
                                 </Link>
                             </li>
                             <li>
-                                <Link 
-                                    to="/my-account" 
+                                <Link
+                                    to="/my-account"
                                     onClick={handleMobileMenuClick}
                                 >
                                     My Account
                                 </Link>
                             </li>
                             <li>
-                                <Link 
-                                    to="/cart" 
+                                <Link
+                                    to="/cart"
                                     onClick={handleMobileMenuClick}
                                 >
                                     Cart {cartQuantity > 0 && `(${cartQuantity})`}
@@ -199,10 +206,10 @@ export default function Navigation() {
                             </li>
                         </ul>
                     </div>
-                    
+
                     {/* Overlay */}
                     {mobileMenuOpen && (
-                        <div 
+                        <div
                             className="nav__overlay active"
                             onClick={() => setMobileMenuOpen(false)}
                             aria-label="Close menu"
