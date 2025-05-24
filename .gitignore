@@ -29,3 +29,6 @@ Thumbs.db
 
 # Ignore logs (optional)
 *.log
+
+#ignore this metadata file
+frontend/.vite

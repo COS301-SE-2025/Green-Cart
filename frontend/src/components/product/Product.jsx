@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import '../styles/product/Product.css';
 
-export default function Product({ product }) {
+export default function Product({ product, image}) {
     const navigate = useNavigate();
 
     const viewProduct = () => {
@@ -13,7 +13,7 @@ export default function Product({ product }) {
         // when clicked, redirect to the product details page
         <div className="product" onClick={viewProduct}>
             <div className="product-image">
-                <img src={product.image} alt={product.name} />
+                <img src={image} alt={product.name} />
                 {/* Stock status badge */}
                 <div className={`product-badge ${product.in_stock ? 'badge-in-stock' : 'badge-out-of-stock'}`}>
                     {product.in_stock ? 'In Stock' : 'Out of Stock'}
@@ -21,7 +21,7 @@ export default function Product({ product }) {
             </div>
             <div className="product-details">
                 <h2>{product.name}</h2>
-                <p>Price: R{product.price.toFixed(2)}</p>
+                <p>Price: R{product.price}</p>
             </div>
         </div>
     );
