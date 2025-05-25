@@ -36,8 +36,9 @@ const LoginForm = () => {
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Email address</label>
+            <label htmlFor="email" className="form-label">Email address</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -47,8 +48,9 @@ const LoginForm = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Password</label>
+            <label htmlFor="password" className="form-label">Password</label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -60,6 +62,7 @@ const LoginForm = () => {
           <div className="form-options">
             <label className="checkbox-label">
               <input
+                
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
