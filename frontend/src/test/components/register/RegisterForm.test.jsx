@@ -15,9 +15,6 @@ const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {})
 // Mock alert
 const mockAlert = vi.spyOn(window, 'alert').mockImplementation(() => {})
 
-// Mock setTimeout for transitions
-vi.mock('setTimeout', () => vi.fn((fn) => fn()))
-
 const renderWithRouter = (component, initialRoute = '/register') => {
   return render(
     <MemoryRouter initialEntries={[initialRoute]}>
@@ -69,25 +66,33 @@ describe('RegisterForm Component', () => {
     expect(googleIcon).toHaveAttribute('src', './src/assets/icons/googleColored.png')
   })
 
-  it('transitions to registration form when Create Account is clicked', () => {
+  it('transitions to registration form when Create Account is clicked', async () => {
     renderWithRouter(<RegisterForm />)
     
     const createAccountButton = screen.getByRole('button', { name: /create an account/i })
     fireEvent.click(createAccountButton)
     
-    // Should show the registration form
-    expect(screen.getByLabelText('Email address')).toBeInTheDocument()
+    // Wait for the transition to complete
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email address')).toBeInTheDocument()
+    })
+    
     expect(screen.getByLabelText('Name')).toBeInTheDocument()
     expect(screen.getByLabelText('Password')).toBeInTheDocument()
     expect(screen.getByLabelText('Confirm Password')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /sign up$/i })).toBeInTheDocument()
   })
 
-  it('renders registration form with correct input types', () => {
+  it('renders registration form with correct input types', async () => {
     renderWithRouter(<RegisterForm />)
     
     const createAccountButton = screen.getByRole('button', { name: /create an account/i })
     fireEvent.click(createAccountButton)
+    
+    // Wait for the transition to complete
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email address')).toBeInTheDocument()
+    })
     
     const emailInput = screen.getByLabelText('Email address')
     const nameInput = screen.getByLabelText('Name')
@@ -104,11 +109,16 @@ describe('RegisterForm Component', () => {
     expect(confirmPasswordInput).toHaveAttribute('required')
   })
 
-  it('updates input values when typing in registration form', () => {
+  it('updates input values when typing in registration form', async () => {
     renderWithRouter(<RegisterForm />)
     
     const createAccountButton = screen.getByRole('button', { name: /create an account/i })
     fireEvent.click(createAccountButton)
+    
+    // Wait for the transition to complete
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email address')).toBeInTheDocument()
+    })
     
     const emailInput = screen.getByLabelText('Email address')
     const nameInput = screen.getByLabelText('Name')
@@ -134,6 +144,11 @@ describe('RegisterForm Component', () => {
     const createAccountButton = screen.getByRole('button', { name: /create an account/i })
     fireEvent.click(createAccountButton)
     
+    // Wait for the transition to complete
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email address')).toBeInTheDocument()
+    })
+    
     const emailInput = screen.getByLabelText('Email address')
     const nameInput = screen.getByLabelText('Name')
     const passwordInput = screen.getByLabelText('Password')
@@ -158,11 +173,16 @@ describe('RegisterForm Component', () => {
     expect(global.mockNavigate).toHaveBeenCalledWith('/home')
   })
 
-  it('validates password confirmation', () => {
+  it('validates password confirmation', async () => {
     renderWithRouter(<RegisterForm />)
     
     const createAccountButton = screen.getByRole('button', { name: /create an account/i })
     fireEvent.click(createAccountButton)
+    
+    // Wait for the transition to complete
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email address')).toBeInTheDocument()
+    })
     
     const emailInput = screen.getByLabelText('Email address')
     const nameInput = screen.getByLabelText('Name')
@@ -190,11 +210,16 @@ describe('RegisterForm Component', () => {
     expect(mockConsoleLog).toHaveBeenCalledWith('Google sign up clicked')
   })
 
-  it('renders terms and privacy links in registration form', () => {
+  it('renders terms and privacy links in registration form', async () => {
     renderWithRouter(<RegisterForm />)
     
     const createAccountButton = screen.getByRole('button', { name: /create an account/i })
     fireEvent.click(createAccountButton)
+    
+    // Wait for the transition to complete
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email address')).toBeInTheDocument()
+    })
     
     const termsLinks = screen.getAllByText('terms of service')
     const privacyLinks = screen.getAllByText('privacy policy')
@@ -213,7 +238,7 @@ describe('RegisterForm Component', () => {
     expect(document.querySelector('.register-form')).toBeInTheDocument()
   })
 
-  it('applies transition classes correctly', () => {
+  it('applies transition classes correctly', async () => {
     renderWithRouter(<RegisterForm />)
     
     const content = document.querySelector('.register-form-content')
@@ -222,11 +247,16 @@ describe('RegisterForm Component', () => {
     const createAccountButton = screen.getByRole('button', { name: /create an account/i })
     fireEvent.click(createAccountButton)
     
+    // Wait for the transition to complete
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email address')).toBeInTheDocument()
+    })
+    
     // After transition, should still have the content element
     expect(document.querySelector('.register-form-content')).toBeInTheDocument()
   })
 
-  it('has correct button types', () => {
+  it('has correct button types', async () => {
     renderWithRouter(<RegisterForm />)
     
     const googleButton = screen.getByRole('button', { name: /sign up with google/i })
@@ -238,15 +268,25 @@ describe('RegisterForm Component', () => {
     // Switch to registration form
     fireEvent.click(createAccountButton)
     
+    // Wait for the transition to complete
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /sign up$/i })).toBeInTheDocument()
+    })
+    
     const signUpButton = screen.getByRole('button', { name: /sign up$/i })
     expect(signUpButton).toHaveAttribute('type', 'submit')
   })
 
-  it('maintains form state after validation error', () => {
+  it('maintains form state after validation error', async () => {
     renderWithRouter(<RegisterForm />)
     
     const createAccountButton = screen.getByRole('button', { name: /create an account/i })
     fireEvent.click(createAccountButton)
+    
+    // Wait for the transition to complete
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email address')).toBeInTheDocument()
+    })
     
     const emailInput = screen.getByLabelText('Email address')
     const nameInput = screen.getByLabelText('Name')
@@ -268,11 +308,16 @@ describe('RegisterForm Component', () => {
     expect(confirmPasswordInput).toHaveValue('different')
   })
 
-  it('has proper accessibility attributes', () => {
+  it('has proper accessibility attributes', async () => {
     renderWithRouter(<RegisterForm />)
     
     const createAccountButton = screen.getByRole('button', { name: /create an account/i })
     fireEvent.click(createAccountButton)
+    
+    // Wait for the transition to complete
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email address')).toBeInTheDocument()
+    })
     
     const emailInput = screen.getByLabelText('Email address')
     const nameInput = screen.getByLabelText('Name')
@@ -285,11 +330,16 @@ describe('RegisterForm Component', () => {
     expect(confirmPasswordInput).toHaveAccessibleName('Confirm Password')
   })
 
-  it('prevents form submission with empty fields', () => {
+  it('prevents form submission with empty fields', async () => {
     renderWithRouter(<RegisterForm />)
     
     const createAccountButton = screen.getByRole('button', { name: /create an account/i })
     fireEvent.click(createAccountButton)
+    
+    // Wait for the transition to complete
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /sign up$/i })).toBeInTheDocument()
+    })
     
     const submitButton = screen.getByRole('button', { name: /sign up$/i })
     fireEvent.click(submitButton)
