@@ -1,0 +1,259 @@
+/* Navigation.css */
+
+.navigation {
+  display: flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 90px;            
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  font-family: 'Inter', sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Left side: logo + main links */
+.nav__left {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo */
+.nav__logo {
+  font-size: 2rem;    
+  font-weight: 700;
+  color: #7BB540;       
+  text-decoration: none;
+  font-weight: bolder;
+  margin-right: 2rem;
+}
+
+.nav-left, .nav__links {
+  gap: 0.9rem;
+}
+
+/* Shared link‐list styles */
+.nav__links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.nav__links--right {
+  gap: 0.9rem;
+}
+
+/* Individual link items */
+.nav__links li a {
+  text-decoration: none;
+  color: #333;               /* dark grey */
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav__links li a:hover {
+  color: #7BB540;
+}
+
+/* Cart icon container */
+.nav__cart {
+  position: relative;
+}
+
+/* Cart icon itself (SVG/img) */
+.nav__cart-icon {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+}
+
+/* Cart badge */
+.nav__cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: #7BB540;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 12px;
+  line-height: 1;
+}
+
+/* Mobile menu button - hidden by default */
+.nav__mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 24px;
+  position: relative;
+  z-index: 1001;
+}
+
+.nav__mobile-toggle span {
+  display: block;
+  position: absolute;
+  height: 3px;
+  width: 100%;
+  background: #7BB540;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.nav__mobile-toggle span:nth-child(1) {
+  top: 0;
+}
+
+.nav__mobile-toggle span:nth-child(2) {
+  top: 10px;
+}
+
+.nav__mobile-toggle span:nth-child(3) {
+  top: 20px;
+}
+
+.nav__mobile-toggle.active span:nth-child(1) {
+  transform: rotate(45deg);
+  top: 10px;
+}
+
+.nav__mobile-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav__mobile-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg);
+  top: 10px;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 1024px) {
+  .navigation {
+    padding: 0 1.5rem;
+  }
+  
+  .nav__logo {
+    font-size: 1.75rem;
+    margin-right: 1.5rem;
+  }
+  
+  .nav__links li a {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navigation {
+    height: 70px;
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .nav__logo {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+  }
+  
+  .nav__links--left {
+    display: none; /* Hide "About Us" and "Help Center" on medium screens */
+  }
+  
+  .nav__links--right li:not(.nav__cart) {
+    display: none; /* Hide all right nav links except cart */
+  }
+}
+
+@media (max-width: 480px) {
+  .navigation {
+    padding: 0 1rem;
+    height: 60px;
+  }
+  
+  /* Hide logo on very small screens */
+  .nav__logo {
+    display: none;
+  }
+  
+  /* Show mobile menu button */
+  .nav__mobile-toggle {
+    display: block;
+  }
+  
+  /* Mobile navigation */
+  .nav__mobile-menu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    /* width: 80%; */
+    width: 60%;
+    height: 100vh;
+    background: white;
+    padding: 80px 20px 20px;
+    transition: left 0.3s ease;
+    z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    display: flex;
+    /* flex-direction: column; */
+  }
+  
+  .nav__mobile-menu.active {
+    left: 0;
+  }
+  
+  .nav__mobile-menu .nav__links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  
+  .nav__mobile-menu .nav__links li {
+    margin: 0;
+    width: 100%;
+  }
+  
+  .nav__mobile-menu .nav__links li a {
+    font-size: 1.1rem;
+    display: block;
+    padding: 0.5rem 0;
+    width: 100%;
+  }
+  
+  /* Overlay when mobile menu is open */
+  .nav__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    display: none;
+  }
+  
+  .nav__overlay.active {
+    display: block;
+  }
+}
+
+.nav__cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
