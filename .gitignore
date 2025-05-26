@@ -1,0 +1,34 @@
+# Ignore virtual environment
+venv/
+
+# Ignore Python cache files
+app/__pycache__/
+app/db/__pycache__/
+app/models/__pycache__/
+app/routes/__pycache__/
+app/schemas/__pycache__/
+app/services/__pycache__/
+app/utilities/__pycache__/
+
+# Ignore environment variable files
+.env
+
+# Ignore VSCode settings (optional)
+.vscode/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore compiled C files
+*.so
+
+# Ignore init dbs or database dumps (optional)
+*.sqlite3
+*.db
+
+# Ignore logs (optional)
+*.log
+
+#ignore this metadata file
+frontend/.vite
