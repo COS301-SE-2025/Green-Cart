@@ -44,8 +44,6 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | Demo   | Video      | Slides      |
 | ------ | ---------- | ----------- |
 | Demo 1 | [Watch](#) | [Slides](#) |
-| Demo 2 | [Watch](#) | [Slides](#) |
-| Demo 3 | [Watch](#) | [Slides](#) |
 
 <h1 align="center">Technologies</h1>
 <div align="center">
@@ -92,8 +90,8 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | ----------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------- | --------------------------------- |
 | **Nikhil Govender**     | Team lead, Back-end Engineer and Database Engineer  | A versatile developer with a focus on backend systems and architecture. Passionate about clean, scalable code. | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
 | **Shayden Naidoo**      | Backend Engineer, Businees Analyst and Dev ops| Enthusiastic about secure systems and front-to-back development. Always learning.                              | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
-| **Corné de Lange**      | Front-end Engineer   | Logical, structured thinker. Strong foundation in building and integrating maintainable codebases.             | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
-| **Tshegofatso Mahlase** | Front-end Engineer       | Expert in designing scalable, modular systems. Brings a full-stack perspective to problem-solving.             | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
+| **Corné de Lange**      | Front-end Engineer   | Logical, structured thinker. Strong foundation in building and integrating maintainable codebases.             | [GitHub](https://github.com/CornedeLange) | [LinkedIn](https://www.linkedin.com/in/corné-dl-2953a3355) |
+| **Tshegofatso Mahlase** | Front-end Engineer       | Expert in designing scalable, modular systems. Brings a full-stack perspective to problem-solving.             | [GitHub](https://github.com/) | [LinkedIn](https://www.linkedin.com/in/tshegofatso-mahlase-13b8a2218) |
 | **Samvit Prakash**      | Back-end Engineer and Database Engineer   | Backend-focused developer with internship experience in scalable architecture and system logic.                | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
 
 </div>
