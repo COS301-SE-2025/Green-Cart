@@ -40,7 +40,7 @@ jobs:
           pip install -r requirements.txt
 
           echo "Installing pytest..."
-          pip install pytest
+          pip install pytest httpx
 
           echo "Starting Uvicorn server in background..."
           # Start Uvicorn. We use 'nohup' and '&' to run it in the background
