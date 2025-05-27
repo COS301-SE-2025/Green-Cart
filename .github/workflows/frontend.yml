@@ -23,22 +23,8 @@ jobs:
           node-version: '20.x'
           cache: 'npm' # Caches npm dependencies to speed up subsequent runs
 
-      - name: Change to frontend directory
-        # Navigates into the 'frontend' directory where your package.json is located.
-        # This is crucial for 'npm install' and 'npm run test:run' to work correctly.
-        run: cd /home/runner/work/Green-Cart/Green-Cart/frontend
-
-      - name: Testing Directory
-        # Installs all the necessary npm packages defined in frontend/package.json.
-        # The 'cd frontend' from the previous step ensures this runs in the correct directory.
-        run: pwd
-
-      - name: Install frontend dependencies
-        # Installs all the necessary npm packages defined in frontend/package.json.
-        # The 'cd frontend' from the previous step ensures this runs in the correct directory.
-        run: npm ci
-
-      - name: Run frontend tests
-        # Executes your test script.
-        # This command is run from within the 'frontend' directory due to the 'cd' step.
-        run: npm run test:run
+      - name: Install and Test Frontend
+        run: |
+            cd frontend
+            npm ci
+            npm run test:run
