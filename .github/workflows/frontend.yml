@@ -28,13 +28,10 @@ jobs:
         # This is crucial for 'npm install' and 'npm run test:run' to work correctly.
         run: cd ./frontend
 
-      - name: testing the tests
-        run: pwd
-
       - name: Install frontend dependencies
         # Installs all the necessary npm packages defined in frontend/package.json.
         # The 'cd frontend' from the previous step ensures this runs in the correct directory.
-        run: npm install
+        run: npm ci
 
       - name: Run frontend tests
         # Executes your test script.
