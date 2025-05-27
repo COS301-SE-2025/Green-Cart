@@ -39,6 +39,9 @@ jobs:
           echo "Installing Python dependencies..."
           pip install -r requirements.txt
 
+          echo "Installing pytest..."
+          pip install pytest
+
           echo "Starting Uvicorn server in background..."
           # Start Uvicorn. We use 'nohup' and '&' to run it in the background
           # and capture its process ID (PID).
