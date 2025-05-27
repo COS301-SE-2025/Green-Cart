@@ -1,0 +1,84 @@
+.checkout-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+.checkout-container h1 {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  text-align: center;
+  color: #6BBF59; /* Brand Green */
+}
+
+.checkout-section {
+  margin-bottom: 2rem;
+}
+
+.checkout-section h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+.checkout-section input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #333;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.checkout-section input:focus {
+  outline: none;
+  border-color: #6BBF59;
+  box-shadow: 0 0 0 2px rgba(107, 191, 89, 0.2);
+}
+
+.payment-icons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.payment-icons img {
+  height: 28px;
+  max-width: 48px;
+  object-fit: contain;
+  opacity: 0.85;
+  filter: grayscale(10%);
+  transition: transform 0.2s ease, opacity 0.2s;
+}
+
+.payment-icons img:hover {
+  transform: scale(1.05);
+  opacity: 1;
+  filter: none;
+}
+
+.place-order-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: #6BBF59; /* Brand Green */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.place-order-button:hover {
+  background-color: #5BA74D; /* Darker hover */
+}
