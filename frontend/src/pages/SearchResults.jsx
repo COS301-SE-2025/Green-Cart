@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useSearch } from '../components/search/SearchProvider';
 import Product from '../components/product/Product';
 import SearchBar from '../components/search/SearchBar';
+
 // import { products } from '../data/products';
 import { searchProducts } from '../product-services/searchProducts';
 import './styles/SearchResults.css';
