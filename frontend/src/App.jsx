@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
+
 import ViewProduct from './components/product/ViewProduct';
 import Home from './pages/Home';
 import Splash from './pages/Splash';
@@ -10,6 +11,7 @@ import Register from './pages/Register';
 import Navigation from './components/navigation/Navigation';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
+import Checkout from './pages/Checkout'; // ✅ ADDED
 import { SearchProvider } from './components/search/SearchProvider';
 import { CartProvider } from "./components/cart/CartContext";
 
@@ -52,6 +54,12 @@ function App() {
               <React.Fragment key="orders">
                 <Navigation />
                 <Orders />
+              </React.Fragment>
+            } />
+            <Route path="/checkout" element={   // ✅ ADDED THIS ROUTE
+              <React.Fragment key="checkout">
+                <Navigation />
+                <Checkout />
               </React.Fragment>
             } />
             {/* catch-all */}

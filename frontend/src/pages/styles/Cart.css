@@ -48,3 +48,15 @@
   border-radius: 6px;
   background-color: #f9f9f9;
 }
+
+.checkout-btn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #6BBF59; /* Brand Green */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
