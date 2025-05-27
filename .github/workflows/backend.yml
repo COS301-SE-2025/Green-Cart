@@ -1,0 +1,66 @@
+name: Run Backend Tests Before Merge
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        # Checks out your repository code into the runner's environment.
+        # This is the first step in almost all workflows to get your project files.
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        # Installs a specific version of Python on the runner.
+        # '3.x' will pick the latest stable Python 3 version.
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip' # Caches pip dependencies to speed up subsequent runs
+
+      - name: Install dependencies and run tests
+        # This single 'run' block is crucial because 'source venv/bin/activate'
+        # only applies to the current shell session. All commands that rely on
+        # the activated virtual environment must be in this same 'run' block.
+        run: |
+          echo "Creating virtual environment..."
+          python -m venv venv
+
+          echo "Activating virtual environment..."
+          # Activate the virtual environment. Note: 'source' is for bash/zsh,
+          # for GitHub Actions, it's generally safe to use directly.
+          source venv/bin/activate
+
+          echo "Installing Python dependencies..."
+          pip install -r requirements.txt
+
+          echo "Starting Uvicorn server in background..."
+          # Start Uvicorn. We use 'nohup' and '&' to run it in the background
+          # and capture its process ID (PID).
+          # '--host 0.0.0.0' makes it accessible within the container.
+          # We remove '--reload' as it's typically not needed in CI and can cause issues.
+          nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          UVICORN_PID=$! # Store the PID of the Uvicorn process
+
+          echo "Waiting for Uvicorn to start (5 seconds)..."
+          # Give Uvicorn a moment to fully initialize.
+          # For more robust checks, you could use 'curl' to hit a health endpoint.
+          sleep 5
+
+          echo "Running backend tests..."
+          # Execute your pytest commands.
+          # The virtual environment is active, so pytest will use installed packages.
+          pytest tests/ -v -W ignore::pydantic.PydanticDeprecatedSince20
+
+          echo "Stopping Uvicorn server..."
+          # Kill the Uvicorn process using its stored PID.
+          kill $UVICORN_PID
+
+        # The 'shell: bash' is explicitly set to ensure consistent shell behavior,
+        # especially for 'source' and background processes.
+        shell: bash
