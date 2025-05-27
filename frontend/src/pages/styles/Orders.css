@@ -1,0 +1,20 @@
+.orders-container {
+  padding: 20px;
+  max-width: 700px;
+  margin: auto;
+  background-color: #f9f9f9;
+  color: #000; /* Ensure text is visible */
+  border-radius: 10px;
+}
+
+.orders-list {
+  list-style: none;
+  padding: 0;
+}
+
+.order-item {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
