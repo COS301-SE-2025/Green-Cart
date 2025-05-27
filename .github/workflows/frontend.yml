@@ -13,12 +13,12 @@ jobs:
       - name: Checkout code
         # Checks out your repository code into the runner's environment.
         # This is essential for the workflow to access your project files.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
         # Sets up the Node.js environment required for npm commands.
         # '20.x' is a common stable version, you can adjust this if needed.
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: '20.x'
           cache: 'npm' # Caches npm dependencies to speed up subsequent runs
