@@ -11,22 +11,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        # Checks out your repository code into the runner's environment.
-        # This is the first step in almost all workflows to get your project files.
         uses: actions/checkout@v4
 
       - name: Set up Python
-        # Installs a specific version of Python on the runner.
-        # '3.x' will pick the latest stable Python 3 version.
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-          cache: 'pip' # Caches pip dependencies to speed up subsequent runs
+          cache: 'pip'
 
       - name: Install dependencies and run tests
-        # This single 'run' block is crucial because 'source venv/bin/activate'
-        # only applies to the current shell session. All commands that rely on
-        # the activated virtual environment must be in this same 'run' block.
         run: |
           echo "Creating virtual environment..."
           python -m venv venv
@@ -64,6 +57,4 @@ jobs:
           # Kill the Uvicorn process using its stored PID.
           kill $UVICORN_PID
 
-        # The 'shell: bash' is explicitly set to ensure consistent shell behavior,
-        # especially for 'source' and background processes.
         shell: bash
