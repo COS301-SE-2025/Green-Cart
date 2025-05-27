@@ -26,7 +26,7 @@ jobs:
       - name: Change to frontend directory
         # Navigates into the 'frontend' directory where your package.json is located.
         # This is crucial for 'npm install' and 'npm run test:run' to work correctly.
-        run: cd /frontend
+        run: cd ./frontend
 
       - name: Install frontend dependencies
         # Installs all the necessary npm packages defined in frontend/package.json.
