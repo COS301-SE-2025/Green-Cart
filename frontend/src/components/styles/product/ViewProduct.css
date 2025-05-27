@@ -371,3 +371,19 @@
     flex-direction: column;
   }
 }
+
+.add-to-cart-button {
+  margin-top: 20px;
+  padding: 12px 20px;
+  background-color: #00a859;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-to-cart-button:hover {
+  background-color: #008e4d;
+}

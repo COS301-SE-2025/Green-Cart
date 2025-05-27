@@ -3,40 +3,47 @@ import { useLocation } from 'react-router-dom';
 import { useSearch } from '../components/search/SearchProvider';
 import Product from '../components/product/Product';
 import SearchBar from '../components/search/SearchBar';
-import { products } from '../data/products';
+
+// import { products } from '../data/products';
+import { searchProducts } from '../product-services/searchProducts';
 import './styles/SearchResults.css';
 
 export default function SearchResults() {
   const location = useLocation();
-  const { performSearch, isSearching } = useSearch();
+  const [isSearching, setSearching ] = useState(null);
   const [results, setResults] = useState([]);
-  const [displayQuery, setDisplayQuery] = useState('');
+  const [images, setImages] = useState([]);
+  const [displayQuery, setDisplayQuery] = useState(null);
   const [error, setError] = useState(null);
-  
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const query = params.get('q') || '';
-    
-    console.log('SearchResults effect - query:', query);
-    setDisplayQuery(query);
-    
+
+  async function search_products(){
+    //apiKey will removed from this request in the next iteration
+    const apiKey = "someKey";
+    const fromItem = 0;
+    const count = 20;
     try {
-      setError(null);
+      const response = await searchProducts({ apiKey, search: displayQuery, fromItem, count });
+      setResults(response.data || []);
+      setImages(response.images || []);
       
-      if (query) {
-        // Perform search with the query
-        const searchResults = performSearch(query, products);
-        setResults(searchResults);
-      } else {
-        // If no query, show all products
-        setResults(products);
-      }
-    } catch (err) {
-      console.error("Search error:", err);
-      setError("An error occurred during search. Please try again.");
-      setResults([]);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setError("Failed to load products. Please try again later.");
     }
-  }, [location.search]); // Remove performSearch from dependencies
+  }
+  
+useEffect(() => {
+  const params = new URLSearchParams(location.search);
+  const query = params.get('q') || '';
+  setDisplayQuery(query);
+  setSearching(true);
+}, [location.search]);
+
+useEffect(() => {
+  if (displayQuery !== null) { // or add any other condition you want
+    search_products().finally(() => setSearching(false));
+  }
+}, [displayQuery]);
   
   return (
     <div className="search-results">
@@ -59,8 +66,8 @@ export default function SearchResults() {
               {displayQuery ? `${results.length} products found` : `${results.length} products available`}
             </p>
             <div className="product-list">
-              {results.map(product => (
-                <Product key={product.id} product={product} />
+              {results.map((product, i) => (
+                <Product key={product.id} product={product} image={images[i]} />
               ))}
             </div>
           </>
