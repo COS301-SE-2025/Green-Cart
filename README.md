@@ -67,6 +67,29 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
     />
   </div>
 
+  <p>Testing</p>
+  <div style="display: flex; justify-content: center; gap: 10px;">
+    <img src="https://skillicons.dev/icons?i=jest" />
+    <img 
+      src="https://upload.wikimedia.org/wikipedia/commons/e/ee/Pytest_logo.svg" 
+      width="50" height="50"
+      style="background-color: #fff; border-radius: 12px; padding: 6px; box-sizing: border-box;"
+    />
+  </div>
+
+  <p>Hosting & Deployment</p>
+  <div style="display: flex; justify-content: center; gap: 10px;">
+    <img src="https://skillicons.dev/icons?i=aws" />
+    <img 
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Supabase_logo.svg/512px-Supabase_logo.svg.png" 
+      width="50" height="50"
+      style="background-color: #fff; border-radius: 12px; padding: 6px; box-sizing: border-box;"
+    />
+  </div>
+
+</div>
+
+
   <p>Database & Versioning</p>
   <img src="https://skillicons.dev/icons?i=postgresql,liquibase"/>
 
