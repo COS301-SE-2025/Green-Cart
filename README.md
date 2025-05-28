@@ -7,7 +7,7 @@
   />
 </p>
   <h1 align="center">GreenCart by EnigmaX</h1>
-  <h3 align="center">A Capstone Project for <a href="https://www.bbd.co.za/">BBD</a></h3>
+  <h3 align="center">A Capstone Project for <a href="https://www.bbd.co.za/">BBD Software</a></h3>
 
 <div align="center">
 
