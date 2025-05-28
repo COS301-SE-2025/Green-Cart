@@ -33,7 +33,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | [Proposal Document]()             | Project overview and business rationale        |
 | [System Architecture]()           | Architectural overview                         |
 | [Database Schema]()               | Entity relationship model and schema reference |
-| [Deployment Diagram]()            | Hosting infrastructure breakdown               |
+| [Deployment Diagram](https://github.com/COS301-SE-2025/Green-Cart/blob/documentation/documents/Development_Diagram.jpg)            | Hosting infrastructure breakdown               |
 | [Project Board]()                                                       | Task management and team progress              |
 
 <h1 align="center">Demo Resources</h1>
