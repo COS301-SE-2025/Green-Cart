@@ -44,7 +44,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 
 | Demo   | Video      | Slides      |
 | ------ | ---------- | ----------- |
-| Demo 1 | [Watch](#) | [Slides](https://www.canva.com/design/DAGoo0NOHOs/MpZHdfQEJuRwyW97PpcBaA/edit?utm_content=DAGoo0NOHOs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) |
+| Demo 1 | [Watch](https://drive.google.com/file/d/1x923JaubfP_FH0dgEdhZ3O-y96iFVVzO/view) | [Slides](https://www.canva.com/design/DAGoo0NOHOs/MpZHdfQEJuRwyW97PpcBaA/edit?utm_content=DAGoo0NOHOs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) |
 
 <h1 align="center">Technologies</h1>
 <div align="center">
