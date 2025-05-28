@@ -1,4 +1,4 @@
-<p align="center">
+![image](https://github.com/user-attachments/assets/914c844b-65ca-491d-9297-cc728489df8e)<p align="center">
   <img src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/assets/EnigmaX%202nd%20logo.png?raw=true" width="240" height="auto">
 
   <h1 align="center">GreenCart by EnigmaX</h1>
@@ -30,9 +30,10 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 
 | Resource                                                                                                               | Description                                    |
 | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| [Proposal Document]()             | Project overview and business rationale        |
-| [System Architecture]()           | Architectural overview                         |
-| [Database Schema]()               | Entity relationship model and schema reference |
+| [Proposal Document](https://www.canva.com/design/DAGlkKZ2Tck/nRnry4uoAMHH9-PVaqgAvA/edit?utm_content=DAGlkKZ2Tck&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)             | Project overview and business rationale        |
+| [System Requirements Document](https://docs.google.com/document/d/1SvLTt7jRWEveDAkH8mjZ0KU3gi2sbbJkxBVchZX8C90/edit?usp=sharing)               | System requirements overview |
+| [System Architecture Document](https://docs.google.com/document/d/1KUXww-AsuFPJi2uFpKgFf5PEZGdCYqKZ4R21-Tpzqzs/edit?usp=sharing)           | Architectural overview                         |
+| [Database Schema](https://github.com/COS301-SE-2025/Green-Cart/blob/documentation/documents/ERD%20diagram.png?raw=true)               | Entity relationship model and schema reference |
 | [Deployment Diagram](https://github.com/COS301-SE-2025/Green-Cart/blob/documentation/documents/Development_Diagram.jpg)            | Hosting infrastructure breakdown               |
 | [Project Board]()                                                       | Task management and team progress              |
 
@@ -40,7 +41,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 
 | Demo   | Video      | Slides      |
 | ------ | ---------- | ----------- |
-| Demo 1 | [Watch](#) | [Slides](#) |
+| Demo 1 | [Watch](#) | [Slides](https://www.canva.com/design/DAGoo0NOHOs/MpZHdfQEJuRwyW97PpcBaA/edit?utm_content=DAGoo0NOHOs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) |
 
 <h1 align="center">Technologies</h1>
 <div align="center">
