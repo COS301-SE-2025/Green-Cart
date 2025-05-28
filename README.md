@@ -11,12 +11,13 @@
 
 <div align="center">
 
-![GitHub issues](https://img.shields.io/github/issues/COS301-SE-2025/Green-Cart)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/COS301-SE-2025/Green-Cart)
-![GitHub languages count](https://img.shields.io/github/languages/count/COS301-SE-2025/Green-Cart)
-![GitHub last commit](https://img.shields.io/github/last-commit/COS301-SE-2025/Green-Cart)
-![GitHub repo size](https://img.shields.io/github/repo-size/COS301-SE-2025/Green-Cart)
-[![Linting Status](https://github.com/COS301-SE-2025/Green-Cart/actions/workflows/linting.yml/badge.svg)](https://github.com/COS301-SE-2025/Green-Cart/actions/workflows/linting.yml)
+![Version](https://img.shields.io/badge/version-1.3.3-007ACC?style=flat-square&logo=semantic-release&logoColor=white)
+![GitHub issues](https://img.shields.io/github/issues/COS301-SE-2025/Green-Cart?style=flat-square&color=orange&logo=github)
+![GitHub PRs](https://img.shields.io/github/issues-pr/COS301-SE-2025/Green-Cart?style=flat-square&color=purple&logo=git)
+![Languages](https://img.shields.io/github/languages/count/COS301-SE-2025/Green-Cart?style=flat-square&color=informational&logo=code)
+![Last Commit](https://img.shields.io/github/last-commit/COS301-SE-2025/Green-Cart?style=flat-square&color=success&logo=git)
+![Repo Size](https://img.shields.io/github/repo-size/COS301-SE-2025/Green-Cart?style=flat-square&color=blueviolet&logo=database)
+[![Linting Status](https://img.shields.io/github/actions/workflow/status/COS301-SE-2025/Green-Cart/linting.yml?style=flat-square&label=Linting&logo=githubactions&color=blue)](https://github.com/COS301-SE-2025/Green-Cart/actions/workflows/linting.yml)
 
 </div>
 
