@@ -1,11 +1,11 @@
-<p align="center">
+<div align="center">
   <img 
-    src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/assets/EnigmaX%202nd%20logo.png?raw=true" 
+    src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/image_assets/EnigmaX%20prop.png?raw=true" 
     alt="EnigmaX Logo"
     width="200" 
     height="auto"
   />
-</p>
+</div>
   <h1 align="center">GreenCart by EnigmaX</h1>
   <h3 align="center">A Capstone Project for <a href="https://www.bbd.co.za/">BBD Software</a></h3>
 
@@ -59,7 +59,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
   <div style="display: flex; justify-content: center; gap: 10px;">
     <img src="https://skillicons.dev/icons?i=fastapi" />
     <img 
-      src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/assets/icons/177059352-fe91dcd5-e17b-4103-88ae-70d6d396cf85.png?raw=true" 
+      src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/image_assets/177059352-fe91dcd5-e17b-4103-88ae-70d6d396cf85.png?raw=true" 
       width="50" height="50"
       style="border-radius: 12px; background-color: #222; padding: 6px; box-sizing: border-box;"
     />
