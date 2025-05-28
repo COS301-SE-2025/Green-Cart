@@ -11,7 +11,7 @@
 ![GitHub languages count](https://img.shields.io/github/languages/count/COS301-SE-2025/Green-Cart)
 ![GitHub last commit](https://img.shields.io/github/last-commit/COS301-SE-2025/Green-Cart)
 ![GitHub repo size](https://img.shields.io/github/repo-size/COS301-SE-2025/Green-Cart)
-[![CI](https://github.com/COS301-SE-2025/Green-Cart/actions/workflows/main.yml/badge.svg)](https://github.com/COS301-SE-2025/Green-Cart/actions/workflows/main.yml)
+[![Linting Status](https://github.com/COS301-SE-2025/Green-Cart/actions/workflows/linting.yml/badge.svg)](https://github.com/COS301-SE-2025/Green-Cart/actions/workflows/linting.yml)
 
 </div>
 
