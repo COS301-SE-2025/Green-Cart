@@ -26,8 +26,6 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 
 </p>
 
-[Our Website](https://enigmax-greencart.app/) |
-[Project Proposal](https://drive.google.com/file/d/1MaFtYWnZ2zXstXiF1RS4HlPDrfohCJWV/view?usp=drive_link)
 
 <h1 align="center">Documentation and Resources</h1>
 
