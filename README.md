@@ -109,9 +109,9 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | Member                  | Role                    | Bio                                                                                                            | GitHub                        | LinkedIn                          |
 | ----------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------- | --------------------------------- |
 | **Nikhil Govender**     | Team lead, Back-end Engineer and Database Engineer  | A versatile developer with a focus on backend systems and architecture. Passionate about clean, scalable code. | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
-| **Shayden Naidoo**      | Backend Engineer, Businees Analyst and Dev ops| Enthusiastic about secure systems and front-to-back development. Always learning.                              | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
+| **Shayden Naidoo**      | Backend Engineer, Businees Analyst | Enthusiastic about secure systems and front-to-back development. Always learning.                              | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
 | **Corné de Lange**      | Front-end Engineer   | Logical, structured thinker. Strong foundation in building and integrating maintainable codebases.             | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
 | **Tshegofatso Mahlase** | Front-end Engineer       | Expert in designing scalable, modular systems. Brings a full-stack perspective to problem-solving.             | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
-| **Samvit Prakash**      | Back-end Engineer and Database Engineer   | Backend-focused developer with internship experience in scalable architecture and system logic.                | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
+| **Samvit Prakash**      | Back-end Engineer,Database Engineer and Dev ops   | Backend-focused developer with internship experience in scalable architecture and system logic.                | [GitHub](https://github.com/) | [LinkedIn](https://linkedin.com/) |
 
 </div>
