@@ -85,7 +85,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
   <div style="display: flex; justify-content: center; gap: 10px;">
     <img src="https://skillicons.dev/icons?i=aws" />
     <img 
-      src="https://github.com/COS301-SE-2025/Green-Cart/blob/documentation/documents/supabase.jpg?raw=true" 
+      src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/supabase.jpg?raw=true" 
       width="50" height="50"
       style="background-color: #fff; border-radius: 12px; padding: 6px; box-sizing: border-box;"
     />
