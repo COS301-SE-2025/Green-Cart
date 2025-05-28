@@ -1,6 +1,11 @@
-![image](https://github.com/user-attachments/assets/914c844b-65ca-491d-9297-cc728489df8e)<p align="center">
-  <img src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/assets/EnigmaX%202nd%20logo.png?raw=true" width="240" height="auto">
-
+<p align="center">
+  <img 
+    src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/assets/EnigmaX%202nd%20logo.png?raw=true" 
+    alt="EnigmaX Logo"
+    width="200" 
+    height="auto"
+  />
+</p>
   <h1 align="center">GreenCart by EnigmaX</h1>
   <h3 align="center">A Capstone Project for <a href="https://www.bbd.co.za/">BBD</a></h3>
 
