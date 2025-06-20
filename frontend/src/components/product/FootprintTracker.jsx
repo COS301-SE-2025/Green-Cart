@@ -7,39 +7,39 @@ export default function FootprintTracker() {
   const [selected, setSelected] = useState(data.breakdown[0].stage);
 
   const detail = data.breakdown.find(d => d.stage === selected);
-  const MAX_KG = 50;
-  const percentage = Math.min(data.overalRating, MAX_KG) / MAX_KG * 100;
+  const MAX_RATING = 100;
+  const percentage = Math.min(data.overallRating, MAX_RATING) / MAX_RATING * 100;
   
   // Calculate the rotation angle for the needle (180 degrees arc)
   const needleAngle = (percentage / 100) * 180 - 90;
 
-  // Get color based on footprint level
-  const getFootprintColor = (kg) => {
-    if (kg <= 10) return '#22c55e'; // Green - excellent
-    if (kg <= 25) return '#eab308'; // Yellow - good
-    if (kg <= 40) return '#f97316'; // Orange - moderate
-    return '#ef4444'; // Red - high
+  // Get color based on rating level
+  const getRatingColor = (rating) => {
+    if (rating >= 80) return '#22c55e'; // Green - excellent
+    if (rating >= 60) return '#eab308'; // Yellow - good
+    if (rating >= 40) return '#f97316'; // Orange - moderate
+    return '#ef4444'; // Red - poor
   };
 
-  const getFootprintLevel = (kg) => {
-    if (kg <= 10) return 'Excellent';
-    if (kg <= 25) return 'Good';
-    if (kg <= 40) return 'Moderate';
-    return 'High Impact';
+  const getRatingLevel = (rating) => {
+    if (rating >= 80) return 'Excellent';
+    if (rating >= 60) return 'Good';
+    if (rating >= 40) return 'Fair';
+    return 'Needs Improvement';
   };
 
-  const footprintColor = getFootprintColor(data.overalRating);
-  const footprintLevel = getFootprintLevel(data.overalRating);
+  const ratingColor = getRatingColor(data.overallRating);
+  const ratingLevel = getRatingLevel(data.overallRating);
 
   return (
     <div className="fp-tracker">
       <div className="fp-header">
         <h2 className="fp-title">
           <span className="fp-icon">🌱</span>
-          Carbon Footprint
+          Sustainability Rating
         </h2>
-        <div className="fp-badge" style={{ backgroundColor: `${footprintColor}20`, color: footprintColor }}>
-          {footprintLevel}
+        <div className="fp-badge" style={{ backgroundColor: `${ratingColor}20`, color: ratingColor }}>
+          {ratingLevel}
         </div>
       </div>
 
@@ -59,7 +59,7 @@ export default function FootprintTracker() {
           <path
             d="M 20 100 A 80 80 0 0 1 180 100"
             fill="none"
-            stroke={footprintColor}
+            stroke={ratingColor}
             strokeWidth="12"
             strokeLinecap="round"
             strokeDasharray={`${percentage * 2.51} 251`}
@@ -67,7 +67,7 @@ export default function FootprintTracker() {
           />
           
           {/* Center circle */}
-          <circle cx="100" cy="100" r="8" fill={footprintColor} />
+          <circle cx="100" cy="100" r="8" fill={ratingColor} />
           
           {/* Needle */}
           <line
@@ -75,7 +75,7 @@ export default function FootprintTracker() {
             y1="100"
             x2="100"
             y2="30"
-            stroke={footprintColor}
+            stroke={ratingColor}
             strokeWidth="3"
             strokeLinecap="round"
             transform={`rotate(${needleAngle} 100 100)`}
@@ -105,21 +105,21 @@ export default function FootprintTracker() {
         </svg>
         
         <div className="fp-center-value">
-          <span className="fp-value">{data.overalRating.toFixed(1)}</span>
-          <span className="fp-unit">Rating</span>
+          <span className="fp-value">{data.overallRating.toFixed(1)}</span>
+          <span className="fp-unit">/ 100</span>
         </div>
       </div>
 
       {/* Scale labels */}
       <div className="fp-scale-labels">
         <span className="fp-scale-min">0</span>
-        <span className="fp-scale-mid">25</span>
-        <span className="fp-scale-max">50+ kg</span>
+        <span className="fp-scale-mid">50</span>
+        <span className="fp-scale-max">100</span>
       </div>
 
       {/* Interactive Breakdown */}
       <div className="fp-breakdown">
-        <h3 className="fp-breakdown-title">Breakdown by Stage</h3>
+        <h3 className="fp-breakdown-title">Sustainability Breakdown</h3>
         
         <div className="fp-breakdown-grid">
           {data.breakdown.map(item => (
@@ -128,22 +128,22 @@ export default function FootprintTracker() {
               className={`fp-breakdown-item ${selected === item.stage ? 'active' : ''}`}
               onClick={() => setSelected(item.stage)}
               style={{
-                '--accent-color': getFootprintColor(item.kg)
+                '--accent-color': getRatingColor(item.rating)
               }}
             >
               <div className="fp-breakdown-bar">
                 <div 
                   className="fp-breakdown-fill"
                   style={{ 
-                    width: `${(item.kg / data.overalRating) * 100}%`,
-                    backgroundColor: getFootprintColor(item.kg)
+                    width: `${(item.rating / 100) * 100}%`,
+                    backgroundColor: getRatingColor(item.rating)
                   }}
                 />
               </div>
               <div className="fp-breakdown-info">
                 <span className="fp-breakdown-stage">{item.stage}</span>
                 <span className="fp-breakdown-value">
-                  {item.kg.toFixed(1)} kg ({item.percent.toFixed(1)}%)
+                  {item.rating.toFixed(1)}/100 ({item.percent.toFixed(1)}%)
                 </span>
               </div>
             </div>
@@ -152,16 +152,16 @@ export default function FootprintTracker() {
 
         {/* Selected detail */}
         {detail && (
-          <div className="fp-detail" style={{ borderColor: getFootprintColor(detail.kg) }}>
+          <div className="fp-detail" style={{ borderColor: getRatingColor(detail.rating) }}>
             <div className="fp-detail-header">
               <h4>{detail.stage}</h4>
-              <span className="fp-detail-badge" style={{ backgroundColor: getFootprintColor(detail.kg) }}>
-                {((detail.kg / data.overalRating) * 100).toFixed(0)}%
+              <span className="fp-detail-badge" style={{ backgroundColor: getRatingColor(detail.rating) }}>
+                {detail.rating.toFixed(0)}/100
               </span>
             </div>
             <p className="fp-detail-description">
-              This stage contributes <strong>{detail.kg.toFixed(1)} kg CO₂e</strong> to the total footprint.
-              {detail.kg > 15 && " Consider eco-friendly alternatives to reduce this impact."}
+              This category has a sustainability rating of <strong>{detail.rating.toFixed(1)}/100</strong>.
+              {detail.rating < 60 && " Consider looking for products with better sustainability in this area."}
             </p>
           </div>
         )}
@@ -171,9 +171,10 @@ export default function FootprintTracker() {
       <div className="fp-tips">
         <h4 className="fp-tips-title">💡 Sustainability Tips</h4>
         <ul className="fp-tips-list">
-          <li>Look for products with lower transportation footprints</li>
-          <li>Choose items with sustainable packaging</li>
-          <li>Consider the product's end-of-life recyclability</li>
+          <li>Look for products with high energy efficiency ratings</li>
+          <li>Choose items made from sustainable materials</li>
+          <li>Consider product durability to reduce replacement frequency</li>
+          <li>Check recyclability ratings to minimize environmental impact</li>
         </ul>
       </div>
     </div>
