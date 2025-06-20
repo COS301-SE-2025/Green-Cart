@@ -25,12 +25,14 @@ class FetchAllProductsResponse(BaseModel):
     images: Optional[List[str]] = []
 
 class FetchAllProductsRequest(BaseModel):
+    apiKey: str 
     filter: Optional[Dict[str, str]] = None
     sort: Optional[List[str]] = None
     fromItem: int
     count: int
 
 class FetchProductRequest(BaseModel):
+    apiKey: str
     product_id: int
 
 class FetchProductResponse(BaseModel):
@@ -40,6 +42,7 @@ class FetchProductResponse(BaseModel):
     images: Optional[List[str]] = []
 
 class SearchProductsRequest(BaseModel):
+    apiKey: str
     search: str
     filter: Optional[Dict[str, str]] = None
     sort: Optional[List[str]] = None
