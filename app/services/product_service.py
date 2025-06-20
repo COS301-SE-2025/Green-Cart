@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
-from app.models.product import Product, Category, ProductImage
+from app.models.product import Product
+from app.models.categories import Category
+from app.models.product_images import ProductImage
 from fastapi import HTTPException
 
 def get_all_products(db: Session):
