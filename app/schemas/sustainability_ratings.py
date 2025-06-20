@@ -19,3 +19,7 @@ class fetchSustainabilityRatingsResponse(BaseModel):
     rating: float
     statistics: Optional[List[SustainabilityRating]] = []
 
+class agregateSustainabilityRatings(BaseModel):
+    rating: float
+    statistics: Optional[List[SustainabilityRating]] = []
+

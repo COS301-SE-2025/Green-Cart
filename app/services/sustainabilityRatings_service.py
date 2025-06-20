@@ -57,7 +57,12 @@ def fetchSustainabilityRatings(request, db : Session):
             minSum += 1
             maxSum += 5
 
-    EcologicalImpact = ((currentSum - minSum) / (maxSum - minSum)) * 100
+
+    try:
+        EcologicalImpact = ((currentSum - minSum) / (maxSum - minSum)) * 100
+    except ZeroDivisionError:
+        EcologicalImpact = 0
+    
 
     return {
         "status": 200,

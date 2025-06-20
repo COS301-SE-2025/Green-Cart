@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Optional, List, Dict
 from decimal import Decimal
 from datetime import datetime
+from app.schemas.sustainability_ratings import agregateSustainabilityRatings
 
 class ProductResponse(BaseModel):
     id: int
@@ -23,6 +24,7 @@ class FetchAllProductsResponse(BaseModel):
     message: str
     data: Optional[List[ProductResponse]] = []
     images: Optional[List[str]] = []
+    rating: List[Decimal] = []
 
 class FetchAllProductsRequest(BaseModel):
     filter: Optional[Dict[str, str]] = None
@@ -38,6 +40,7 @@ class FetchProductResponse(BaseModel):
     message: str
     data: Optional[ProductResponse] = None
     images: Optional[List[str]] = []
+    sustainability: agregateSustainabilityRatings = None
 
 class SearchProductsRequest(BaseModel):
     search: str
@@ -51,3 +54,4 @@ class SearchProductsResponse(BaseModel):
     message: str
     data: Optional[List[ProductResponse]] = []
     images: Optional[List[str]] = []
+    rating: List[Decimal] = []
