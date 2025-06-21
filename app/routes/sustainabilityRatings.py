@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from typing import List
 
 from app.db.session import get_db
 from app.schemas.sustainability_ratings import fetchSustainabilityRatingsRequest, fetchSustainabilityRatingsResponse 
