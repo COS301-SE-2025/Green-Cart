@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Optional, List, Dict
 from decimal import Decimal
 from datetime import datetime
+from app.schemas.product import ProductResponse
 
 class OrderResponse(BaseModel):
     id: int
@@ -19,3 +20,18 @@ class FetchAllOrdersResponse(BaseModel):
     status: int
     message: str
     orders: List[OrderResponse]
+
+class FetchOrderByIDRequest(BaseModel):
+    userID: str
+    orderID: int
+    fromItem: int = 0
+    count: int = 10
+
+class FetchOrderByIDResponse(BaseModel):
+    status: int
+    message: str
+    order: OrderResponse = None
+    products: List[ProductResponse] = []
+    images: List[str] = []
+    quantities: List[int] = []
+    rating: List[Decimal]  = []

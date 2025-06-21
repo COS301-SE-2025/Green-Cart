@@ -1,9 +1,16 @@
 from app.models.orders import Order
+from app.models.cart import Cart
+from app.models.cart_item import CartItem
 from app.models.product import Product
+from app.services.product_service import fetchProductImages
+from app.services.sustainabilityRatings_service import fetchSustainabilityRatings
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-def fetch_all_orders(request, db : Session):
+def fetchAllOrders(request, db : Session):
+    if request.fromItem < 0 or request.count <= 0:
+        raise HTTPException(status_code=400, detail="Invalid pagination parameters")
+    
     orders = db.query(Order).filter(Order.user_id == request.userID).offset(request.fromItem).limit(request.count).all()
 
     return {
@@ -12,3 +19,48 @@ def fetch_all_orders(request, db : Session):
         "orders": orders
     }
     
+
+def fetchOrderById(request, db: Session):
+    if request.fromItem < 0 or request.count <= 0:
+        raise HTTPException(status_code=400, detail="Invalid pagination parameters")
+
+    order = db.query(Order).filter(Order.id == request.orderID, Order.user_id == request.userID).first()
+
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    cart = db.query(Cart).filter(Cart.id == order.cart_id).first()
+
+    cartItems = db.query(CartItem).filter(CartItem.cart_id == cart.id).offset(request.fromItem).limit(request.count).all()
+
+    products = []
+    images = []
+    quantities = []
+    rating = []
+
+    for item in cartItems:
+        product = db.query(Product).filter(Product.id == item.product_id).first()
+        
+        if product is None:
+            continue
+
+        products.append(product)
+        images.append(fetchProductImages(db, product.id))
+        quantities.append(item.quantity)
+
+        req = {
+            "product_id": product.id
+        }
+
+        res = fetchSustainabilityRatings(req, db)
+        rating.append(res.get("rating",0))
+
+    return {
+        "status": 200,
+        "message": "Success",
+        "order": order,
+        "products": products,
+        "images": images,
+        "rating": rating,
+        "quantities": quantities
+    }
