@@ -19,3 +19,5 @@ app.add_middleware(
 app.include_router(product.router)
 app.include_router(user.router, prefix="/auth", tags=["Auth"])
 app.include_router(sustainabilityRatings.router)
+app.include_router(cart.router) 
+app.include_router(orders.router)
