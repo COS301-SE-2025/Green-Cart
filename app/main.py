@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from app.routes import product
 from app.routes import user
 from app.routes import sustainabilityRatings
+from app.routes import cart 
 from fastapi.middleware.cors import CORSMiddleware
-
 
 app = FastAPI()
 
@@ -18,3 +18,4 @@ app.add_middleware(
 app.include_router(product.router)
 app.include_router(user.router, prefix="/auth", tags=["Auth"])
 app.include_router(sustainabilityRatings.router)
+app.include_router(cart.router) 
