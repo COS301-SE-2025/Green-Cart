@@ -35,3 +35,12 @@ class FetchOrderByIDResponse(BaseModel):
     images: List[str] = []
     quantities: List[int] = []
     rating: List[Decimal]  = []
+
+class CreateOrderRequest(BaseModel):
+    userID: str
+    cartID: int
+
+class CreateOrderResponse(BaseModel):
+    status: int
+    message: str
+    order_id: int

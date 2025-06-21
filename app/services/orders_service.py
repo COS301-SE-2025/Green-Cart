@@ -2,6 +2,7 @@ from app.models.orders import Order
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
 from app.models.product import Product
+from app.models.user import User
 from app.services.product_service import fetchProductImages
 from app.services.sustainabilityRatings_service import fetchSustainabilityRatings
 from fastapi import HTTPException
@@ -63,4 +64,29 @@ def fetchOrderById(request, db: Session):
         "images": images,
         "rating": rating,
         "quantities": quantities
+    }
+
+def createOrder(request, db : Session):
+    user = db.query(User).filter(User.id == request.userID).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    try:
+        order = Order(
+        user_id = user.id,
+        cart_id = request.cartID,
+        state = "Preparing Order"
+        )
+
+        db.add(order)
+        db.commit()
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating order: {str(e)}")
+    
+    return {
+        "status": 201,
+        "message": "Order created successfully",
+        "order_id": db.refresh(order).id
     }
