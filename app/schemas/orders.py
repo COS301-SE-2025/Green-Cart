@@ -7,7 +7,7 @@ from app.schemas.product import ProductResponse
 class OrderResponse(BaseModel):
     id: int
     user_id: str
-    product_id: int
+    cart_id: int
     state: str
     created_at: Optional[datetime]
 
@@ -41,6 +41,15 @@ class CreateOrderRequest(BaseModel):
     cartID: int
 
 class CreateOrderResponse(BaseModel):
+    status: int
+    message: str
+    order_id: int
+
+class cancelledOrderRequest(BaseModel):
+    userID: str
+    orderID: int
+
+class CancelledOrderResponse(BaseModel):
     status: int
     message: str
     order_id: int

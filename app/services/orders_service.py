@@ -46,7 +46,7 @@ def fetchOrderById(request, db: Session):
             continue
 
         products.append(product)
-        images.append(fetchProductImages(db, product.id))
+        images.append(fetchProductImages(db, product.id)[0].image_url if fetchProductImages(db, product.id) else None)
         quantities.append(item.quantity)
 
         req = {
@@ -72,6 +72,11 @@ def createOrder(request, db : Session):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
+    cart = db.query(Order).filter(Order.cart_id == request.cartID, Order.user_id == user.id).first()
+
+    if cart:
+        raise HTTPException(status_code=409, detail="Cart is already in an order")
+
     try:
         order = Order(
         user_id = user.id,
@@ -81,6 +86,7 @@ def createOrder(request, db : Session):
 
         db.add(order)
         db.commit()
+        db.refresh(order)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating order: {str(e)}")
@@ -88,5 +94,21 @@ def createOrder(request, db : Session):
     return {
         "status": 201,
         "message": "Order created successfully",
-        "order_id": db.refresh(order).id
+        "order_id": order.id
+    }
+
+def cancellOrder(request, db: Session):
+    order = db.query(Order).filter(Order.id == request.orderID, Order.user_id == request.userID).first()
+
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    order.state = "Cancelled"
+    db.commit()
+    db.refresh(order)
+
+    return {
+        "status": 204,
+        "message": "Success",
+        "order_id": order.id
     }
