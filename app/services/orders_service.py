@@ -1,6 +1,14 @@
 from app.models.orders import Order
+from app.models.product import Product
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-def get_all_orders(request, Session db):
+def fetch_all_orders(request, db : Session):
+    orders = db.query(Order).filter(Order.user_id == request.userID).offset(request.fromItem).limit(request.count).all()
+
+    return {
+        "status": 200,
+        "message": "Success",
+        "orders": orders
+    }
     
