@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:8000"; // Or your WSL IP
+const API_BASE_URL = "http://127.0.0.1:8000";
 
 export async function loginUser(email, password) {
   const response = await fetch(`${API_BASE_URL}/auth/signin`, {
@@ -14,5 +14,9 @@ export async function loginUser(email, password) {
     throw new Error(error.detail || "Login failed");
   }
 
-  return response.json();
+  const data = await response.json();
+
+  localStorage.setItem("user_id", data.id);
+
+  return data;
 }

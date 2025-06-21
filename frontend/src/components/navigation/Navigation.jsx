@@ -13,6 +13,8 @@ export default function Navigation() {
     const cartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
     const isMobileView = windowWidth <= 480;
 
     useEffect(() => {
@@ -33,27 +35,37 @@ export default function Navigation() {
         };
     }, [mobileMenuOpen]);
 
+    useEffect(() => {
+        // Check login status on route change
+        const storedUserId = localStorage.getItem("user_id");
+        setIsLoggedIn(!!storedUserId);
+    }, [location]);
+
     const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
     const handleLogoClick = (e) => {
         e.preventDefault();
         if (mobileMenuOpen) setMobileMenuOpen(false);
-        if (location.pathname !== '/Home') {
-            clearSearch();
+
+        // Clear search and redirect regardless of current path
+        clearSearch();
+
+        // Redirect logged in users to /Home, others to /
+        const userId = localStorage.getItem("user_id");
+        if (userId) {
             navigate('/Home', { replace: true });
+        } else {
+            navigate('/', { replace: true });
         }
     };
 
-    const handleMobileMenuClick = (e) => {
-        setMobileMenuOpen(false);
-        if (e.target.textContent === 'Home') handleLogoClick(e);
-    };
-
-    const returnToLogin = (e) => {
+    const handleLogout = (e) => {
         e.preventDefault();
-        localStorage.removeItem("token");
+        localStorage.removeItem("user_id");
         navigate("/", { replace: true });
     };
+
+    const handleMobileMenuClick = () => setMobileMenuOpen(false);
 
     return (
         <>
@@ -86,7 +98,9 @@ export default function Navigation() {
                 </div>
 
                 <ul className="nav__links nav__links--right">
-                    <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li>
+                    {isLoggedIn && (
+                        <li><Link to="/logout" onClick={handleLogout}>Logout</Link></li>
+                    )}
                     <li><Link to="/orders">Orders</Link></li>
                     <li><Link to="/my-account">My Account</Link></li>
                     <li className="nav__cart">
@@ -95,11 +109,7 @@ export default function Navigation() {
                             aria-label={`Cart with ${cartQuantity} item${cartQuantity !== 1 ? 's' : ''}`}
                             title={`Shopping Cart (${cartQuantity})`}
                         >
-                            <img
-                                src={CartIcon}
-                                alt="Shopping Cart"
-                                className="nav__cart-icon"
-                            />
+                            <img src={CartIcon} alt="Shopping Cart" className="nav__cart-icon" />
                             {cartQuantity > 0 && (
                                 <span className="nav__cart-badge">{cartQuantity}</span>
                             )}
@@ -115,7 +125,9 @@ export default function Navigation() {
                             <li><Link to="/Home" onClick={handleMobileMenuClick}>Home</Link></li>
                             <li><Link to="/about" onClick={handleMobileMenuClick}>About Us</Link></li>
                             <li><Link to="/help" onClick={handleMobileMenuClick}>Help Center</Link></li>
-                            <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li>
+                            {isLoggedIn && (
+                                <li><Link to="/logout" onClick={handleLogout}>Logout</Link></li>
+                            )}
                             <li><Link to="/orders" onClick={handleMobileMenuClick}>Orders</Link></li>
                             <li><Link to="/my-account" onClick={handleMobileMenuClick}>My Account</Link></li>
                             <li><Link to="/cart" onClick={handleMobileMenuClick}>
