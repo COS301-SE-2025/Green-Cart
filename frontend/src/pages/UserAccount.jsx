@@ -388,7 +388,194 @@ export default function UserAccount() {
             </div>
           )}
 
-         
+         {/* NEW: Carbon Footprint Tab */}
+          {activeTab === 'carbon-footprint' && (
+            <div className="carbon-section">
+              <div className="section-header">
+                <h2>Your Carbon Footprint</h2>
+                <div className="timeframe-selector">
+                  <button 
+                    className={`timeframe-btn ${selectedTimeframe === 'monthly' ? 'active' : ''}`}
+                    onClick={() => setSelectedTimeframe('monthly')}
+                  >
+                    Monthly
+                  </button>
+                  <button 
+                    className={`timeframe-btn ${selectedTimeframe === 'yearly' ? 'active' : ''}`}
+                    onClick={() => setSelectedTimeframe('yearly')}
+                  >
+                    Yearly
+                  </button>
+                </div>
+              </div>
+
+              {/* Carbon Stats Overview */}
+              <div className="carbon-overview">
+                <div className="carbon-stat-card">
+                  <div className="stat-icon">🌍</div>
+                  <div className="stat-content">
+                    <h3>Total Footprint</h3>
+                    <div className="stat-value" style={{ color: getCarbonColor(carbonData.totalFootprint, 300) }}>
+                      {carbonData.totalFootprint} 
+                    </div>
+                    <p className="stat-description">This year</p>
+                  </div>
+                </div>
+
+                <div className="carbon-stat-card">
+                  <div className="stat-icon">📅</div>
+                  <div className="stat-content">
+                    <h3>This Month</h3>
+                    <div className="stat-value" style={{ color: getCarbonColor(carbonData.monthlyFootprint) }}>
+                      {carbonData.monthlyFootprint}
+                    </div>
+                    <p className="stat-description">
+                      {monthlyChange > 0 ? '📈' : '📉'} {Math.abs(monthlyChange).toFixed(1)}% vs last month
+                    </p>
+                  </div>
+                </div>
+
+                <div className="carbon-stat-card">
+                  <div className="stat-icon">🎯</div>
+                  <div className="stat-content">
+                    <h3>Yearly Goal</h3>
+                    <div className="stat-value">
+                      {carbonData.yearlyGoal}
+                    </div>
+                    <div className="progress-bar">
+                      <div 
+                        className="progress-fill"
+                        style={{ 
+                          width: `${Math.min(yearlyProgress, 100)}%`,
+                          backgroundColor: yearlyProgress > 100 ? '#ef4444' : '#22c55e'
+                        }}
+                      ></div>
+                    </div>
+                    <p className="stat-description">{yearlyProgress.toFixed(1)}% of goal used</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Monthly Trend Chart */}
+              <div className="carbon-chart-section">
+                <h3>Monthly Carbon Footprint Trend</h3>
+                <div className="chart-container">
+                  <div className="chart-bars">
+                    {carbonData.monthlyData.map((month, index) => (
+                      <div key={month.month} className="chart-bar-group">
+                        <div className="chart-bars-container">
+                          <div 
+                            className="chart-bar actual"
+                            style={{ 
+                              height: `${(month.footprint / 35) * 100}%`,
+                              backgroundColor: getCarbonColor(month.footprint)
+                            }}
+                            title={`${month.footprint}`}
+                          ></div>
+                          <div 
+                            className="chart-bar goal"
+                            style={{ height: `${(month.goal / 35) * 100}%` }}
+                            title={`Goal: ${month.goal} `}
+                          ></div>
+                        </div>
+                        <span className="chart-label">{month.month}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="chart-legend">
+                    <div className="legend-item">
+                      <div className="legend-color actual"></div>
+                      <span>Actual</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color goal"></div>
+                      <span>Goal</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Category Breakdown */}
+              <div className="carbon-breakdown-section">
+                <h3>Footprint by Category</h3>
+                <div className="category-breakdown">
+                  {carbonData.categoryBreakdown.map((category) => (
+                    <div key={category.category} className="category-item">
+                      <div className="category-header">
+                        <span className="category-name">{category.category}</span>
+                        <span className="category-amount">{category.footprint}</span>
+                      </div>
+                      <div className="category-bar">
+                        <div 
+                          className="category-fill"
+                          style={{ 
+                            width: `${category.percentage}%`,
+                            backgroundColor: category.color
+                          }}
+                        ></div>
+                      </div>
+                      <span className="category-percentage">{category.percentage}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Recent Orders */}
+              <div className="carbon-orders-section">
+                <h3>Recent Order Impact</h3>
+                <div className="carbon-orders">
+                  {carbonData.orders.map((order) => (
+                    <div key={order.id} className="carbon-order-item">
+                      <div className="order-info">
+                        <span className="order-id">Order #{order.id}</span>
+                        <span className="order-date">{order.date}</span>
+                        <span className="order-category">{order.category}</span>
+                      </div>
+                      <div className="order-impact">
+                        <span 
+                          className="order-footprint"
+                          style={{ color: getCarbonColor(order.footprint, 15) }}
+                        >
+                          {order.footprint}
+                        </span>
+                        <span className="order-items">{order.items} items</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Achievements */}
+              <div className="carbon-achievements-section">
+                <h3>Sustainability Achievements</h3>
+                <div className="achievements-grid">
+                  {carbonData.achievements.map((achievement, index) => (
+                    <div key={index} className="achievement-card">
+                      <div className="achievement-icon">{achievement.icon}</div>
+                      <div className="achievement-content">
+                        <h4>{achievement.title}</h4>
+                        <p>{achievement.description}</p>
+                        <span className="achievement-date">{achievement.date}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Recommendations */}
+              <div className="carbon-recommendations-section">
+                <h3>💡 Personalized Recommendations</h3>
+                <div className="recommendations-list">
+                  {carbonData.recommendations.map((recommendation, index) => (
+                    <div key={index} className="recommendation-item">
+                      <div className="recommendation-icon">🌱</div>
+                      <p>{recommendation}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Enhanced Preferences Tab */}
           {activeTab === 'preferences' && (
