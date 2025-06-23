@@ -118,3 +118,7 @@
   cursor: pointer;
   text-decoration: underline;
 }
+
+.terrabot-link:hover {
+  color: #45a049;
+}
