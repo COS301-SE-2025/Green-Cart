@@ -12,6 +12,7 @@ import Navigation from './components/navigation/Navigation';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
 import Checkout from './pages/Checkout'; // ✅ ADDED
+import UserAccount from './pages/UserAccount'; // Placeholder for user account page
 import { SearchProvider } from './components/search/SearchProvider';
 import { CartProvider } from "./components/cart/CartContext";
 
@@ -60,6 +61,13 @@ function App() {
               <React.Fragment key="checkout">
                 <Navigation />
                 <Checkout />
+              </React.Fragment>
+            } />
+            <Route path="/user-account" element={
+              <React.Fragment key="user-account">
+                <Navigation />
+                {/* User account page can be added here */}
+                <UserAccount />
               </React.Fragment>
             } />
             {/* catch-all */}
