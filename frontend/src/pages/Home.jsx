@@ -12,16 +12,20 @@ import './styles/Home.css';
 
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [images, setImages] = useState([]);
   
   // Simulate loading products from an API
   useEffect(() => {
-    setIsLoading(true);
+    // setIsLoading(true);
     
     fetchProducts().then(() => {
-      setIsLoading(false);
+
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 300)
+      // setIsLoading(false);
     }).catch(() => {
       alert("Failed to load products. Please try again later.");
       setIsLoading(false);
@@ -45,36 +49,42 @@ export default function Home() {
     }
 
   }
-
+  
   return (
     <div className="home">
       <SearchBar className="home-search-bar" />
       
+      <h1>Just In</h1>
+      
       {isLoading ? (
-        <div className="loading">Loading products...</div>
-      ) : (
         <>
-          <h1>Just In</h1>
+          {/* Loading indicator */}
+          <div className="loading-indicator">
+            <div className="loading-spinner"></div>
+            <span className="loading-text">Loading eco-friendly products...</span>
+          </div>
+          {/* Simple loading skeleton cards */}
           <div className="product-list">
-            {products.map((product, i) => (
-              <Product key={product.id} product={product} image={images[i]} />
+            {[...Array(12)].map((_, index) => (
+              <div key={index} className="product-skeleton">
+                <div className="skeleton-image"></div>
+                <div className="skeleton-content">
+                  <div className="skeleton-title"></div>
+                  <div className="skeleton-price"></div>
+                  <div className="skeleton-badge"></div>
+                </div>
+              </div>
             ))}
           </div>
           
-          {/* <h1>Best Sellers</h1>
-          <div className="product-list">
-            {bestSellerProducts.map(product => (
-              <Product key={product.id} product={product} />
-            ))}
-          </div>
-
-          <h1>Featured Products</h1>
-          <div className="product-list">
-            {featuredProducts.map(product => (
-              <Product key={product.id} product={product} />
-            ))}
-          </div> */}
+          
         </>
+      ) : (
+        <div className="product-list">
+          {products.map((product, i) => (
+            <Product key={product.id} product={product} image={images[i]} />
+          ))}
+        </div>
       )}
     </div>
   );

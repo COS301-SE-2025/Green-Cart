@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { fetchProduct } from '../../product-services/fetchProduct';
 import '../styles/product/ViewProduct.css';
 import { useCart } from "../cart/CartContext";
+import FootprintTracker from './FootprintTracker';
 
 export default function ViewProduct() {
     const { id } = useParams();
@@ -11,11 +12,17 @@ export default function ViewProduct() {
     const [product, setData] = useState({});
     const [image, setImages] = useState([]);
     const [found, setState] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [imageLoaded, setImageLoaded] = useState(false);
     const { addToCart } = useCart();
 
     async function fetch_Product() {
         const apiKey = "someKey";
         const product_id = parseInt(id);
+        
+        //set isLoading to true while fetching
+        setIsLoading(true);
+
         try {
             const response = await fetchProduct({ apiKey, product_id });
             setData(response.data);
@@ -24,12 +31,20 @@ export default function ViewProduct() {
         } catch (error) {
             console.error("Error fetching product:", error);
             setState(false);
+        } finally {
+            setIsLoading(false); // End loading
         }
     }
 
     useEffect(() => {
         fetch_Product();
+        //set image load
+        setImageLoaded(false);
     }, [id]);
+
+    const handlImageLoad = () => {
+        setImageLoaded(true);
+    }
 
     if (found === false) {
         return (
@@ -53,6 +68,51 @@ export default function ViewProduct() {
             image: image[0] || ""                   // fallback if no image
         });
     };
+
+    // if (isLoading) {
+    //     return (
+    //         <div className="view-product-container">
+    //             <div className="product-loading">
+    //                 <div className="loading-spinner"></div>
+    //                 <h2>Loading Product...</h2>
+    //                 <p>Please wait while we fetch the product details</p>
+    //             </div>
+    //         </div>
+    //     );
+    // }
+
+    //Product skeleton for laodiung state
+    const ProductSkeleton = () => (
+    <div className="view-product">
+        <div className="product-image-container skeleton" style={{ height: '500px' }}></div>
+        
+        <div className="product-info">
+        <div className="product-header">
+            <div className="skeleton" style={{ height: '2rem', width: '70%', marginBottom: '0.5rem' }}></div>
+            <div className="skeleton" style={{ height: '1rem', width: '40%', marginBottom: '1rem' }}></div>
+        </div>
+        
+        <div className="skeleton" style={{ height: '2rem', width: '30%', margin: '1.5rem 0' }}></div>
+        
+        <div style={{ margin: '1.5rem 0' }}>
+            <div className="skeleton" style={{ height: '1rem', width: '100%', marginBottom: '0.5rem' }}></div>
+            <div className="skeleton" style={{ height: '1rem', width: '100%', marginBottom: '0.5rem' }}></div>
+            <div className="skeleton" style={{ height: '1rem', width: '80%' }}></div>
+        </div>
+        
+        <div className="skeleton" style={{ height: '3rem', width: '100%', margin: '2rem 0' }}></div>
+        </div>
+    </div>
+    );
+
+    if (isLoading) {
+    return (
+        <div className="view-product-container">
+        <div className="skeleton" style={{ height: '2rem', width: '6rem', marginBottom: '1.5rem' }}></div>
+        <ProductSkeleton />
+        </div>
+    );
+    }
 
 
     return (
@@ -112,7 +172,10 @@ export default function ViewProduct() {
                     <button className="add-to-cart-button" onClick={handleAddToCart}>
                         Add to Cart
                     </button>
-                </div>
+                </div> 
+            </div>
+           <div>
+                    <FootprintTracker />
             </div>
         </div>
     );
