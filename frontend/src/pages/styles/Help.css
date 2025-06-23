@@ -146,3 +146,10 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   background-color: #d8d8d8;
 }
+
+.category-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+}
