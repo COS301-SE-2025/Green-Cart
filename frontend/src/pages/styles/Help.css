@@ -88,3 +88,9 @@
   padding: 80px 20px;
   background-color: #f5f5f5;
 }
+
+.help-content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
