@@ -62,3 +62,15 @@
   transform: translateY(-50%);
   z-index: 3;
 }
+
+.help-search-input {
+  width: 100%;
+  padding: 16px 20px 16px 55px;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  outline: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
