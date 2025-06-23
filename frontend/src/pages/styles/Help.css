@@ -214,3 +214,34 @@
     font-size: 15px;
   }
 }
+
+@media (max-width: 480px) {
+  .help-hero {
+    height: 250px;
+  }
+  
+  .help-title {
+    font-size: 28px;
+    margin-bottom: 25px;
+  }
+  
+  .help-main-title {
+    font-size: 28px;
+  }
+  
+  .help-description {
+    font-size: 15px;
+  }
+  
+  .help-category-card {
+    padding: 25px 20px;
+  }
+  
+  .category-title {
+    font-size: 22px;
+  }
+  
+  .category-description {
+    font-size: 14px;
+  }
+}
