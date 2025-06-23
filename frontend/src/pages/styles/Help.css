@@ -5,7 +5,7 @@
 }
 
 .help-hero {
-  background-image: url('./assets/help-hero-bg.jpg');
+  background-image: url('/src/assets/images/help-green.avif');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
