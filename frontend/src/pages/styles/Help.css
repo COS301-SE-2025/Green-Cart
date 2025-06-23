@@ -49,3 +49,8 @@
   max-width: 600px;
   margin: 0 auto;
 }
+
+.help-search-box {
+  position: relative;
+  width: 100%;
+}
