@@ -35,3 +35,11 @@
   max-width: 800px;
   padding: 0 20px;
 }
+
+.help-title {
+  color: white;
+  font-size: 48px;
+  font-weight: 600;
+  margin-bottom: 40px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
