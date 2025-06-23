@@ -26,3 +26,12 @@
   background: rgba(0, 0, 0, 0.3);
   z-index: 1;
 }
+
+.help-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  width: 100%;
+  max-width: 800px;
+  padding: 0 20px;
+}
