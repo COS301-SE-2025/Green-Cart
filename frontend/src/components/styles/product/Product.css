@@ -1,95 +1,268 @@
-/* Product.css */
-
 .product {
-  width: 100%;
-  max-width: 220px; /* Reduced from 240px to make cards smaller */
-  background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-  transition: transform 0.2s, box-shadow 0.2s;
-  font-family: 'Inter', sans-serif;
-  margin: 0 auto; /* Center the card */
+    width: 100%;
+    max-width: 220px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: 'Inter', sans-serif;
+    margin: 0 auto;
+    position: relative; /* Important for positioning badges */
 }
 
 .product:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 /* IMAGE AREA */
 .product-image {
-  position: relative;
-  background: #f5f5f5;
-  height: 200px; /* Fixed height for consistency */
-  overflow: hidden;
+    position: relative;
+    background: #f5f5f5;
+    height: 200px;
+    overflow: hidden;
 }
 
 .product-image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* This ensures images fill the space proportionally */
-  object-position: center; /* Center the image within the container */
-  transition: transform 0.3s ease;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.3s ease;
 }
 
 .product:hover .product-image img {
-  transform: scale(1.05);
+    transform: scale(1.05);
 }
 
-/* STOCK BADGE */
-.product-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 4px 8px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  border-radius: 12px;
-  z-index: 2;
+/* STOCK BADGE - Top Right */
+.stock-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    border-radius: 12px;
+    z-index: 2;
 }
 
 .badge-in-stock {
-  background: #e8f5e9;
-  color: #2e7d32;
+    background: #e8f5e9;
+    color: #2e7d32;
 }
 
 .badge-out-of-stock {
-  background: #ffebee;
-  color: #c62828;
+    background: #ffebee;
+    color: #c62828;
 }
 
-/* DETAILS AREA */
+/* PRODUCT DETAILS */
 .product-details {
-  background: #fafafa;
-  padding: 0.75rem 1rem;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+    background: #fafafa;
+    padding: 0.75rem 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative; /* Important for badge positioning */
 }
 
 .product-details h2 {
-  font-size: 1rem; /* Reduced from 1.2rem */
-  font-weight: 500;
-  margin: 0 0 0.5rem;
-  color: #222;
-  line-height: 1.2;
-  /* Add text truncation for long names */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0 0 0.5rem;
+    color: #222;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .product-details p {
-  margin: 0;
-  font-size: 0.95rem; /* Slightly reduced */
-  font-weight: 600;
-  color: #2e7d32;
+    margin: 0;
+    font-size: 0.99rem;
+    font-weight: 600;
+    color: #2e7d32;
+}
+
+/* SUSTAINABILITY BADGE - Bottom Right */
+.sustainability-badge {
+    position: absolute;
+    bottom: 15px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    border: 1px solid transparent;
+    z-index: 3;
+    min-width: 35px;
+    justify-content: center;
+}
+
+.rating-icon {
+    font-size: 0.9rem;
+}
+
+.rating-score {
+    font-size: 0.90rem;
+    font-weight: 600;
+}
+
+/* HOVER EFFECTS */
+.product:hover .sustainability-badge {
+    transform: scale(1.05);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+    .product {
+        max-width: 200px;
+    }
+    
+    .product-image {
+        height: 160px;
+    }
+    
+    .stock-badge {
+        top: 6px;
+        right: 6px;
+        padding: 3px 6px;
+        font-size: 0.6rem;
+    }
+    
+    .sustainability-badge {
+        bottom: 6px;
+        right: 6px;
+        padding: 3px 6px;
+        font-size: 0.6rem;
+        min-width: 30px;
+    }
+    
+    .rating-icon {
+        font-size: 0.65rem;
+    }
+    
+    .rating-score {
+        font-size: 0.6rem;
+    }
+    
+    .product-details {
+        padding: 0.65rem 0.85rem;
+    }
+    
+    .product-details h2 {
+        font-size: 0.9rem;
+    }
+    
+    .product-details p {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .product {
+        max-width: 180px;
+    }
+    
+    .product-image {
+        height: 140px;
+    }
+    
+    .stock-badge {
+        top: 4px;
+        right: 4px;
+        padding: 2px 5px;
+        font-size: 0.55rem;
+    }
+    
+    .sustainability-badge {
+        bottom: 4px;
+        right: 4px;
+        padding: 2px 5px;
+        font-size: 0.55rem;
+        min-width: 25px;
+        gap: 2px;
+    }
+    
+    .rating-icon {
+        font-size: 0.6rem;
+    }
+    
+    .rating-score {
+        font-size: 0.55rem;
+    }
+}
+
+/* ACCESSIBILITY */
+.product:focus {
+    outline: 2px solid #7BB540;
+    outline-offset: 2px;
+}
+
+.sustainability-badge:focus {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* SMOOTH TRANSITIONS */
+.sustainability-badge,
+.stock-badge,
+.product-image img {
+    transition: all 0.3s ease;
+}
+
+/* LOADING STATES */
+.product-image img[src=""],
+.product-image img:not([src]) {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ENSURE CONSISTENT SPACING */
+.product-details {
+    padding-bottom: 2.5rem; /* Add extra bottom padding to make room for badge */
+}
+
+/* DISABLE ANIMATIONS FOR REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+    .product,
+    .product-image img,
+    .sustainability-badge,
+    .stock-badge {
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    .product:hover {
+        transform: none;
+    }
+    
+    .product:hover .product-image img {
+        transform: none;
+    }
+    
+    .product:hover .sustainability-badge {
+        transform: none;
+    }
 }
