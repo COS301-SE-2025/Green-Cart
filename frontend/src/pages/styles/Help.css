@@ -94,3 +94,10 @@
   margin: 0 auto;
   text-align: center;
 }
+
+.help-main-title {
+  font-size: 42px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 24px;
+}
