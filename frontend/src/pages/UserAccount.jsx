@@ -126,6 +126,68 @@ export default function UserAccount() {
     }
   };
 
+  const handleSaveChanges = async () => {
+    setIsLoading(true);
+    try {
+      const updatedUser = { ...user, ...formData };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      setIsEditing(false);
+      alert('Profile updated successfully!');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('Failed to update profile. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || '',
+        city: user.city || '',
+        postalCode: user.postalCode || '',
+        dateOfBirth: user.dateOfBirth || '',
+        preferences: {
+          emailNotifications: user.preferences?.emailNotifications ?? true,
+          smsNotifications: user.preferences?.smsNotifications ?? false,
+          marketingEmails: user.preferences?.marketingEmails ?? true,
+          carbonGoalNotifications: user.preferences?.carbonGoalNotifications ?? true,
+          sustainabilityTips: user.preferences?.sustainabilityTips ?? true
+        }
+      });
+    }
+    setIsEditing(false);
+  };
+
+  const handleDeleteAccount = () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete your account? This action cannot be undone.'
+    );
+    
+    if (confirmed) {
+      const doubleConfirmed = window.confirm(
+        'This will permanently delete all your data. Are you absolutely sure?'
+      );
+      
+      if (doubleConfirmed) {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        navigate('/');
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
   
 
   if (isLoading) {
