@@ -54,3 +54,11 @@
   position: relative;
   width: 100%;
 }
+
+.search-icon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+}
