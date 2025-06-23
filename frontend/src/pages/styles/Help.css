@@ -78,3 +78,8 @@
 .help-search-input::placeholder {
   color: #666;
 }
+
+.help-search-input:focus {
+  background-color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
