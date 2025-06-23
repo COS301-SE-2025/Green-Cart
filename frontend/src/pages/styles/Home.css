@@ -2,6 +2,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    animation: fadeIn 0.5s ease-out;
 }
 
 .home-search-bar {
@@ -18,20 +19,142 @@
 
 .product-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Reduced from 280px */
-    gap: 20px; /* Reduced gap for tighter layout */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
     margin-bottom: 40px;
-    justify-items: center; /* Center the cards in their grid cells */
+    justify-items: center;
 }
 
-.loading {
-    text-align: center;
-    padding: 40px 20px;
-    font-size: 18px;
+/* ===== LOADING STYLES ===== */
+
+/* Loading Indicator - Now independent */
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 1rem auto 2rem auto;
+    max-width: 400px;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e0e0e0;
+    border-top: 2px solid #7BB540;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
     color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
-/* Make section titles sticky when scrolling on mobile */
+/* Skeleton Product Cards - Now use the same grid as real products */
+.product-skeleton {
+    width: 100%;
+    max-width: 220px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-image {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeleton-content {
+    padding: 0.75rem 1rem 2.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.skeleton-title {
+    height: 1rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    border-radius: 4px;
+    animation: shimmer 1.5s infinite;
+    animation-delay: 0.1s;
+}
+
+.skeleton-price {
+    height: 0.875rem;
+    width: 60%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    border-radius: 4px;
+    animation: shimmer 1.5s infinite;
+    animation-delay: 0.2s;
+}
+
+.skeleton-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 35px;
+    height: 20px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    border-radius: 12px;
+    animation: shimmer 1.5s infinite;
+    animation-delay: 0.3s;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes skeletonPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
     .home {
         max-width: 100%;
@@ -40,7 +163,7 @@
     
     .home h1 {
         position: sticky;
-        top: 70px; /* Account for navigation height */
+        top: 70px;
         background: rgba(255, 255, 255, 0.95);
         z-index: 10;
         padding: 15px 0;
@@ -48,8 +171,25 @@
     }
     
     .product-list {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* Smaller cards on mobile */
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 16px;
+    }
+
+    .product-skeleton {
+        max-width: 160px;
+    }
+
+    .skeleton-image {
+        height: 160px;
+    }
+
+    .loading-indicator {
+        padding: 0.75rem;
+        margin: 0.5rem auto 1.5rem auto;
+    }
+
+    .loading-text {
+        font-size: 0.8rem;
     }
 }
 
@@ -59,12 +199,31 @@
     }
     
     .product-list {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Even smaller on very small screens */
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 12px;
+    }
+
+    .product-skeleton {
+        max-width: 140px;
+    }
+
+    .skeleton-image {
+        height: 140px;
+    }
+
+    .loading-indicator {
+        flex-direction: row;
+        gap: 0.5rem;
+        text-align: center;
+        padding: 0.5rem;
+    }
+
+    .loading-spinner {
+        width: 16px;
+        height: 16px;
     }
 }
 
-/* For larger screens, show more products per row */
 @media (min-width: 1400px) {
     .home {
         max-width: 1400px;
@@ -72,5 +231,25 @@
     
     .product-list {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+/* Disable animations for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .home,
+    .product-skeleton,
+    .skeleton-image,
+    .skeleton-title,
+    .skeleton-price,
+    .skeleton-badge,
+    .loading-spinner {
+        animation: none !important;
+    }
+    
+    .skeleton-image,
+    .skeleton-title,
+    .skeleton-price,
+    .skeleton-badge {
+        background: #f0f0f0;
     }
 }
