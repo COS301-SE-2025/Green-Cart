@@ -160,3 +160,57 @@
   line-height: 1.5;
   margin: 0;
 }
+
+@media (max-width: 768px) {
+  .help-hero {
+    height: 300px;
+  }
+  
+  .help-title {
+    font-size: 36px;
+    margin-bottom: 30px;
+  }
+  
+  .help-search-input {
+    padding: 14px 18px 14px 50px;
+    font-size: 14px;
+  }
+  
+  .search-icon {
+    left: 15px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  .help-main-content {
+    padding: 60px 20px;
+  }
+  
+  .help-main-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+  
+  .help-description {
+    font-size: 16px;
+    margin-bottom: 40px;
+  }
+  
+  .help-categories {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .help-category-card {
+    padding: 30px 25px;
+  }
+  
+  .category-title {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  
+  .category-description {
+    font-size: 15px;
+  }
+}
