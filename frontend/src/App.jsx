@@ -11,6 +11,7 @@ import Register from './pages/Register';
 import Navigation from './components/navigation/Navigation';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
+import Help from './pages/Help';
 import Checkout from './pages/Checkout'; // ✅ ADDED
 import { SearchProvider } from './components/search/SearchProvider';
 import { CartProvider } from "./components/cart/CartContext";
@@ -56,6 +57,12 @@ function App() {
                 <Orders />
               </React.Fragment>
             } />
+            <Route path="/help" element={
+              <React.Fragment key="help">
+                <Navigation />
+                <Help />
+              </React.Fragment>
+            }/>
             <Route path="/checkout" element={   // ✅ ADDED THIS ROUTE
               <React.Fragment key="checkout">
                 <Navigation />
