@@ -15,6 +15,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [images, setImages] = useState([]);
+  const [ratings, setRatings] = useState([]);
   
   // Simulate loading products from an API
   useEffect(() => {
@@ -34,15 +35,15 @@ export default function Home() {
   }, []);
 
   async function fetchProducts() {
-    // apiKey will be removed from this request in the next iteration
-    const api = "someKey";
     const fromItem = 0;
     const count = 20;
 
     try{
-      const response = await fetchAllProducts({ apiKey: api, fromItem, count });
+      const response = await fetchAllProducts({fromItem, count });
       setProducts(response.data || []);
       setImages(response.images || []);
+      setRatings(response.rating || []);
+
     }catch(error){
       console.error("Error fetching products:", error);
 
@@ -82,7 +83,7 @@ export default function Home() {
       ) : (
         <div className="product-list">
           {products.map((product, i) => (
-            <Product key={product.id} product={product} image={images[i]} />
+            <Product key={product.id} product={product} image={images[i]} product_rating={parseInt(ratings[i])} />
           ))}
         </div>
       )}
