@@ -4,3 +4,14 @@
   background-color: #f5f5f5;
 }
 
+.help-hero {
+  background-image: url('./assets/help-hero-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
