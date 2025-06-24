@@ -4,7 +4,7 @@ import "../styles/product/FootprintTracker.css";
 
 export default function FootprintTracker({ sustainability }) {
   const data = sustainability;
-  const [selected, setSelected] = useState(data.statistics[0].type);
+  const [selected, setSelected] = useState(null);
 
   const detail = "Hello World";//data.breakdown.find(d => d.stage === selected);
   const MAX_RATING = 100;
