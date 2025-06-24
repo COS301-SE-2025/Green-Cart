@@ -1,5 +1,8 @@
 from sqlalchemy.orm import Session
-from app.models.product import Product, Category, ProductImage
+from app.models.product import Product
+from app.models.categories import Category
+from app.models.product_images import ProductImage
+from app.services.sustainabilityRatings_service import fetchSustainabilityRatings
 from fastapi import HTTPException
 
 def get_all_products(db: Session):
@@ -63,18 +66,28 @@ def fetchAllProducts(request, db: Session):
         raise HTTPException(status_code=400, detail="count must be greater than 0")
 
     products = products.offset(fromItem).limit(count).all()
+    rating = []
+
 
     for x in range(len(products)):
         product = products[x]
         image = fetchProductImages(db, product.id)
         images.append(image[0].image_url)
+
+        req = {
+            "product_id": product.id
+        }
+
+        res = fetchSustainabilityRatings(req, db)
+        rating.append(res.get("rating",0))
         
 
     return {
         "status": 200,
         "message": "Success",
         "data": products,
-        "images": images
+        "images": images,
+        "rating": rating
     }
     
 def fetchProduct(request, db: Session):
@@ -91,11 +104,23 @@ def fetchProduct(request, db: Session):
         image = imageResponse[x].image_url
         images.append(image)
 
+    req = {
+        "product_id": product.id
+    }
+
+    res = fetchSustainabilityRatings(req, db)
+
+    sustainability = {
+        "rating": res.get("rating", 0),
+        "statistics": res.get("statistics", [])
+    }
+
     return {
         "status": 200,
         "message": "Success",
         "data": product,
-        "images": images
+        "images": images,
+        "sustainability": sustainability
     }
 
 def searchProducts(request, db: Session):
@@ -151,15 +176,25 @@ def searchProducts(request, db: Session):
 
     products = products.offset(fromItem).limit(count).all()
 
+    rating = []
+
     for x in range(len(products)):
         product = products[x]
         image = fetchProductImages(db, product.id)
         images.append(image[0].image_url)
+
+        req = {
+            "product_id": product.id
+        }
+
+        res = fetchSustainabilityRatings(req, db)
+        rating.append(res.get("rating",0))
         
 
     return {
         "status": 200,
         "message": "Success",
         "data": products,
-        "images": images
+        "images": images,
+        "rating": rating
     }

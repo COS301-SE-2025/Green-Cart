@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import '../styles/product/Product.css';
 
-export default function Product({ product, image}) {
+export default function Product({ product, image, product_rating}) {
     const navigate = useNavigate();
 
     const viewProduct = () => {
@@ -9,16 +9,7 @@ export default function Product({ product, image}) {
         navigate(`/Product/${product.id}`);
     };
 
-    const getSustainabilityRating = () => {
-        if (product.sustainability_rating) {
-            return product.sustainability_rating;
-        }
-
-        const mockRating = Math.floor(Math.random() * 60) + 25;
-        return mockRating; // Return a random rating between 25 and 85
-    }
-
-    const sustainabilityRating = getSustainabilityRating();
+    const sustainabilityRating = product_rating;
 
      const getRatingColor = (rating) => {
         if (rating >= 70) return '#22c55e'; // Green - good

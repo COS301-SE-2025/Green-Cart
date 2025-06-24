@@ -15,18 +15,19 @@ export default function ViewProduct() {
     const [isLoading, setIsLoading] = useState(true);
     const [imageLoaded, setImageLoaded] = useState(false);
     const { addToCart } = useCart();
+    const [sustainability, setSustainability] = useState({});
 
     async function fetch_Product() {
-        const apiKey = "someKey";
         const product_id = parseInt(id);
         
         //set isLoading to true while fetching
         setIsLoading(true);
 
         try {
-            const response = await fetchProduct({ apiKey, product_id });
+            const response = await fetchProduct({product_id });
             setData(response.data);
             setImages(response.images);
+            setSustainability(response.sustainability);
             setState(true);
         } catch (error) {
             console.error("Error fetching product:", error);
@@ -175,7 +176,7 @@ export default function ViewProduct() {
                 </div> 
             </div>
            <div>
-                    <FootprintTracker />
+                    <FootprintTracker sustainability={sustainability} />
             </div>
         </div>
     );
