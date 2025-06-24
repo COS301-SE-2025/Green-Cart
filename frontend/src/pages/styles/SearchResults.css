@@ -1,5 +1,6 @@
 .search-results {
-  max-width: 1400px;
+  /* max-width: 1400px; */
+  width: 80%;
   margin: 0 auto;
   padding: 20px;
   animation: fadeIn 0.5s ease-out;
