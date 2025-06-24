@@ -86,7 +86,7 @@ export default function Navigation() {
                 </div>
 
                 <ul className="nav__links nav__links--right">
-                    <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li>
+                    {/* <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li> */}
                     <li><Link to="/orders">Orders</Link></li>
                     <li><Link to="/user-account">My Account</Link></li>
                     <li className="nav__cart">
