@@ -8,7 +8,6 @@ export const fetchAllProducts = async ({filter, sort, fromItem, count }) => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                apiKey,
                 filter,
                 sort,
                 fromItem,
