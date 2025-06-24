@@ -103,6 +103,7 @@ export default function Home() {
       setTimeout(() => {
         setIsLoading(false);
       }, 300);
+    }
   }, [filters, sort]);
 
   useEffect(() => {
@@ -182,7 +183,7 @@ export default function Home() {
                 <span className="loading-text">Loading eco-friendly products...</span>
               </div>
               <div className="product-list">
-                {[...Array(8)].map((_, index) => (
+                {[...Array(12)].map((_, index) => (
                   <div key={index} className="product-skeleton">
                     <div className="skeleton-image"></div>
                     <div className="skeleton-content">
