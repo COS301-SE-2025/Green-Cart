@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from typing import List, Dict, Any
+from typing import List
 
 from app.db.session import get_db
 from app.schemas.product import ProductResponse, FetchAllProductsResponse, FetchAllProductsRequest, FetchProductRequest, FetchProductResponse, SearchProductsRequest, SearchProductsResponse
@@ -8,6 +8,7 @@ from app.services.product_service import get_all_products, fetchAllProducts, fet
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
+# This route should be removed further down the line[Was used for testing purposes]
 @router.get("/", response_model=List[ProductResponse])
 def list_products(db: Session = Depends(get_db)):
     return get_all_products(db)

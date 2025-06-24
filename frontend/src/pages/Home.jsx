@@ -14,6 +14,7 @@ export default function Home() {
   const [sort, setSort] = useState(['name', 'ASC']);
   const [error, setError] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [ratings, setRatings] = useState([]);
   
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
@@ -39,6 +40,7 @@ export default function Home() {
 
       let fetchedProducts = response.data || [];
       let fetchedImages = response.images || [];
+      const fetchedRatings  = response.rating || [];
       
       // Apply client-side filters that backend doesn't support yet
       fetchedProducts = fetchedProducts.filter(product => {
@@ -92,6 +94,7 @@ export default function Home() {
       
       setProducts(fetchedProducts);
       setImages(filteredImages);
+      setRatings(fetchedRatings);
       
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -100,7 +103,6 @@ export default function Home() {
       setTimeout(() => {
         setIsLoading(false);
       }, 300);
-    }
   }, [filters, sort]);
 
   useEffect(() => {
@@ -193,11 +195,11 @@ export default function Home() {
               </div>
             </>
           ) : products.length > 0 ? (
-            <div className="product-list">
+             <div className="product-list">
               {products.map((product, i) => (
-                <Product key={product.id} product={product} image={images[i]} />
-              ))}
-            </div>
+              <Product key={product.id} product={product} image={images[i]} product_rating={parseInt(ratings[i])} />
+            ))}
+        </div>
           ) : (
             <div className="no-products">
               <h3>No products found</h3>

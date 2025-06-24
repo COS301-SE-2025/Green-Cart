@@ -1,6 +1,6 @@
 const API_URL = "http://localhost:8000/products/FetchAllProducts";
 
-export const fetchAllProducts = async ({ apiKey, filter, sort, fromItem, count }) => {
+export const fetchAllProducts = async ({filter, sort, fromItem, count }) => {
     try {
         const response = await fetch(API_URL, {
             method: "POST",
