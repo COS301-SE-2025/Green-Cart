@@ -9,6 +9,8 @@ export const fetchAllProducts = async ({ apiKey, filter, sort, fromItem, count }
             },
             body: JSON.stringify({
                 apiKey,
+                filter,
+                sort,
                 fromItem,
                 count
             })
