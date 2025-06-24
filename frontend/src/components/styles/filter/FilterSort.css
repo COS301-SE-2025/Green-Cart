@@ -1,0 +1,218 @@
+.filter-sort-sidebar {
+  padding: 1.5rem;
+  background: white;
+}
+
+.filter-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.filter-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.filter-section h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+}
+
+/* Improved Select Styling */
+.filter-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: white;
+  color: #1f2937; /* Dark text for better contrast */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25rem;
+  padding-right: 2.5rem;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #7BB540;
+  box-shadow: 0 0 0 3px rgba(123, 181, 64, 0.1);
+}
+
+.filter-select:hover {
+  border-color: #d1d5db;
+}
+
+/* Improved Radio Options */
+.filter-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.radio-option:hover {
+  background-color: #f9fafb;
+}
+
+.radio-option input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #7BB540;
+  margin: 0;
+}
+
+.radio-label {
+  font-size: 0.9rem;
+  color: #374151;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.radio-option:has(input:checked) {
+  background-color: #f0f9ff;
+  border: 1px solid #7BB540;
+}
+
+.radio-option:has(input:checked) .radio-label {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+/* Filter Actions */
+.filter-actions {
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 1.5rem;
+}
+
+.clear-filters-btn {
+  width: 100%;
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-filters-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.clear-filters-btn:active {
+  transform: translateY(0);
+}
+
+/* Focus States for Accessibility */
+.filter-select:focus,
+.radio-option input:focus,
+.clear-filters-btn:focus {
+  outline: 2px solid #7BB540;
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar for sidebar */
+.filter-sort-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.filter-sort-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filter-sort-sidebar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.filter-sort-sidebar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.filter-sort-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .filter-sort-sidebar {
+    padding: 1rem;
+  }
+
+  .filter-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+  }
+
+  .radio-option {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .radio-label {
+    font-size: 0.85rem;
+  }
+}
+
+/* Loading State */
+.filter-sort-sidebar.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Animation for smooth transitions */
+.filter-section {
+  animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Improved contrast for better visibility */
+.filter-select option {
+  background: white;
+  color: #1f2937;
+  padding: 0.5rem;
+}
+
+/* Enhanced focus states */
+.filter-select:focus-visible {
+  outline: 2px solid #7BB540;
+  outline-offset: 2px;
+  border-color: #7BB540;
+}
+
+.radio-option input:focus-visible {
+  outline: 2px solid #7BB540;
+  outline-offset: 2px;
+}
