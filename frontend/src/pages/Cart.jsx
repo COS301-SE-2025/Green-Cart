@@ -77,11 +77,11 @@ export default function Cart() {
           <div className="cart-items-list">
             {cartItems.map((item) => (
               <div key={item.id} className="cart-item-row">
-                <div className="product-details">
+                <div className="product-cart-details">
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="product-image"
+                    className="product-cart-image"
                   />
                   <div className="product-info">
                     <h4>{item.name}</h4>
