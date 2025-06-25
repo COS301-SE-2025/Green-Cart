@@ -20,12 +20,12 @@ export default function Cart() {
         <>
           <ul className="cart-list">
             {cartItems.map((item) => (
-              <li key={item.id} className="cart-item">
-                <div style={{ display: "flex", alignItems: "center" }}>
+              <div key={item.id} className="cart-item-row">
+                <div className="product-cart-details">
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="cart-item-image"
+                    className="product-cart-image"
                   />
                   <div className="item-info">
                     <h4>{item.name}</h4>
