@@ -83,7 +83,7 @@
 /* Main Content */
 .home-main {
   flex: 1;
-  min-width: 0; /* Prevents flex item from overflowing */
+  min-width: 0; 
 }
 
 .home-header {
