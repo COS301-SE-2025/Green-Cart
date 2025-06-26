@@ -1,2 +1,2 @@
 [flake8]
-ignore = E,W,C,F
+ignore = E, F, W

@@ -86,9 +86,9 @@ export default function Navigation() {
                 </div>
 
                 <ul className="nav__links nav__links--right">
-                    <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li>
+                    {/* <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li> */}
                     <li><Link to="/orders">Orders</Link></li>
-                    <li><Link to="/my-account">My Account</Link></li>
+                    <li><Link to="/user-account">My Account</Link></li>
                     <li className="nav__cart">
                         <Link
                             to="/cart"
@@ -117,7 +117,7 @@ export default function Navigation() {
                             <li><Link to="/help" onClick={handleMobileMenuClick}>Help Center</Link></li>
                             <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li>
                             <li><Link to="/orders" onClick={handleMobileMenuClick}>Orders</Link></li>
-                            <li><Link to="/my-account" onClick={handleMobileMenuClick}>My Account</Link></li>
+                            <li><Link to="/user-account" onClick={handleMobileMenuClick}>My Account</Link></li>
                             <li><Link to="/cart" onClick={handleMobileMenuClick}>
                                 Cart {cartQuantity > 0 && `(${cartQuantity})`}
                             </Link></li>

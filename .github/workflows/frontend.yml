@@ -1,9 +1,10 @@
-name: Run Frontend Tests Before Merge
+name: Frontend Unit Tests
 
 on:
   pull_request:
     branches:
       - main
+      - dev
 
 jobs:
   frontend_tests:
