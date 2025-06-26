@@ -2,6 +2,19 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './styles/UserAccount.css';
 
+const orderStates = [
+  'Preparing Order'
+]
+
+
+const status = Object.freeze({
+  Prepare: "Preparing Order",
+  Ready: "Ready for Delivery",
+  Transit: "In Transit",
+  Delivered: "Delivered",
+  Cancelled: "Cancelled"
+});
+
 // Mock data for carbon footprint tracking
 const mockCarbonData = {
   totalFootprint: 142.5, // kg CO2e
@@ -9,11 +22,11 @@ const mockCarbonData = {
   lastMonthFootprint: 31.7,
   yearlyGoal: 300,
   orders: [
-    { id: 1001, date: '2024-05-10', footprint: 15.2, items: 3, category: 'Electronics' },
-    { id: 1002, date: '2024-04-22', footprint: 8.1, items: 1, category: 'Home & Garden' },
-    { id: 1003, date: '2024-04-18', footprint: 12.4, items: 2, category: 'Fashion' },
-    { id: 1004, date: '2024-04-12', footprint: 4.8, items: 1, category: 'Food' },
-    { id: 1005, date: '2024-03-31', footprint: 22.3, items: 5, category: 'Electronics' },
+    { id: 1001, date: '2024-05-10', footprint: 15.2, items: 3, category: 'Electronics', state: status.Cancelled, totalPrice: 736.36 },
+    { id: 1002, date: '2024-04-22', footprint: 8.1, items: 1, category: 'Home & Garden', state: status.Prepare, totalPrice: 224.67 },
+    { id: 1003, date: '2024-04-18', footprint: 12.4, items: 2, category: 'Fashion', state: status.Ready, totalPrice: 935.05 },
+    { id: 1004, date: '2024-04-12', footprint: 4.8, items: 1, category: 'Food', state: status.Transit, totalPrice: 548.00  },
+    { id: 1005, date: '2024-03-31', footprint: 22.3, items: 5, category: 'Electronics', state: status.Delivered, totalPrice: 234.50 },
   ],
   monthlyData: [
     { month: 'Jan', footprint: 25.4, goal: 25 },
@@ -529,14 +542,15 @@ export default function UserAccount() {
                       <div className="order-info">
                         <span className="order-id">Order #{order.id}</span>
                         <span className="order-date">{order.date}</span>
-                        <span className="order-category">{order.category}</span>
+                        <span className="order-category">R {order.totalPrice}</span>
                       </div>
                       <div className="order-impact">
                         <span 
                           className="order-footprint"
-                          style={{ color: getCarbonColor(order.footprint, 15) }}
+                          // style={{ color: getCarbonColor(order.footprint, 15) }}
+                          style={{color: order.state === status.Cancelled ? '#b51818':'#3a4039'}}
                         >
-                          {order.footprint}
+                          {order.state}
                         </span>
                         <span className="order-items">{order.items} items</span>
                       </div>
