@@ -4,7 +4,7 @@ import { useCart } from "../components/cart/CartContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
-  const { cartItems, remove_From_Cart, add_To_Cart, refreshCart } = useCart();
+  const { cartItems, remove_From_Cart, add_To_Cart, refreshCart, cartID } = useCart();
   const navigate = useNavigate();
   const [shippingOption, setShippingOption] = useState("standard");
   const [applyGreenPoints, setApplyGreenPoints] = useState(false);
@@ -217,7 +217,7 @@ export default function Cart() {
 
           <button 
             className="checkout-btn"
-            onClick={() => navigate("/checkout")}
+            onClick={() => navigate("/checkout?cart_id="+ cartID)}
           >
             Checkout
           </button>

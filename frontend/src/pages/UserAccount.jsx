@@ -3,6 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import {fetchUserInformation} from '../user-services/fetchUserInformation'
 import './styles/UserAccount.css';
 
+const status = Object.freeze({
+  Prepare: "Preparing Order",
+  Ready: "Ready for Delivery",
+  Transit: "In Transit",
+  Delivered: "Delivered",
+  Cancelled: "Cancelled"
+});
+
 // Mock data for carbon footprint tracking
 const mockCarbonData = {
   totalFootprint: 142.5, // kg CO2e
@@ -10,11 +18,11 @@ const mockCarbonData = {
   lastMonthFootprint: 31.7,
   yearlyGoal: 300,
   orders: [
-    { id: 1001, date: '2024-05-10', footprint: 15.2, items: 3, category: 'Electronics' },
-    { id: 1002, date: '2024-04-22', footprint: 8.1, items: 1, category: 'Home & Garden' },
-    { id: 1003, date: '2024-04-18', footprint: 12.4, items: 2, category: 'Fashion' },
-    { id: 1004, date: '2024-04-12', footprint: 4.8, items: 1, category: 'Food' },
-    { id: 1005, date: '2024-03-31', footprint: 22.3, items: 5, category: 'Electronics' },
+    { id: 1001, date: '2024-05-10', footprint: 15.2, items: 3, category: 'Electronics', state: status.Cancelled },
+    { id: 1002, date: '2024-04-22', footprint: 8.1, items: 1, category: 'Home & Garden', state: status.Prepare },
+    { id: 1003, date: '2024-04-18', footprint: 12.4, items: 2, category: 'Fashion', state: status.Ready },
+    { id: 1004, date: '2024-04-12', footprint: 4.8, items: 1, category: 'Food', state: status.Transit },
+    { id: 1005, date: '2024-03-31', footprint: 22.3, items: 5, category: 'Electronics', state: status.Delivered },
   ],
   monthlyData: [
     { month: 'Jan', footprint: 25.4, goal: 25 },
@@ -42,6 +50,17 @@ const mockCarbonData = {
   ]
 };
 
+const mockCountryCodes = [
+  { code: '+1', country: 'US', flag: '🇺🇸' },
+  { code: '+44', country: 'UK', flag: '🇬🇧' },
+  { code: '+27', country: 'ZA', flag: '🇿🇦' },
+  { code: '+49', country: 'DE', flag: '🇩🇪' },
+  { code: '+33', country: 'FR', flag: '🇫🇷' },
+  { code: '+81', country: 'JP', flag: '🇯🇵' },
+  { code: '+61', country: 'AU', flag: '🇦🇺' },
+  { code: '+86', country: 'CN', flag: '🇨🇳' }
+];
+
 export default function UserAccount() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -54,6 +73,7 @@ export default function UserAccount() {
     name: '',
     email: '',
     phone: '',
+    countryCode: '+27',
     address: '',
     city: '',
     postalCode: '',
@@ -82,7 +102,8 @@ export default function UserAccount() {
             name: userInformation.user.name || '',
             email: userInformation.user.email || '',
             phone: userInformation.user.telephone || 'Not Set',
-            address: userInformation.address?.address || 'Not Set',
+            countryCode: parsedUser.countryCode || '+27', // Default to SA
+        address: userInformation.address?.address || 'Not Set',
             city: userInformation.address?.city || 'Not Set',
             postalCode: userInformation.address?.postal_code || 'Not Set',
             dateOfBirth: userInformation.user.date_of_birth || 'Not Set',
@@ -162,6 +183,7 @@ export default function UserAccount() {
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
+        countryCode: user.countryCode || '+27',
         address: user.address || '',
         city: user.city || '',
         postalCode: user.postalCode || '',
@@ -334,17 +356,33 @@ export default function UserAccount() {
                 </div>
 
                 <div className="form-row">
-                  <div className="form-group">
+                  <div className="form-group phone-group">
                     <label htmlFor="phone">Phone Number</label>
-                    <input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      placeholder="Enter your phone number"
-                    />
+                    <div className="phone-input-container">
+                      <select
+                        name="countryCode"
+                        value={formData.countryCode}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="country-code-select"
+                      >
+                        {mockCountryCodes.map((country) => (
+                          <option key={country.code} value={country.code}>
+                            {country.flag} {country.code}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        placeholder="Enter your phone number"
+                        className="phone-input"
+                      />
+                    </div>
                   </div>
                   <div className="form-group">
                     <label htmlFor="dateOfBirth">Date of Birth</label>
@@ -543,14 +581,19 @@ export default function UserAccount() {
                       <div className="order-info">
                         <span className="order-id">Order #{order.id}</span>
                         <span className="order-date">{order.date}</span>
-                        <span className="order-category">{order.category}</span>
+                        <span 
+                          className="order-category" 
+                          style={{ color: getCarbonColor(order.footprint, 15) }}>
+                            {order.footprint}
+                        </span>
                       </div>
                       <div className="order-impact">
                         <span 
                           className="order-footprint"
-                          style={{ color: getCarbonColor(order.footprint, 15) }}
+                          // style={{ color: getCarbonColor(order.footprint, 15) }}
+                          style={{color: order.state === status.Cancelled ? '#b51818':'#3a4039'}}
                         >
-                          {order.footprint}
+                          {order.state}
                         </span>
                         <span className="order-items">{order.items} items</span>
                       </div>
