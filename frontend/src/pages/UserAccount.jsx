@@ -102,8 +102,8 @@ export default function UserAccount() {
             name: userInformation.user.name || '',
             email: userInformation.user.email || '',
             phone: userInformation.user.telephone || 'Not Set',
-            countryCode: parsedUser.countryCode || '+27', // Default to SA
-        address: userInformation.address?.address || 'Not Set',
+            countryCode: userInformation.user.country_code || '+27', // Default to SA
+            address: userInformation.address?.address || 'Not Set',
             city: userInformation.address?.city || 'Not Set',
             postalCode: userInformation.address?.postal_code || 'Not Set',
             dateOfBirth: userInformation.user.date_of_birth || 'Not Set',
@@ -178,25 +178,6 @@ export default function UserAccount() {
   };
 
   const handleCancelEdit = () => {
-    if (user) {
-      setFormData({
-        name: user.name || '',
-        email: user.email || '',
-        phone: user.phone || '',
-        countryCode: user.countryCode || '+27',
-        address: user.address || '',
-        city: user.city || '',
-        postalCode: user.postalCode || '',
-        dateOfBirth: user.dateOfBirth || '',
-        preferences: {
-          emailNotifications: user.preferences?.emailNotifications ?? true,
-          smsNotifications: user.preferences?.smsNotifications ?? false,
-          marketingEmails: user.preferences?.marketingEmails ?? true,
-          carbonGoalNotifications: user.preferences?.carbonGoalNotifications ?? true,
-          sustainabilityTips: user.preferences?.sustainabilityTips ?? true
-        }
-      });
-    }
     setIsEditing(false);
   };
 

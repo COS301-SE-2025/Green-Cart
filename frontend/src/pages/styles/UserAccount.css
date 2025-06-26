@@ -186,6 +186,7 @@
   font-size: 1rem;
   transition: all 0.2s ease;
   background: white;
+  color: #1f2937; /* <-- Add this line for dark text */
 }
 
 .form-group input:focus {
@@ -196,7 +197,7 @@
 
 .form-group input:disabled {
   background: #f9fafb;
-  color: #6b7280;
+  color: #374151;
   cursor: not-allowed;
 }
 
