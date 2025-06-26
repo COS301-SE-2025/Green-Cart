@@ -15,7 +15,7 @@ export default function ViewProduct() {
     const [found, setState] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [imageLoaded, setImageLoaded] = useState(false);
-    // const { addToCart } = useCart();
+    const { refreshCart } = useCart();
     const [sustainability, setSustainability] = useState({});
 
     async function fetch_Product() {
@@ -68,6 +68,7 @@ export default function ViewProduct() {
             if (user && user.id) {
                 addToCart({ user_id: user.id, product_id: product.id, quantity });
                 alert("Item added to cart!");
+                refreshCart(user.id); // Refresh the cart after adding an item
             } else {
                 // Optionally handle the case where user is not found
                 alert("Please log in to add items to your cart.");

@@ -142,6 +142,7 @@
 }
 
 .quantity-display {
+  color: #2E2E2E;
   min-width: 30px;
   text-align: center;
   font-weight: 600;
@@ -190,6 +191,7 @@
 }
 
 .summary-row {
+  color: #2E2E2E;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -218,6 +220,7 @@
 }
 
 .shipping-select {
+  color: #2E2E2E;
   width: 100%;
   padding: 12px;
   border: 1px solid #e0e0e0;
@@ -234,6 +237,7 @@
 }
 
 .green-points-section {
+  color: #2E2E2E;
   margin: 20px 0;
   padding: 15px 0;
 }
