@@ -2,11 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './styles/UserAccount.css';
 
-const orderStates = [
-  'Preparing Order'
-]
-
-
 const status = Object.freeze({
   Prepare: "Preparing Order",
   Ready: "Ready for Delivery",
@@ -54,6 +49,17 @@ const mockCarbonData = {
   ]
 };
 
+const mockCountryCodes = [
+  { code: '+1', country: 'US', flag: '🇺🇸' },
+  { code: '+44', country: 'UK', flag: '🇬🇧' },
+  { code: '+27', country: 'ZA', flag: '🇿🇦' },
+  { code: '+49', country: 'DE', flag: '🇩🇪' },
+  { code: '+33', country: 'FR', flag: '🇫🇷' },
+  { code: '+81', country: 'JP', flag: '🇯🇵' },
+  { code: '+61', country: 'AU', flag: '🇦🇺' },
+  { code: '+86', country: 'CN', flag: '🇨🇳' }
+];
+
 export default function UserAccount() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -66,6 +72,7 @@ export default function UserAccount() {
     name: '',
     email: '',
     phone: '',
+    countryCode: '+27',
     address: '',
     city: '',
     postalCode: '',
@@ -89,6 +96,7 @@ export default function UserAccount() {
         name: parsedUser.name || '',
         email: parsedUser.email || '',
         phone: parsedUser.phone || '',
+        countryCode: parsedUser.countryCode || '+27', // Default to SA
         address: parsedUser.address || '',
         city: parsedUser.city || '',
         postalCode: parsedUser.postalCode || '',
@@ -161,6 +169,7 @@ export default function UserAccount() {
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
+        countryCode: user.countryCode || '+27',
         address: user.address || '',
         city: user.city || '',
         postalCode: user.postalCode || '',
@@ -333,17 +342,33 @@ export default function UserAccount() {
                 </div>
 
                 <div className="form-row">
-                  <div className="form-group">
+                  <div className="form-group phone-group">
                     <label htmlFor="phone">Phone Number</label>
-                    <input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      placeholder="Enter your phone number"
-                    />
+                    <div className="phone-input-container">
+                      <select
+                        name="countryCode"
+                        value={formData.countryCode}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="country-code-select"
+                      >
+                        {mockCountryCodes.map((country) => (
+                          <option key={country.code} value={country.code}>
+                            {country.flag} {country.code}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        placeholder="Enter your phone number"
+                        className="phone-input"
+                      />
+                    </div>
                   </div>
                   <div className="form-group">
                     <label htmlFor="dateOfBirth">Date of Birth</label>
