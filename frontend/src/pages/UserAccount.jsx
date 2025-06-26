@@ -22,11 +22,11 @@ const mockCarbonData = {
   lastMonthFootprint: 31.7,
   yearlyGoal: 300,
   orders: [
-    { id: 1001, date: '2024-05-10', footprint: 15.2, items: 3, category: 'Electronics', state: status.Cancelled, totalPrice: 736.36 },
-    { id: 1002, date: '2024-04-22', footprint: 8.1, items: 1, category: 'Home & Garden', state: status.Prepare, totalPrice: 224.67 },
-    { id: 1003, date: '2024-04-18', footprint: 12.4, items: 2, category: 'Fashion', state: status.Ready, totalPrice: 935.05 },
-    { id: 1004, date: '2024-04-12', footprint: 4.8, items: 1, category: 'Food', state: status.Transit, totalPrice: 548.00  },
-    { id: 1005, date: '2024-03-31', footprint: 22.3, items: 5, category: 'Electronics', state: status.Delivered, totalPrice: 234.50 },
+    { id: 1001, date: '2024-05-10', footprint: 15.2, items: 3, category: 'Electronics', state: status.Cancelled },
+    { id: 1002, date: '2024-04-22', footprint: 8.1, items: 1, category: 'Home & Garden', state: status.Prepare },
+    { id: 1003, date: '2024-04-18', footprint: 12.4, items: 2, category: 'Fashion', state: status.Ready },
+    { id: 1004, date: '2024-04-12', footprint: 4.8, items: 1, category: 'Food', state: status.Transit },
+    { id: 1005, date: '2024-03-31', footprint: 22.3, items: 5, category: 'Electronics', state: status.Delivered },
   ],
   monthlyData: [
     { month: 'Jan', footprint: 25.4, goal: 25 },
@@ -542,7 +542,11 @@ export default function UserAccount() {
                       <div className="order-info">
                         <span className="order-id">Order #{order.id}</span>
                         <span className="order-date">{order.date}</span>
-                        <span className="order-category">R {order.totalPrice}</span>
+                        <span 
+                          className="order-category" 
+                          style={{ color: getCarbonColor(order.footprint, 15) }}>
+                            {order.footprint}
+                        </span>
                       </div>
                       <div className="order-impact">
                         <span 
