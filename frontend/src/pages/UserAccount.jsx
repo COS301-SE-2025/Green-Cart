@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {fetchUserInformation} from '../user-services/fetchUserInformation'
 import './styles/UserAccount.css';
 
 const status = Object.freeze({
@@ -87,32 +88,45 @@ export default function UserAccount() {
   });
 
   useEffect(() => {
-    // Load user data from localStorage or API
     const userData = localStorage.getItem('user');
     if (userData) {
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
-      setFormData({
-        name: parsedUser.name || '',
-        email: parsedUser.email || '',
-        phone: parsedUser.phone || '',
-        countryCode: parsedUser.countryCode || '+27', // Default to SA
-        address: parsedUser.address || '',
-        city: parsedUser.city || '',
-        postalCode: parsedUser.postalCode || '',
-        dateOfBirth: parsedUser.dateOfBirth || '',
-        preferences: {
-          emailNotifications: parsedUser.preferences?.emailNotifications ?? true,
-          smsNotifications: parsedUser.preferences?.smsNotifications ?? false,
-          marketingEmails: parsedUser.preferences?.marketingEmails ?? true,
-          carbonGoalNotifications: parsedUser.preferences?.carbonGoalNotifications ?? true,
-          sustainabilityTips: parsedUser.preferences?.sustainabilityTips ?? true
+
+      const loadUserInfo = async () => {
+        try {
+          const userInformation = await fetchUserInformation(parsedUser.id);
+          console.log(userInformation);
+
+          setFormData({
+            name: userInformation.user.name || '',
+            email: userInformation.user.email || '',
+            phone: userInformation.user.telephone || 'Not Set',
+            countryCode: userInformation.user.country_code || '+27', // Default to SA
+            address: userInformation.address?.address || 'Not Set',
+            city: userInformation.address?.city || 'Not Set',
+            postalCode: userInformation.address?.postal_code || 'Not Set',
+            dateOfBirth: userInformation.user.date_of_birth || 'Not Set',
+            preferences: {
+              emailNotifications: parsedUser.preferences?.emailNotifications ?? true,
+              smsNotifications: parsedUser.preferences?.smsNotifications ?? false,
+              marketingEmails: parsedUser.preferences?.marketingEmails ?? true,
+              carbonGoalNotifications: parsedUser.preferences?.carbonGoalNotifications ?? true,
+              sustainabilityTips: parsedUser.preferences?.sustainabilityTips ?? true
+            }
+          });
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoading(false);
         }
-      });
+      };
+
+      loadUserInfo();
     } else {
       navigate('/Login');
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, [navigate]);
 
   // Calculate progress towards yearly goal
@@ -164,25 +178,6 @@ export default function UserAccount() {
   };
 
   const handleCancelEdit = () => {
-    if (user) {
-      setFormData({
-        name: user.name || '',
-        email: user.email || '',
-        phone: user.phone || '',
-        countryCode: user.countryCode || '+27',
-        address: user.address || '',
-        city: user.city || '',
-        postalCode: user.postalCode || '',
-        dateOfBirth: user.dateOfBirth || '',
-        preferences: {
-          emailNotifications: user.preferences?.emailNotifications ?? true,
-          smsNotifications: user.preferences?.smsNotifications ?? false,
-          marketingEmails: user.preferences?.marketingEmails ?? true,
-          carbonGoalNotifications: user.preferences?.carbonGoalNotifications ?? true,
-          sustainabilityTips: user.preferences?.sustainabilityTips ?? true
-        }
-      });
-    }
     setIsEditing(false);
   };
 

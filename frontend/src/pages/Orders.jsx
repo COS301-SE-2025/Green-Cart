@@ -63,7 +63,7 @@ export default function Orders() {
       ) : (
         <ul className="orders-list">
           {retrievedOrders.map((order) => {
-            const isCancelled = order.state === 'Cancelled';
+            const isCancelled = order.state === 'Cancelled'|| order.state ==='In Transit' || order.state === 'Delivered';
             return (
               <li key={order.id} className="order-item">
                 <p><strong>Order ID:</strong> {order.id}</p>

@@ -14,6 +14,7 @@ export default function SearchResults() {
   const [isSearching, setSearching ] = useState(null);
   const [results, setResults] = useState([]);
   const [images, setImages] = useState([]);
+  const [ratings, setRatings] = useState([]);
   const [displayQuery, setDisplayQuery] = useState(null);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({});
@@ -46,6 +47,7 @@ const search_products = useCallback(async () => {
       
       let searchResults = response.data || [];
       let searchImages = response.images || [];
+      let product_rating = response.rating || [];
       
       // Apply client-side filters that backend doesn't support yet
       searchResults = searchResults.filter(product => {
@@ -96,10 +98,15 @@ const search_products = useCallback(async () => {
         const originalIndex = (response.data || []).findIndex(p => p.id === product.id);
         return searchImages[originalIndex] || '';
       });
+
+      const filteredRatings = searchResults.map((product, index) => {
+        const originalIndex = (response.data || []).findIndex(p => p.id === product.id);
+        return product_rating[originalIndex] || 0;
+      });
       
       setResults(searchResults);
       setImages(filteredImages);
-      
+      setRatings(filteredRatings);
     } catch (error) {
       console.error("Error fetching products:", error);
       setError("Failed to load products. Please try again later.");
@@ -218,7 +225,7 @@ const search_products = useCallback(async () => {
           ) : results.length > 0 ? (
             <div className="product-list">
               {results.map((product, i) => (
-                <Product key={product.id} product={product} image={images[i]} />
+                <Product key={product.id} product={product} image={images[i]} product_rating={Math.round(ratings[i])} />
               ))}
             </div>
           ) : (
