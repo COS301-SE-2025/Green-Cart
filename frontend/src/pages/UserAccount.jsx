@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {fetchUserInformation} from '../user-services/fetchUserInformation'
 import './styles/UserAccount.css';
 
 // Mock data for carbon footprint tracking
@@ -67,31 +68,44 @@ export default function UserAccount() {
   });
 
   useEffect(() => {
-    // Load user data from localStorage or API
     const userData = localStorage.getItem('user');
     if (userData) {
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
-      setFormData({
-        name: parsedUser.name || '',
-        email: parsedUser.email || '',
-        phone: parsedUser.phone || '',
-        address: parsedUser.address || '',
-        city: parsedUser.city || '',
-        postalCode: parsedUser.postalCode || '',
-        dateOfBirth: parsedUser.dateOfBirth || '',
-        preferences: {
-          emailNotifications: parsedUser.preferences?.emailNotifications ?? true,
-          smsNotifications: parsedUser.preferences?.smsNotifications ?? false,
-          marketingEmails: parsedUser.preferences?.marketingEmails ?? true,
-          carbonGoalNotifications: parsedUser.preferences?.carbonGoalNotifications ?? true,
-          sustainabilityTips: parsedUser.preferences?.sustainabilityTips ?? true
+
+      const loadUserInfo = async () => {
+        try {
+          const userInformation = await fetchUserInformation(parsedUser.id);
+          console.log(userInformation);
+
+          setFormData({
+            name: userInformation.user.name || '',
+            email: userInformation.user.email || '',
+            phone: userInformation.user.telephone || 'Not Set',
+            address: userInformation.address?.address || 'Not Set',
+            city: userInformation.address?.city || 'Not Set',
+            postalCode: userInformation.address?.postal_code || 'Not Set',
+            dateOfBirth: userInformation.user.date_of_birth || 'Not Set',
+            preferences: {
+              emailNotifications: parsedUser.preferences?.emailNotifications ?? true,
+              smsNotifications: parsedUser.preferences?.smsNotifications ?? false,
+              marketingEmails: parsedUser.preferences?.marketingEmails ?? true,
+              carbonGoalNotifications: parsedUser.preferences?.carbonGoalNotifications ?? true,
+              sustainabilityTips: parsedUser.preferences?.sustainabilityTips ?? true
+            }
+          });
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoading(false);
         }
-      });
+      };
+
+      loadUserInfo();
     } else {
       navigate('/Login');
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, [navigate]);
 
   // Calculate progress towards yearly goal
