@@ -4,6 +4,7 @@ import { fetchProduct } from '../../product-services/fetchProduct';
 import '../styles/product/ViewProduct.css';
 import { useCart } from "../cart/CartContext";
 import FootprintTracker from './FootprintTracker';
+import { addToCart } from '../cart-services/addToCart';
 
 export default function ViewProduct() {
     const { id } = useParams();
@@ -14,7 +15,7 @@ export default function ViewProduct() {
     const [found, setState] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [imageLoaded, setImageLoaded] = useState(false);
-    const { addToCart } = useCart();
+    const { refreshCart } = useCart();
     const [sustainability, setSustainability] = useState({});
 
     async function fetch_Product() {
@@ -62,12 +63,21 @@ export default function ViewProduct() {
     };
 
     const handleAddToCart = () => {
-        addToCart({
-            id: product.id,
-            name: product.name,
-            price: Number(product.price) || 0,      // ensures price is numeric
-            image: image[0] || ""                   // fallback if no image
-        });
+        const user = JSON.parse(localStorage.getItem("user"));
+        try{
+            if (user && user.id) {
+                addToCart({ user_id: user.id, product_id: product.id, quantity });
+                alert("Item added to cart!");
+                refreshCart(user.id); // Refresh the cart after adding an item
+            } else {
+                // Optionally handle the case where user is not found
+                alert("Please log in to add items to your cart.");
+                navigate("/login");
+            }
+        }catch (error) {
+            console.error("Error adding to cart:", error);
+            alert("Failed to add item to cart. Please try again.");
+        }
     };
 
     // if (isLoading) {

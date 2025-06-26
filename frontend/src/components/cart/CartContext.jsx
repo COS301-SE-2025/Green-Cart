@@ -1,4 +1,8 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { addToCart } from "../cart-services/addToCart"; 
+import { viewCart } from "../cart-services/viewCart";
+import { fetchProduct } from "../../product-services/fetchProduct";
+import { removeFromCart } from "../cart-services/removeFromCart";
 
 const CartContext = createContext();
 
@@ -7,27 +11,55 @@ export const useCart = () => useContext(CartContext);
 export function CartProvider({ children }) {
     const [cartItems, setCartItems] = useState([]);
 
-    const addToCart = (product) => {
-        setCartItems((prev) => {
-            const existing = prev.find((item) => item.id === product.id);
-            if (existing) {
-                return prev.map((item) =>
-                    item.id === product.id
-                        ? { ...item, quantity: item.quantity + 1 }
-                        : item
-                );
-            }
-            return [...prev, { ...product, quantity: 1 }];
-        });
+    const refreshCart = async (user_id) => {
+        const response = await viewCart({ user_id });
+        // Fetch all product details in parallel
+        const products = await Promise.all(
+            response.items.map(async (item) => {
+                if(item.quantity <= 0){
+                    await remove_From_Cart({ user_id, product_id: item.product_id });
+                    return null; // Skip this item if quantity is 0 or less
+                }
+
+                const product = await fetchProduct({ product_id: item.product_id });
+                return { ...product, quantity: item.quantity };
+            })
+        );
+        setCartItems(products);
+        console.log("Cart items refreshed:", cartItems);
+    };
+
+    const add_To_Cart = async (user_id, product_id, quantity, deleteFlag = false) => {
+        if (deleteFlag){
+            await remove_From_Cart(user_id, product_id);
+            // Refresh the cart after removing an item
+            await refreshCart(user_id);
+            return;
+        }
+
+        try {
+            await addToCart({ user_id, product_id, quantity });
+        
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+        }
+        // Refresh the cart after adding an item
+        await refreshCart(user_id);
     };
 
 
-    const removeFromCart = (id) => {
-        setCartItems((prev) => prev.filter((item) => item.id !== id));
+    const remove_From_Cart = async (user_id, id) => {
+        try{
+            await removeFromCart({ user_id, product_id: id });
+        } catch (error) {
+            console.error("Error removing from cart:", error);
+        }
+        // Refresh the cart after removing an item
+        await refreshCart(user_id);
     };
 
     return (
-        <CartContext.Provider value={{ cartItems, addToCart, removeFromCart }}>
+        <CartContext.Provider value={{ cartItems, refreshCart, add_To_Cart, remove_From_Cart }}>
             {children}
         </CartContext.Provider>
     );
