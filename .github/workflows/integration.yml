@@ -1,4 +1,4 @@
-name: Backend Unit Tests
+name: Integration Tests
 
 on:
   pull_request:
@@ -52,7 +52,7 @@ jobs:
           echo "Running backend tests..."
           # Execute your pytest commands.
           # The virtual environment is active, so pytest will use installed packages.
-          pytest unit-tests/ -v -W ignore::pydantic.PydanticDeprecatedSince20
+          python -m pytest integration-tests/ -v -p no:warnings
 
           echo "Stopping Uvicorn server..."
           # Kill the Uvicorn process using its stored PID.
