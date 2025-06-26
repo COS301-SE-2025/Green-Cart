@@ -1,14 +1,11 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import pytest
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
 from app.models.product import Product
-import sys
-import os
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from app.models.cart import Cart
-
-
 
 def test_cart_initialization():
     cart = Cart(user_id=1)
@@ -24,7 +21,6 @@ def test_cart_add_item_logic():
     assert cart.items[0].quantity == 2
 
 def test_cart_total_price_computation():
-
     cart = Cart(user_id=1)
     cart.items = [
         CartItem(product_id=1, quantity=2),
