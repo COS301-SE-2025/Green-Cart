@@ -9,7 +9,8 @@ app/routes/__pycache__/
 app/schemas/__pycache__/
 app/services/__pycache__/
 app/utilities/__pycache__/
-tests/__pycache__/
+unit-tests/__pycache__/
+integration-tests/__pycache__/
 .pytest_cache/
 
 # Ignore environment variable files
