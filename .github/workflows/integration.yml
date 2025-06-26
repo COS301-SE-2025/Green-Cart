@@ -6,6 +6,19 @@ on:
       - main
       - dev
 
+services:
+  postgres:
+    image: postgres:14
+    ports:
+      - 5432:5432
+    env:
+      DATABASE_URL: postgresql://postgres.httrffbdyhzwfocrwxhr:X4wcx62kVzC0V0u6@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
+    options: >-
+      --health-cmd pg_isready
+      --health-interval 10s
+      --health-timeout 5s
+      --health-retries 5
+
 jobs:
   backend_tests:
     runs-on: ubuntu-latest
@@ -19,6 +32,10 @@ jobs:
         with:
           python-version: '3.x'
           cache: 'pip'
+
+      - name: Create .env file
+        run: |
+          echo "DATABASE_URL=postgresql://postgres.httrffbdyhzwfocrwxhr:X4wcx62kVzC0V0u6@aws-0-eu-central-1.pooler.supabase.com:5432/postgres" >> .env
 
       - name: Install dependencies and run tests
         run: |
