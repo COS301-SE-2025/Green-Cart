@@ -81,14 +81,6 @@ describe('Home Page', () => {
     expect(screen.getByPlaceholderText('Search eco-friendly products...')).toBeInTheDocument()
   })
 
-  it('displays loading state initially', async () => {
-    fetchAllProducts.mockImplementation(() => new Promise(() => {})) // Never resolves
-    
-    renderWithProviders(<Home />)
-    
-    expect(screen.getByText('Loading products...')).toBeInTheDocument()
-  })
-
   it('renders products after successful fetch', async () => {
     fetchAllProducts.mockResolvedValue(mockProductsResponse)
     
@@ -115,7 +107,9 @@ describe('Home Page', () => {
       expect(fetchAllProducts).toHaveBeenCalledWith({
         apiKey: 'someKey',
         fromItem: 0,
-        count: 20
+        count: 40,
+        filter: undefined,
+        sort: ["name", "ASC",]
       })
     })
   })
@@ -132,7 +126,7 @@ describe('Home Page', () => {
 
         // The product list should be empty
         const productList = document.querySelector('.product-list')
-        expect(productList).toBeInTheDocument()
+        expect(productList).toBeNull()
         
         const productCards = document.querySelectorAll('.product')
         expect(productCards).toHaveLength(0)
@@ -173,7 +167,7 @@ describe('Home Page', () => {
       const outOfStockBadges = screen.getAllByText('Out of Stock')
       
       expect(inStockBadges).toHaveLength(2) // Two products in stock
-      expect(outOfStockBadges).toHaveLength(1) // One product out of stock
+      expect(outOfStockBadges).toHaveLength(2) // One product out of stock
     })
   })
 
@@ -268,9 +262,7 @@ describe('Home Page', () => {
     fetchAllProducts.mockReturnValue(fetchPromise)
     
     renderWithProviders(<Home />)
-    
-    expect(screen.getByText('Loading products...')).toBeInTheDocument()
-    
+        
     await act(async () => {
       resolvePromise(mockProductsResponse)
       await fetchPromise

@@ -180,9 +180,7 @@ export default function ViewProduct() {
                         </div>
                     </div>
 
-                    <button className="add-to-cart-button" onClick={handleAddToCart}>
-                        Add to Cart
-                    </button>
+                    <button className="add-to-cart-button" onClick={handleAddToCart}>Add to Cart</button>
                 </div> 
             </div>
            <div>
