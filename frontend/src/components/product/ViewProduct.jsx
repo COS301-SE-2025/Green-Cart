@@ -4,7 +4,7 @@ import { fetchProduct } from '../../product-services/fetchProduct';
 import '../styles/product/ViewProduct.css';
 import { useCart } from "../cart/CartContext";
 import FootprintTracker from './FootprintTracker';
-import { addToCart } from '../cart-services/addToCart';
+import { addToCart } from '../../cart-services/addToCart';
 
 export default function ViewProduct() {
     const { id } = useParams();

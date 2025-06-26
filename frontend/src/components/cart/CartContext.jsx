@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { addToCart } from "../cart-services/addToCart"; 
-import { viewCart } from "../cart-services/viewCart";
+import { addToCart } from "../../cart-services/addToCart"; 
+import { viewCart } from "../../cart-services/viewCart";
 import { fetchProduct } from "../../product-services/fetchProduct";
-import { removeFromCart } from "../cart-services/removeFromCart";
+import { removeFromCart } from "../../cart-services/removeFromCart";
 
 const CartContext = createContext();
 
