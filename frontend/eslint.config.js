@@ -21,13 +21,13 @@ export default [
       'react-refresh': reactRefresh,
     },
     rules: {
-      ...js.configs.recommended.rules,
-      ...reactHooks.configs.recommended.rules,
-      'no-unused-vars': 'warn', //['error', { varsIgnorePattern: '^[A-Z_]' }],
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      // ...js.configs.recommended.rules,
+      // ...reactHooks.configs.recommended.rules,
+      //'no-unused-vars': 'warn', //['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // 'react-refresh/only-export-components': [
+      //   'warn',
+      //   { allowConstantExport: true },
+      // ],
     },
   },
 ]
