@@ -1,13 +1,33 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createOrder } from '../order-services/createOrder'; // Assuming you have a createOrder function
 import './styles/Checkout.css';
 
 export default function Checkout() {
     const navigate = useNavigate();
 
-    const handlePlaceOrder = () => {
-        alert("Order placed successfully (mock)");
-        navigate("/Home");
+    const handlePlaceOrder = async () => {
+        const params = new URLSearchParams(window.location.search);
+        const cart_id = params.get('cart_id');
+        console.log('Cart ID:', cart_id);
+
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            alert('Please log in to place an order.');
+            navigate('/login');
+            return;
+        }
+
+        try {
+            const order = await createOrder({ userID: user.id, cartID: cart_id });
+            console.log('Order created successfully:', order);
+            alert('Order placed successfully! Your order ID is ' + order.order_id);
+            navigate('/orders'); // Redirect to the orders page
+        } catch (error) {
+            console.error('Error placing order:', error);
+            alert('Failed to place order. Please try again later.');
+        }
+
     };
 
     return (
