@@ -412,6 +412,67 @@ input:checked + .toggle-slider:before {
   transform: translateY(-1px);
 }
 
+.phone-group {
+  position: relative;
+}
+
+.phone-input-container {
+  display: flex;
+  gap: 0;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.phone-input-container:focus-within {
+  border-color: #7BB540;
+  box-shadow: 0 0 0 3px rgba(123, 181, 64, 0.1);
+}
+
+.country-code-select {
+  background: #f9fafb;
+  border: none;
+  padding: 0.75rem 0.5rem;
+  font-size: 1rem;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
+  min-width: 80px;
+  border-right: 1px solid #e5e7eb;
+  font-weight: 500;
+}
+
+.country-code-select:disabled {
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.country-code-select:focus {
+  background: #f0f9ff;
+}
+
+.phone-input {
+  flex: 1;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  outline: none;
+  background: white;
+}
+
+.phone-input:disabled {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.phone-input::placeholder {
+  color: #9ca3af;
+}
+
 .delete-button {
   background: #ef4444;
   color: white;
@@ -509,6 +570,20 @@ input:checked + .toggle-slider:before {
   .toggle-switch {
     align-self: flex-end;
   }
+
+  .phone-input-container {
+    flex-direction: column;
+  }
+  
+  .country-code-select {
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    min-width: unset;
+  }
+  
+  .phone-input-container:focus-within {
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 480px) {
@@ -522,6 +597,11 @@ input:checked + .toggle-slider:before {
 
   .account-title h1 {
     font-size: 1.75rem;
+  }
+
+  .country-code-select {
+    padding: 0.75rem;
+    text-align: center;
   }
 }
 
