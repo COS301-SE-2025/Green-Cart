@@ -10,9 +10,11 @@ export const useCart = () => useContext(CartContext);
 
 export function CartProvider({ children }) {
     const [cartItems, setCartItems] = useState([]);
+    const [cartID, setCartID] = useState(null);
 
     const refreshCart = async (user_id) => {
         const response = await viewCart({ user_id });
+
         // Fetch all product details in parallel
         const products = await Promise.all(
             response.items.map(async (item) => {
@@ -26,6 +28,7 @@ export function CartProvider({ children }) {
             })
         );
         setCartItems(products);
+        setCartID(response.id);
         console.log("Cart items refreshed:", cartItems);
     };
 
@@ -59,7 +62,7 @@ export function CartProvider({ children }) {
     };
 
     return (
-        <CartContext.Provider value={{ cartItems, refreshCart, add_To_Cart, remove_From_Cart }}>
+        <CartContext.Provider value={{ cartItems, refreshCart, add_To_Cart, remove_From_Cart, cartID}}>
             {children}
         </CartContext.Provider>
     );

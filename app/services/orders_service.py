@@ -11,8 +11,8 @@ from sqlalchemy.orm import Session
 def fetchAllOrders(request, db : Session):
     if request.fromItem < 0 or request.count <= 0:
         raise HTTPException(status_code=400, detail="Invalid pagination parameters")
-    
-    orders = db.query(Order).filter(Order.user_id == request.userID).offset(request.fromItem).limit(request.count).all()
+
+    orders = db.query(Order).filter(Order.user_id == request.userID).order_by(Order.created_at.desc()).offset(request.fromItem).limit(request.count).all()
 
     return {
         "status": 200,
