@@ -67,18 +67,20 @@ export default function Home() {
           }
         }
         
-        // Sustainability filter (mock implementation)
-        if (filters.sustainability) {
-          const mockRating = Math.floor(Math.random() * 60) + 25; // Same logic as Product component
+        // Updated this code, it was working with random values at first, now it uses the actual ratings
+       if (filters.sustainability) {
+          const originalIndex = (response.data || []).findIndex(p => p.id === product.id);
+          const actualRating = fetchedRatings[originalIndex] || 0;
+          
           switch (filters.sustainability) {
             case 'good':
-              if (mockRating < 70) return false;
+              if (actualRating < 70) return false;
               break;
             case 'fair':
-              if (mockRating < 50 || mockRating >= 70) return false;
+              if (actualRating < 50 || actualRating >= 70) return false;
               break;
             case 'needs_work':
-              if (mockRating >= 50) return false;
+              if (actualRating >= 50) return false;
               break;
           }
         }
@@ -91,11 +93,17 @@ export default function Home() {
         const originalIndex = (response.data || []).findIndex(p => p.id === product.id);
         return fetchedImages[originalIndex] || '';
       });
+
+      // Update ratings array to match filtered products 
+      const filteredRatings = fetchedProducts.map((product) => {
+        const originalIndex = (response.data || []).findIndex(p => p.id === product.id);
+        return fetchedRatings[originalIndex] || 0;
+      });
       
       setProducts(fetchedProducts);
       setImages(filteredImages);
-      setRatings(fetchedRatings);
-      
+      setRatings(filteredRatings);
+
     } catch (error) {
       console.error("Error fetching products:", error);
       setError("Failed to load products. Please try again later.");
