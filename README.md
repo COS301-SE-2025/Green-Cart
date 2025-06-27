@@ -32,21 +32,30 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 
 <div align="center">
 
-| Resource                                                                                                               | Description                                    |
-| ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| [Proposal Document](https://www.canva.com/design/DAGlkKZ2Tck/nRnry4uoAMHH9-PVaqgAvA/edit?utm_content=DAGlkKZ2Tck&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)             | Project overview and business rationale        |
-| [System Requirements Document](https://docs.google.com/document/d/1SvLTt7jRWEveDAkH8mjZ0KU3gi2sbbJkxBVchZX8C90/edit?usp=sharing)               | System requirements overview |
-| [System Architecture Document](https://docs.google.com/document/d/1KUXww-AsuFPJi2uFpKgFf5PEZGdCYqKZ4R21-Tpzqzs/edit?usp=sharing)           | Architectural overview                         |
-| [Database Schema](https://github.com/COS301-SE-2025/Green-Cart/blob/documentation/documents/ERD%20diagram.png?raw=true)               | Entity relationship model and schema reference |
-| [Deployment Diagram](https://github.com/COS301-SE-2025/Green-Cart/blob/documentation/documents/Development_Diagram.jpg)            | Hosting infrastructure breakdown               |
-| [Project Board](https://github.com/orgs/COS301-SE-2025/projects/198/views/2)                                                       | Task management and team progress              |
+Here's the cleaned-up and correctly formatted version of your tables, using proper Markdown syntax and structure. I also ensured the columns align and the headers are consistent.
 
-<h1 align="center">Demo Resources</h1>
+---
 
-| Demo   | Video      | Slides      |
-| ------ | ---------- | ----------- |
-| Demo 1 | [Watch](https://drive.google.com/file/d/1x923JaubfP_FH0dgEdhZ3O-y96iFVVzO/view) | [Slides](https://www.canva.com/design/DAGoo0NOHOs/MpZHdfQEJuRwyW97PpcBaA/edit?utm_content=DAGoo0NOHOs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) |
+### Project Resources
 
+| **Resource** | **Description** |
+|-------------|-----------------|
+| [Proposal Document](https://www.canva.com/design/DAGlkKZ2Tck/nRnry4uoAMHH9-PVaqgAvA/edit?utm_content=DAGlkKZ2Tck&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) | Project overview and business rationale |
+| [System Requirements Document](https://docs.google.com/document/d/1SvLTt7jRWEveDAkH8mjZ0KU3gi2sbbJkxBVchZX8C90/edit?usp=sharing) | System requirements overview |
+| [System Architecture Document](https://drive.google.com/file/d/124o7l_VJLKWKY1lrcR39qQqbaKSZdtFm/view?usp=drive_link) | Architectural overview |
+| [Database Schema](https://github.com/COS301-SE-2025/Green-Cart/blob/documentation/documents/ERD%20diagram.png?raw=true) | Entity relationship model and schema reference |
+| [Deployment Diagram](https://github.com/COS301-SE-2025/Green-Cart/blob/documentation/documents/Development_Diagram.jpg) | Hosting infrastructure breakdown |
+| [Project Board](https://github.com/orgs/COS301-SE-2025/projects/198/views/2) | Task management and team progress |
+| [Coding Standards Document](https://drive.google.com/file/d/1TL8G4iiOyyxTrD2zRGtyi9jaAINlpJ1C/view?usp=sharing) | Coding Standards Document |
+| [User Installation Manual ]() | User Installation Manual |
+---
+
+<h1 align="center"> Demo Resources</h1>
+
+| **Demo** | **Video** | **Slides** | **SRS Document** | **Architectural Document** |
+|---------|-----------|------------|------------------|-----------------------------|
+| Demo 1 | [Watch](https://drive.google.com/file/d/1x923JaubfP_FH0dgEdhZ3O-y96iFVVzO/view) | [Slides](https://www.canva.com/design/DAGoo0NOHOs/MpZHdfQEJuRwyW97PpcBaA/edit?utm_content=DAGoo0NOHOs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) | [System Requirements Document_v1](https://drive.google.com/file/d/1tUEFSQVjV-HfzKvjbx3_98__JOBLFUeK/view?usp=sharing) | [System Architecture Document_v1](https://docs.google.com/document/d/1KUXww-AsuFPJi2uFpKgFf5PEZGdCYqKZ4R21-Tpzqzs/edit?usp=sharing) |
+| Demo 2 |[Watch](https://drive.google.com/file/d/1JLZhZgI4QhDSkQFlCGH3h51MXt633Cyr/view?usp=sharing)  | [Slides](https://www.canva.com/design/DAGreB5l2ZA/c3Kde60qQsHp7J0Z71a6PA/edit?utm_content=DAGreB5l2ZA&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) |[System Requirements Document_v2](https://docs.google.com/document/d/1SvLTt7jRWEveDAkH8mjZ0KU3gi2sbbJkxBVchZX8C90/edit?usp=sharing) | [System Architecture Document_v2](https://drive.google.com/file/d/124o7l_VJLKWKY1lrcR39qQqbaKSZdtFm/view?usp=sharing)
 <h1 align="center">Technologies</h1>
 <div align="center">
 
