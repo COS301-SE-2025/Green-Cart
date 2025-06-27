@@ -31,9 +31,6 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 <h1 align="center">Documentation and Resources</h1>
 
 <div align="center">
-
-Here's the cleaned-up and correctly formatted version of your tables, using proper Markdown syntax and structure. I also ensured the columns align and the headers are consistent.
-
 ---
 
 ### Project Resources
