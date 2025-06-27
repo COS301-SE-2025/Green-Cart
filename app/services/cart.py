@@ -39,7 +39,7 @@ def get_cart(db: Session, user_id: str):
     return cart
 
 def remove_item(db: Session, user_id: str, product_id: int):
-    cart = db.query(Cart).filter(Cart.user_id == user_id).first()
+    cart = db.query(Cart).filter(Cart.user_id == user_id).order_by(Cart.created_at.desc()).first()
     if not cart:
         return False
     item = db.query(CartItem).filter_by(cart_id=cart.id, product_id=product_id).first()
