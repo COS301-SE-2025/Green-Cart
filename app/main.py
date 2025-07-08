@@ -5,7 +5,9 @@ from app.routes import users
 from app.routes import sustainabilityRatings
 from app.routes import cart 
 from app.routes import orders
+from app.routes import donation
 from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
 
@@ -23,3 +25,4 @@ app.include_router(sustainabilityRatings.router)
 app.include_router(cart.router) 
 app.include_router(orders.router)
 app.include_router(users.router)
+app.include_router(donation.router)
