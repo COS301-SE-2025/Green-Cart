@@ -26,8 +26,8 @@ def fetchSustainabilityRatings(request, db: Session):
             "statistics": []
         }
 
-    # Calculate weighted sustainability score
-    overall_rating = calculateWeightedSustainabilityScore(statistics)
+    # Calculate dynamic weighted sustainability score
+    overall_rating = calculateDynamicSustainabilityScore(statistics)
 
     return {
         "status": 200,
@@ -36,52 +36,154 @@ def fetchSustainabilityRatings(request, db: Session):
         "statistics": statistics
     }
 
-def calculateWeightedSustainabilityScore(statistics):
-    """
-    Calculate weighted sustainability score based on different rating types.
-    Missing sustainability types are treated as 0% (penalizes incomplete data).
-    """
-    
-    # Define weights for different sustainability metrics
-    WEIGHTS = {
-        'carbon_footprint': 0.35,      # 35%
-        'energy_efficiency': 0.25,     # 25%
-        'recyclability': 0.20,         # 20%
-        'sustainable_materials': 0.15, # 15%
-        'durability': 0.05,           # 5%
-    }
-    
-    # Group ratings by type and calculate averages
+def calculateDynamicSustainabilityScore(statistics):
+   
+    # Dynamic sustainability scoring system that:
+    # 1. Considers ALL main sustainability variables (missing = 0%)
+    # 2. Prioritizes carbon_footprint as the most important factor
+    # 3. Distributes weight among all variables, not just present ones
+    # 4. Works with new/removed variables automatically
+
+
     type_averages = {}
     for stat in statistics:
         if stat.type not in type_averages:
             type_averages[stat.type] = []
         type_averages[stat.type].append(stat.value)
     
-    # Calculate average for each type that exists
+
+    available_averages = {}
     for rating_type in type_averages:
         values = type_averages[rating_type]
-        type_averages[rating_type] = sum(values) / len(values)
+        available_averages[rating_type] = sum(values) / len(values)
     
-    # Calculate weighted score including ALL weight categories
+  
+    if not available_averages:
+        return 0.0
+    
+    # We get the weights for ALL sustainability types (includes missing ones too)
+    weights = calculateDynamicWeights(available_averages)
+    
+    # Calculate weighted score including ALL types
     weighted_score = 0.0
-    total_possible_weight = sum(WEIGHTS.values())  # Should be 1.0
     
-    for weight_category, weight in WEIGHTS.items():
-        if weight_category in type_averages:
+    for type_name, weight in weights.items():
+        if type_name in available_averages:
             # Use actual rating if available
-            category_score = type_averages[weight_category]
+            rating_value = available_averages[type_name]
         else:
-            # Treat missing categories as 0% (penalty for incomplete data)
-            category_score = 0
+            # Missing sustainability data = 0% rating
+            rating_value = 0
         
-        weighted_score += category_score * weight
+        contribution = rating_value * weight
+        weighted_score += contribution
         
-        # Optional: Log for debugging
-        logging.info(f"Category: {weight_category}, Score: {category_score}, Weight: {weight}, Contribution: {category_score * weight}")
+        status = f"(actual: {rating_value:.1f})" if type_name in available_averages else "(missing: 0.0)"
+        logging.info(f"Type: {type_name}, Value: {rating_value:.1f} {status}, Weight: {weight:.3f}, Contribution: {contribution:.2f}")
     
-    # No need to normalize since we're using all weights
-    final_score = weighted_score
+    # Apply carbon footprint bonus/penalty if needed
+    if 'carbon_footprint' in available_averages:
+        carbon_score = available_averages['carbon_footprint']
+        if carbon_score >= 80:
+            weighted_score *= 1.1  # 10% bonus for excellent carbon performance
+            logging.info(f"Carbon footprint bonus applied: {carbon_score:.1f}% -> +10%")
+        elif carbon_score <= 30:
+            weighted_score *= 0.9  # 10% penalty for poor carbon performance
+            logging.info(f"Carbon footprint penalty applied: {carbon_score:.1f}% -> -10%")
+    else:
+        # Penalty for missing carbon footprint data
+        weighted_score *= 0.8  # 20% penalty for missing critical environmental data
+        logging.info("Carbon footprint missing -> -20% penalty applied")
     
     # Ensure score is within 0-100 range
-    return max(0, min(100, final_score))
+    final_score = max(0, min(100, weighted_score))
+    
+    logging.info(f"Final sustainability score: {final_score:.1f}")
+    return final_score
+
+def calculateDynamicWeights(available_averages):
+    """
+    Calculate dynamic weights based on ALL main sustainability types.
+    Missing types are assumed to have 0% rating.
+    Carbon footprint always gets the highest weight.
+    """
+    
+    # Define ALL main sustainability variables that should be considered
+    MAIN_SUSTAINABILITY_TYPES = [
+        'carbon_footprint',
+        'energy_efficiency', 
+        'recyclability',
+        'sustainable_materials',
+        'durability'
+    ]
+    
+    # Base importance levels (higher number = more important)
+    IMPORTANCE_LEVELS = {
+        'carbon_footprint': 10,      # Highest priority
+        'energy_efficiency': 7,      # High priority
+        'recyclability': 6,          # Medium-high priority
+        'sustainable_materials': 5,  # Medium priority
+        'durability': 4,            # Lower priority
+    }
+    
+    # Calculate weights based on ALL main types, not just available ones
+    total_importance = sum(IMPORTANCE_LEVELS[t] for t in MAIN_SUSTAINABILITY_TYPES)
+    
+    # Calculate proportional weights for ALL main types
+    weights = {}
+    for type_name in MAIN_SUSTAINABILITY_TYPES:
+        importance = IMPORTANCE_LEVELS[type_name]
+        weights[type_name] = importance / total_importance
+    
+    # Ensure carbon footprint gets at least 35% of total weight
+    min_carbon_weight = 0.35
+    if weights['carbon_footprint'] < min_carbon_weight:
+        # Adjust weights to give carbon footprint minimum weight
+        current_carbon_weight = weights['carbon_footprint']
+        adjustment_needed = min_carbon_weight - current_carbon_weight
+        
+        # Reduce other weights proportionally
+        other_types = [t for t in MAIN_SUSTAINABILITY_TYPES if t != 'carbon_footprint']
+        total_other_weight = sum(weights[t] for t in other_types)
+        
+        if total_other_weight > 0:
+            reduction_factor = (1.0 - min_carbon_weight) / total_other_weight
+            
+            # Apply reduction to other types
+            for type_name in other_types:
+                weights[type_name] *= reduction_factor
+            
+            # Set carbon footprint to minimum weight
+            weights['carbon_footprint'] = min_carbon_weight
+    
+    # Add any additional types that might be present but not in main list
+    available_types = list(available_averages.keys())
+    for type_name in available_types:
+        if type_name not in MAIN_SUSTAINABILITY_TYPES:
+            # Give small weight to unknown types
+            weights[type_name] = 0.05
+    
+    # Log the calculated weights for debugging
+    logging.info("Dynamic weights calculated (including missing types as 0%):")
+    for type_name, weight in weights.items():
+        present = "✓" if type_name in available_averages else "✗ (missing = 0%)"
+        logging.info(f"  {type_name}: {weight:.3f} ({weight*100:.1f}%) {present}")
+    
+    return weights
+
+def addNewSustainabilityType(type_name, importance_level=None):
+ 
+    if importance_level is None:
+        importance_level = 3  # Default priority if not specified
+    
+    # This could update a database table or configuration file
+    # For now, it's just a placeholder showing how to extend the system
+
+    logging.info(f"New sustainability type added: {type_name} with importance {importance_level}")
+    
+    return {
+        "type": type_name,
+        "importance": importance_level,
+        "status": "added"
+    }
+
