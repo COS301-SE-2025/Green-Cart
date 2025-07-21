@@ -1,5 +1,63 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/retailer/StatsOverview.css';
+
+
+const useCountAnimation = (targetValue, duration = 2000, delay = 0) => {
+    const [currentValue, setCurrentValue] = useState(0);
+
+    useEffect(() => {
+        let startTime;
+        let animationFrame;
+
+        const animate = (timestamp) => {
+            if (!startTime) startTime = timestamp + delay;
+            
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function for smooth animation (ease-out)
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            
+            setCurrentValue(Math.floor(targetValue * easeOut));
+            
+            if (progress < 1) {
+                animationFrame = requestAnimationFrame(animate);
+            } else {
+                setCurrentValue(targetValue);
+            }
+        };
+
+        const timeoutId = setTimeout(() => {
+            animationFrame = requestAnimationFrame(animate);
+        }, delay);
+
+        return () => {
+            clearTimeout(timeoutId);
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+            }
+        };
+    }, [targetValue, duration, delay]);
+
+    return currentValue;
+};
+
+// Component for animated stat value
+const AnimatedStatValue = ({ value, isRevenue, delay = 0 }) => {
+    const numericValue = typeof value === 'string' ? 
+        parseFloat(value.replace(/[^\d.-]/g, '')) : value;
+    
+    const animatedValue = useCountAnimation(numericValue, 2000, delay);
+
+    if (isRevenue) {
+        return animatedValue.toLocaleString("en-ZA", {
+            style: "currency",
+            currency: "ZAR"
+        });
+    }
+
+    return animatedValue.toLocaleString();
+};
 
 export default function StatsOverview({ stats }) {
     const statItems = [
@@ -28,8 +86,8 @@ export default function StatsOverview({ stats }) {
             color: '#f59e0b'
         },
         {
-            key: 'totalOrders',
-            title: 'Total Orders',
+            key: 'averageSustainabilityRating',
+            title: 'Avg Sustainability',
             value: stats.totalOrders,
             icon: '📋',
             color: '#8b5cf6'
@@ -50,7 +108,13 @@ export default function StatsOverview({ stats }) {
                         </div>
                         <div className="stat-content">
                             <h3>{item.title}</h3>
-                            <div className="stat-value">{item.value}</div>
+                            <div className="stat-value">
+                               <AnimatedStatValue 
+                                    value={item.value} 
+                                    isRevenue={item.isRevenue}
+                                    delay={item.delay}
+                                />
+                            </div>
                         </div>
                     </div>
                 ))}
