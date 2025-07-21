@@ -88,6 +88,9 @@ export default function Navigation() {
                 <ul className="nav__links nav__links--right">
                     {/* <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li> */}
                     <li><Link to="/orders">Orders</Link></li>
+
+                    {/*NOTE: have to check if user is a retailer to display Dashboard link  */}
+                    <li><Link to="/retailer-dashboard">Dashboard</Link></li>
                     <li><Link to="/user-account">My Account</Link></li>
                     <li className="nav__cart">
                         <Link
