@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StatsOverview from '../components/retailer/StatsOverview';
+import ProductCarousel from '../components/retailer/ProductCarousel';
+import SalesChart from '../components/retailer/SalesChart';
 
 import './styles/RetailerDashboard.css';
 
@@ -135,16 +137,22 @@ export default function RetailerDashboard() {
             <div className="dashboard-header">
                 <h1>Retailer Dashboard</h1>
                 <p>Welcome back, {user.name || user.email}!</p>
+
+                {/* Add product Button */}
+                <div className="add-product">
+                    <button className="add-product-button">Add Product</button>
+                </div>
+                
             </div>
 
             {/* Stats Overview */}
             <StatsOverview stats={dashboardData.stats} />
 
             {/* Product Carousel */}
-            {/* <ProductCarousel products={dashboardData.products} /> */}
+            <ProductCarousel products={dashboardData.products} />
 
             {/* Sales Chart */}
-            {/* <SalesChart salesData={dashboardData.salesData} /> */}
+            <SalesChart salesData={dashboardData.salesData} />
         </div>
     );
 }

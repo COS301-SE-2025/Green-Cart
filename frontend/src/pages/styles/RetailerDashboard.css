@@ -11,6 +11,25 @@
   margin-bottom: 2rem;
 }
 
+.add-product {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+}
+
+.add-product-button {
+    background-color: #7BB540;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+
 .dashboard-header h1 {
   font-size: 2.5rem;
   color: #1e293b;
