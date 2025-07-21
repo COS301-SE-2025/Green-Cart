@@ -91,6 +91,9 @@ export default function Navigation() {
                     {/* <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li> */}
                     <li><Link to="/orders">Orders</Link></li>
                     <li className="nav__separator">|</li>
+                    {/*NOTE: have to check if user is a retailer to display Dashboard link  */}
+                    <li><Link to="/retailer-dashboard">Dashboard</Link></li>
+                    <li className="nav__separator">|</li>
                     <li><Link to="/user-account">My Account</Link></li>
                     <li className="nav__separator">|</li>
                     <li className="nav__cart">
@@ -121,6 +124,7 @@ export default function Navigation() {
                             <li><Link to="/help" onClick={handleMobileMenuClick}>Help Center</Link></li>
                             <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li>
                             <li><Link to="/orders" onClick={handleMobileMenuClick}>Orders</Link></li>
+                            <li><Link to="/retailer-dashboard" onClick={handleMobileMenuClick}>Dashboard</Link></li>
                             <li><Link to="/user-account" onClick={handleMobileMenuClick}>My Account</Link></li>
                             <li><Link to="/cart" onClick={handleMobileMenuClick}>
                                 Cart {cartQuantity > 0 && `(${cartQuantity})`}
