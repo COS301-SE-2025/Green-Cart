@@ -24,12 +24,16 @@
 
 /* Logo */
 .nav__logo {
-  font-size: 2rem;    
-  font-weight: 700;
-  color: #7BB540;       
+  display: flex;
+  align-items: center;
   text-decoration: none;
-  font-weight: bolder;
   margin-right: 2rem;
+}
+
+.nav__logo-image {
+  height: 55px;
+  width: auto;
+  object-fit: contain;
 }
 
 .nav-left, .nav__links {
@@ -60,6 +64,14 @@
 
 .nav__links li a:hover {
   color: #7BB540;
+}
+
+/* Vertical separator styling */
+.nav__separator {
+  color: #ccc;
+  font-size: 0.9rem;
+  margin: 0 0.3rem;
+  user-select: none;
 }
 
 /* Cart icon container */
@@ -144,8 +156,11 @@
   }
   
   .nav__logo {
-    font-size: 1.75rem;
     margin-right: 1.5rem;
+  }
+  
+  .nav__logo-image {
+    height: 45px;
   }
   
   .nav__links li a {
@@ -161,16 +176,23 @@
   }
   
   .nav__logo {
-    font-size: 1.5rem;
     margin-right: 1rem;
+  }
+  
+  .nav__logo-image {
+    height: 45px;
   }
   
   .nav__links--left {
     display: none; /* Hide "About Us" and "Help Center" on medium screens */
   }
   
-  .nav__links--right li:not(.nav__cart) {
-    display: none; /* Hide all right nav links except cart */
+  .nav__links--right li:not(.nav__cart):not(.nav__separator) {
+    display: none; /* Hide all right nav links except cart and separators */
+  }
+  
+  .nav__links--right .nav__separator {
+    display: none; /* Hide separators when links are hidden */
   }
 }
 
