@@ -7,6 +7,8 @@
   color: #1e293b;
   margin-bottom: 1.5rem;
   font-weight: 600;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
 }
 
 .stats-grid {
@@ -25,6 +27,25 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideInUp 0.6s ease-out forwards;
+}
+
+.stat-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.stat-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.stat-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.stat-card:nth-child(4) {
+  animation-delay: 0.4s;
 }
 
 .stat-card:hover {
@@ -42,6 +63,24 @@
   justify-content: center;
   min-width: 60px;
   height: 60px;
+  transform: scale(0);
+  animation: scaleIn 0.5s ease-out forwards;
+}
+
+.stat-card:nth-child(1) .stat-icon {
+  animation-delay: 0.3s;
+}
+
+.stat-card:nth-child(2) .stat-icon {
+  animation-delay: 0.4s;
+}
+
+.stat-card:nth-child(3) .stat-icon {
+  animation-delay: 0.5s;
+}
+
+.stat-card:nth-child(4) .stat-icon {
+  animation-delay: 0.6s;
 }
 
 .stat-content {
@@ -61,6 +100,53 @@
   font-size: 2rem;
   font-weight: 700;
   color: #1e293b;
+  font-variant-numeric: tabular-nums; /* Ensures consistent spacing during counting */
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Pulse animation for stat values during counting */
+.stat-value {
+  animation: subtlePulse 2s ease-in-out;
+}
+
+@keyframes subtlePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
 }
 
 /* Responsive Design */
@@ -82,5 +168,24 @@
   
   .stat-value {
     font-size: 1.5rem;
+  }
+}
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .stats-title,
+  .stat-card,
+  .stat-icon,
+  .stat-value {
+    animation: none !important;
+  }
+  
+  .stat-card {
+    opacity: 1;
+    transform: none;
+  }
+  
+  .stat-icon {
+    transform: scale(1);
   }
 }

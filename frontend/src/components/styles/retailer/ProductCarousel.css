@@ -49,17 +49,64 @@
   cursor: not-allowed;
 }
 
-.carousel-container {
+/* .carousel-container {
   overflow: hidden;
+
+  scroll-behavior: smooth;
+  
   border-radius: 16px;
+} */
+
+.carousel-container {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  scroll-behavior: smooth;
+  border-radius: 16px;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
+  /* Remove scrollbar hiding */
+  scrollbar-width: thin; /* Firefox: thinner scrollbar */
+  scrollbar-color: #7BB540 transparent; /* Firefox: thumb color and track */
+}
+
+.carousel-container::-webkit-scrollbar {
+  height: 8px; /* Height of the horizontal scrollbar */
+}
+
+.carousel-container::-webkit-scrollbar-track {
+  background: #f1f5f9; /* Track color */
+  border-radius: 8px;
+}
+
+.carousel-container::-webkit-scrollbar-thumb {
+  background: #7BB540; /* Thumb color */
+  border-radius: 8px;
+}
+
+.carousel-container::-webkit-scrollbar-thumb:hover {
+  background: #5a9b30; /* Darker thumb on hover */
 }
 
 .carousel-track {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
-  transition: none; /* Remove transform transition since we're using slice instead */
+  transition: none;
+  user-select: none; /* Prevent text selection during drag */
+  cursor: grab;
 }
+
+.carousel-track.dragging {
+  cursor: grabbing;
+}
+
+/* .carousel-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  transition: none; 
+
+} */
+
+
 
 .product-card {
   background: white;

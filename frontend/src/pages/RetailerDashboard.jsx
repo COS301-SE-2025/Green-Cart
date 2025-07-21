@@ -18,7 +18,7 @@ export default function RetailerDashboard() {
             totalRevenue: 87450.50,
             totalProductsSold: 1247,
             activeProducts: 156,
-            totalOrders: 523
+            totalOrders: 76
         },
         products: [
             {
