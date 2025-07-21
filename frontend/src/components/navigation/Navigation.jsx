@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSearch } from "../search/SearchProvider";
 import { useCart } from "../cart/CartContext";
 import CartIcon from "../../assets/icons/cart.png";
+import Logo from "../../assets/images/logo.png";
 import "../styles/navigation/Navigation.css";
 
 export default function Navigation() {
@@ -76,11 +77,12 @@ export default function Navigation() {
                         onClick={handleLogoClick}
                         title="GreenCart - Go to Home"
                     >
-                        GREENCART
+                        <img src={Logo} alt="GreenCart" className="nav__logo-image" />
                     </Link>
 
                     <ul className="nav__links nav__links--left">
-                        <li><Link to="/about">About Us</Link></li> |
+                        <li><Link to="/about">About Us</Link></li>
+                        <li className="nav__separator">|</li>
                         <li><Link to="/help">Help Center</Link></li>
                     </ul>
                 </div>
@@ -88,10 +90,12 @@ export default function Navigation() {
                 <ul className="nav__links nav__links--right">
                     {/* <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li> */}
                     <li><Link to="/orders">Orders</Link></li>
-
+                    <li className="nav__separator">|</li>
                     {/*NOTE: have to check if user is a retailer to display Dashboard link  */}
                     <li><Link to="/retailer-dashboard">Dashboard</Link></li>
+                    <li className="nav__separator">|</li>
                     <li><Link to="/user-account">My Account</Link></li>
+                    <li className="nav__separator">|</li>
                     <li className="nav__cart">
                         <Link
                             to="/cart"
