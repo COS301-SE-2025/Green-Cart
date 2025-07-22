@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import StatsOverview from '../components/retailer/StatsOverview';
 import ProductCarousel from '../components/retailer/ProductCarousel';
 import SalesChart from '../components/retailer/SalesChart';
+import AddProduct from '../components/retailer/AddProduct';
 
 import './styles/RetailerDashboard.css';
 
@@ -11,6 +12,7 @@ export default function RetailerDashboard() {
     const [user, setUser] = useState(null);
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
 
     // Mock data for development
     const mockDashboardData = {
@@ -110,13 +112,35 @@ export default function RetailerDashboard() {
         }, 1000);
     }, [navigate]);
 
+
+    const handleOpenAddProduct = () => {
+        setIsAddProductModalOpen(true);
+    };
+
+    const handleCloseAddProduct = () => {
+        setIsAddProductModalOpen(false);
+    };
+
+    const handleProductAdded = (newProduct) => {
+        // Update the products list with the new product
+        setDashboardData(prev => ({
+            ...prev,
+            products: [newProduct, ...prev.products],
+            stats: {
+                ...prev.stats,
+                activeProducts: prev.stats.activeProducts + 1
+            }
+        }));
+    };
+
     if (loading) {
         return (
-            <div className="dashboard-container">
+            <div className="dashboard-loading-container">
                 <div className="dashboard-loading">
                     <div className="loading-spinner"></div>
-                    <p>Loading dashboard...</p>
+                    <span>Loading Dashboard...</span>
                 </div>
+                
             </div>
         );
     }
@@ -140,9 +164,12 @@ export default function RetailerDashboard() {
 
                 {/* Add product Button */}
                 <div className="add-product">
-                    <button className="add-product-button">Add Product</button>
+                    <button 
+                        className="add-product-button"
+                        onClick={handleOpenAddProduct}
+                    >
+                    Add Product</button>
                 </div>
-                
             </div>
 
             {/* Stats Overview */}
@@ -153,6 +180,13 @@ export default function RetailerDashboard() {
 
             {/* Sales Chart */}
             <SalesChart salesData={dashboardData.salesData} />
+
+            {/* Add Product Modal */}
+            <AddProduct 
+                isOpen={isAddProductModalOpen}
+                onClose={handleCloseAddProduct}
+                onProductAdded={handleProductAdded}
+            />
         </div>
     );
 }
