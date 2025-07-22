@@ -26,5 +26,4 @@ app.include_router(cart.router)
 app.include_router(orders.router)
 app.include_router(users.router)
 app.include_router(donation.router)
-app.include_router(retailer_metrics.router, prefix="/api", tags=["Retailer Metrics"])
-
+app.include_router(retailer_metrics.router) 
