@@ -212,7 +212,7 @@ export default function UserAccount() {
       <div className="account-container">
         <div className="account-loading">
           <div className="loading-spinner"></div>
-          <p>Loading your account...</p>
+          <span>Loading your Account...</span>
         </div>
       </div>
     );

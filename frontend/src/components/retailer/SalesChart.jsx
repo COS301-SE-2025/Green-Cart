@@ -88,10 +88,15 @@ export default function SalesChart({ salesData }) {
   };
 
   return (
+    <>
+     <h2 className="sales-chart-title">Sales</h2>
     <div className="sales-chart-section">
+     
       <div className="chart-container" style={{ height: '400px' }}>
         <Line options={options} data={data} />
       </div>
     </div>
+    </>
+    
   );
 }

@@ -5,6 +5,46 @@
   background-color: #f9f9f9;
   color: #000; /* Ensure text is visible */
   border-radius: 10px;
+  min-height: 100vh;
+}
+
+.orders-loading-container {
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 1rem;
+  padding: 2rem;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  border-radius: 12px;
+}
+
+
+.orders-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 1rem auto 2rem auto;
+  max-width: 400px;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e0e0e0;
+  border-top: 2px solid #7BB540;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.orders-loading > span {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .orders-list {

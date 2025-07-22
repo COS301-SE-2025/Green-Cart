@@ -7,6 +7,15 @@
   margin-bottom: 2rem;
 }
 
+.sales-chart-title{
+   font-size: 1.75rem;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
 .chart-container {
   position: relative;
   width: 100%;

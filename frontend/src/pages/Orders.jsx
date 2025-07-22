@@ -52,7 +52,16 @@ function useOrders() {
 export default function Orders() {
   const { retrievedOrders: retrievedOrders, loading, error, userID, refreshOrders } = useOrders();
 
-  if (loading) return <div className="orders-container"><p>Loading...</p></div>;
+  // if (loading) return <div className="orders-container"><p>Loading...</p></div>;
+  if (loading) return (
+    <div className="orders-loading-container">
+      <div className="orders-loading">
+        <div className="loading-spinner"></div>
+        <span>Loading your Orders...</span>
+      </div>
+    </div>
+  );
+
   if (error) return <div className="orders-container"><p>Error: {error.message || error.toString()}</p></div>;
 
   return (
