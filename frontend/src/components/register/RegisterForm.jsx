@@ -52,7 +52,7 @@ const RegisterForm = () => {
               Sign up with Google
             </button>
 
-            <div className="divider"><span>or</span></div>
+            <div className="divider"><span>or</span> </div>
 
             <button type="button" className="create-account-button" onClick={handleCreateAccount}>
               Create an Account
@@ -73,51 +73,55 @@ const RegisterForm = () => {
         ) : (
           <form className="register-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="email" className="form-label">Email address</label>
               <input 
                 id="email" 
                 type="email" 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
-                className="form-input" 
+                className="form-input"
+                placeholder=" "
                 required 
               />
+              <label htmlFor="email" className="form-label">Email address</label>
             </div>
 
             <div className="form-group">
-              <label htmlFor="name" className="form-label">Name</label>
               <input 
                 id="name" 
                 type="text" 
                 value={name} 
                 onChange={(e) => setName(e.target.value)} 
-                className="form-input" 
+                className="form-input"
+                placeholder=" "
                 required 
               />
+              <label htmlFor="name" className="form-label">Name</label>
             </div>
 
             <div className="form-group">
-              <label htmlFor="password" className="form-label">Password</label>
               <input 
                 id="password" 
                 type="password" 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
-                className="form-input" 
+                className="form-input"
+                placeholder=" "
                 required 
               />
+              <label htmlFor="password" className="form-label">Password</label>
             </div>
 
             <div className="form-group">
-              <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
               <input 
                 id="confirmPassword" 
                 type="password" 
                 value={confirmPassword} 
                 onChange={(e) => setConfirmPassword(e.target.value)} 
-                className="form-input" 
+                className="form-input"
+                placeholder=" "
                 required 
               />
+              <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
             </div>
 
             <button type="submit" className="sign-up-button">Sign up</button>

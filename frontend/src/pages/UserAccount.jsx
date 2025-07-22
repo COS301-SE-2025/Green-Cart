@@ -311,7 +311,7 @@ export default function UserAccount() {
               <div className="profile-form">
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="name">Full Name</label>
+                    <label htmlFor="name" className='account-form-label'>Full Name</label>
                     <input
                       id="name"
                       name="name"
@@ -320,10 +320,11 @@ export default function UserAccount() {
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       placeholder="Enter your full name"
+                      className="account-form-input"
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="email">Email Address</label>
+                    <label htmlFor="email" className='account-form-label'>Email Address</label>
                     <input
                       id="email"
                       name="email"
@@ -332,13 +333,14 @@ export default function UserAccount() {
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       placeholder="Enter your email"
+                      className="account-form-input"
                     />
                   </div>
                 </div>
 
                 <div className="form-row">
                   <div className="form-group phone-group">
-                    <label htmlFor="phone">Phone Number</label>
+                    <label htmlFor="phone" className='account-form-label'>Phone Number</label>
                     <div className="phone-input-container">
                       <select
                         name="countryCode"
@@ -361,12 +363,12 @@ export default function UserAccount() {
                         onChange={handleInputChange}
                         disabled={!isEditing}
                         placeholder="Enter your phone number"
-                        className="phone-input"
+                        className="phone-input account-form-input"
                       />
                     </div>
                   </div>
                   <div className="form-group">
-                    <label htmlFor="dateOfBirth">Date of Birth</label>
+                    <label htmlFor="dateOfBirth" className='account-form-label'>Date of Birth</label>
                     <input
                       id="dateOfBirth"
                       name="dateOfBirth"
@@ -374,12 +376,13 @@ export default function UserAccount() {
                       value={formData.dateOfBirth}
                       onChange={handleInputChange}
                       disabled={!isEditing}
+                      className="account-form-input"
                     />
                   </div>
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="address">Address</label>
+                  <label htmlFor="address" className='account-form-label'>Address</label>
                   <input
                     id="address"
                     name="address"
@@ -388,12 +391,13 @@ export default function UserAccount() {
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     placeholder="Enter your street address"
+                    className="account-form-input"
                   />
                 </div>
 
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="city">City</label>
+                    <label htmlFor="city" className='account-form-label'>City</label>
                     <input
                       id="city"
                       name="city"
@@ -402,10 +406,11 @@ export default function UserAccount() {
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       placeholder="Enter your city"
+                      className="account-form-input"
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="postalCode">Postal Code</label>
+                    <label htmlFor="postalCode" className='account-form-label'>Postal Code</label>
                     <input
                       id="postalCode"
                       name="postalCode"
@@ -414,6 +419,7 @@ export default function UserAccount() {
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       placeholder="Enter postal code"
+                      className="account-form-input"
                     />
                   </div>
                 </div>
@@ -634,6 +640,7 @@ export default function UserAccount() {
                       name="preferences.emailNotifications"
                       checked={formData.preferences.emailNotifications}
                       onChange={handleInputChange}
+                      className="account-toggle-input"
                     />
                     <span className="toggle-slider"></span>
                   </label>
@@ -650,6 +657,7 @@ export default function UserAccount() {
                       name="preferences.smsNotifications"
                       checked={formData.preferences.smsNotifications}
                       onChange={handleInputChange}
+                      className="account-toggle-input"
                     />
                     <span className="toggle-slider"></span>
                   </label>
@@ -666,6 +674,7 @@ export default function UserAccount() {
                       name="preferences.marketingEmails"
                       checked={formData.preferences.marketingEmails}
                       onChange={handleInputChange}
+                      className="account-toggle-input"
                     />
                     <span className="toggle-slider"></span>
                   </label>
@@ -682,6 +691,7 @@ export default function UserAccount() {
                       name="preferences.carbonGoalNotifications"
                       checked={formData.preferences.carbonGoalNotifications}
                       onChange={handleInputChange}
+                      className="account-toggle-input"
                     />
                     <span className="toggle-slider"></span>
                   </label>
@@ -698,6 +708,7 @@ export default function UserAccount() {
                       name="preferences.sustainabilityTips"
                       checked={formData.preferences.sustainabilityTips}
                       onChange={handleInputChange}
+                      className="account-toggle-input"
                     />
                     <span className="toggle-slider"></span>
                   </label>

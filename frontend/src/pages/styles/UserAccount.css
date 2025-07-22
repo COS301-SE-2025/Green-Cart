@@ -198,30 +198,37 @@
   flex-direction: column;
 }
 
-.form-group label {
+/* .form-group label {
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+} */
+
+.account-form-label{
   font-weight: 500;
   color: #374151;
   margin-bottom: 0.5rem;
   font-size: 0.95rem;
 }
-
-.form-group input {
+ 
+.account-form-input {
   padding: 0.75rem;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.2s ease;
   background: white;
-  color: #1f2937; /* <-- Add this line for dark text */
+  color: #1f2937;
 }
 
-.form-group input:focus {
+.account-form-input:focus {
   outline: none;
   border-color: #7BB540;
   box-shadow: 0 0 0 3px rgba(123, 181, 64, 0.1);
 }
 
-.form-group input:disabled {
+.account-form-input:disabled {
   background: #f9fafb;
   color: #374151;
   cursor: not-allowed;
@@ -324,7 +331,7 @@
   flex-shrink: 0;
 }
 
-.toggle-switch input {
+.account-toggle-input {
   opacity: 0;
   width: 0;
   height: 0;
@@ -354,11 +361,11 @@
   border-radius: 50%;
 }
 
-input:checked + .toggle-slider {
+.account-toggle-input:checked + .toggle-slider {
   background-color: #7BB540;
 }
 
-input:checked + .toggle-slider:before {
+.account-toggle-input:checked + .toggle-slider:before {
   transform: translateX(26px);
 }
 
@@ -649,10 +656,10 @@ input:checked + .toggle-slider:before {
   }
 }
 
-/* Focus styles for accessibility */
+/* Focus styles for accessibility.... to change */
 .tab-button:focus,
-.form-group input:focus,
-button:focus {
+.account-form-input:focus,
+.account-toggle-input:focus + .toggle-slider {
   outline: 2px solid #7BB540;
   outline-offset: 2px;
 }
