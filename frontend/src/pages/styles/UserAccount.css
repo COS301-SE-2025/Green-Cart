@@ -1,13 +1,20 @@
 .account-container {
   max-width: 1000px;
   margin: 0 auto;
+  margin-top: 1rem;
   padding: 2rem;
-  min-height: 80vh;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  /* font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; */
+  /* font-family: 'Inter', sans-serif; */
+/* background: white; */
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+  border-radius: 12px;
 }
 
 /* Loading and Error States */
-.account-loading,
+/* .account-loading, */
 .account-error {
   display: flex;
   flex-direction: column;
@@ -15,16 +22,35 @@
   justify-content: center;
   min-height: 400px;
   text-align: center;
+
+}
+
+.account-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 1rem auto 2rem auto;
+  max-width: 400px;
+}
+
+.account-loading > span {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #7BB540;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e0e0e0;
+  border-top: 2px solid #7BB540;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
 }
 
 .account-error h2 {
