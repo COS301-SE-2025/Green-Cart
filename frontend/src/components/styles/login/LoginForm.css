@@ -69,7 +69,7 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .form-group {
@@ -81,29 +81,44 @@
   color: white;
   font-size: 0.95rem;
   font-weight: 500;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
 }
 
 .form-input {
   width: 100%;
-  padding: 0.75rem;
-  background-color: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
+  padding: 0.75rem 0;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   color: white;
-  font-size: 0.9rem;
+  font-size: 1rem;
   box-sizing: border-box;
+  transition: border-bottom-color 0.3s ease;
 }
 
 .form-input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+  color: transparent;
 }
 
 .form-input:focus {
   outline: none;
-  ring: 2px;
-  ring-color: rgba(255, 255, 255, 0.5);
-  background-color: rgba(255, 255, 255, 0.25);
+  border-bottom-color: white;
+}
+
+/* Float label up when input is focused or has value */
+.form-input:focus + .form-label,
+.form-input:not(:placeholder-shown) + .form-label {
+  transform: translateY(-1.5rem) scale(0.85);
+  color: white;
+  font-weight: 500;
+}
+
+/* Alternative approach using :valid pseudo-class for better browser support */
+.form-input:focus ~ .form-label,
+.form-input:valid ~ .form-label {
+  transform: translateY(-1.5rem) scale(0.85);
+  color: white;
+  font-weight: 500;
 }
 
 .form-options {
@@ -148,27 +163,28 @@
 
 .sign-in-button {
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.5);
-  color: white;
-  padding: 0.75rem 1.2rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #1f2937;
+  padding: 0.875rem 1.2rem;
   border: none;
-  border-radius: 4px;
-  font-size: 0.95rem;
-  font-weight: 500;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 0.8rem;
-  transition: background-color 0.2s ease;
+  margin-top: 1rem;
+  transition: all 0.2s ease;
 }
 
 .sign-in-button:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: white;
+  transform: translateY(-1px);
 }
 
 .signup-link {
   text-align: center;
   color: white;
   font-size: 0.85rem;
-  margin-top: 0.8rem;
+  margin-top: 1rem;
 }
 
 .signup-link-text {
@@ -182,7 +198,7 @@
 
 .divider {
   text-align: center;
-  margin: 0.8rem 0;
+  margin: 1rem 0;
   position: relative;
 }
 
@@ -207,27 +223,27 @@
 
 .google-signin-button {
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.95);
   color: #374151;
-  opacity: 85%;
-  padding: 0.75rem 1.2rem;
+  padding: 0.875rem 1.2rem;
   border: none;
-  border-radius: 4px;
-  font-size: 0.85rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .google-signin-button:hover {
   background-color: white;
+  transform: translateY(-1px);
 }
 
 .google-icon {
-  width: 1rem;
-  height: 1rem;
+  width: 1.2rem;
+  height: 1.2rem;
 }

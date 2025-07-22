@@ -36,33 +36,34 @@ const LoginForm = () => {
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email" className="form-label">Email address</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="form-input"
+              placeholder=" "
               required
             />
+            <label htmlFor="email" className="form-label">Email address</label>
           </div>
 
           <div className="form-group">
-            <label htmlFor="password" className="form-label">Password</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="form-input"
+              placeholder=" "
               required
             />
+            <label htmlFor="password" className="form-label">Password</label>
           </div>
 
           <div className="form-options">
             <label className="checkbox-label">
               <input
-                
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
