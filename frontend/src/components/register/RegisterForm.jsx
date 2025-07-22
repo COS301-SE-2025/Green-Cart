@@ -52,7 +52,7 @@ const RegisterForm = () => {
               Sign up with Google
             </button>
 
-            <div className="divider"><span>or</span></div>
+            <div className="divider"><span>or</span> </div>
 
             <button type="button" className="create-account-button" onClick={handleCreateAccount}>
               Create an Account

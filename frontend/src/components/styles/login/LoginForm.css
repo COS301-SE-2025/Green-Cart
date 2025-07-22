@@ -163,7 +163,7 @@
 
 .sign-in-button {
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.9);
   color: #1f2937;
   padding: 0.875rem 1.2rem;
   border: none;
@@ -196,34 +196,32 @@
   text-decoration: none;
 }
 
+
 .divider {
+  display: flex;
+  align-items: center;
   text-align: center;
   margin: 1rem 0;
-  position: relative;
 }
 
-.divider::before {
+.divider::before,
+.divider::after {
   content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
+  flex: 1;
   height: 1px;
   background-color: rgba(255, 255, 255, 0.3);
 }
 
 .divider span {
-  background-color: transparent;
   color: white;
   padding: 0 1rem;
   font-size: 0.85rem;
-  position: relative;
-  z-index: 1;
+  background-color: transparent;
 }
 
 .google-signin-button {
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.8);
   color: #374151;
   padding: 0.875rem 1.2rem;
   border: none;
