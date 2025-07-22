@@ -7,7 +7,7 @@ from app.routes import cart
 from app.routes import orders
 from app.routes import donation
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.routes import retailer_metrics
 
 app = FastAPI()
 
@@ -26,3 +26,4 @@ app.include_router(cart.router)
 app.include_router(orders.router)
 app.include_router(users.router)
 app.include_router(donation.router)
+app.include_router(retailer_metrics.router) 
