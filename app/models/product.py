@@ -13,5 +13,5 @@ class Product(Base):
     quantity = Column(Integer)
     brand = Column(Text)
     category_id = Column(Integer, ForeignKey("categories.id"))
-    retailer_id = Column(String(36))
-    created_at = Column(DateTime, server_default=func.now())
+    retailer_id = Column(Integer)  # ← changed from String to Integer for consistency with schema.sql
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)

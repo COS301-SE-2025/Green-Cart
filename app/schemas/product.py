@@ -13,7 +13,7 @@ class ProductResponse(BaseModel):
     quantity: Optional[int] = None
     brand: Optional[str] = None
     category_id: Optional[int] = None
-    retailer_id: Optional[str] = None
+    retailer_id: Optional[int] = None
     created_at: Optional[datetime] = None
 
     class Config:
