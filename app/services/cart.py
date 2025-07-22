@@ -48,3 +48,5 @@ def remove_item(db: Session, user_id: str, product_id: int):
         db.commit()
         return True
     return False
+
+

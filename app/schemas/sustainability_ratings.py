@@ -6,7 +6,7 @@ class SustainabilityRating(BaseModel):
     id: int
     product_id: int
     type: str
-    value: int
+    value: float
     created_at: datetime
 
 class fetchSustainabilityRatingsRequest(BaseModel):
