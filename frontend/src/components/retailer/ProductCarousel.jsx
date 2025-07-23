@@ -6,6 +6,8 @@ export default function ProductCarousel({ products, onEditProduct }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const productsPerView = 4; // Show 4 products at a time
 
+    const navigate = useNavigate();
+
     const nextProducts = () => {
         const maxIndex = Math.max(0, products.length - productsPerView);
         setCurrentIndex((prev) => Math.min(prev+ productsPerView, maxIndex));
@@ -30,8 +32,9 @@ export default function ProductCarousel({ products, onEditProduct }) {
     const handleViewClick = (product) => {
         // Navigate to product details page or perform view action
         console.log(`Viewing product: ${product.name}`);
-        //useNavigate() to redirect if needed
-        useNavigate(`/Product/${product.id}`);
+        //navigate
+        navigate(`/Product/${product.id}`);
+
     }
 
     return (
