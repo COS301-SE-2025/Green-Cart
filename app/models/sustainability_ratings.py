@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text, Numeric, Boolean, ForeignKey, DateTime
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.db.database import Base
 
@@ -7,6 +8,10 @@ class SustainabilityRating(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
-    type = Column(Text, nullable=False)  
-    value = Column(Integer, nullable=False, info={"min": 1, "max": 5})
+    type = Column(Integer, ForeignKey("sustainability_types.id"), nullable=False)  # Foreign key to sustainability_types
+    value = Column(Numeric(5, 2), nullable=False)  # Changed to support decimal values
     created_at = Column(DateTime, server_default=func.now())
+    verification = Column(String(255))
+    
+    # Relationship to get the type name
+    type_info = relationship("SustainabilityType", back_populates="ratings")

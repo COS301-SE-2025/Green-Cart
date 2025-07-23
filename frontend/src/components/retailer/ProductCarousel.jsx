@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/retailer/ProductCarousel.css';
 
-export default function ProductCarousel({ products }) {
+export default function ProductCarousel({ products, onEditProduct }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const productsPerView = 4; // Show 4 products at a time
 
@@ -19,6 +20,19 @@ export default function ProductCarousel({ products }) {
 
     // Calculate how many products are actually visible
     const visibleProducts = products.slice(currentIndex, currentIndex + productsPerView);
+
+    const handleEditClick = (product) => {
+        if (onEditProduct) {
+            onEditProduct(product);
+        }
+    };
+
+    const handleViewClick = (product) => {
+        // Navigate to product details page or perform view action
+        console.log(`Viewing product: ${product.name}`);
+        //useNavigate() to redirect if needed
+        useNavigate(`/Product/${product.id}`);
+    }
 
     return (
         <div className="product-carousel-section">
@@ -49,7 +63,7 @@ export default function ProductCarousel({ products }) {
                     {visibleProducts.map((product) => (
                         <div key={product.id} className="product-card">
                             <div className="product-image">
-                                <img src={product.image} alt={product.name} />
+                                <img src={product.image || product.images?.[0]} alt={product.name} />
                                 <div className="product-overlay">
                                     <span className="sustainability-badge">
                                         🌱 {product.sustainability}
@@ -67,16 +81,26 @@ export default function ProductCarousel({ products }) {
                                 <div className="product-stats">
                                     <div className="stat-item">
                                         <span className="stat-label">Stock:</span>
-                                        <span className="stat-value">{product.stock}</span>
+                                        <span className="stat-value">{product.stock || product.quantity}</span>
                                     </div>
                                     <div className="stat-item">
                                         <span className="stat-label">Sold:</span>
-                                        <span className="stat-value">{product.sold}</span>
+                                        <span className="stat-value">{product.sold || 0}</span>
                                     </div>
                                 </div>
                                 <div className="product-actions">
-                                    <button className="btn btn-primary">Edit</button>
-                                    <button className="btn btn-secondary">View</button>
+                                    <button 
+                                        className="btn btn-primary"
+                                        onClick={() => handleEditClick(product)}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button 
+                                        className="btn btn-secondary"
+                                        onClick={() => handleViewClick(product)}
+                                    >
+                                        View
+                                    </button>
                                 </div>
                             </div>
                         </div>

@@ -110,9 +110,21 @@ def fetchProduct(request, db: Session):
 
     res = fetchSustainabilityRatings(req, db)
 
+    statistics = res.get("statistics", [])
+    # Fix: Handle statistics as dictionaries, not objects
+    for stat in statistics:
+        if isinstance(stat, dict):
+            # stat is already a dictionary, type should already be converted in fetchSustainabilityRatings
+            pass
+        else:
+            # If it's still an object, convert it
+            stat.type = str(stat.type)
+
     sustainability = {
         "rating": res.get("rating", 0),
-        "statistics": res.get("statistics", [])
+        "statistics": statistics,
+        "grade": res.get("grade"),
+        "insights": res.get("insights")
     }
 
     return {
@@ -122,6 +134,8 @@ def fetchProduct(request, db: Session):
         "images": images,
         "sustainability": sustainability
     }
+
+
 
 def searchProducts(request, db: Session):
     search = request.get("search", "")

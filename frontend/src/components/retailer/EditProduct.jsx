@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import '../styles/retailer/AddProduct.css';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../styles/retailer/EditProduct.css';
 
-export default function AddProduct({ isOpen, onClose, onProductAdded }) {
+export default function EditProduct({ isOpen, onClose, onProductUpdated, product }) {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -34,6 +35,34 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
         'Baby & Kids'
     ];
 
+    // Populate form when product prop changes
+    useEffect(() => {
+        if (product && isOpen) {
+            setFormData({
+                name: product.name || '',
+                description: product.description || '',
+                price: product.price?.toString() || '',
+                category: product.category || '',
+                brand: product.brand || '',
+                quantity: product.stock?.toString() || product.quantity?.toString() || '',
+                sustainability: {
+                    energyEfficiency: product.sustainability?.energyEfficiency || 70,
+                    carbonFootprint: product.sustainability?.carbonFootprint || 60,
+                    recyclability: product.sustainability?.recyclability || 20,
+                    durability: product.sustainability?.durability || 90,
+                    materialSustainability: product.sustainability?.materialSustainability || 68,
+                }
+            });
+            
+            // Set existing images
+            if (product.images) {
+                setImages(Array.isArray(product.images) ? product.images : [product.image]);
+            } else if (product.image) {
+                setImages([product.image]);
+            }
+        }
+    }, [product, isOpen]);
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -63,15 +92,15 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
     const handleImageUpload = (e) => {
         const files = Array.from(e.target.files);
         
-        // Limit to 5 images
-        if (files.length > 5) {
-            alert('You can upload a maximum of 5 images');
+        // Limit to 5 images total
+        if (images.length + files.length > 5) {
+            alert('You can have a maximum of 5 images');
             return;
         }
 
-        // Create preview URLs
-        const imageUrls = files.map(file => URL.createObjectURL(file));
-        setImages(imageUrls);
+        // Create preview URLs for new files
+        const newImageUrls = files.map(file => URL.createObjectURL(file));
+        setImages(prev => [...prev, ...newImageUrls]);
     };
 
     const removeImage = (index) => {
@@ -109,89 +138,95 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 2000));
             
-            const newProduct = {
-                id: Date.now(), // Temporary ID
+            const updatedProduct = {
+                ...product,
                 ...formData,
                 price: parseFloat(formData.price),
+                stock: parseInt(formData.quantity),
                 quantity: parseInt(formData.quantity),
                 sustainability: calculateSustainabilityScore(),
                 images: images,
-                dateAdded: new Date().toISOString()
+                dateUpdated: new Date().toISOString()
             };
 
-            console.log('New product:', newProduct);
+            console.log('Updated product:', updatedProduct);
             
             // Call parent callback if provided
-            if (onProductAdded) {
-                onProductAdded(newProduct);
+            if (onProductUpdated) {
+                onProductUpdated(updatedProduct);
             }
-
-            // Reset form
-            setFormData({
-                name: '',
-                description: '',
-                price: '',
-                category: '',
-                brand: '',
-                quantity: '',
-                sustainability: {
-                    energyEfficiency: 3,
-                    materialSustainability: 3,
-                    durability: 3,
-                    recyclability: 3
-                }
-            });
-            setImages([]);
             
-            alert('Product added successfully!');
+            alert('Product updated successfully!');
             onClose();
 
         } catch (error) {
-            console.error('Error adding product:', error);
-            alert('Failed to add product. Please try again.');
+            console.error('Error updating product:', error);
+            alert('Failed to update product. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    if (!isOpen) return null;
+    const handleClose = () => {
+        // Reset form when closing
+        setFormData({
+            name: '',
+            description: '',
+            price: '',
+            category: '',
+            brand: '',
+            quantity: '',
+            sustainability: {
+                energyEfficiency: 70,
+                carbonFootprint: 60,
+                recyclability: 20,
+                durability: 90,
+                materialSustainability: 68,
+            }
+        });
+        setImages([]);
+        setErrors({});
+        onClose();
+    };
+
+    if (!isOpen || !product) return null;
 
     const sustainabilityScore = calculateSustainabilityScore();
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-overlay" onClick={handleClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>Add New Product</h2>
-                    <button className="close-btn" onClick={onClose} aria-label="Close modal">
+                    <h2>Edit Product</h2>
+                    <button className="close-btn" onClick={handleClose} aria-label="Close modal">
                         ✕
                     </button>
                 </div>
 
-                <form className="add-product-form" onSubmit={handleSubmit}>
+                <form className="edit-product-form" onSubmit={handleSubmit}>
                     <div className="form-grid">
                         {/* Basic Information */}
                         <div className="form-section">
                             <h3>Basic Information</h3>
                             
                             <div className="form-group">
-                                <label htmlFor="name">Product Name *</label>
+                                <label htmlFor="edit-name">Product Name *</label>
                                 <input
                                     type="text"
-                                    id="name"
+                                    id="edit-name"
                                     name="name"
                                     value={formData.name}
                                     onChange={handleInputChange}
                                     placeholder="Enter product name"
                                     className={errors.name ? 'error' : ''}
                                 />
-                                {errors.name && <span className="add-product-error-message">{errors.name}</span>}
+                                {errors.name && <span className="edit-product-error-message">{errors.name}</span>}
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="description">Description *</label>
+                                <label htmlFor="edit-description">Description *</label>
                                 <textarea
-                                    id="description"
+                                    id="edit-description"
                                     name="description"
                                     value={formData.description}
                                     onChange={handleInputChange}
@@ -199,15 +234,15 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                     rows="4"
                                     className={errors.description ? 'error' : ''}
                                 />
-                                {errors.description && <span className="add-product-error-message">{errors.description}</span>}
+                                {errors.description && <span className="edit-product-error-message">{errors.description}</span>}
                             </div>
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label htmlFor="price">Price (ZAR) *</label>
+                                    <label htmlFor="edit-price">Price (ZAR) *</label>
                                     <input
                                         type="number"
-                                        id="price"
+                                        id="edit-price"
                                         name="price"
                                         value={formData.price}
                                         onChange={handleInputChange}
@@ -216,14 +251,14 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                         step="0.01"
                                         className={errors.price ? 'error' : ''}
                                     />
-                                    {errors.price && <span className="add-product-error-message">{errors.price}</span>}
+                                    {errors.price && <span className="edit-product-error-message">{errors.price}</span>}
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="quantity">Stock Quantity *</label>
+                                    <label htmlFor="edit-quantity">Stock Quantity *</label>
                                     <input
                                         type="number"
-                                        id="quantity"
+                                        id="edit-quantity"
                                         name="quantity"
                                         value={formData.quantity}
                                         onChange={handleInputChange}
@@ -231,15 +266,15 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                         min="0"
                                         className={errors.quantity ? 'error' : ''}
                                     />
-                                    {errors.quantity && <span className="add-product-error-message">{errors.quantity}</span>}
+                                    {errors.quantity && <span className="edit-product-error-message">{errors.quantity}</span>}
                                 </div>
                             </div>
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label htmlFor="category">Category *</label>
+                                    <label htmlFor="edit-category">Category *</label>
                                     <select
-                                        id="category"
+                                        id="edit-category"
                                         name="category"
                                         value={formData.category}
                                         onChange={handleInputChange}
@@ -252,21 +287,21 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                             </option>
                                         ))}
                                     </select>
-                                    {errors.category && <span className="add-product-error-message">{errors.category}</span>}
+                                    {errors.category && <span className="edit-product-error-message">{errors.category}</span>}
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="brand">Brand *</label>
+                                    <label htmlFor="edit-brand">Brand *</label>
                                     <input
                                         type="text"
-                                        id="brand"
+                                        id="edit-brand"
                                         name="brand"
                                         value={formData.brand}
                                         onChange={handleInputChange}
                                         placeholder="Enter brand name"
                                         className={errors.brand ? 'error' : ''}
                                     />
-                                    {errors.brand && <span className="add-product-error-message">{errors.brand}</span>}
+                                    {errors.brand && <span className="edit-product-error-message">{errors.brand}</span>}
                                 </div>
                             </div>
                         </div>
@@ -276,16 +311,16 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                             <h3>Product Images</h3>
                             
                             <div className="form-group">
-                                <label htmlFor="images">Upload Images * (Max 5)</label>
+                                <label htmlFor="edit-images">Add More Images (Max 5 total)</label>
                                 <input
                                     type="file"
-                                    id="images"
+                                    id="edit-images"
                                     accept="image/*"
                                     multiple
                                     onChange={handleImageUpload}
                                     className={errors.images ? 'error' : ''}
                                 />
-                                {errors.images && <span className="add-product-error-message">{errors.images}</span>}
+                                {errors.images && <span className="edit-product-error-message">{errors.images}</span>}
                             </div>
 
                             {images.length > 0 && (
@@ -345,7 +380,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                         <button
                             type="button"
                             className="btn btn-cancel"
-                            onClick={onClose}
+                            onClick={handleClose}
                             disabled={isSubmitting}
                         >
                             Cancel
@@ -358,10 +393,10 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                             {isSubmitting ? (
                                 <>
                                     <div className="loading-spinner small"></div>
-                                    Adding Product...
+                                    Updating Product...
                                 </>
                             ) : (
-                                'Add Product'
+                                'Update Product'
                             )}
                         </button>
                     </div>

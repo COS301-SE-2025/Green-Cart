@@ -63,7 +63,7 @@
   color: #ef4444;
 }
 
-.add-product-form {
+.edit-product-form {
   padding: 2rem;
 }
 
@@ -127,11 +127,7 @@
   color: #374151;
 }
 
-/* .form-group select > option {
-
-  background: white;
-} */
-#category {
+#edit-category {
   background: white;
   color: #374151;
   font-size: 0.875rem;
@@ -162,11 +158,11 @@
   gap: 1rem;
 }
 
-.add-product-error-message {
+.edit-product-error-message {
   color: #ef4444;
   font-size: 0.75rem;
-  /* margin-top: 0.25rem; */
-  /* display: block; */
+  margin-top: 0.25rem;
+  display: block;
 }
 
 /* Image Upload */
@@ -358,7 +354,7 @@
   }
   
   .modal-header,
-  .add-product-form {
+  .edit-product-form {
     padding: 1.5rem;
   }
   

@@ -4,6 +4,7 @@ import StatsOverview from '../components/retailer/StatsOverview';
 import ProductCarousel from '../components/retailer/ProductCarousel';
 import SalesChart from '../components/retailer/SalesChart';
 import AddProduct from '../components/retailer/AddProduct';
+import EditProduct from '../components/retailer/EditProduct';
 
 import './styles/RetailerDashboard.css';
 
@@ -13,6 +14,8 @@ export default function RetailerDashboard() {
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+    const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     // Mock data for development
     const mockDashboardData = {
@@ -133,6 +136,25 @@ export default function RetailerDashboard() {
         }));
     };
 
+    const handleEditProduct = (product) => {
+        setSelectedProduct(product);
+        setIsEditProductModalOpen(true);
+    };
+
+    const handleCloseEditProduct = () => {
+        setIsEditProductModalOpen(false);
+        setSelectedProduct(null);
+    };
+
+    const handleProductUpdated = (updatedProduct) => {
+        setDashboardData(prev => ({
+            ...prev,
+            products: prev.products.map(product => 
+                product.id === updatedProduct.id ? updatedProduct : product
+            )
+        }));
+    };
+
     if (loading) {
         return (
             <div className="dashboard-loading-container">
@@ -176,7 +198,7 @@ export default function RetailerDashboard() {
             <StatsOverview stats={dashboardData.stats} />
 
             {/* Product Carousel */}
-            <ProductCarousel products={dashboardData.products} />
+            <ProductCarousel products={dashboardData.products} onEditProduct={handleEditProduct} />
 
             {/* Sales Chart */}
             <SalesChart salesData={dashboardData.salesData} />
@@ -186,6 +208,14 @@ export default function RetailerDashboard() {
                 isOpen={isAddProductModalOpen}
                 onClose={handleCloseAddProduct}
                 onProductAdded={handleProductAdded}
+            />
+
+            {/* Edit Product Modal */}
+            <EditProduct 
+                isOpen={isEditProductModalOpen}
+                onClose={handleCloseEditProduct}
+                onProductUpdated={handleProductUpdated}
+                product={selectedProduct}
             />
         </div>
     );
