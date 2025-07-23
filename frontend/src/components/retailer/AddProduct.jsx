@@ -94,8 +94,8 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
     };
 
     const calculateSustainabilityScore = () => {
-        const { energyEfficiency, materialSustainability, durability, recyclability } = formData.sustainability;
-        return Math.round(((energyEfficiency + materialSustainability + durability + recyclability) / 4) );
+        const { energyEfficiency, carbonFootprint, recyclability, durability, materialSustainability } = formData.sustainability;
+        return Math.round(((energyEfficiency + carbonFootprint + recyclability + durability + materialSustainability) / 5));
     };
 
     const handleSubmit = async (e) => {
