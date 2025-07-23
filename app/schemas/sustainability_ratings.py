@@ -6,7 +6,7 @@ class SustainabilityRating(BaseModel):
     id: int
     product_id: int
     type: str
-    value: int = Field(..., ge=0, le=100, description="Sustainability rating as percentage (0-100)")
+    value: float = Field(..., ge=0, le=100, description="Sustainability rating as percentage (0-100)")
     created_at: datetime
 
 class fetchSustainabilityRatingsRequest(BaseModel):

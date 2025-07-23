@@ -34,3 +34,4 @@ def test_fetch_sustainability_ratings():
 
     # Updated to expect percentages (0-100) instead of 1-5 scale
     assert 0 <= data["rating"] <= 100
+
