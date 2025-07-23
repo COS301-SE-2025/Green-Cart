@@ -5,13 +5,14 @@ from typing import Optional, List
 class SustainabilityRating(BaseModel):
     id: int
     product_id: int
-    type: str
+    type: str  # Changed to string to show type name
     value: float = Field(..., ge=0, le=100, description="Sustainability rating as percentage (0-100)")
     created_at: datetime
+    verification: Optional[str] = None
 
 class fetchSustainabilityRatingsRequest(BaseModel):
     product_id: int
-    type: Optional[List[str]] = None
+    type: Optional[List[str]] = None  # Accept type names instead of IDs
 
 class fetchSustainabilityRatingsResponse(BaseModel):
     status: int
