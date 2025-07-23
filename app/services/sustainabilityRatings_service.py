@@ -41,10 +41,20 @@ def fetchSustainabilityRatings(request, db: Session):
     # Convert statistics to include type names for frontend
     formatted_statistics = []
     for stat in statistics:
+        # Handle case where type_info relationship might not be loaded
+        if stat.type_info:
+            type_name = stat.type_info.type_name
+        else:
+            # Fallback: manually query for type name
+            type_record = db.query(SustainabilityType).filter(
+                SustainabilityType.id == stat.type
+            ).first()
+            type_name = type_record.type_name if type_record else str(stat.type)
+        
         formatted_statistics.append({
             "id": stat.id,
             "product_id": stat.product_id,
-            "type": stat.type_info.type_name,  # Use type_name instead of ID
+            "type": type_name,  # Use type_name instead of ID
             "value": float(stat.value),
             "created_at": stat.created_at,
             "verification": stat.verification
