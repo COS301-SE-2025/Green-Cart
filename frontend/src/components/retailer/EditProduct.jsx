@@ -94,7 +94,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
         
         // Limit to 5 images total
         if (images.length + files.length > 5) {
-            alert('You can have a maximum of 5 images');
+            toast.error('You can have a maximum of 5 images');
             return;
         }
 
@@ -156,12 +156,12 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                 onProductUpdated(updatedProduct);
             }
             
-            alert('Product updated successfully!');
+            toast.success('Product updated successfully!');
             onClose();
 
         } catch (error) {
             console.error('Error updating product:', error);
-            alert('Failed to update product. Please try again.');
+            toast.error('Failed to update product. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
