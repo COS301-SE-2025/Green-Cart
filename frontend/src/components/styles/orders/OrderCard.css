@@ -66,6 +66,12 @@
   color: #7BB540;
 }
 
+.order-items-count {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-top: 0.25rem;
+}
+
 .sustainability-order-badge {
   display: flex;
   align-items: center;

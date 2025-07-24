@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import '../styles/login/LoginForm.css';
 import { loginUser } from '../../user-services/loginService'; // External function
 
@@ -18,7 +19,7 @@ const LoginForm = () => {
       navigate('/Home');
     } catch (err) {
       console.error('Login failed:', err.message);
-      alert(err.message);
+      toast.error(err.message || 'Login failed. Please try again.');
     }
   };
 

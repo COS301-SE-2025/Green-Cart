@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ConfirmationModal from "../components/modals/ConfirmationModal";
+import { useConfirmation } from "../hooks/useConfirmation";
+import toast from 'react-hot-toast';
 import {fetchUserInformation} from '../user-services/fetchUserInformation'
 import './styles/UserAccount.css';
 
@@ -69,6 +72,7 @@ export default function UserAccount() {
   const [activeTab, setActiveTab] = useState('profile');
   const [carbonData, setCarbonData] = useState(mockCarbonData);
   const [selectedTimeframe, setSelectedTimeframe] = useState('monthly');
+  const { confirmationState, showConfirmation } = useConfirmation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -106,7 +110,7 @@ export default function UserAccount() {
             address: userInformation.address?.address || 'Not Set',
             city: userInformation.address?.city || 'Not Set',
             postalCode: userInformation.address?.postal_code || 'Not Set',
-            dateOfBirth: userInformation.user.date_of_birth || 'Not Set',
+            dateOfBirth: userInformation.user.date_of_birth || '',
             preferences: {
               emailNotifications: parsedUser.preferences?.emailNotifications ?? true,
               smsNotifications: parsedUser.preferences?.smsNotifications ?? false,
@@ -168,10 +172,12 @@ export default function UserAccount() {
       localStorage.setItem('user', JSON.stringify(updatedUser));
       setUser(updatedUser);
       setIsEditing(false);
-      alert('Profile updated successfully!');
+      // alert('Profile updated successfully!');
+      toast.success('Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile. Please try again.');
+      // alert('Failed to update profile. Please try again.');
+      toast.error('Failed to update profile. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -181,15 +187,24 @@ export default function UserAccount() {
     setIsEditing(false);
   };
 
-  const handleDeleteAccount = () => {
-    const confirmed = window.confirm(
-      'Are you sure you want to delete your account? This action cannot be undone.'
-    );
+  const handleDeleteAccount = async () => {
+    const confirmed = await showConfirmation({
+      title: 'Delete Account',
+      message: 'This will permanently delete your account and all associated data. Are you absolutely sure?',
+      confirmText: 'Delete Account',
+      cancelText: 'Keep Account',
+      type: 'danger'
+    });
     
     if (confirmed) {
-      const doubleConfirmed = window.confirm(
-        'This will permanently delete all your data. Are you absolutely sure?'
-      );
+      const doubleConfirmed = await showConfirmation({
+        title: 'Confirm Deletion',
+        message: 'This will permanently delete all your data. Are you absolutely sure?',
+        confirmText: 'Yes, Delete My Account',
+        cancelText: 'No, Keep My Account',
+        type: 'danger'
+      });
+
       
       if (doubleConfirmed) {
         localStorage.removeItem('user');
@@ -199,10 +214,26 @@ export default function UserAccount() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      const confirmed = await showConfirmation({
+        title: 'Confirm Logout',
+        message: 'You will be Logged out of your Account, Continue Logout?',
+        confirmText: 'Continue',
+        cancelText: 'Cancel',
+        type: 'default'
+      });
+      
+      console.log('Confirmation result:', confirmed);
+      
+      if (confirmed) {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Error with confirmation:', error);
+    }
   };
 
   
@@ -373,7 +404,7 @@ export default function UserAccount() {
                       id="dateOfBirth"
                       name="dateOfBirth"
                       type="date"
-                      value={formData.dateOfBirth}
+                      value={formData.dateOfBirth || ''}
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       className="account-form-input"
@@ -783,6 +814,7 @@ export default function UserAccount() {
           )}
         </div>
       </div>
+      <ConfirmationModal {...confirmationState} />
     </div>
   );
 }
