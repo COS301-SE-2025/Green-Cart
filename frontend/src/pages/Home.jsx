@@ -15,6 +15,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [ratings, setRatings] = useState([]);
+  const [isSticky, setIsSticky] = useState(true);
   
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
@@ -129,11 +130,28 @@ export default function Home() {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-  
+
+  useEffect(() => {
+    const heroSection = document.querySelector('.hero-section');
+
+    if (!heroSection) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsSticky(entry.isIntersecting); // true when hero is in view
+      },
+      { threshold: 0.1 } // trigger when at least 10% is visible
+    );
+
+    observer.observe(heroSection);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="home">
       {/* Search Section */}
-      <section className="search-section">
+      <section className={`search-section ${isSticky ? 'sticky' : ''}`}>
         <SearchBar className="home-search-bar" />
       </section>
 

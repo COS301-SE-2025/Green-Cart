@@ -210,7 +210,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                             <h3>Basic Information</h3>
                             
                             <div className="form-group">
-                                <label htmlFor="edit-name">Product Name *</label>
+                                <label htmlFor="edit-name" className='label'>Product Name *</label>
                                 <input
                                     type="text"
                                     id="edit-name"
@@ -218,13 +218,13 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                     value={formData.name}
                                     onChange={handleInputChange}
                                     placeholder="Enter product name"
-                                    className={errors.name ? 'error' : ''}
+                                    className={errors.name ? 'error' : 'input'}
                                 />
                                 {errors.name && <span className="edit-product-error-message">{errors.name}</span>}
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="edit-description">Description *</label>
+                                <label htmlFor="edit-description" className='label'>Description *</label>
                                 <textarea
                                     id="edit-description"
                                     name="description"
@@ -232,14 +232,14 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                     onChange={handleInputChange}
                                     placeholder="Describe your product..."
                                     rows="4"
-                                    className={errors.description ? 'error' : ''}
+                                    className={errors.description ? 'error' : 'textarea'}
                                 />
                                 {errors.description && <span className="edit-product-error-message">{errors.description}</span>}
                             </div>
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label htmlFor="edit-price">Price (ZAR) *</label>
+                                    <label htmlFor="edit-price" className='label'>Price (ZAR) *</label>
                                     <input
                                         type="number"
                                         id="edit-price"
@@ -249,13 +249,13 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                         placeholder="0.00"
                                         min="0"
                                         step="0.01"
-                                        className={errors.price ? 'error' : ''}
+                                        className={errors.price ? 'error' : 'input'}
                                     />
                                     {errors.price && <span className="edit-product-error-message">{errors.price}</span>}
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="edit-quantity">Stock Quantity *</label>
+                                    <label htmlFor="edit-quantity" className='label'>Stock Quantity *</label>
                                     <input
                                         type="number"
                                         id="edit-quantity"
@@ -264,7 +264,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                         onChange={handleInputChange}
                                         placeholder="0"
                                         min="0"
-                                        className={errors.quantity ? 'error' : ''}
+                                        className={errors.quantity ? 'error' : 'input'}
                                     />
                                     {errors.quantity && <span className="edit-product-error-message">{errors.quantity}</span>}
                                 </div>
@@ -272,13 +272,13 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label htmlFor="edit-category">Category *</label>
+                                    <label htmlFor="edit-category" className='label'>Category *</label>
                                     <select
                                         id="edit-category"
                                         name="category"
                                         value={formData.category}
                                         onChange={handleInputChange}
-                                        className={errors.category ? 'error' : ''}
+                                        className={errors.category ? 'error' : 'select'}
                                     >
                                         <option value="">Select category</option>
                                         {categories.map(category => (
@@ -291,7 +291,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="edit-brand">Brand *</label>
+                                    <label htmlFor="edit-brand" className='label'>Brand *</label>
                                     <input
                                         type="text"
                                         id="edit-brand"
@@ -299,7 +299,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                         value={formData.brand}
                                         onChange={handleInputChange}
                                         placeholder="Enter brand name"
-                                        className={errors.brand ? 'error' : ''}
+                                        className={errors.brand ? 'error' : 'input'}
                                     />
                                     {errors.brand && <span className="edit-product-error-message">{errors.brand}</span>}
                                 </div>
@@ -311,14 +311,14 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                             <h3>Product Images</h3>
                             
                             <div className="form-group">
-                                <label htmlFor="edit-images">Add More Images (Max 5 total)</label>
+                                <label htmlFor="edit-images" className='label'>Add More Images (Max 5 total)</label>
                                 <input
                                     type="file"
                                     id="edit-images"
                                     accept="image/*"
                                     multiple
                                     onChange={handleImageUpload}
-                                    className={errors.images ? 'error' : ''}
+                                    className={errors.images ? 'error' : 'input'}
                                 />
                                 {errors.images && <span className="edit-product-error-message">{errors.images}</span>}
                             </div>
