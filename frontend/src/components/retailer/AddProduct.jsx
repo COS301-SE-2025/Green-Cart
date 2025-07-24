@@ -316,27 +316,143 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                 </span>
                             </h3>
                             
-                            <div className="sustainability-grid">
-                                {Object.entries(formData.sustainability).map(([key, value]) => (
-                                    <div key={key} className="sustainability-item">
-                                        <label>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
+                            {/* <div className="sustainability-grid">
+                                {Object.entries(formData.sustainability).map(([key, value]) => {
+                                const getRatingColor = (rating) => {
+                                    if (rating >= 80) return '#22c55e';
+                                    if (rating >= 60) return '#eab308';
+                                    if (rating >= 40) return '#f97316';
+                                    return '#ef4444';
+                                };
+
+                                const ratingColor = getRatingColor(value);
+                                const percentage = value / 100;
+
+                                return (
+                                    <div 
+                                        key={key} 
+                                        className="sustainability-item"
+                                        style={{
+                                            '--rating-color': ratingColor,
+                                            '--rating-percentage': `${percentage * 100}%`
+                                        }}
+                                    >
+                                        <div className="sustainability-header">
+                                            <label>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
+                                            <div className="rating-indicator">
+                                                <div 
+                                                    className="rating-dot"
+                                                    style={{ backgroundColor: ratingColor }}
+                                                ></div>
+                                                <span className="rating-text">
+                                                    {value >= 80 ? 'Excellent' : 
+                                                    value >= 60 ? 'Good' : 
+                                                    value >= 40 ? 'Fair' : 'Poor'}
+                                                </span>
+                                            </div>
+                                        </div>
                                         <div className="rating-slider">
-                                            <input
-                                                type="range"
-                                                min="0"
-                                                max="100"
-                                                value={value}
-                                                onChange={(e) => handleSustainabilityChange(key, parseInt(e.target.value))}
-                                                className="slider"
-                                            />
+                                            <div className="slider-container">
+                                                <input
+                                                    type="range"
+                                                    min="0"
+                                                    max="100"
+                                                    value={value}
+                                                    onChange={(e) => handleSustainabilityChange(key, parseInt(e.target.value))}
+                                                    className="slider dynamic-slider"
+                                                />
+                                                <div className="slider-progress" style={{ width: `${value}%`, backgroundColor: ratingColor }}></div>
+                                            </div>
                                             <div className="rating-labels">
-                                                <span>Poor</span>
-                                                <span className="current-rating">{value}/100</span>
-                                                <span>Excellent</span>
+                                                <span>0</span>
+                                                <span 
+                                                    className="current-rating"
+                                                    style={{ backgroundColor: ratingColor }}
+                                                >
+                                                    {value}
+                                                </span>
+                                                <span>100</span>
                                             </div>
                                         </div>
                                     </div>
-                                ))}
+                                );
+                            })} */}
+                            <div className="sustainability-grid">
+    {Object.entries(formData.sustainability).map(([key, value]) => {
+        const getRatingColor = (rating) => {
+            if (rating >= 80) return '#22c55e'; // Green
+            if (rating >= 60) return '#eab308'; // Yellow
+            if (rating >= 40) return '#f97316'; // Orange
+            return '#ef4444'; // Red
+        };
+
+        const getRatingLevel = (rating) => {
+            if (rating >= 80) return 'Excellent';
+            if (rating >= 60) return 'Good';
+            if (rating >= 40) return 'Fair';
+            return 'Poor';  
+        };
+
+        const ratingColor = getRatingColor(value);
+        const ratingLevel = getRatingLevel(value);
+
+        return (
+            <div 
+                key={key} 
+                className="sustainability-item"
+                style={{
+                    '--rating-color': ratingColor,
+                }}
+            >
+                <div className="sustainability-header">
+                    <label>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
+                    <div className="rating-indicator">
+                        <div 
+                            className="rating-dot"
+                            style={{ backgroundColor: ratingColor }}
+                        ></div>
+                        <span 
+                            className="rating-text"
+                            style={{ color: ratingColor }}
+                        >
+                            {ratingLevel}
+                        </span>
+                    </div>
+                </div>
+                <div className="rating-slider">
+                    <div className="slider-container">
+                        <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={value}
+                            onChange={(e) => handleSustainabilityChange(key, parseInt(e.target.value))}
+                            className="dynamic-slider"
+                        />
+                        <div 
+                            className="slider-progress" 
+                            style={{ 
+                                width: `${value}%`, 
+                                backgroundColor: ratingColor 
+                            }}
+                        ></div>
+                    </div>
+                    <div className="rating-labels">
+                        <span>Poor (0)</span>
+                        <span 
+                            className="current-rating"
+                            style={{ 
+                                '--rating-color': ratingColor 
+                            }}
+                        >
+                            {value}
+                        </span>
+                        <span>Excellent (100)</span>
+                    </div>
+                </div>
+            </div>
+        );
+    })}
                             </div>
                         </div>
                     </div>

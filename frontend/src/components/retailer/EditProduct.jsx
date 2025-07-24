@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast  from 'react-hot-toast';
 import '../styles/retailer/EditProduct.css';
 
 export default function EditProduct({ isOpen, onClose, onProductUpdated, product }) {
@@ -352,26 +353,82 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                             </h3>
                             
                             <div className="sustainability-grid">
-                                {Object.entries(formData.sustainability).map(([key, value]) => (
-                                    <div key={key} className="sustainability-item">
-                                        <label>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
-                                        <div className="rating-slider">
-                                            <input
-                                                type="range"
-                                                min="0"
-                                                max="100"
-                                                value={value}
-                                                onChange={(e) => handleSustainabilityChange(key, parseInt(e.target.value))}
-                                                className="slider"
-                                            />
-                                            <div className="rating-labels">
-                                                <span>Poor</span>
-                                                <span className="current-rating">{value}/100</span>
-                                                <span>Excellent</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+        {Object.entries(formData.sustainability).map(([key, value]) => {
+            // Function to get color based on rating value
+            const getRatingColor = (rating) => {
+                if (rating >= 80) return '#22c55e'; // Green
+                if (rating >= 60) return '#eab308'; // Yellow
+                if (rating >= 40) return '#f97316'; // Orange
+                return '#ef4444'; // Red
+            };
+
+            const getRatingLevel = (rating) => {
+                if (rating >= 80) return 'Excellent';
+                if (rating >= 60) return 'Good';
+                if (rating >= 40) return 'Fair';
+                return 'Poor';  
+            };
+
+            const ratingColor = getRatingColor(value);
+            const ratingLevel = getRatingLevel(value);
+
+            return (
+                <div 
+                    key={key} 
+                    className="sustainability-item"
+                    style={{
+                        '--rating-color': ratingColor,
+                    }}
+                >
+                    <div className="sustainability-header">
+                        <label>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
+                        <div className="rating-indicator">
+                            <div 
+                                className="rating-dot"
+                                style={{ backgroundColor: ratingColor }}
+                            ></div>
+                            <span 
+                                className="rating-text"
+                                style={{ color: ratingColor }}
+                            >
+                                {ratingLevel}
+                            </span>
+                        </div>
+                    </div>
+                    <div className="rating-slider">
+                        <div className="slider-container">
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value={value}
+                                onChange={(e) => handleSustainabilityChange(key, parseInt(e.target.value))}
+                                className="dynamic-slider"
+                            />
+                            <div 
+                                className="slider-progress" 
+                                style={{ 
+                                    width: `${value}%`, 
+                                    backgroundColor: ratingColor 
+                                }}
+                            ></div>
+                        </div>
+                        <div className="rating-labels">
+                            <span>Poor (0)</span>
+                            <span 
+                                className="current-rating"
+                                style={{ 
+                                    '--rating-color': ratingColor 
+                                }}
+                            >
+                                {value}
+                            </span>
+                            <span>Excellent (100)</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        })}
                             </div>
                         </div>
                     </div>
