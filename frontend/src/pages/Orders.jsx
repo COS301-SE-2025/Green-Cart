@@ -4,6 +4,7 @@ import "./styles/Orders.css";
 import { fetchAllOrders } from "../order-services/fetchAllOrders";  
 import { cancelOrder } from "../order-services/cancelOrder"; // Assuming you have a cancelOrder function
 import { useEffect, useState } from "react";
+import  toast  from "react-hot-toast";
 import OrderList from "../components/orders/OrderList";
 // import OrderDetails from "../components/orders/OrderDetails";
 import ConfirmationModal from "../components/modals/ConfirmationModal";
