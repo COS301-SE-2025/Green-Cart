@@ -65,7 +65,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
         
         // Limit to 5 images
         if (files.length > 5) {
-            alert('You can upload a maximum of 5 images');
+            toast.error('You can upload a maximum of 5 images');
             return;
         }
 
@@ -143,12 +143,12 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             });
             setImages([]);
             
-            alert('Product added successfully!');
+            toast.success('Product added successfully!');
             onClose();
 
         } catch (error) {
             console.error('Error adding product:', error);
-            alert('Failed to add product. Please try again.');
+            toast.error('Failed to add product. Please try again.');
         } finally {
             setIsSubmitting(false);
         }

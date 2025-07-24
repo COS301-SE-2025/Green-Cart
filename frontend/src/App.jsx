@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import './App.css';
 
 import ViewProduct from './components/product/ViewProduct';
@@ -87,6 +88,55 @@ function App() {
             {/* catch-all */}
             <Route path="*" element={<Navigate to="/Home" replace />} />
           </Routes>
+
+          {/* Toast notifications */}
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#ffffff',
+                color: '#1e293b',
+                border: '1px solid #e2e8f0',
+                borderRadius: '12px',
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
+                fontSize: '20px',
+                fontWeight: '500',
+                padding: '16px 20px',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+              },
+              success: {
+                style: {
+                  border: '1px solid #22c55e',
+                  backgroundColor: '#f0fdf4',
+                },
+                iconTheme: {
+                  primary: '#22c55e',
+                  secondary: '#ffffff',
+                },
+              },
+              error: {
+                style: {
+                  border: '1px solid #ef4444',
+                  backgroundColor: '#fef2f2',
+                },
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#ffffff',
+                },
+              },
+              loading: {
+                style: {
+                  border: '1px solid #7BB540',
+                  backgroundColor: '#f8fafc',
+                },
+                iconTheme: {
+                  primary: '#7BB540',
+                  secondary: '#ffffff',
+                },
+              },
+            }}
+          />
         </div>
       </CartProvider>
     </SearchProvider>
