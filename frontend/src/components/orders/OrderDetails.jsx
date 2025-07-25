@@ -1,189 +1,138 @@
-import React, { useState, useEffect } from 'react';
-import { fetchOrderById } from '../../order-services/fetchOrderById';
-import '../styles/orders/OrderDetails.css';
+import React, { useEffect, useState } from "react";
+import { fetchOrderById } from "../../order-services/fetchOrderById";
+import "../styles/orders/OrderDetails.css";
 
 export default function OrderDetails({ isOpen, onClose, order, userID }) {
-    const [orderDetails, setOrderDetails] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+  const [details, setDetails] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        if (isOpen && order) {
-            setLoading(true);
-            setError(null);
-            
-            fetchOrderById({ 
-                userID, 
-                orderID: order.id, 
-                fromItem: 0, 
-                count: 10 
-            })
-            .then((data) => {
-                setOrderDetails(data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                setError(err);
-                setLoading(false);
-            });
-        }
-    }, [isOpen, order, userID]);
+  useEffect(() => {
+    if (isOpen && order && userID) {
+      setLoading(true);
+      console.log("Fetching order details for:", order.id, "user:", userID);
 
-    if (!isOpen) return null;
+      fetchOrderById({ userID, orderID: order.id })
+        .then((data) => {
+          console.log("Raw fetched data:", data);
 
-    const getStatusColor = (status) => {
-        switch (status.toLowerCase()) {
-            case 'pending': return '#f59e0b';
-            case 'confirmed': return '#3b82f6';
-            case 'in transit': return '#8b5cf6';
-            case 'delivered': return '#22c55e';
-            case 'cancelled': return '#ef4444';
-            default: return '#64748b';
-        }
-    };
+          const combined = data.products.map((product, i) => {
+            const price = parseFloat(product.price);
+            const image = data.images?.[i] || null;
+            const rating = data.rating?.[i] || "N/A";
+            const qty = data.quantities?.[i] || 0;
 
-    return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content order-details-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <div className="order-header-info">
-                        <h2>Order #{order.id}</h2>
-                        <div 
-                            className="order-status-badge large"
-                            style={{ backgroundColor: getStatusColor(order.state) }}
-                        >
-                            {order.state}
-                        </div>
+            console.log(`Product ${i} - Price:`, product.price, "Parsed:", price);
+            console.log(`Image: ${image} | Quantity: ${qty} | Rating: ${rating}`);
+
+            return {
+              ...product,
+              image,
+              sustainability: rating,
+              quantity: qty,
+              parsedPrice: price,
+              subtotal: price * qty,
+            };
+          });
+
+          const totalPrice = combined.reduce((sum, p) => sum + p.subtotal, 0);
+          const averageSustainability = parseFloat(data.average_sustainability || 0);
+
+          setDetails({
+            ...data,
+            products: combined,
+            total: totalPrice.toFixed(2),
+            average_sustainability: averageSustainability.toFixed(2),
+          });
+
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Failed to load order details", error);
+          setLoading(false);
+        });
+    }
+  }, [isOpen, order, userID]);
+
+  if (!isOpen) return null;
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-ZA", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  const getEstimatedDelivery = (orderDate) => {
+    const date = new Date(orderDate);
+    date.setDate(date.getDate() + 5);
+    return date.toLocaleDateString("en-ZA", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  return (
+    <div className="order-details-overlay" onClick={onClose}>
+      <div className="order-details-container" onClick={(e) => e.stopPropagation()}>
+        <button className="order-details-close" onClick={onClose}>×</button>
+
+        {loading ? (
+          <div className="order-details-loading">
+            <div className="spinner"></div>
+            <p>Loading order details...</p>
+          </div>
+        ) : details ? (
+          <>
+            <div className="order-section">
+              <h3 className="section-title">Item Details</h3>
+              <div className="order-product-info">
+                {details.products.map((product, idx) => (
+                  <div className="order-product-row" key={product.id}>
+                    <div className="order-product-img">
+                      {product.image ? (
+                        <img src={product.image} alt={product.name} />
+                      ) : (
+                        <div style={{ width: "100px", height: "100px", backgroundColor: "#ccc" }} />
+                      )}
                     </div>
-                    <button className="close-btn" onClick={onClose} aria-label="Close modal">
-                        ✕
-                    </button>
-                </div>
-
-                <div className="order-details-content">
-                    {loading ? (
-                        <div className="loading-section">
-                            <div className="loading-spinner"></div>
-                            <span>Loading order details...</span>
-                        </div>
-                    ) : error ? (
-                        <div className="error-section">
-                            <p>Error loading order details: {error.message}</p>
-                        </div>
-                    ) : orderDetails ? (
-                        <>
-                            {/* Order Summary */}
-                            <div className="order-summary-section">
-                                <h3>Order Summary</h3>
-                                <div className="order-info-grid">
-                                    <div className="info-item">
-                                        <span className="info-label">Order Date:</span>
-                                        <span className="info-value">
-                                            {new Date(order.created_at).toLocaleDateString('en-ZA', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}
-                                        </span>
-                                    </div>
-                                    <div className="info-item">
-                                        <span className="info-label">Cart ID:</span>
-                                        <span className="info-value">#{order.cart_id}</span>
-                                    </div>
-                                    <div className="info-item">
-                                        <span className="info-label">Total Items:</span>
-                                        <span className="info-value">{orderDetails.products?.length || 0}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Products */}
-                            <div className="order-products-section">
-                                <h3>Products ({orderDetails.products?.length || 0})</h3>
-                                <div className="products-list">
-                                    {orderDetails.products?.map((product, index) => (
-                                        <div key={product.id} className="product-item">
-                                            <div className="product-image">
-                                                <img 
-                                                    src={orderDetails.images?.[index] || '/placeholder-image.jpg'} 
-                                                    alt={product.name}
-                                                    onError={(e) => {
-                                                        e.target.src = '/placeholder-image.jpg';
-                                                    }}
-                                                />
-                                            </div>
-                                            <div className="product-info">
-                                                <h4 className="product-name">{product.name}</h4>
-                                                <p className="product-brand">{product.brand || 'Unknown Brand'}</p>
-                                                <div className="product-sustainability">
-                                                    <span className="sustainability-badge small">
-                                                        🌱 {Math.floor(orderDetails.rating?.[index] || 75)}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="product-details">
-                                                <div className="product-quantity">
-                                                    Qty: {orderDetails.quantities?.[index] || 1}
-                                                </div>
-                                                <div className="product-price">
-                                                    {Number(product.price).toLocaleString("en-ZA", {
-                                                        style: "currency",
-                                                        currency: "ZAR"
-                                                    })}
-                                                </div>
-                                                <div className="product-total">
-                                                    Total: {(Number(product.price) * (orderDetails.quantities?.[index] || 1)).toLocaleString("en-ZA", {
-                                                        style: "currency",
-                                                        currency: "ZAR"
-                                                    })}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Order Total */}
-                            <div className="order-total-section">
-                                <div className="total-calculation">
-                                    <div className="total-row">
-                                        <span>Subtotal:</span>
-                                        <span>
-                                            {orderDetails.products?.reduce((sum, product, index) => 
-                                                sum + (Number(product.price) * (orderDetails.quantities?.[index] || 1)), 0
-                                            ).toLocaleString("en-ZA", {
-                                                style: "currency",
-                                                currency: "ZAR"
-                                            })}
-                                        </span>
-                                    </div>
-                                    <div className="total-row">
-                                        <span>Shipping:</span>
-                                        <span>R 73.99</span>
-                                    </div>
-                                    <div className="total-row final-total">
-                                        <span>Total:</span>
-                                        <span>
-                                            {(orderDetails.products?.reduce((sum, product, index) => 
-                                                sum + (Number(product.price) * (orderDetails.quantities?.[index] || 1)), 0
-                                            ) + 73.99).toLocaleString("en-ZA", {
-                                                style: "currency",
-                                                currency: "ZAR"
-                                            })}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </>
-                    ) : (
-                        <div className="no-details">
-                            <p>No order details available.</p>
-                        </div>
-                    )}
-                </div>
+                    <div className="order-product-meta">
+                      <p className="order-product-name">{product.name}</p>
+                      <div className="order-product-grid">
+                        <div><span className="label">Quantity:</span> {product.quantity}</div>
+                        <div><span className="label">Price:</span> R{product.parsedPrice.toFixed(2)}</div>
+                        <div><span className="label">Sustainability:</span> 🌱 {product.sustainability}/100</div>
+                        <div><span className="label">Subtotal:</span> R{product.subtotal.toFixed(2)}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-        </div>
-    );
+
+            <div className="order-section">
+              <h3 className="section-title">Order Summary</h3>
+              <div className="order-summary-grid">
+                <div><span className="label">Order Number:</span> #{order.id}</div>
+                <div><span className="label">Date:</span> {formatDate(order.created_at)}</div>
+                <div><span className="label">Status:</span> <span className="status-tag">{order.state}</span></div>
+                <div><span className="label">Total:</span> R{details.total}</div>
+                <div><span className="label">Total Sustainability:</span> 🌱 {details.average_sustainability}/100</div>
+              </div>
+            </div>
+
+            <div className="order-section">
+              <h3 className="section-title">Shipment</h3>
+              <p><span className="label">Estimated Arrival:</span> {getEstimatedDelivery(order.created_at)}</p>
+            </div>
+
+            <button className="order-track-button">Track Order</button>
+          </>
+        ) : (
+          <p className="order-error">Failed to load order details.</p>
+        )}
+      </div>
+    </div>
+  );
 }
