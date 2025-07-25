@@ -18,6 +18,9 @@
 ![Last Commit](https://img.shields.io/github/last-commit/COS301-SE-2025/Green-Cart?style=flat-square&color=success&logo=git)
 ![Repo Size](https://img.shields.io/github/repo-size/COS301-SE-2025/Green-Cart?style=flat-square&color=blueviolet&logo=database)
 [![Linting Status](https://img.shields.io/github/actions/workflow/status/COS301-SE-2025/Green-Cart/linting.yml?style=flat-square&label=Linting&logo=githubactions&color=blue)](https://github.com/COS301-SE-2025/Green-Cart/actions/workflows/linting.yml)
+[![AWS Deployed](https://img.shields.io/badge/AWS-Deployed-orange?style=flat-square&logo=amazonaws)](http://greencart-frontend-hosting.s3-website-us-east-1.amazonaws.com)
+[![Database](https://img.shields.io/badge/Database-AWS%20RDS-blue?style=flat-square&logo=postgresql)](https://aws.amazon.com/rds/)
+[![Storage](https://img.shields.io/badge/Storage-AWS%20S3-green?style=flat-square&logo=amazons3)](https://aws.amazon.com/s3/)
 
 </div>
 
