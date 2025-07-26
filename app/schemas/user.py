@@ -39,3 +39,18 @@ class UserInformationResponse(BaseModel):
     message: str
     user: UserInformation
     address: Optional[Address] = None
+
+class SetUserInformationRequest(BaseModel):
+    user_id: str
+    name: Optional[str]
+    email: Optional[EmailStr]
+    date_of_birth: Optional[date]
+    country_code: Optional[str]
+    telephone: Optional[str]
+    address: str
+    city: str
+    postal_code: str
+
+class SetUserInformationResponse(BaseModel):
+    status: int
+    message: str
