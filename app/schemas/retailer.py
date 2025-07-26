@@ -23,3 +23,13 @@ class RegisterAsRetailerResponse(BaseModel):
     status: int
     message: str
 
+class SetRetailerInformationRequest(BaseModel):
+    user_id: str
+    name: str
+    description: str
+    banner_image: str
+
+class SetRetailerInformationResponse(BaseModel):
+    status: int
+    message: str
+

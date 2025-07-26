@@ -35,3 +35,20 @@ def register_as_retailer(request, db : Session):
         "message": "Retailer registered successfully"
     }
     
+def set_retailer_information(request, db: Session):
+    retailer_info = db.query(RetailerInformation).filter(RetailerInformation.user_id == request.user_id).first()
+
+    if not retailer_info:
+        raise HTTPException(status_code=404, detail="Retailer information not found")
+
+    retailer_info.name = request.name
+    retailer_info.description = request.description
+    retailer_info.banner_image = request.banner_image
+
+    db.commit()
+    db.refresh(retailer_info)
+
+    return {
+        "status": 200,
+        "message": "Retailer information updated successfully"
+    }
