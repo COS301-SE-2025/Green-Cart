@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, Numeric, Boolean, ForeignKey, DateTime
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from app.db.database import Base
 
 class Product(Base):
@@ -13,5 +14,7 @@ class Product(Base):
     quantity = Column(Integer)
     brand = Column(Text)
     category_id = Column(Integer, ForeignKey("categories.id"))
-    retailer_id = Column(Integer)  # ← changed from String to Integer for consistency with schema.sql
+    retailer_id = Column(Integer, ForeignKey("retailer_information.id"))
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    retailer_information = relationship("RetailerInformation", back_populates="products", cascade="all, delete")

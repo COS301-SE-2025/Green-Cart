@@ -48,7 +48,7 @@ def set_user_information(request, db: Session):
     if not user:
         raise HTTPException(status_code=404, detail="User not found : )")
 
-    if not request.name or request.name == "" or request.name == " ":
+    if not request.name or request.name == "" or request.name.isspace():
         raise HTTPException(status_code=400, detail="Name cannot be empty or whitespace")
 
     if len(request.name.split(" ")) < 2:

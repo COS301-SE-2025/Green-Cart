@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, Text, Numeric, Boolean, ForeignKey, DateTime, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum
 from sqlalchemy.sql import func
-from app.db.base import Base
+from app.db.database import Base
 from sqlalchemy.orm import relationship
 
 class Order(Base):
