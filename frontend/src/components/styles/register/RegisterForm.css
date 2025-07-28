@@ -123,7 +123,27 @@
 
 .form-input:focus {
   outline: none;
-  border-bottom-color: white;
+  border-bottom-color: rgb(255, 255, 255);
+  transform: scaleX(1);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.form-input::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background-color: white;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.form-input:focus::after {
+  transform: scaleX(1);
 }
 
 /* Float label up when input is focused or has value */
