@@ -13,6 +13,12 @@
   border-radius: 12px;
 }
 
+.account-actions {
+  display: flex;
+  gap: 1rem; /* Add gap between buttons */
+  align-items: center;
+}
+
 /* Loading and Error States */
 /* .account-loading, */
 .account-error {
@@ -119,6 +125,46 @@
   background: #dc2626;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.retailer-button {
+  background: #7BB540;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.retailer-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.retailer-button:hover {
+  background: #6a9e35;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(123, 181, 64, 0.3);
+}
+
+.retailer-button:hover::before {
+  left: 100%;
 }
 
 /* Tabs */
@@ -549,6 +595,18 @@
     padding: 1rem;
   }
 
+  .account-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  
+  .logout-button,
+  .retailer-button {
+    width: 100%;
+    text-align: center;
+  }
+
   .account-header {
     flex-direction: column;
     gap: 1rem;
@@ -636,6 +694,16 @@
   .country-code-select {
     padding: 0.75rem;
     text-align: center;
+  }
+
+  .account-actions {
+    gap: 0.5rem;
+  }
+  
+  .logout-button,
+  .retailer-button {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9rem;
   }
 }
 

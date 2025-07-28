@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { fetchUserInformation } from '../user-services/fetchUserInformation'
 import { setUserInformation } from '../user-services/setUserInformation';
 import './styles/UserAccount.css';
+import RetailerAuthOverlay from "../components/retailer/Auth/RetailerAuthOverlay";
 
 const status = Object.freeze({
 	Prepare: "Preparing Order",
@@ -74,6 +75,7 @@ export default function UserAccount() {
 	const [carbonData, setCarbonData] = useState(mockCarbonData);
 	const [selectedTimeframe, setSelectedTimeframe] = useState('monthly');
 	const { confirmationState, showConfirmation } = useConfirmation();
+  const [isRetailerOverlayOpen, setIsRetailerOverlayOpen] = useState(false);
 	const [formData, setFormData] = useState({
 		name: '',
 		email: '',
@@ -261,7 +263,22 @@ export default function UserAccount() {
 		}
 	};
 
+  const logasRetailer = async () => {
+    setIsRetailerOverlayOpen(true);
+  };
 
+  const handleRetailerAuthSubmit = (formData, mode) => {
+    console.log(`Retailer ${mode} submitted:`, formData);
+    // Handle the retailer authentication logic here
+    // You can make API calls, validate credentials, etc.
+    
+    // For now, just close the overlay and show a success message
+    setIsRetailerOverlayOpen(false);
+    toast.success(`Retailer ${mode} successful!`);
+    
+    // You might want to redirect to a retailer dashboard or update user state
+    // navigate('/retailer-dashboard');
+  };
 
 	if (isLoading) {
 		return (
@@ -288,19 +305,22 @@ export default function UserAccount() {
 		);
 	}
 
-	return (
-		<div className="account-container">
-			<div className="account-header">
-				<div className="account-title">
-					<h1>My Account</h1>
-					<p>Manage your profile and track your environmental impact</p>
-				</div>
-				<div className="account-actions">
-					<button onClick={handleLogout} className="logout-button">
-						Logout
-					</button>
-				</div>
-			</div>
+  return (
+    <div className="account-container">
+      <div className="account-header">
+        <div className="account-title">
+          <h1>My Account</h1>
+          <p>Manage your profile and track your environmental impact</p>
+        </div>
+        <div className="account-actions">
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+          <button onClick={logasRetailer} className="retailer-button">
+            Sign as Retailer
+          </button>
+        </div>
+      </div>
 
 			<div className="account-content">
 				{/* Tab Navigation */}
@@ -819,27 +839,32 @@ export default function UserAccount() {
 									</button>
 								</div>
 
-								<div className="danger-zone">
-									<h3>Danger Zone</h3>
-									<div className="security-item danger">
-										<div className="security-info">
-											<h4>Delete Account</h4>
-											<p>Permanently delete your account and all associated data</p>
-										</div>
-										<button
-											onClick={handleDeleteAccount}
-											className="delete-button"
-										>
-											Delete Account
-										</button>
-									</div>
-								</div>
-							</div>
-						</div>
-					)}
-				</div>
-			</div>
-			<ConfirmationModal {...confirmationState} />
-		</div>
-	);
+                <div className="danger-zone">
+                  <h3>Danger Zone</h3>
+                  <div className="security-item danger">
+                    <div className="security-info">
+                      <h4>Delete Account</h4>
+                      <p>Permanently delete your account and all associated data</p>
+                    </div>
+                    <button
+                      onClick={handleDeleteAccount}
+                      className="delete-button"
+                    >
+                      Delete Account
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      <ConfirmationModal {...confirmationState} />
+      <RetailerAuthOverlay
+        isOpen={isRetailerOverlayOpen}
+        onClose={() => setIsRetailerOverlayOpen(false)}
+        onSubmit={handleRetailerAuthSubmit}
+      />
+    </div>
+  );
 }
