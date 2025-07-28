@@ -32,9 +32,9 @@ export default function OrderCard({ order, onViewDetails, onCancelOrder }) {
         day: 'numeric'
     });
 
-    // Mock data - in real app, this would come from the order data
-    const mockPrice = Math.floor(Math.random() * 2000) + 100;
-    const mockSustainability = Math.floor(Math.random() * 40) + 60;
+    // Use actual data if present, fallback if missing
+    const price = order.total !== undefined ? parseFloat(order.total) : 0;
+    const sustainability = order.average_sustainability !== undefined ? parseFloat(order.average_sustainability) : null;
 
     return (
         <div className="order-card">
@@ -53,7 +53,7 @@ export default function OrderCard({ order, onViewDetails, onCancelOrder }) {
 
             <div className="order-card-body">
                 <div className="order-price">
-                    {mockPrice.toLocaleString("en-ZA", {
+                    {price.toLocaleString("en-ZA", {
                         style: "currency",
                         currency: "ZAR"
                     })}
@@ -71,13 +71,15 @@ export default function OrderCard({ order, onViewDetails, onCancelOrder }) {
                 
 
                 <div className="order-sustainability">
-                    <div 
-                        className="sustainability-order-badge"
-                        style={{ backgroundColor: getSustainabilityColor(mockSustainability) }}
-                    >
-                        <span className="sustainability-icon">🌱</span>
-                        <span className="sustainability-score">{mockSustainability}</span>
-                    </div>
+                    {sustainability !== null && (
+                        <div 
+                            className="sustainability-order-badge"
+                            style={{ backgroundColor: getSustainabilityColor(sustainability) }}
+                        >
+                            <span className="sustainability-icon">🌱</span>
+                            <span className="sustainability-score">{sustainability.toFixed(1)}</span>
+                        </div>
+                    )}
                 </div>
             </div>
 

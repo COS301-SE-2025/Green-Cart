@@ -41,6 +41,8 @@ class FetchProductResponse(BaseModel):
     data: Optional[ProductResponse] = None
     images: Optional[List[str]] = []
     sustainability: agregateSustainabilityRatings = None
+    units_sold: Optional[int] = 0
+    revenue: Optional[float] = 0.0
 
 class SearchProductsRequest(BaseModel):
     search: str

@@ -139,6 +139,13 @@ export default function RetailerDashboard() {
                     >
                         Add Product
                     </button>
+                    <button
+                        className="add-product-button"
+                        style={{ marginLeft: '1rem' }}
+                        onClick={() => navigate('/retailer/products')}
+                    >
+                        View All Products
+                    </button>
                 </div>
             </div>
 

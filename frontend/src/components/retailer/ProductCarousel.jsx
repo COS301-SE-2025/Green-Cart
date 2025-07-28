@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/retailer/ProductCarousel.css';
+import EditProduct from './EditProduct';
 
 export default function ProductCarousel({ products, onEditProduct }) {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
     const productsPerView = 4;
 
     const navigate = useNavigate();
@@ -23,13 +26,15 @@ export default function ProductCarousel({ products, onEditProduct }) {
     const visibleProducts = products.slice(currentIndex, currentIndex + productsPerView);
 
     const handleEditClick = (product) => {
+        setSelectedProduct(product);
+        setEditModalOpen(true);
         if (onEditProduct) {
             onEditProduct(product);
         }
     };
 
     const handleViewClick = (product) => {
-        navigate(`/Product/${product.id}`);
+        navigate(`/retailer/product/${product.id}`);
     };
 
     return (
@@ -86,11 +91,11 @@ export default function ProductCarousel({ products, onEditProduct }) {
                                 <div className="product-stats">
                                     <div className="stat-item">
                                         <span className="stat-label">Stock:</span>
-                                        <span className="stat-value">{product.quantity ?? 'N/A'}</span>
+                                        <span className="stat-value">{product.stock_quantity ?? product.quantity ?? 'N/A'}</span>
                                     </div>
                                     <div className="stat-item">
                                         <span className="stat-label">Sold:</span>
-                                        <span className="stat-value">{product.sold ?? 0}</span>
+                                        <span className="stat-value">{product.units_sold ?? product.sold ?? 0}</span>
                                     </div>
                                 </div>
                                 <div className="product-actions">
@@ -118,6 +123,29 @@ export default function ProductCarousel({ products, onEditProduct }) {
                     Showing {currentIndex + 1}-{Math.min(currentIndex + productsPerView, products.length)} of {products.length} products
                 </span>
             </div>
+
+            <EditProduct
+                isOpen={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                product={selectedProduct}
+                onProductUpdated={async (updatedProduct) => {
+                    try {
+                        const response = await fetch(`http://localhost:8000/retailer/products/${updatedProduct.id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(updatedProduct)
+                        });
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert('Failed to update product.');
+                        }
+                    } catch (err) {
+                        alert('Error updating product.');
+                    }
+                    setEditModalOpen(false);
+                }}
+            />
         </div>
     );
 }

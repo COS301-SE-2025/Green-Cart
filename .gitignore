@@ -16,6 +16,19 @@ integration-tests/__pycache__/
 # Ignore environment variable files
 .env
 
+# Ignore AWS key files (SECURITY CRITICAL)
+*.pem
+*.key
+*key*.pem
+greencart-*-key*
+aws-keys/
+keys/
+
+# Ignore deployment files
+greencart-backend-deployment.tar.gz
+cloudfront_info.json
+route53_info.json
+
 # Ignore VSCode settings (optional)
 .vscode/
 
@@ -33,5 +46,26 @@ Thumbs.db
 # Ignore logs (optional)
 *.log
 
-#ignore this metadata file
+# Ignore metadata files
 frontend/.vite
+
+# Ignore production environment files
+frontend/.env.production
+.env.production
+
+# Ignore Python __pycache__ globally
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore backup files
+*_backup.py
+*.backup
+
+# Ignore AWS CLI files
+awscliv2.zip
+aws/
+
+# Ignore tunnel logs
+/tmp/tunnel.log

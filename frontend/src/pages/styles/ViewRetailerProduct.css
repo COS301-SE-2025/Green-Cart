@@ -1,0 +1,429 @@
+.view-retailer-product-container {
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 1rem;
+    padding: 2rem;
+    background: white;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.back-button {
+    background: transparent;
+    color: #666;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+.back-button:hover {
+    color: #7BB540;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.edit-button {
+    background-color: #7BB540;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.edit-button:hover {
+    background-color: #69a32d;
+}
+
+.delete-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+    background-color: #bb2d3b;
+}
+
+.product-content {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.product-image-section {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.product-image-section img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-details-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.product-details-section h1 {
+    font-size: 2rem;
+    color: #1e293b;
+    margin: 0;
+    font-weight: 700;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.metric-item label {
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.metric-item p {
+    color: #1e293b;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+label {
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.price p, .stock p {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.description-section {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.description-section p {
+    margin: 0.5rem 0 0;
+    color: #1e293b;
+    line-height: 1.6;
+}
+
+.sustainability-section {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-top: 2rem;
+}
+
+.sustainability-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sustainability-header h2 {
+    color: #111827;
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sustainability-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    transition: all 0.3s ease;
+}
+
+.gauge-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem 0;
+}
+
+.gauge {
+    position: relative;
+    width: 200px;
+    height: 120px;
+}
+
+.gauge svg {
+    width: 100%;
+    height: 100%;
+}
+
+.gauge-arc {
+    fill: none;
+    stroke: #e5e7eb;
+    stroke-width: 12;
+    stroke-linecap: round;
+}
+
+.gauge-progress {
+    fill: none;
+    stroke-width: 12;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.3s ease;
+}
+
+.gauge-needle {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    transform-origin: center 100px;
+    transition: transform 0.3s ease;
+}
+
+.gauge-center {
+    fill: currentColor;
+}
+
+.gauge-value-container {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #111827;
+}
+
+.gauge-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.gauge-label {
+    font-size: 0.875rem;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.gauge-scale {
+    width: calc(100% - 20px);
+    display: flex;
+    justify-content: space-between;
+    margin: 0.75rem auto 0;
+    color: #6B7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.sustainability-breakdown {
+    margin-top: 2.5rem;
+}
+
+.sustainability-breakdown h3 {
+    color: #111827;
+    font-size: 0.938rem;
+    font-weight: 600;
+    margin: 0 0 1.75rem 0;
+}
+
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.breakdown-item:last-child {
+    margin-bottom: 0;
+}
+
+.breakdown-label {
+    width: 140px;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.breakdown-bar-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.breakdown-bar {
+    flex: 1;
+    height: 8px;
+    background: #F3F4F6;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    transition: width 0.5s ease;
+}
+
+.bar-fill[data-type="energy_efficiency"] {
+    background: linear-gradient(90deg, #FF6B00 0%, #FF9500 100%);
+}
+
+.bar-fill[data-type="recyclability"] {
+    background: linear-gradient(90deg, #FF6B00 0%, #FF9500 100%);
+}
+
+.bar-fill[data-type="carbon_footprint"] {
+    background: linear-gradient(90deg, #FFD700 0%, #FFC000 100%);
+}
+
+.percentage-value {
+    min-width: 45px;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: right;
+}
+
+.sustainability-notes {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.sustainability-notes h3 {
+    color: #1e293b;
+    font-size: 1.1rem;
+    margin: 0 0 1rem 0;
+}
+
+.sustainability-notes p {
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.sustainability-description {
+    background: #f0fdf4;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: -1rem;
+    border: 1px solid #86efac;
+    border-top: none;
+}
+
+.sustainability-description p {
+    margin: 0.5rem 0 0;
+    color: #1e293b;
+    line-height: 1.6;
+}
+
+.product-metadata {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: auto;
+}
+
+.metadata-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.metadata-item p {
+    margin: 0;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+    .product-content {
+        grid-template-columns: 1fr;
+    }
+
+    .product-image-section {
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .action-buttons {
+        width: 100%;
+    }
+
+    .edit-button, .delete-button {
+        flex: 1;
+    }
+
+    .price-stock-section {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .product-metadata {
+        grid-template-columns: 1fr;
+    }
+}

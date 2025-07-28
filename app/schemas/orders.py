@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List, Dict
+from typing import Optional, List
 from decimal import Decimal
 from datetime import datetime
 from app.schemas.product import ProductResponse
@@ -11,30 +11,30 @@ class OrderResponse(BaseModel):
     state: str
     created_at: Optional[datetime]
 
-class FetchAllOrdersRequst(BaseModel):
+    class Config:
+        from_attributes = True
+
+class FetchAllOrdersRequest(BaseModel):
     userID: str
-    fromItem: int
-    count: int
 
 class FetchAllOrdersResponse(BaseModel):
     status: int
     message: str
     orders: List[OrderResponse]
 
-class FetchOrderByIDRequest(BaseModel):
+class FetchOrderByIdRequest(BaseModel):
     userID: str
     orderID: int
-    fromItem: int = 0
-    count: int = 10
 
-class FetchOrderByIDResponse(BaseModel):
+class FetchOrderByIdResponse(BaseModel):
     status: int
     message: str
-    order: OrderResponse = None
-    products: List[ProductResponse] = []
-    images: List[str] = []
-    quantities: List[int] = []
-    rating: List[Decimal]  = []
+    order: OrderResponse
+    products: List[ProductResponse]
+    images: List[str]
+    quantities: List[int]
+    rating: List[Decimal]
+    average_sustainability: Decimal
 
 class CreateOrderRequest(BaseModel):
     userID: str
@@ -45,7 +45,7 @@ class CreateOrderResponse(BaseModel):
     message: str
     order_id: int
 
-class cancelledOrderRequest(BaseModel):
+class CancelOrderRequest(BaseModel):
     userID: str
     orderID: int
 
