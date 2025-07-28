@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, or_
 from app.models.product import Product
@@ -151,12 +152,34 @@ def fetchProduct(request, db: Session):
     req = {"product_id": product.id}
     sustainability_data = fetchSustainabilityRatings(req, db)
 
+    # Calculate units sold
+    from app.models.orders import Order
+    from app.models.cart_item import CartItem
+    from app.models.cart import Cart
+    # Join CartItem -> Cart -> Order, filter for delivered orders, sum quantity for this product
+    from sqlalchemy import select, join
+    valid_states = [
+        "Preparing Order", "Ready for Delivery", "In Transit", "Delivered"
+    ]
+    valid_orders = db.query(Order.id).filter(Order.state.in_(valid_states)).subquery()
+    valid_carts = db.query(Cart.id).filter(Cart.id.in_(db.query(Order.cart_id).filter(Order.state.in_(valid_states)))).subquery()
+    units_sold = db.query(func.sum(CartItem.quantity)).filter(
+        CartItem.product_id == product.id,
+        CartItem.cart_id.in_(valid_carts)
+    ).scalar() or 0
+
+    # Calculate revenue
+    price = float(product.price) if product and product.price else 0.0
+    revenue = units_sold * price
+
     return {
         "status": 200,
         "message": "Success",
         "data": product,
         "images": image_urls,
-        "sustainability": sustainability_data
+        "sustainability": sustainability_data,
+        "units_sold": units_sold,
+        "revenue": revenue
     }
 
 def searchProducts(request, db: Session):

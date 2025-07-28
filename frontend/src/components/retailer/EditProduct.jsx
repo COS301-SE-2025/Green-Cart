@@ -109,15 +109,13 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
     const validateForm = () => {
         const newErrors = {};
-        
         if (!formData.name.trim()) newErrors.name = 'Product name is required';
         if (!formData.description.trim()) newErrors.description = 'Description is required';
         if (!formData.price || parseFloat(formData.price) <= 0) newErrors.price = 'Valid price is required';
         if (!formData.category) newErrors.category = 'Category is required';
         if (!formData.brand.trim()) newErrors.brand = 'Brand is required';
         if (!formData.quantity || parseInt(formData.quantity) < 0) newErrors.quantity = 'Valid quantity is required';
-        if (images.length === 0) newErrors.images = 'At least one product image is required';
-
+        // Do NOT require images
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -129,36 +127,65 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
         if (!validateForm()) return;
-
         setIsSubmitting(true);
-
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            const updatedProduct = {
-                ...product,
-                ...formData,
-                price: parseFloat(formData.price),
-                stock: parseInt(formData.quantity),
-                quantity: parseInt(formData.quantity),
-                sustainability: calculateSustainabilityScore(),
-                images: images,
-                dateUpdated: new Date().toISOString()
+            // Build payload for backend (with correct sustainability field)
+            const sustainabilityTypeIds = {
+                energyEfficiency: 1,
+                carbonFootprint: 2,
+                recyclability: 3,
+                durability: 4,
+                materialSustainability: 5,
             };
-
-            console.log('Updated product:', updatedProduct);
-            
-            // Call parent callback if provided
-            if (onProductUpdated) {
-                onProductUpdated(updatedProduct);
+            const sustainability_metrics = [
+                { id: sustainabilityTypeIds.energyEfficiency, value: formData.sustainability.energyEfficiency },
+                { id: sustainabilityTypeIds.carbonFootprint, value: formData.sustainability.carbonFootprint },
+                { id: sustainabilityTypeIds.recyclability, value: formData.sustainability.recyclability },
+                { id: sustainabilityTypeIds.durability, value: formData.sustainability.durability },
+                { id: sustainabilityTypeIds.materialSustainability, value: formData.sustainability.materialSustainability },
+            ];
+            const payload = {
+                name: formData.name,
+                description: formData.description,
+                price: parseFloat(formData.price),
+                quantity: parseInt(formData.quantity),
+                brand: formData.brand,
+                category_id: product.category_id || product.category || '',
+                retailer_id: product.retailer_id,
+                sustainability_metrics,
+            };
+            // Update product
+            const response = await fetch(`http://localhost:8000/retailer/products/${product.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (response.ok) {
+                // Fetch updated product data to reflect new sustainability ratings
+                const updatedProductRes = await fetch(`http://localhost:8000/products/${product.id}`);
+                if (updatedProductRes.ok) {
+                    const updatedProduct = await updatedProductRes.json();
+                    // Update form state with new sustainability ratings
+                    if (updatedProduct.data && updatedProduct.data.sustainability) {
+                        setFormData(prev => ({
+                            ...prev,
+                            sustainability: {
+                                energyEfficiency: updatedProduct.data.sustainability.energyEfficiency || prev.sustainability.energyEfficiency,
+                                carbonFootprint: updatedProduct.data.sustainability.carbonFootprint || prev.sustainability.carbonFootprint,
+                                recyclability: updatedProduct.data.sustainability.recyclability || prev.sustainability.recyclability,
+                                durability: updatedProduct.data.sustainability.durability || prev.sustainability.durability,
+                                materialSustainability: updatedProduct.data.sustainability.materialSustainability || prev.sustainability.materialSustainability,
+                            }
+                        }));
+                    }
+                    if (onProductUpdated) onProductUpdated(updatedProduct.data);
+                }
+                alert('Product updated successfully!');
+                onClose();
+            } else {
+                alert('Failed to update product.');
             }
-            
-            alert('Product updated successfully!');
-            onClose();
-
         } catch (error) {
             console.error('Error updating product:', error);
             alert('Failed to update product. Please try again.');
@@ -309,7 +336,6 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                         {/* Images */}
                         <div className="form-section">
                             <h3>Product Images</h3>
-                            
                             <div className="form-group">
                                 <label htmlFor="edit-images">Add More Images (Max 5 total)</label>
                                 <input
@@ -322,7 +348,6 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                 />
                                 {errors.images && <span className="edit-product-error-message">{errors.images}</span>}
                             </div>
-
                             {images.length > 0 && (
                                 <div className="image-preview-grid">
                                     {images.map((image, index) => (

@@ -100,33 +100,34 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
         if (!validateForm()) return;
-
         setIsSubmitting(true);
-
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            const newProduct = {
-                id: Date.now(), // Temporary ID
-                ...formData,
+            const productData = {
+                name: formData.name,
+                description: formData.description,
                 price: parseFloat(formData.price),
                 quantity: parseInt(formData.quantity),
-                sustainability: calculateSustainabilityScore(),
-                images: images,
-                dateAdded: new Date().toISOString()
+                brand: formData.brand,
+                category_id: categories.indexOf(formData.category) + 1,
+                retailer_id: 3, // Hardcoded for now
+                sustainability_metrics: formData.sustainability
             };
-
-            console.log('New product:', newProduct);
-            
-            // Call parent callback if provided
+            const response = await fetch('http://localhost:8000/retailer/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(productData)
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Failed to create product');
+            }
+            const newProduct = await response.json();
             if (onProductAdded) {
                 onProductAdded(newProduct);
             }
-
-            // Reset form
             setFormData({
                 name: '',
                 description: '',
@@ -135,17 +136,16 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                 brand: '',
                 quantity: '',
                 sustainability: {
-                    energyEfficiency: 3,
-                    materialSustainability: 3,
-                    durability: 3,
-                    recyclability: 3
+                    energyEfficiency: 70,
+                    carbonFootprint: 60,
+                    recyclability: 20,
+                    durability: 90,
+                    materialSustainability: 68,
                 }
             });
             setImages([]);
-            
             alert('Product added successfully!');
             onClose();
-
         } catch (error) {
             console.error('Error adding product:', error);
             alert('Failed to add product. Please try again.');

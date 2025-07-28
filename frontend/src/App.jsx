@@ -15,6 +15,8 @@ import Help from './pages/Help';
 import Checkout from './pages/Checkout'; // ✅ ADDED
 import UserAccount from './pages/UserAccount'; // Placeholder for user account page
 import RetailerDashboard from './pages/RetailerDashboard'; // ✅ ADDED
+import RetailerProducts from './pages/RetailerProducts'; // Importing RetailerProducts page
+import ViewRetailerProduct from './pages/ViewRetailerProduct'; // Importing ViewRetailerProduct page
 import { SearchProvider } from './components/search/SearchProvider';
 import { CartProvider } from "./components/cart/CartContext";
 
@@ -76,6 +78,19 @@ function App() {
                 <Navigation />
                 {/* User account page can be added here */}
                 <UserAccount />
+              </React.Fragment>
+            } />
+            {/* Retailer routes - more specific first */}
+            <Route path="/retailer/product/:id" element={
+              <React.Fragment key="view-retailer-product">
+                <Navigation />
+                <ViewRetailerProduct />
+              </React.Fragment>
+            } />
+            <Route path="/retailer/products" element={
+              <React.Fragment key="retailer-products">
+                <Navigation />
+                <RetailerProducts />
               </React.Fragment>
             } />
             <Route path="/retailer-dashboard" element={
