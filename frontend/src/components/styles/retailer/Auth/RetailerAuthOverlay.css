@@ -1,0 +1,153 @@
+/* components/RetailerAuthOverlay.css */
+
+.retailer-auth-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.retailer-auth-container {
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.95);
+  background-image: linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(255, 255, 255, 0.95) 100%);
+  border-radius: 12px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: color 0.2s ease;
+}
+
+.close-button:hover {
+  color: #ef4444;
+}
+
+.retailer-auth-header {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.retailer-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group .AuthInput {
+  width: 100%;
+  padding: 0.75rem 0;
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(34, 197, 94, 0.3);
+  color: #1f2937;
+  font-size: 1rem;
+  transition: border-bottom-color 0.3s ease;
+}
+
+.form-group .AuthLabel {
+  position: absolute;
+  left: 0;
+  top: 0.75rem;
+  color: #6b7280;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  transform-origin: left top;
+}
+
+.form-group .AuthInput:focus {
+  outline: none;
+  border-bottom-color: #22c55e;
+}
+
+.form-group .AuthInput:focus + .AuthLabel,
+.form-group .AuthInput:not(:placeholder-shown) + .AuthLabel,
+.form-group .AuthInput:valid + .AuthLabel {
+  transform: translateY(-1.5rem) scale(0.85);
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.form-group .AuthInput::placeholder {
+  color: transparent;
+}
+
+.submit-button {
+  width: 100%;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  padding: 0.875rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.2s ease;
+}
+
+.submit-button:hover {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  transform: translateY(-1px);
+}
+
+.toggle-container {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.toggle-text {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-right: 0.5rem;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: #22c55e;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.toggle-button:hover {
+  color: #16a34a;
+}
