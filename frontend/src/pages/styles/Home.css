@@ -64,12 +64,28 @@
 
 /* Search Section */
 .search-section {
+  position: sticky;
+  top: 90px;
   background: #2e7d32;
   padding: 1rem 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 10;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
+.search-section.sticky {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.search-section:not(.sticky) {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
 
 .home-search-bar {
   width: 100%;

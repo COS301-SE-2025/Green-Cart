@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { signup } from '../../user-services/signupService';
 import '../styles/register/RegisterForm.css';
 
@@ -24,16 +25,16 @@ const RegisterForm = () => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
     try {
       await signup({ name, email, password });
-      alert("Account created successfully!");
+      toast.success("Account created successfully!");
       navigate("/home");
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message || "An error occurred while creating the account.");
     }
   };
 

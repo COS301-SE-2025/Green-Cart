@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast'
 import { fetchProduct } from '../../product-services/fetchProduct';
 import '../styles/product/ViewProduct.css';
 import { useCart } from "../cart/CartContext";
@@ -67,16 +68,16 @@ export default function ViewProduct() {
         try{
             if (user && user.id) {
                 addToCart({ user_id: user.id, product_id: product.id, quantity });
-                alert("Item added to cart!");
+                toast.success("Item added to cart!");
                 refreshCart(user.id); // Refresh the cart after adding an item
             } else {
                 // Optionally handle the case where user is not found
-                alert("Please log in to add items to your cart.");
+                toast.error("Please log in to add items to your cart.");
                 navigate("/login");
             }
         }catch (error) {
             console.error("Error adding to cart:", error);
-            alert("Failed to add item to cart. Please try again.");
+            toast.error("Failed to add item to cart. Please try again.");
         }
     };
 

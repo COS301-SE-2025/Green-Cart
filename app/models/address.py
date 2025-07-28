@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
-from app.db.base import Base
+from app.db.database import Base
 
 class Address(Base):
     __tablename__ = "address"

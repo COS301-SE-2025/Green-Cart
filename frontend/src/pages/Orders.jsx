@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles/Orders.css";
-import { fetchAllOrders } from "../order-services/fetchAllOrders";
-import { cancelOrder } from "../order-services/cancelOrder";
+import { fetchAllOrders } from "../order-services/fetchAllOrders";  
+import { cancelOrder } from "../order-services/cancelOrder"; // Assuming you have a cancelOrder function
+import { useEffect, useState } from "react";
+import  toast  from "react-hot-toast";
 import OrderList from "../components/orders/OrderList";
-import OrderDetails from "../components/orders/OrderDetails";
+// import OrderDetails from "../components/orders/OrderDetails";
+import ConfirmationModal from "../components/modals/ConfirmationModal";
+import { useConfirmation } from "../hooks/useConfirmation";
 
 function useOrders() {
   const [retrievedOrders, setOrders] = useState([]);
@@ -54,6 +58,7 @@ export default function Orders() {
   const { retrievedOrders, loading, error, userID, refreshOrders } = useOrders();
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
+  const { confirmationState, showConfirmation } = useConfirmation();
 
   const handleViewDetails = (order) => {
     setSelectedOrder(order);
@@ -69,23 +74,33 @@ export default function Orders() {
     const canCancel = !['cancelled', 'delivered', 'in transit'].includes(order.state.toLowerCase());
 
     if (!canCancel) {
-      alert('This order cannot be cancelled.');
+      toast.error('This order cannot be cancelled.', {
+        duration: 5000,
+      });
       return;
     }
 
-    const confirmCancel = window.confirm(
-      `Are you sure you want to cancel order #${order.id}? This action cannot be undone.`
-    );
+    const confirmed = await showConfirmation({
+      title: 'Cancel Order',
+      message: `Are you sure you want to cancel order #${order.id}? This action cannot be undone and any payment will be refunded within 3-5 business days.`,
+      confirmText: 'Yes, Cancel Order',
+      cancelText: 'Keep Order',
+      type: 'danger'
+    });
 
-    if (!confirmCancel) return;
+    if (!confirmed) return;
 
     try {
       await cancelOrder(userID, order.id);
-      alert('Order cancelled successfully!');
+      toast.success('Order cancelled successfully!', {
+        duration: 5000,
+      });
       await refreshOrders();
     } catch (error) {
       console.error('Error cancelling order:', error);
-      alert('Failed to cancel order. Please try again or contact support.');
+      toast.error('Failed to cancel order. Please try again or contact support.', {
+        duration: 5000,
+      });
     }
   };
 
@@ -133,7 +148,10 @@ export default function Orders() {
         onClose={handleCloseDetails}
         order={selectedOrder}
         userID={userID}
-      />
+      /> */}
+
+      {/* Our custom Confirmation Modal */}
+      <ConfirmationModal {...confirmationState} />
     </div>
   );
 }

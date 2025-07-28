@@ -57,8 +57,19 @@ export default function OrderCard({ order, onViewDetails, onCancelOrder }) {
                         style: "currency",
                         currency: "ZAR"
                     })}
+
+                    {/* Number of Items if it is provided */}
+                    {order.items && order.items.length > 0 && (
+                        <div className="order-items-count">
+                            {order.items.length} {order.items.length === 1 ? 'item' : 'items'}
+                        </div>
+                    ) || (
+                        <div className="order-items-count">No items</div>
+                    )}
                 </div>
+
                 
+
                 <div className="order-sustainability">
                     {sustainability !== null && (
                         <div 

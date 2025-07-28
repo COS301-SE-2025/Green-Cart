@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Text, Date
 from sqlalchemy.orm import relationship
-from app.db.base import Base
+from app.db.database import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -14,4 +14,5 @@ class User(Base):
 
     orders = relationship("Order", back_populates="user", cascade="all, delete")
     address = relationship("Address", back_populates="user", cascade="all, delete")
+    retailer_information = relationship("RetailerInformation", back_populates="user", cascade="all, delete")
     

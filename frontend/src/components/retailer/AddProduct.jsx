@@ -65,7 +65,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
         
         // Limit to 5 images
         if (files.length > 5) {
-            alert('You can upload a maximum of 5 images');
+            toast.error('You can upload a maximum of 5 images');
             return;
         }
 
@@ -144,11 +144,12 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                 }
             });
             setImages([]);
-            alert('Product added successfully!');
+            
+            toast.success('Product added successfully!');
             onClose();
         } catch (error) {
             console.error('Error adding product:', error);
-            alert('Failed to add product. Please try again.');
+            toast.error('Failed to add product. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -175,7 +176,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                             <h3>Basic Information</h3>
                             
                             <div className="form-group">
-                                <label htmlFor="name">Product Name *</label>
+                                <label htmlFor="name" className='label'>Product Name *</label>
                                 <input
                                     type="text"
                                     id="name"
@@ -183,13 +184,13 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                     value={formData.name}
                                     onChange={handleInputChange}
                                     placeholder="Enter product name"
-                                    className={errors.name ? 'error' : ''}
+                                    className={errors.name ? 'error' : 'input'}
                                 />
                                 {errors.name && <span className="add-product-error-message">{errors.name}</span>}
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="description">Description *</label>
+                                <label htmlFor="description" className='label'>Description *</label>
                                 <textarea
                                     id="description"
                                     name="description"
@@ -197,14 +198,14 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                     onChange={handleInputChange}
                                     placeholder="Describe your product..."
                                     rows="4"
-                                    className={errors.description ? 'error' : ''}
+                                    className={errors.description ? 'error' : 'textarea'}
                                 />
                                 {errors.description && <span className="add-product-error-message">{errors.description}</span>}
                             </div>
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label htmlFor="price">Price (ZAR) *</label>
+                                    <label htmlFor="price" className='label'>Price (ZAR) *</label>
                                     <input
                                         type="number"
                                         id="price"
@@ -214,13 +215,13 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                         placeholder="0.00"
                                         min="0"
                                         step="0.01"
-                                        className={errors.price ? 'error' : ''}
+                                        className={errors.price ? 'error' : 'input'}
                                     />
                                     {errors.price && <span className="add-product-error-message">{errors.price}</span>}
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="quantity">Stock Quantity *</label>
+                                    <label htmlFor="quantity" className='label'>Stock Quantity *</label>
                                     <input
                                         type="number"
                                         id="quantity"
@@ -229,7 +230,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                         onChange={handleInputChange}
                                         placeholder="0"
                                         min="0"
-                                        className={errors.quantity ? 'error' : ''}
+                                        className={errors.quantity ? 'error' : 'input'}
                                     />
                                     {errors.quantity && <span className="add-product-error-message">{errors.quantity}</span>}
                                 </div>
@@ -237,13 +238,13 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label htmlFor="category">Category *</label>
+                                    <label htmlFor="category" className='label'>Category *</label>
                                     <select
                                         id="category"
                                         name="category"
                                         value={formData.category}
                                         onChange={handleInputChange}
-                                        className={errors.category ? 'error' : ''}
+                                        className={errors.category ? 'error' : 'select'}
                                     >
                                         <option value="">Select category</option>
                                         {categories.map(category => (
@@ -256,7 +257,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="brand">Brand *</label>
+                                    <label htmlFor="brand" className='label'>Brand *</label>
                                     <input
                                         type="text"
                                         id="brand"
@@ -264,7 +265,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                         value={formData.brand}
                                         onChange={handleInputChange}
                                         placeholder="Enter brand name"
-                                        className={errors.brand ? 'error' : ''}
+                                        className={errors.brand ? 'error' : 'input'}
                                     />
                                     {errors.brand && <span className="add-product-error-message">{errors.brand}</span>}
                                 </div>
@@ -276,14 +277,14 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                             <h3>Product Images</h3>
                             
                             <div className="form-group">
-                                <label htmlFor="images">Upload Images * (Max 5)</label>
+                                <label htmlFor="images" className='label'>Upload Images * (Max 5)</label>
                                 <input
                                     type="file"
                                     id="images"
                                     accept="image/*"
                                     multiple
                                     onChange={handleImageUpload}
-                                    className={errors.images ? 'error' : ''}
+                                    className={errors.images ? 'error' : 'input'}
                                 />
                                 {errors.images && <span className="add-product-error-message">{errors.images}</span>}
                             </div>
