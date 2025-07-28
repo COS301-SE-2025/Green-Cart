@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import toast  from 'react-hot-toast';
 import '../styles/retailer/EditProduct.css';
 
 export default function EditProduct({ isOpen, onClose, onProductUpdated, product }) {
@@ -95,7 +94,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
         
         // Limit to 5 images total
         if (images.length + files.length > 5) {
-            toast.error('You can have a maximum of 5 images');
+            alert('You can have a maximum of 5 images');
             return;
         }
 
@@ -131,21 +130,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
         if (!validateForm()) return;
         setIsSubmitting(true);
         try {
-            // Build payload for backend (with correct sustainability field)
-            const sustainabilityTypeIds = {
-                energyEfficiency: 1,
-                carbonFootprint: 2,
-                recyclability: 3,
-                durability: 4,
-                materialSustainability: 5,
-            };
-            const sustainability_metrics = [
-                { id: sustainabilityTypeIds.energyEfficiency, value: formData.sustainability.energyEfficiency },
-                { id: sustainabilityTypeIds.carbonFootprint, value: formData.sustainability.carbonFootprint },
-                { id: sustainabilityTypeIds.recyclability, value: formData.sustainability.recyclability },
-                { id: sustainabilityTypeIds.durability, value: formData.sustainability.durability },
-                { id: sustainabilityTypeIds.materialSustainability, value: formData.sustainability.materialSustainability },
-            ];
+            // Build payload for backend
             const payload = {
                 name: formData.name,
                 description: formData.description,
@@ -154,34 +139,16 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                 brand: formData.brand,
                 category_id: product.category_id || product.category || '',
                 retailer_id: product.retailer_id,
-                sustainability_metrics,
+                sustainability_metrics: formData.sustainability || {},
             };
-            // Update product
             const response = await fetch(`http://localhost:8000/retailer/products/${product.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
             if (response.ok) {
-                // Fetch updated product data to reflect new sustainability ratings
-                const updatedProductRes = await fetch(`http://localhost:8000/products/${product.id}`);
-                if (updatedProductRes.ok) {
-                    const updatedProduct = await updatedProductRes.json();
-                    // Update form state with new sustainability ratings
-                    if (updatedProduct.data && updatedProduct.data.sustainability) {
-                        setFormData(prev => ({
-                            ...prev,
-                            sustainability: {
-                                energyEfficiency: updatedProduct.data.sustainability.energyEfficiency || prev.sustainability.energyEfficiency,
-                                carbonFootprint: updatedProduct.data.sustainability.carbonFootprint || prev.sustainability.carbonFootprint,
-                                recyclability: updatedProduct.data.sustainability.recyclability || prev.sustainability.recyclability,
-                                durability: updatedProduct.data.sustainability.durability || prev.sustainability.durability,
-                                materialSustainability: updatedProduct.data.sustainability.materialSustainability || prev.sustainability.materialSustainability,
-                            }
-                        }));
-                    }
-                    if (onProductUpdated) onProductUpdated(updatedProduct.data);
-                }
+                const result = await response.json();
+                if (onProductUpdated) onProductUpdated(result.data);
                 alert('Product updated successfully!');
                 onClose();
             } else {
@@ -189,7 +156,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
             }
         } catch (error) {
             console.error('Error updating product:', error);
-            toast.error('Failed to update product. Please try again.');
+            alert('Failed to update product. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -238,7 +205,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                             <h3>Basic Information</h3>
                             
                             <div className="form-group">
-                                <label htmlFor="edit-name" className='label'>Product Name *</label>
+                                <label htmlFor="edit-name">Product Name *</label>
                                 <input
                                     type="text"
                                     id="edit-name"
@@ -246,13 +213,13 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                     value={formData.name}
                                     onChange={handleInputChange}
                                     placeholder="Enter product name"
-                                    className={errors.name ? 'error' : 'input'}
+                                    className={errors.name ? 'error' : ''}
                                 />
                                 {errors.name && <span className="edit-product-error-message">{errors.name}</span>}
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="edit-description" className='label'>Description *</label>
+                                <label htmlFor="edit-description">Description *</label>
                                 <textarea
                                     id="edit-description"
                                     name="description"
@@ -260,14 +227,14 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                     onChange={handleInputChange}
                                     placeholder="Describe your product..."
                                     rows="4"
-                                    className={errors.description ? 'error' : 'textarea'}
+                                    className={errors.description ? 'error' : ''}
                                 />
                                 {errors.description && <span className="edit-product-error-message">{errors.description}</span>}
                             </div>
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label htmlFor="edit-price" className='label'>Price (ZAR) *</label>
+                                    <label htmlFor="edit-price">Price (ZAR) *</label>
                                     <input
                                         type="number"
                                         id="edit-price"
@@ -277,13 +244,13 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                         placeholder="0.00"
                                         min="0"
                                         step="0.01"
-                                        className={errors.price ? 'error' : 'input'}
+                                        className={errors.price ? 'error' : ''}
                                     />
                                     {errors.price && <span className="edit-product-error-message">{errors.price}</span>}
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="edit-quantity" className='label'>Stock Quantity *</label>
+                                    <label htmlFor="edit-quantity">Stock Quantity *</label>
                                     <input
                                         type="number"
                                         id="edit-quantity"
@@ -292,7 +259,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                         onChange={handleInputChange}
                                         placeholder="0"
                                         min="0"
-                                        className={errors.quantity ? 'error' : 'input'}
+                                        className={errors.quantity ? 'error' : ''}
                                     />
                                     {errors.quantity && <span className="edit-product-error-message">{errors.quantity}</span>}
                                 </div>
@@ -300,13 +267,13 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label htmlFor="edit-category" className='label'>Category *</label>
+                                    <label htmlFor="edit-category">Category *</label>
                                     <select
                                         id="edit-category"
                                         name="category"
                                         value={formData.category}
                                         onChange={handleInputChange}
-                                        className={errors.category ? 'error' : 'select'}
+                                        className={errors.category ? 'error' : ''}
                                     >
                                         <option value="">Select category</option>
                                         {categories.map(category => (
@@ -319,7 +286,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="edit-brand" className='label'>Brand *</label>
+                                    <label htmlFor="edit-brand">Brand *</label>
                                     <input
                                         type="text"
                                         id="edit-brand"
@@ -327,7 +294,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                         value={formData.brand}
                                         onChange={handleInputChange}
                                         placeholder="Enter brand name"
-                                        className={errors.brand ? 'error' : 'input'}
+                                        className={errors.brand ? 'error' : ''}
                                     />
                                     {errors.brand && <span className="edit-product-error-message">{errors.brand}</span>}
                                 </div>
@@ -338,14 +305,14 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                         <div className="form-section">
                             <h3>Product Images</h3>
                             <div className="form-group">
-                                <label htmlFor="edit-images" className='label'>Add More Images (Max 5 total)</label>
+                                <label htmlFor="edit-images">Add More Images (Max 5 total)</label>
                                 <input
                                     type="file"
                                     id="edit-images"
                                     accept="image/*"
                                     multiple
                                     onChange={handleImageUpload}
-                                    className={errors.images ? 'error' : 'input'}
+                                    className={errors.images ? 'error' : ''}
                                 />
                                 {errors.images && <span className="edit-product-error-message">{errors.images}</span>}
                             </div>
@@ -378,82 +345,26 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                             </h3>
                             
                             <div className="sustainability-grid">
-        {Object.entries(formData.sustainability).map(([key, value]) => {
-            // Function to get color based on rating value
-            const getRatingColor = (rating) => {
-                if (rating >= 80) return '#22c55e'; // Green
-                if (rating >= 60) return '#eab308'; // Yellow
-                if (rating >= 40) return '#f97316'; // Orange
-                return '#ef4444'; // Red
-            };
-
-            const getRatingLevel = (rating) => {
-                if (rating >= 80) return 'Excellent';
-                if (rating >= 60) return 'Good';
-                if (rating >= 40) return 'Fair';
-                return 'Poor';  
-            };
-
-            const ratingColor = getRatingColor(value);
-            const ratingLevel = getRatingLevel(value);
-
-            return (
-                <div 
-                    key={key} 
-                    className="sustainability-item"
-                    style={{
-                        '--rating-color': ratingColor,
-                    }}
-                >
-                    <div className="sustainability-header">
-                        <label>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
-                        <div className="rating-indicator">
-                            <div 
-                                className="rating-dot"
-                                style={{ backgroundColor: ratingColor }}
-                            ></div>
-                            <span 
-                                className="rating-text"
-                                style={{ color: ratingColor }}
-                            >
-                                {ratingLevel}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="rating-slider">
-                        <div className="slider-container">
-                            <input
-                                type="range"
-                                min="0"
-                                max="100"
-                                value={value}
-                                onChange={(e) => handleSustainabilityChange(key, parseInt(e.target.value))}
-                                className="dynamic-slider"
-                            />
-                            <div 
-                                className="slider-progress" 
-                                style={{ 
-                                    width: `${value}%`, 
-                                    backgroundColor: ratingColor 
-                                }}
-                            ></div>
-                        </div>
-                        <div className="rating-labels">
-                            <span>Poor (0)</span>
-                            <span 
-                                className="current-rating"
-                                style={{ 
-                                    '--rating-color': ratingColor 
-                                }}
-                            >
-                                {value}
-                            </span>
-                            <span>Excellent (100)</span>
-                        </div>
-                    </div>
-                </div>
-            );
-        })}
+                                {Object.entries(formData.sustainability).map(([key, value]) => (
+                                    <div key={key} className="sustainability-item">
+                                        <label>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
+                                        <div className="rating-slider">
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max="100"
+                                                value={value}
+                                                onChange={(e) => handleSustainabilityChange(key, parseInt(e.target.value))}
+                                                className="slider"
+                                            />
+                                            <div className="rating-labels">
+                                                <span>Poor</span>
+                                                <span className="current-rating">{value}/100</span>
+                                                <span>Excellent</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
