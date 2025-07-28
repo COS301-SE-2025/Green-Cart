@@ -17,88 +17,7 @@ export default function RetailerDashboard() {
     const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
-    // Mock data for development
-    const mockDashboardData = {
-        stats: {
-            totalRevenue: 87450.50,
-            totalProductsSold: 1247,
-            activeProducts: 156,
-            totalOrders: 76
-        },
-        products: [
-            {
-                id: 1,
-                name: "Eco-Friendly Water Bottle",
-                image: "/src/assets/images/product1.jpg",
-                price: 29.99,
-                stock: 45,
-                sold: 234,
-                rating: 4.8,
-                sustainability: 89
-            },
-            {
-                id: 2,
-                name: "Solar-Powered Charger",
-                image: "/src/assets/images/product2.jpg",
-                price: 75.99,
-                stock: 12,
-                sold: 167,
-                rating: 4.6,
-                sustainability: 92
-            },
-            {
-                id: 3,
-                name: "Bamboo Kitchen Set",
-                image: "/src/assets/images/product3.jpg",
-                price: 45.50,
-                stock: 28,
-                sold: 198,
-                rating: 4.9,
-                sustainability: 95
-            },
-            {
-                id: 4,
-                name: "Organic Cotton T-Shirt",
-                image: "/src/assets/images/product4.jpg",
-                price: 35.00,
-                stock: 67,
-                sold: 312,
-                rating: 4.5,
-                sustainability: 78
-            },
-            {
-                id: 5,
-                name: "Recycled Paper Notebook",
-                image: "/src/assets/images/product5.jpg",
-                price: 12.99,
-                stock: 89,
-                sold: 445,
-                rating: 4.7,
-                sustainability: 85
-            },
-            {
-                id: 6,
-                name: "Hemp Backpack",
-                image: "/src/assets/images/product6.jpg",
-                price: 89.99,
-                stock: 23,
-                sold: 89,
-                rating: 4.4,
-                sustainability: 88
-            }
-        ],
-        salesData: [
-            { month: 'Jan', sales: 12500 },
-            { month: 'Feb', sales: 19000 },
-            { month: 'Mar', sales: 15600 },
-            { month: 'Apr', sales: 23400 },
-            { month: 'May', sales: 18900 },
-            { month: 'Jun', sales: 26700 }
-        ]
-    };
-
     useEffect(() => {
-        // Check if user is logged in and is a retailer
         const userData = localStorage.getItem('user');
         if (!userData) {
             navigate('/Login');
@@ -107,25 +26,55 @@ export default function RetailerDashboard() {
 
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
-        
-        // Simulate API call
-        setTimeout(() => {
-            setDashboardData(mockDashboardData);
-            setLoading(false);
-        }, 1000);
+
+        const fetchDashboardData = async () => {
+            try {
+                const retailerId = 3; // 🔁 Use parsedUser.id when backend supports dynamic users
+
+                const metricsRes = await fetch(`http://localhost:8000/retailer/metrics/${retailerId}`);
+                const productsRes = await fetch(`http://localhost:8000/retailer/products/${retailerId}`);
+
+                const [metricsJson, productsJson] = await Promise.all([
+                    metricsRes.json(),
+                    productsRes.json()
+                ]);
+
+                if (metricsJson.status === 200 && productsJson.status === 200) {
+                    const metrics = metricsJson.data;
+                    const transformedData = {
+                        stats: {
+                            totalRevenue: metrics.total_revenue,
+                            totalProductsSold: metrics.total_units_sold,
+                            activeProducts: metrics.total_products,
+                            totalOrders: 0,
+                            avgSustainability: metrics.avg_sustainability_rating,
+                            availability: metrics.availability
+                        },
+                        products: productsJson.data,
+                        salesData: metrics.monthly_revenue.map(m => ({
+                            month: m.month,
+                            sales: m.revenue
+                        }))
+                    };
+
+                    setDashboardData(transformedData);
+                } else {
+                    console.error("Failed to load dashboard data");
+                }
+            } catch (err) {
+                console.error("API Error:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
     }, [navigate]);
 
-
-    const handleOpenAddProduct = () => {
-        setIsAddProductModalOpen(true);
-    };
-
-    const handleCloseAddProduct = () => {
-        setIsAddProductModalOpen(false);
-    };
+    const handleOpenAddProduct = () => setIsAddProductModalOpen(true);
+    const handleCloseAddProduct = () => setIsAddProductModalOpen(false);
 
     const handleProductAdded = (newProduct) => {
-        // Update the products list with the new product
         setDashboardData(prev => ({
             ...prev,
             products: [newProduct, ...prev.products],
@@ -149,7 +98,7 @@ export default function RetailerDashboard() {
     const handleProductUpdated = (updatedProduct) => {
         setDashboardData(prev => ({
             ...prev,
-            products: prev.products.map(product => 
+            products: prev.products.map(product =>
                 product.id === updatedProduct.id ? updatedProduct : product
             )
         }));
@@ -162,7 +111,6 @@ export default function RetailerDashboard() {
                     <div className="loading-spinner"></div>
                     <span>Loading Dashboard...</span>
                 </div>
-                
             </div>
         );
     }
@@ -184,13 +132,13 @@ export default function RetailerDashboard() {
                 <h1>Retailer Dashboard</h1>
                 <p>Welcome back, {user.name || user.email}!</p>
 
-                {/* Add product Button */}
                 <div className="add-product">
-                    <button 
+                    <button
                         className="add-product-button"
                         onClick={handleOpenAddProduct}
                     >
-                    Add Product</button>
+                        Add Product
+                    </button>
                 </div>
             </div>
 
@@ -198,20 +146,23 @@ export default function RetailerDashboard() {
             <StatsOverview stats={dashboardData.stats} />
 
             {/* Product Carousel */}
-            <ProductCarousel products={dashboardData.products} onEditProduct={handleEditProduct} />
+            <ProductCarousel
+                products={dashboardData.products}
+                onEditProduct={handleEditProduct}
+            />
 
             {/* Sales Chart */}
             <SalesChart salesData={dashboardData.salesData} />
 
             {/* Add Product Modal */}
-            <AddProduct 
+            <AddProduct
                 isOpen={isAddProductModalOpen}
                 onClose={handleCloseAddProduct}
                 onProductAdded={handleProductAdded}
             />
 
             {/* Edit Product Modal */}
-            <EditProduct 
+            <EditProduct
                 isOpen={isEditProductModalOpen}
                 onClose={handleCloseEditProduct}
                 onProductUpdated={handleProductUpdated}

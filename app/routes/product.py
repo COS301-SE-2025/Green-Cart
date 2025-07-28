@@ -24,3 +24,4 @@ def fetch_product(request: FetchProductRequest, db: Session = Depends(get_db)):
 @router.post("/SearchProducts", response_model=SearchProductsResponse)
 def search_products(request: SearchProductsRequest, db: Session = Depends(get_db)):
     return searchProducts(request.model_dump(), db)
+

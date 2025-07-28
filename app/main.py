@@ -10,6 +10,7 @@ from app.routes import retailer_user
 from app.routes import retailer_metrics
 import app.models
 from fastapi.middleware.cors import CORSMiddleware
+from app.routes import retailer_products
 
 app = FastAPI()
 
