@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 import "./styles/Orders.css";
 import { fetchAllOrders } from "../order-services/fetchAllOrders";  
 import { cancelOrder } from "../order-services/cancelOrder"; // Assuming you have a cancelOrder function
-import { useEffect, useState } from "react";
 import  toast  from "react-hot-toast";
 import OrderList from "../components/orders/OrderList";
-// import OrderDetails from "../components/orders/OrderDetails";
+import OrderDetails from "../components/orders/OrderDetails";
 import ConfirmationModal from "../components/modals/ConfirmationModal";
 import { useConfirmation } from "../hooks/useConfirmation";
 
@@ -148,7 +147,7 @@ export default function Orders() {
         onClose={handleCloseDetails}
         order={selectedOrder}
         userID={userID}
-      /> */}
+      /> 
 
       {/* Our custom Confirmation Modal */}
       <ConfirmationModal {...confirmationState} />
