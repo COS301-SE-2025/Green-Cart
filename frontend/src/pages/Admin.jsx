@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import SideBar from '../components/admin/SideBar';
 import Products from '../components/admin/tabs/Products';
+import Dashboard from '../components/admin/tabs/Dashboard';
 import './styles/Admin.css';
 
 const Admin = () => {
@@ -18,7 +19,7 @@ const Admin = () => {
   const renderContent = () => {
     switch (currentPage) {
       case 'Dashboard':
-        return <div className="page-placeholder">Dashboard Page - Coming Soon</div>;
+        return <Dashboard />;
       case 'Orders':
         return <div className="page-placeholder">Orders Page - Coming Soon</div>;
       case 'Products':

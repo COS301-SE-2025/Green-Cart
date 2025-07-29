@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/admin/Dashboard.css';
+import '../../styles/admin/tabs/Dashboard.css';
 
 const Dashboard = () => {
   const [exportDropdown, setExportDropdown] = useState(false);
