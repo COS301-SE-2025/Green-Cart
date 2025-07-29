@@ -1,0 +1,262 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 240px;
+  height: 100vh;
+  background-color: #1a1d21;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.sidebar-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+/* Header */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #2a2d31;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  font-size: 20px;
+  color: #3b82f6;
+}
+
+.logo-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.collapse-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.collapse-btn:hover {
+  background-color: #2a2d31;
+}
+
+/* Search */
+.search-container {
+  padding: 0 20px 20px 20px;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #2a2d31;
+  border-radius: 6px;
+  padding: 0 12px;
+}
+
+.search-icon {
+  color: #9ca3af;
+  margin-right: 8px;
+}
+
+.search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #ffffff;
+  padding: 8px 0;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #6b7280;
+}
+
+.search-shortcut {
+  color: #6b7280;
+  font-size: 12px;
+  background-color: #374151;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+}
+
+/* Menu Items */
+.main-menu {
+  flex: 1;
+  padding: 0 12px;
+}
+
+.bottom-menu {
+  padding: 0 12px;
+  margin-top: auto;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.menu-item:hover {
+  background-color: #2a2d31;
+}
+
+.menu-item.active {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.menu-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-text {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.menu-shortcut {
+  color: #6b7280;
+  font-size: 12px;
+  background-color: #374151;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.notification-badge {
+  background-color: #ef4444;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Profile Section */
+.profile-section {
+  border-top: 1px solid #2a2d31;
+  padding: 16px 20px;
+  background-color: #1a1d21;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.profile-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.profile-menu-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.profile-menu-btn:hover {
+  background-color: #2a2d31;
+}
+
+/* Responsive Design */
+@media (max-height: 600px) {
+  .sidebar-content {
+    overflow-y: auto;
+  }
+  
+  .main-menu {
+    flex-shrink: 1;
+    min-height: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    max-width: 240px;
+  }
+}
+
+/* Scrollbar Styling */
+.sidebar-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 2px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
