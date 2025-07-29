@@ -19,6 +19,7 @@
 }
 
 .stat-card {
+  display: block;
   background: white;
   padding: 24px;
   border-radius: 12px;
@@ -29,7 +30,7 @@
 .stat-number {
   font-size: 28px;
   font-weight: 700;
-  color: #1f2937;
+  color: #506076;
   margin-bottom: 4px;
 }
 
@@ -60,15 +61,16 @@
 }
 
 .tab:hover {
-  color: #22c55e;
+  color: #368b55;
 }
 
 .tab.active {
-  color: #22c55e;
-  border-bottom-color: #22c55e;
+  color: #368b55;
+  border-bottom-color: #368b55;
+  font-size: 16px;
 }
 
-.add-tab {
+/* .add-tab {
   background: none;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
@@ -82,7 +84,7 @@
 
 .add-tab:hover {
   background-color: #f9fafb;
-}
+} */
 
 .products-table {
   background: white;

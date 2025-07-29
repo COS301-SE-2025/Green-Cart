@@ -10,8 +10,8 @@ import customersIcon from './icons/customersIcon.png';
 // import notificationsIcon from '../icons/notificationsIcon.png';
 // import helpIcon from '../icons/helpIcon.png';
 // import settingsIcon from '../icons/settingsIcon.png';
-import searchIcon from './icons/loupe.png'; // Add this icon to your icons folder
-import logoImage from './icons/loupe.png'; // Add your logo image
+import searchIcon from './icons/microscope.png'; // Add this icon to your icons folder
+import logoImage from './icons/microscope.png'; // Add your logo image
 
 const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -27,9 +27,9 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
   ];
 
   const supportItems = [
-    // { name: 'Notifications', icon: notificationsIcon, badge: 7 },
-    // { name: 'Help & Support', icon: helpIcon },
-    // { name: 'Settings', icon: settingsIcon }
+    { name: 'Notifications', icon: dashboardIcon /*notificationsIcon*/, badge: 7 },
+    { name: 'Help & Support', icon: dashboardIcon /*helpIcon*/ },
+    { name: 'Settings', icon: dashboardIcon /*settingsIcon*/ }
   ];
 
   const handleNavClick = (itemName) => {
