@@ -1,7 +1,25 @@
 import React from 'react';
 import '../styles/admin/SideBar.css';
 
-const SideBar = ({ isOpen, onToggle }) => {
+const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
+  const navigationItems = [
+    { name: 'Dashboard', icon: '📊' },
+    { name: 'Orders', icon: '📦' },
+    { name: 'Products', icon: '🛍️' },
+    { name: 'Payments', icon: '💳' },
+    { name: 'Customers', icon: '👥' }
+  ];
+
+  const supportItems = [
+    { name: 'Notifications', icon: '🔔', badge: 7 },
+    { name: 'Help & Support', icon: '❓' },
+    { name: 'Settings', icon: '⚙️' }
+  ];
+
+  const handleNavClick = (itemName) => {
+    onNavigate(itemName);
+  };
+
   return (
     <div className={`sidebar ${!isOpen ? 'sidebar-closed' : ''}`}>
       {/* Close Button */}
@@ -24,42 +42,30 @@ const SideBar = ({ isOpen, onToggle }) => {
           </div>
 
           <nav className="sidebar-nav">
-            <div className="nav-item">
-              <span className="nav-icon">📊</span>
-              <span>Dashboard</span>
-            </div>
-            <div className="nav-item">
-              <span className="nav-icon">📦</span>
-              <span>Orders</span>
-            </div>
-            <div className="nav-item active">
-              <span className="nav-icon">🛍️</span>
-              <span>Products</span>
-            </div>
-            <div className="nav-item">
-              <span className="nav-icon">💳</span>
-              <span>Payments</span>
-            </div>
-            <div className="nav-item">
-              <span className="nav-icon">👥</span>
-              <span>Customers</span>
-            </div>
+            {navigationItems.map((item) => (
+              <div 
+                key={item.name}
+                className={`nav-item ${currentPage === item.name ? 'active' : ''}`}
+                onClick={() => handleNavClick(item.name)}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                <span>{item.name}</span>
+              </div>
+            ))}
 
             <div className="nav-divider"></div>
 
-            <div className="nav-item">
-              <span className="nav-icon notification-icon">🔔</span>
-              <span>Notifications</span>
-              <span className="notification-badge">7</span>
-            </div>
-            <div className="nav-item">
-              <span className="nav-icon">❓</span>
-              <span>Help & Support</span>
-            </div>
-            <div className="nav-item">
-              <span className="nav-icon">⚙️</span>
-              <span>Settings</span>
-            </div>
+            {supportItems.map((item) => (
+              <div 
+                key={item.name}
+                className={`nav-item ${currentPage === item.name ? 'active' : ''}`}
+                onClick={() => handleNavClick(item.name)}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                <span>{item.name}</span>
+                {item.badge && <span className="notification-badge">{item.badge}</span>}
+              </div>
+            ))}
           </nav>
         </>
       )}

@@ -17,7 +17,7 @@ import Checkout from './pages/Checkout'; // ✅ ADDED
 import UserAccount from './pages/UserAccount'; // Placeholder for user account page
 import RetailerDashboard from './pages/RetailerDashboard'; // ✅ ADDED
 import RetailerProducts from './pages/RetailerProducts'; // Importing RetailerProducts page
-import Products from './pages/admin/Products';
+import Admin from './pages/Admin';
 import ViewRetailerProduct from './pages/ViewRetailerProduct'; // Importing ViewRetailerProduct page
 import { SearchProvider } from './components/search/SearchProvider';
 import { CartProvider } from "./components/cart/CartContext";

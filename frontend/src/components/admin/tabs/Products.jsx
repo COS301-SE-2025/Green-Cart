@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import SideBar from './SideBar';
-import '../styles/admin/Products.css';
+import '../../styles/admin/tabs/Products.css';
 
 const Products = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [selectedImage, setSelectedImage] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const handleImageClick = (imageSrc) => {
     setSelectedImage(imageSrc);
@@ -13,10 +11,6 @@ const Products = () => {
 
   const closeImageOverlay = () => {
     setSelectedImage(null);
-  };
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
   };
 
   const products = [
@@ -68,85 +62,80 @@ const Products = () => {
   ];
 
   return (
-    <div className="inventory-page">
-      <SideBar isOpen={sidebarOpen} onToggle={toggleSidebar} />
+    <div className="products-content">
+      <div className="content-header">
+        <h1>Products</h1>
+      </div>
 
-      {/* Main Content */}
-      <div className={`main-content ${!sidebarOpen ? 'main-content-expanded' : ''}`}>
-        <div className="content-header">
-          <h1>Products</h1>
+      {/* Stats Cards */}
+      <div className="stats-cards">
+        <div className="stat-card">
+          <div className="stat-number">1,582</div>
+          <div className="stat-label">Total Volume</div>
         </div>
-
-        {/* Stats Cards */}
-        <div className="stats-cards">
-          <div className="stat-card">
-            <div className="stat-number">1,582</div>
-            <div className="stat-label">Total Volume</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-number">$1.9M</div>
-            <div className="stat-label">Total Value</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-number">6.82</div>
-            <div className="stat-label">Unverified Items</div>
-          </div>
+        <div className="stat-card">
+          <div className="stat-number">$1.9M</div>
+          <div className="stat-label">Total Value</div>
         </div>
-
-        {/* Tabs */}
-        <div className="tabs">
-          {['All', 'Verified', 'Promoted', 'Unverified'].map((tab) => (
-            <button
-              key={tab}
-              className={`tab ${activeTab === tab ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-          <button className="add-tab">+</button>
+        <div className="stat-card">
+          <div className="stat-number">6.82</div>
+          <div className="stat-label">Unverified Items</div>
         </div>
+      </div>
 
-        {/* Products Table */}
-        <div className="products-table">
-          <table>
-            <thead>
-              <tr>
-                <th>
+      {/* Tabs */}
+      <div className="tabs">
+        {['All', 'Verified', 'Promoted', 'Unverified'].map((tab) => (
+          <button
+            key={tab}
+            className={`tab ${activeTab === tab ? 'active' : ''}`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+        <button className="add-tab">+</button>
+      </div>
+
+      {/* Products Table */}
+      <div className="products-table">
+        <table>
+          <thead>
+            <tr>
+              <th>
+                <input type="checkbox" />
+              </th>
+              <th>Image</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Sold</th>
+              <th>Added Date</th>
+              <th>Retailer</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product) => (
+              <tr key={product.id}>
+                <td>
                   <input type="checkbox" />
-                </th>
-                <th>Image</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>Sold</th>
-                <th>Added Date</th>
-                <th>Retailer</th>
+                </td>
+                <td>
+                  <img
+                    src={product.image}
+                    alt={product.description}
+                    className="product-image"
+                    onClick={() => handleImageClick(product.image)}
+                  />
+                </td>
+                <td className="product-description">{product.description}</td>
+                <td>{product.category}</td>
+                <td>{product.sold}</td>
+                <td>{product.addedDate}</td>
+                <td>{product.retailer}</td>
               </tr>
-            </thead>
-            <tbody>
-              {products.map((product) => (
-                <tr key={product.id}>
-                  <td>
-                    <input type="checkbox" />
-                  </td>
-                  <td>
-                    <img
-                      src={product.image}
-                      alt={product.description}
-                      className="product-image"
-                      onClick={() => handleImageClick(product.image)}
-                    />
-                  </td>
-                  <td className="product-description">{product.description}</td>
-                  <td>{product.category}</td>
-                  <td>{product.sold}</td>
-                  <td>{product.addedDate}</td>
-                  <td>{product.retailer}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* Image Overlay */}
