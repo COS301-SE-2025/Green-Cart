@@ -17,6 +17,7 @@ import Checkout from './pages/Checkout'; // ✅ ADDED
 import UserAccount from './pages/UserAccount'; // Placeholder for user account page
 import RetailerDashboard from './pages/RetailerDashboard'; // ✅ ADDED
 import RetailerProducts from './pages/RetailerProducts'; // Importing RetailerProducts page
+import Products from './pages/admin/Products';
 import ViewRetailerProduct from './pages/ViewRetailerProduct'; // Importing ViewRetailerProduct page
 import { SearchProvider } from './components/search/SearchProvider';
 import { CartProvider } from "./components/cart/CartContext";
@@ -98,6 +99,12 @@ function App() {
               <React.Fragment key="retailer-dashboard"> 
                 <Navigation />
                 <RetailerDashboard />
+              </React.Fragment>
+            } />
+            <Route path="/admin/products" element={
+              <React.Fragment key="admin-products"> 
+                <Navigation />
+                <Products />
               </React.Fragment>
             } />
             {/* catch-all */}
