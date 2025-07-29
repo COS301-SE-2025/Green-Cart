@@ -101,9 +101,9 @@ function App() {
                 <RetailerDashboard />
               </React.Fragment>
             } />
-            <Route path="/admin/products" element={
+            <Route path="/admin" element={
               <React.Fragment key="admin-products"> 
-                <Navigation />
+                {/* <Navigation /> */}
                 <Admin />
               </React.Fragment>
             } />

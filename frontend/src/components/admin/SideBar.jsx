@@ -2,11 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import '../styles/admin/SideBar.css';
 
 // icons
-import dashboardIcon from './icons/dashboards.png';
+import dashboardIcon from './icons/dashboardIcon.png';
 import ordersIcon from './icons/ordersIcon.png';
-import productsIcon from './icons/package.png';
+import productsIcon from './icons/productsIcon.png';
 import paymentsIcon from './icons/paymentsIcon.png';
-import customersIcon from './icons/multiple-users-silhouette.png';
+import customersIcon from './icons/customersIcon.png';
 // import notificationsIcon from '../icons/notificationsIcon.png';
 // import helpIcon from '../icons/helpIcon.png';
 // import settingsIcon from '../icons/settingsIcon.png';
