@@ -104,7 +104,7 @@ function App() {
             <Route path="/admin/products" element={
               <React.Fragment key="admin-products"> 
                 <Navigation />
-                <Products />
+                <Admin />
               </React.Fragment>
             } />
             {/* catch-all */}
