@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 import '../../styles/admin/tabs/Dashboard.css';
 
 const Dashboard = () => {
   const [exportDropdown, setExportDropdown] = useState(false);
   const [periodDropdown, setPeriodDropdown] = useState(false);
+  const exportRef = useRef(null);
+  const periodRef = useRef(null);
 
   const statsCards = [
     {
@@ -26,7 +30,7 @@ const Dashboard = () => {
       change: '+1.2k this week',
       trend: 'up',
       icon: '👤',
-      dark: false
+      dark: !false
     },
     {
       id: 3,
@@ -37,25 +41,8 @@ const Dashboard = () => {
       change: '-213',
       trend: 'down',
       icon: '↩️',
-      dark: false
+      dark: !false
     }
-  ];
-
-  const chartData = [
-    { day: '03 Wed', earnings: 30, costs: 25 },
-    { day: '04 Thu', earnings: 40, costs: 20 },
-    { day: '05 Fri', earnings: 46, costs: 35 },
-    { day: '06 Sat', earnings: 37, costs: 22 },
-    { day: '07 Sun', earnings: 42, costs: 38 },
-    { day: '08 Mon', earnings: 62, costs: 42 },
-    { day: '09 Tue', earnings: 55, costs: 25 },
-    { day: '10 Wed', earnings: 13, costs: 15 },
-    { day: '11 Thu', earnings: 35, costs: 40 },
-    { day: '12 Fri', earnings: 38, costs: 30 },
-    { day: '13 Sat', earnings: 20, costs: 18 },
-    { day: '14 Sun', earnings: 10, costs: 20 },
-    { day: '15 Mon', earnings: 32, costs: 28 },
-    { day: '16 Tue', earnings: 48, costs: 30 }
   ];
 
   const categories = [
@@ -63,6 +50,164 @@ const Dashboard = () => {
     { name: 'Laptops', color: '#6b7280', value: 30 },
     { name: 'Phones', color: '#d1d5db', value: 25 }
   ];
+
+  // Line chart configuration
+  const lineChartOptions = {
+    chart: {
+      type: 'line',
+      height: 300,
+      backgroundColor: 'transparent',
+      spacing: [20, 20, 20, 20]
+    },
+    title: {
+      text: null
+    },
+    credits: {
+      enabled: false
+    },
+    legend: {
+      enabled: false
+    },
+    xAxis: {
+      categories: ['03 Wed', '04 Thu', '05 Fri', '06 Sat', '07 Sun', '08 Mon', '09 Tue', '10 Wed', '11 Thu', '12 Fri', '13 Sat', '14 Sun', '15 Mon', '16 Tue'],
+      gridLineWidth: 0,
+      lineWidth: 0,
+      tickWidth: 0,
+      labels: {
+        style: {
+          color: '#9ca3af',
+          fontSize: '12px'
+        }
+      }
+    },
+    yAxis: {
+      title: {
+        text: null
+      },
+      gridLineColor: '#f3f4f6',
+      lineWidth: 0,
+      tickWidth: 0,
+      labels: {
+        style: {
+          color: '#9ca3af',
+          fontSize: '12px'
+        }
+      },
+      min: 0,
+      max: 70
+    },
+    plotOptions: {
+      line: {
+        marker: {
+          enabled: true,
+          radius: 3
+        },
+        lineWidth: 2
+      }
+    },
+    series: [
+      {
+        name: 'Earnings',
+        data: [30, 40, 46, 37, 42, 62, 55, 13, 35, 38, 20, 10, 32, 48],
+        color: '#1f2937',
+        marker: {
+          fillColor: '#1f2937'
+        }
+      },
+      {
+        name: 'Costs',
+        data: [25, 20, 35, 22, 38, 42, 25, 15, 40, 30, 18, 20, 28, 30],
+        color: '#d1d5db',
+        marker: {
+          fillColor: '#d1d5db'
+        }
+      }
+    ],
+    responsive: {
+      rules: [{
+        condition: {
+          maxWidth: 500
+        },
+        chartOptions: {
+          chart: {
+            height: 250
+          }
+        }
+      }]
+    }
+  };
+
+  // Donut chart configuration
+  const donutChartOptions = {
+    chart: {
+      type: 'pie',
+      height: 200,
+      backgroundColor: 'transparent'
+    },
+    title: {
+      text: '$6.2k',
+      align: 'center',
+      verticalAlign: 'middle',
+      style: {
+        fontSize: '24px',
+        fontWeight: '700',
+        color: '#1f2937'
+      }
+    },
+    credits: {
+      enabled: false
+    },
+    legend: {
+      enabled: false
+    },
+    tooltip: {
+      enabled: false
+    },
+    plotOptions: {
+      pie: {
+        innerSize: '70%',
+        dataLabels: {
+          enabled: false
+        },
+        enableMouseTracking: false,
+        borderWidth: 0
+      }
+    },
+    series: [{
+      data: [
+        { name: 'Electronics', y: 45, color: '#1f2937' },
+        { name: 'Laptops', y: 30, color: '#6b7280' },
+        { name: 'Phones', y: 25, color: '#d1d5db' }
+      ]
+    }]
+  };
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (exportRef.current && !exportRef.current.contains(event.target)) {
+        setExportDropdown(false);
+      }
+      if (periodRef.current && !periodRef.current.contains(event.target)) {
+        setPeriodDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleExportClick = (type) => {
+    console.log(`Exporting as ${type}`);
+    setExportDropdown(false);
+  };
+
+  const handlePeriodClick = (period) => {
+    console.log(`Selected period: ${period}`);
+    setPeriodDropdown(false);
+  };
 
   return (
     <div className="dashboard">
@@ -106,33 +251,51 @@ const Dashboard = () => {
           <div className="chart-header">
             <h3 className="chart-title">Sales Performance</h3>
             <div className="chart-controls">
-              <div className="dropdown-container">
+              <div className="dropdown-container" ref={exportRef}>
                 <button 
                   className="dropdown-btn"
-                  onClick={() => setExportDropdown(!exportDropdown)}
+                  onClick={() => {
+                    setExportDropdown(!exportDropdown);
+                    setPeriodDropdown(false);
+                  }}
                 >
                   Export data <span className="dropdown-arrow">⌄</span>
                 </button>
                 {exportDropdown && (
                   <div className="dropdown-menu">
-                    <div className="dropdown-item">Export as CSV</div>
-                    <div className="dropdown-item">Export as PDF</div>
-                    <div className="dropdown-item">Export as Excel</div>
+                    <div className="dropdown-item" onClick={() => handleExportClick('CSV')}>
+                      Export as CSV
+                    </div>
+                    <div className="dropdown-item" onClick={() => handleExportClick('PDF')}>
+                      Export as PDF
+                    </div>
+                    <div className="dropdown-item" onClick={() => handleExportClick('Excel')}>
+                      Export as Excel
+                    </div>
                   </div>
                 )}
               </div>
-              <div className="dropdown-container">
+              <div className="dropdown-container" ref={periodRef}>
                 <button 
                   className="dropdown-btn"
-                  onClick={() => setPeriodDropdown(!periodDropdown)}
+                  onClick={() => {
+                    setPeriodDropdown(!periodDropdown);
+                    setExportDropdown(false);
+                  }}
                 >
                   Last 14 Days <span className="dropdown-arrow">⌄</span>
                 </button>
                 {periodDropdown && (
                   <div className="dropdown-menu">
-                    <div className="dropdown-item">Last 7 Days</div>
-                    <div className="dropdown-item">Last 14 Days</div>
-                    <div className="dropdown-item">Last 30 Days</div>
+                    <div className="dropdown-item" onClick={() => handlePeriodClick('7 Days')}>
+                      Last 7 Days
+                    </div>
+                    <div className="dropdown-item" onClick={() => handlePeriodClick('14 Days')}>
+                      Last 14 Days
+                    </div>
+                    <div className="dropdown-item" onClick={() => handlePeriodClick('30 Days')}>
+                      Last 30 Days
+                    </div>
                   </div>
                 )}
               </div>
@@ -150,84 +313,11 @@ const Dashboard = () => {
             </div>
           </div>
           
-          <div className="chart-area">
-            <svg className="line-chart" viewBox="0 0 800 300">
-              {/* Grid lines */}
-              {[0, 10, 20, 30, 40, 50, 60].map((y) => (
-                <line 
-                  key={y} 
-                  x1="40" 
-                  y1={280 - (y * 4)} 
-                  x2="760" 
-                  y2={280 - (y * 4)} 
-                  stroke="#f3f4f6" 
-                  strokeWidth="1"
-                />
-              ))}
-              
-              {/* Y-axis labels */}
-              {[0, 10, 20, 30, 40, 50, 60].map((y) => (
-                <text 
-                  key={y} 
-                  x="30" 
-                  y={285 - (y * 4)} 
-                  fill="#9ca3af" 
-                  fontSize="12" 
-                  textAnchor="end"
-                >
-                  {y}
-                </text>
-              ))}
-              
-              {/* Earnings line */}
-              <polyline
-                fill="none"
-                stroke="#1f2937"
-                strokeWidth="2"
-                points={chartData.map((point, index) => 
-                  `${60 + (index * 50)},${280 - (point.earnings * 4)}`
-                ).join(' ')}
-              />
-              
-              {/* Costs line */}
-              <polyline
-                fill="none"
-                stroke="#d1d5db"
-                strokeWidth="2"
-                points={chartData.map((point, index) => 
-                  `${60 + (index * 50)},${280 - (point.costs * 4)}`
-                ).join(' ')}
-              />
-              
-              {/* Data points for earnings */}
-              {chartData.map((point, index) => (
-                <circle
-                  key={`earnings-${index}`}
-                  cx={60 + (index * 50)}
-                  cy={280 - (point.earnings * 4)}
-                  r="3"
-                  fill="#1f2937"
-                />
-              ))}
-              
-              {/* Data points for costs */}
-              {chartData.map((point, index) => (
-                <circle
-                  key={`costs-${index}`}
-                  cx={60 + (index * 50)}
-                  cy={280 - (point.costs * 4)}
-                  r="3"
-                  fill="#d1d5db"
-                />
-              ))}
-            </svg>
-            
-            {/* X-axis labels */}
-            <div className="x-axis-labels">
-              {chartData.map((point, index) => (
-                <span key={index} className="x-label">{point.day}</span>
-              ))}
-            </div>
+          <div className="chart-wrapper">
+            <HighchartsReact
+              highcharts={Highcharts}
+              options={lineChartOptions}
+            />
           </div>
         </div>
 
@@ -237,65 +327,23 @@ const Dashboard = () => {
             <h3 className="chart-title">Top Categories</h3>
           </div>
           
-          <div className="donut-chart-container">
-            <div className="donut-chart">
-              <svg viewBox="0 0 200 200" className="donut-svg">
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="70"
-                  fill="none"
-                  stroke="#f3f4f6"
-                  strokeWidth="20"
-                />
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="70"
-                  fill="none"
-                  stroke="#1f2937"
-                  strokeWidth="20"
-                  strokeDasharray={`${categories[0].value * 4.4} 440`}
-                  strokeDashoffset="0"
-                  transform="rotate(-90 100 100)"
-                />
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="70"
-                  fill="none"
-                  stroke="#6b7280"
-                  strokeWidth="20"
-                  strokeDasharray={`${categories[1].value * 4.4} 440`}
-                  strokeDashoffset={`-${categories[0].value * 4.4}`}
-                  transform="rotate(-90 100 100)"
-                />
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="70"
-                  fill="none"
-                  stroke="#d1d5db"
-                  strokeWidth="20"
-                  strokeDasharray={`${categories[2].value * 4.4} 440`}
-                  strokeDashoffset={`-${(categories[0].value + categories[1].value) * 4.4}`}
-                  transform="rotate(-90 100 100)"
-                />
-              </svg>
-              <div className="donut-center">
-                <span className="donut-value">$6.2k</span>
-              </div>
-            </div>
+          <div className="donut-chart-wrapper">
+            <HighchartsReact
+              highcharts={Highcharts}
+              options={donutChartOptions}
+            />
           </div>
           
           <div className="categories-list">
             {categories.map((category, index) => (
               <div key={index} className="category-item">
-                <div 
-                  className="category-dot" 
-                  style={{ backgroundColor: category.color }}
-                ></div>
-                <span className="category-name">{category.name}</span>
+                <div className="category-left">
+                  <div 
+                    className="category-dot" 
+                    style={{ backgroundColor: category.color }}
+                  ></div>
+                  <span className="category-name">{category.name}</span>
+                </div>
               </div>
             ))}
             <div className="category-arrow">›</div>
