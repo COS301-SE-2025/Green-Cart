@@ -117,11 +117,16 @@
   color: white;
 }
 
-.nav-icon {
-  font-size: 16px;
-  width: 20px;
-  text-align: center;
+.nav-icon-img {
+  width: 15px;
+  height: auto;
+  object-fit: contain;
   flex-shrink: 0;
+  filter: brightness(0) invert(1); /* Makes icons white */
+}
+
+.nav-item.active .nav-icon-img {
+  filter: brightness(0) invert(1); /* Keep icons white when active */
 }
 
 .notification-badge {
@@ -178,9 +183,82 @@
 }
 
 .user-menu {
+  background: none;
+  border: none;
+  color: white;
   cursor: pointer;
-  padding: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
   flex-shrink: 0;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.user-menu:hover {
+  background-color: #2d3748;
+}
+
+/* Profile Menu Overlay */
+.profile-menu-overlay {
+  position: absolute;
+  bottom: 100%;
+  right: 8px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
+  min-width: 180px;
+  z-index: 1000;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.profile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: #1f2937;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 14px;
+}
+
+.profile-menu-item:hover {
+  background-color: #f9fafb;
+}
+
+.profile-menu-item.logout:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.profile-menu-icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+.profile-menu-divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 4px 0;
+}
+
+/* Animation for profile menu */
+.profile-menu-overlay {
+  animation: slideUp 0.15s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsive */
@@ -209,6 +287,10 @@
   .sidebar-user {
     padding: 16px;
   }
+  
+  .profile-menu-overlay {
+    min-width: 160px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -221,5 +303,10 @@
   .sidebar-closed {
     transform: translateX(-100%);
     width: 240px;
+  }
+  
+  .profile-menu-overlay {
+    right: 16px;
+    min-width: 150px;
   }
 }

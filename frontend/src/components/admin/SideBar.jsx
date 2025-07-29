@@ -1,28 +1,85 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import '../styles/admin/SideBar.css';
 
+// icons
+import dashboardIcon from './icons/dashboardIcon.png';
+// import ordersIcon from '../icons/ordersIcon.png';
+// import productsIcon from '../icons/productsIcon.png';
+// import paymentsIcon from '../icons/paymentsIcon.png';
+// import customersIcon from '../icons/customersIcon.png';
+// import notificationsIcon from '../icons/notificationsIcon.png';
+// import helpIcon from '../icons/helpIcon.png';
+// import settingsIcon from '../icons/settingsIcon.png';
+
 const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const profileMenuRef = useRef(null);
+  const profileButtonRef = useRef(null);
+
   const navigationItems = [
-    { name: 'Dashboard', icon: '📊' },
-    { name: 'Orders', icon: '📦' },
-    { name: 'Products', icon: '🛍️' },
-    { name: 'Payments', icon: '💳' },
-    { name: 'Customers', icon: '👥' }
+    { name: 'Dashboard', icon: dashboardIcon || 'https://placehold.co/600x400' },
+    { name: 'Orders', icon: 'https://placehold.co/600x400'},
+    { name: 'Products', icon: 'https://placehold.co/600x400'},
+    { name: 'Payments', icon: 'https://placehold.co/600x400'},
+    { name: 'Customers', icon: 'https://placehold.co/600x400'}
   ];
 
   const supportItems = [
-    { name: 'Notifications', icon: '🔔', badge: 7 },
-    { name: 'Help & Support', icon: '❓' },
-    { name: 'Settings', icon: '⚙️' }
+    { name: 'Notifications', icon: 'https://placehold.co/600x400', badge: 7 },
+    { name: 'Help & Support', icon: 'https://placehold.co/600x400'},
+    { name: 'Settings', icon: 'https://placehold.co/600x400'}
   ];
 
   const handleNavClick = (itemName) => {
     onNavigate(itemName);
   };
 
+  const handleProfileMenuToggle = (e) => {
+    e.stopPropagation();
+    setShowProfileMenu(!showProfileMenu);
+  };
+
+  const handleProfileAction = (action) => {
+    setShowProfileMenu(false);
+    if (action === 'logout') {
+      // Handle logout logic here
+      console.log('Logging out...');
+      // You can add your logout logic here
+    } else if (action === 'profile') {
+      // Handle view profile logic here
+      console.log('Viewing profile...');
+      // You can navigate to profile page or open profile modal
+    }
+  };
+
+  // Close profile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        profileMenuRef.current && 
+        !profileMenuRef.current.contains(event.target) &&
+        !profileButtonRef.current.contains(event.target)
+      ) {
+        setShowProfileMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Close profile menu when sidebar is collapsed
+  useEffect(() => {
+    if (!isOpen) {
+      setShowProfileMenu(false);
+    }
+  }, [isOpen]);
+
   return (
     <div className={`sidebar ${!isOpen ? 'sidebar-closed' : ''}`}>
-      {/* Close Button */}
+      {/* Toggle Button */}
       <button className="sidebar-toggle" onClick={onToggle}>
         {isOpen ? '←' : '→'}
       </button>
@@ -48,7 +105,11 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
                 className={`nav-item ${currentPage === item.name ? 'active' : ''}`}
                 onClick={() => handleNavClick(item.name)}
               >
-                <span className="nav-icon">{item.icon}</span>
+                <img 
+                  src={item.icon} 
+                  alt={`${item.name} icon`} 
+                  className="nav-icon-img"
+                />
                 <span>{item.name}</span>
               </div>
             ))}
@@ -61,7 +122,11 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
                 className={`nav-item ${currentPage === item.name ? 'active' : ''}`}
                 onClick={() => handleNavClick(item.name)}
               >
-                <span className="nav-icon">{item.icon}</span>
+                <img 
+                  src={item.icon} 
+                  alt={`${item.name} icon`} 
+                  className="nav-icon-img"
+                />
                 <span>{item.name}</span>
                 {item.badge && <span className="notification-badge">{item.badge}</span>}
               </div>
@@ -76,8 +141,32 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
         {isOpen && (
           <>
             <span className="user-name">Olivia Williams</span>
-            <span className="user-menu">⋯</span>
+            <button 
+              ref={profileButtonRef}
+              className="user-menu"
+              onClick={handleProfileMenuToggle}
+            >
+              ⋯
+            </button>
           </>
+        )}
+
+        {/* Profile Menu Overlay */}
+        {showProfileMenu && isOpen && (
+          <div 
+            ref={profileMenuRef}
+            className="profile-menu-overlay"
+          >
+            <div className="profile-menu-item" onClick={() => handleProfileAction('profile')}>
+              <span className="profile-menu-icon">👤</span>
+              <span>View Profile</span>
+            </div>
+            <div className="profile-menu-divider"></div>
+            <div className="profile-menu-item logout" onClick={() => handleProfileAction('logout')}>
+              <span className="profile-menu-icon">🚪</span>
+              <span>Logout</span>
+            </div>
+          </div>
         )}
       </div>
     </div>
