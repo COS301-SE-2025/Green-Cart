@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../styles/admin/SideBar.css';
 
-// icons
+// Import icons
 import dashboardIcon from './icons/dashboardIcon.png';
 import ordersIcon from './icons/ordersIcon.png';
 import productsIcon from './icons/productsIcon.png';
@@ -10,6 +10,8 @@ import customersIcon from './icons/customersIcon.png';
 // import notificationsIcon from '../icons/notificationsIcon.png';
 // import helpIcon from '../icons/helpIcon.png';
 // import settingsIcon from '../icons/settingsIcon.png';
+import searchIcon from './icons/loupe.png'; // Add this icon to your icons folder
+import logoImage from './icons/loupe.png'; // Add your logo image
 
 const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -18,16 +20,16 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
 
   const navigationItems = [
     { name: 'Dashboard', icon: dashboardIcon },
-    { name: 'Orders', icon: ordersIcon},
-    { name: 'Products', icon: productsIcon},
-    { name: 'Payments', icon: paymentsIcon},
-    { name: 'Customers', icon: customersIcon}
+    { name: 'Orders', icon: ordersIcon },
+    { name: 'Products', icon: productsIcon },
+    { name: 'Payments', icon: paymentsIcon },
+    { name: 'Customers', icon: customersIcon }
   ];
 
   const supportItems = [
-    { name: 'Notifications', icon: 'https://placehold.co/600x400', badge: 7 },
-    { name: 'Help & Support', icon: 'https://placehold.co/600x400'},
-    { name: 'Settings', icon: 'https://placehold.co/600x400'}
+    // { name: 'Notifications', icon: notificationsIcon, badge: 7 },
+    // { name: 'Help & Support', icon: helpIcon },
+    // { name: 'Settings', icon: settingsIcon }
   ];
 
   const handleNavClick = (itemName) => {
@@ -42,13 +44,9 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
   const handleProfileAction = (action) => {
     setShowProfileMenu(false);
     if (action === 'logout') {
-      // Handle logout logic here
       console.log('Logging out...');
-      // You can add your logout logic here
     } else if (action === 'profile') {
-      // Handle view profile logic here
       console.log('Viewing profile...');
-      // You can navigate to profile page or open profile modal
     }
   };
 
@@ -88,14 +86,14 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
         <>
           <div className="sidebar-header">
             <div className="logo">
-              <span className="logo-icon">🛒</span>
+              <img src={logoImage} alt="Green-Cart Logo" className="logo-image" />
               <span className="logo-text">Green-Cart</span>
             </div>
           </div>
 
           <div className="search-bar">
+            <img src={searchIcon} alt="Search" className="search-icon" />
             <input type="text" placeholder="Search" />
-            <span className="search-shortcut">⌘F</span>
           </div>
 
           <nav className="sidebar-nav">
