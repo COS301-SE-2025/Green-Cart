@@ -8,11 +8,12 @@ import productsIcon from './icons/productsIcon.png';
 import paymentsIcon from './icons/paymentsIcon.png';
 import customersIcon from './icons/customersIcon.png';
 import leafIcon from './icons/leafIcon.png';
-import backIcon from './icons/backIcon.png'; // Add this arrow icon to your icons folder
+import backIcon from './icons/backIcon.png';
 import logo from './icons/Green-cart-admin.png'
 
 const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const profileMenuRef = useRef(null);
   const profileButtonRef = useRef(null);
 
@@ -48,7 +49,7 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
     }
   };
 
-    // Close profile menu when clicking outside
+  // Close profile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -66,15 +67,24 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
     };
   }, []);
 
-    // Close profile menu when sidebar is collapsed
+  // Handle sidebar animation state
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      setIsAnimating(true);
+      // Reset animation state after animation completes
+      const timer = setTimeout(() => {
+        setIsAnimating(false);
+      }, 800); // Adjust based on your longest animation delay
+      
+      return () => clearTimeout(timer);
+    } else {
       setShowProfileMenu(false);
+      setIsAnimating(false);
     }
   }, [isOpen]);
 
   return (
-    <div className={`sidebar ${!isOpen ? 'sidebar-closed' : ''}`}>
+    <div className={`sidebar ${!isOpen ? 'sidebar-closed' : ''} ${isAnimating ? 'sidebar-animating' : ''}`}>
       {/* Toggle Button */}
       <button className="sidebar-toggle" onClick={onToggle}>
         <img 
@@ -88,7 +98,6 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
         <>
           <div className="admin-sidebar-header">
             <div className="logo">
-              {/* <img src={leafIcon} alt="Green-Cart Logo" className="logo-image" /> */}
               <span className="logo-text"><img src={logo} className='logo-admin-image'/></span>
             </div>
           </div>
@@ -110,10 +119,13 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
           </div>
 
           <nav className="sidebar-nav">
-            {navigationItems.map((item) => (
+            {navigationItems.map((item, index) => (
               <div 
                 key={item.name}
                 className={`nav-item ${currentPage === item.name ? 'active' : ''}`}
+                style={{ 
+                  animationDelay: isAnimating ? `${index * 0.1}s` : '0s' 
+                }}
                 onClick={() => handleNavClick(item.name)}
               >
                 <img 
@@ -127,10 +139,13 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
 
             <div className="nav-divider"></div>
 
-            {supportItems.map((item) => (
+            {supportItems.map((item, index) => (
               <div 
                 key={item.name}
                 className={`nav-item ${currentPage === item.name ? 'active' : ''}`}
+                style={{ 
+                  animationDelay: isAnimating ? `${(navigationItems.length + index) * 0.1}s` : '0s' 
+                }}
                 onClick={() => handleNavClick(item.name)}
               >
                 <img 

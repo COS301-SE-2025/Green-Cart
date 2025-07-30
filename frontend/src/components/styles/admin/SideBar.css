@@ -65,6 +65,156 @@
   animation: slideInDown 0.4s ease-out;
 }
 
+.sidebar-animating .nav-item {
+  animation: shuffleSlideIn 0.6s ease-out both;
+}
+
+/* Shuffled slide-in animation for nav items */
+@keyframes shuffleSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) rotate(-2deg);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(-5px) rotate(1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+/* Enhanced hover effects for animated items */
+.sidebar-animating .nav-item:hover {
+  transform: translateX(5px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth transition for non-animating state */
+.nav-item {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Add a subtle bounce to active items during animation */
+.sidebar-animating .nav-item.active {
+  animation: shuffleSlideInActive 0.6s ease-out both;
+}
+
+@keyframes shuffleSlideInActive {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) translateX(-15px) rotate(-2deg) scale(0.9);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(-5px) translateX(5px) rotate(1deg) scale(1.05);
+  }
+  70% {
+    transform: translateY(2px) translateX(-2px) rotate(-0.5deg) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+  }
+}
+
+/* Enhanced divider animation */
+.sidebar-animating .nav-divider {
+  animation: dividerSlideIn 0.4s ease-out both;
+  animation-delay: 0.5s;
+}
+
+@keyframes dividerSlideIn {
+  0% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+/* Icon animation within nav items */
+.sidebar-animating .nav-icon-img {
+  animation: iconRotateIn 2s ease-out both;
+}
+
+@keyframes iconRotateIn {
+  0% {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.5);
+  }
+  50% {
+    transform: rotate(10deg) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+/* Badge animation */
+.sidebar-animating .notification-badge {
+  animation: badgePop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+  animation-delay: 0.4s;
+}
+
+@keyframes badgePop {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* User profile enhanced animation */
+.sidebar-animating .sidebar-user {
+  animation: userSlideUp 0.5s ease-out both;
+  animation-delay: 0.6s;
+}
+
+@keyframes userSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Search bar animation enhancement */
+.sidebar-animating .admin-search-bar {
+  animation: searchSlideIn 0.4s ease-out both;
+  animation-delay: 0.2s;
+}
+
+@keyframes searchSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Performance optimization */
+.sidebar-animating {
+  will-change: transform;
+}
+
+.sidebar-animating .nav-item {
+  will-change: transform, opacity;
+}
+
 @keyframes slideInDown {
   from {
     opacity: 0;

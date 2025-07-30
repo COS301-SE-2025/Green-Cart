@@ -23,7 +23,7 @@ const Dashboard = () => {
       id: 1,
       title: 'Total Customers',
       subtitle: '731 Orders',
-      value: '$9,328.55',
+      value: 'R9,328.55',
       percentage: '+15.6%',
       change: '+1.4k this week',
       trend: 'up',
@@ -318,7 +318,7 @@ const Dashboard = () => {
                 <h3 className="stat-title">{card.title}</h3>
                 <p className="stat-subtitle">{card.subtitle}</p>
               </div>
-              <div className="stat-arrow">›</div>
+              {/* <div className="stat-arrow">›</div> */}
             </div>
             
             <div className="stat-value">{card.value}</div>
