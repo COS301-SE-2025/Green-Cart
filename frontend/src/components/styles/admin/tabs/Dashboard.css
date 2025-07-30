@@ -74,7 +74,7 @@
 }
 
 .stat-card-dark .stat-icon {
-  background: rgba(34, 197, 94, 0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .stat-info {
@@ -167,6 +167,23 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+}
+
+/* Add this new style for the icon images */
+.stat-icon-image {
+  width: 20px;
+  height: 30px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+}
+
+.stat-card-dark .stat-icon-image {
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(109deg) brightness(111%) contrast(111%);
+}
+
+/* Ensure the categories chart has enough space */
+.categories-chart {
+  min-height: 400px; /* Ensure minimum height */
 }
 
 .chart-title {
@@ -267,6 +284,10 @@
   background: #d1d5db;
 }
 
+.stats-icon{
+  width: 20px
+}
+
 /* Chart Wrappers */
 .chart-wrapper {
   width: 100%;
@@ -274,14 +295,26 @@
   overflow: hidden;
 }
 
+/* Update the donut chart wrapper for better sizing */
 .donut-chart-wrapper {
+  width: 100%;
+  height: 180px; /* Reduced from 200px */
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Center vertically */
+  margin: 16px 0; /* Reduced margin */
+  overflow: hidden; /* Changed from hidden to visible */
+}
+
+/* .donut-chart-wrapper {
   width: 100%;
   height: 200px;
   display: flex;
   justify-content: center;
   margin: 20px 0;
   overflow: hidden;
-}
+} */
+
 
 /* Categories List */
 .categories-list {

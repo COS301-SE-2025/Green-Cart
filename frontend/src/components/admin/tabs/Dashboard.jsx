@@ -3,6 +3,16 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import '../../styles/admin/tabs/Dashboard.css';
 
+// Import real icons
+import retailerIcon from '../icons/retailerIcon.png';
+import customerIcon from '../icons/customersIcon.png'; // Add this
+import verifiedIcon from '../icons/verifiedIcon.png'; // Add this
+import unverifiedIcon from '../icons/unverifiedIcon.png'; // Add this
+import statsIcon from '../icons/statsIcon.png'; // Add this
+
+import statsLossIcon from '../icons/statsLossIcon.png'; // Add this
+import statsProfitIcon from '../icons/statsProfitIcon.png'; // Add this
+
 const Dashboard = () => {
   const [exportDropdown, setExportDropdown] = useState(false);
   const [periodDropdown, setPeriodDropdown] = useState(false);
@@ -12,35 +22,46 @@ const Dashboard = () => {
   const statsCards = [
     {
       id: 1,
-      title: 'Total Sales',
+      title: 'Total Customers',
       subtitle: '731 Orders',
       value: '$9,328.55',
       percentage: '+15.6%',
       change: '+1.4k this week',
       trend: 'up',
-      icon: '🛒',
+      icon: customerIcon, // Use real icon
       dark: true
     },
     {
       id: 2,
-      title: 'Visitors',
+      title: 'Total Retailers',
       subtitle: 'Avg. time: 4:30m',
       value: '12,302',
       percentage: '+12.7%',
       change: '+1.2k this week',
       trend: 'up',
-      icon: '👤',
+      icon: retailerIcon, // Use real icon
       dark: !false
     },
     {
       id: 3,
-      title: 'Refunds',
+      title: 'Verified Products',
       subtitle: '2 Disputed',
       value: '963',
       percentage: '-12.7%',
       change: '-213',
       trend: 'down',
-      icon: '↩️',
+      icon: verifiedIcon, // Use real icon
+      dark: !false
+    },
+    {
+      id: 4,
+      title: 'Unverified Products',
+      subtitle: '2 Disputed',
+      value: '963',
+      percentage: '-12.7%',
+      change: '-213',
+      trend: 'down',
+      icon: unverifiedIcon, // Use real icon
       dark: !false
     }
   ];
@@ -137,19 +158,20 @@ const Dashboard = () => {
     }
   };
 
-  // Donut chart configuration
+  // Updated donut chart configuration with better sizing
   const donutChartOptions = {
     chart: {
       type: 'pie',
-      height: 200,
-      backgroundColor: 'transparent'
+      height: 180, // Reduced height
+      backgroundColor: 'transparent',
+      margin: [10, 10, 10, 10] // Add margins
     },
     title: {
       text: '$6.2k',
       align: 'center',
       verticalAlign: 'middle',
       style: {
-        fontSize: '24px',
+        fontSize: '20px', // Slightly smaller
         fontWeight: '700',
         color: '#1f2937'
       }
@@ -165,12 +187,13 @@ const Dashboard = () => {
     },
     plotOptions: {
       pie: {
-        innerSize: '70%',
+        innerSize: '65%', // Slightly smaller inner size
         dataLabels: {
           enabled: false
         },
         enableMouseTracking: false,
-        borderWidth: 0
+        borderWidth: 0,
+        size: '85%' // Make the pie smaller to fit better
       }
     },
     series: [{
@@ -224,7 +247,9 @@ const Dashboard = () => {
         {statsCards.map((card) => (
           <div key={card.id} className={`stat-card ${card.dark ? 'stat-card-dark' : ''}`}>
             <div className="stat-card-header">
-              <div className="stat-icon">{card.icon}</div>
+              <div className="stat-icon">
+                <img src={card.icon} alt={card.title} className="stat-icon-image" />
+              </div>
               <div className="stat-info">
                 <h3 className="stat-title">{card.title}</h3>
                 <p className="stat-subtitle">{card.subtitle}</p>
@@ -236,7 +261,7 @@ const Dashboard = () => {
             
             <div className="stat-footer">
               <span className={`stat-percentage ${card.trend}`}>
-                📈 {card.percentage}
+                <img src={card.percentage.charAt(0) === '-' ? statsLossIcon : statsProfitIcon} alt='stats-icon' className='stats-icon'/> {card.percentage}
               </span>
               <span className="stat-change">{card.change}</span>
             </div>
