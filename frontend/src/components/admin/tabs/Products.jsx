@@ -123,7 +123,7 @@ const Products = () => {
                   <img
                     src={product.image}
                     alt={product.description}
-                    className="product-image"
+                    className="admin-product-image"
                     onClick={() => handleImageClick(product.image)}
                   />
                 </td>

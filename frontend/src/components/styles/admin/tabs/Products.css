@@ -124,7 +124,7 @@
   background-color: #f9fafb;
 }
 
-.product-image {
+.admin-product-image {
   width: 40px;
   height: 40px;
   border-radius: 8px;
@@ -133,7 +133,7 @@
   transition: transform 0.2s;
 }
 
-.product-image:hover {
+.admin-product-image:hover {
   transform: scale(1.1);
 }
 

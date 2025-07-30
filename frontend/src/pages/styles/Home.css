@@ -379,13 +379,10 @@
   .product-list {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
-<<<<<<< HEAD
-=======
 
   .search-section {
     top: 90px;
   }
->>>>>>> frontend
 }
 
 @media (max-width: 992px) {
@@ -400,13 +397,10 @@
   .hero-title {
     font-size: 2.5rem;
   }
-<<<<<<< HEAD
-=======
 
   .search-section {
     top: 90px;
   }
->>>>>>> frontend
 }
 
 @media (max-width: 768px) {
@@ -486,13 +480,10 @@
   .skeleton-image {
     height: 160px;
   }
-<<<<<<< HEAD
-=======
 
   .search-section {
     top: 70px;
   }
->>>>>>> frontend
 }
 
 @media (max-width: 480px) {
@@ -537,13 +528,10 @@
   .skeleton-image {
     height: 140px;
   }
-<<<<<<< HEAD
-=======
 
   .search-section {
     top: 60px;
   }
->>>>>>> frontend
 }
 
 /* Disable animations for reduced motion */

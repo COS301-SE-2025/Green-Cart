@@ -84,15 +84,15 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
 
       {isOpen && (
         <>
-          <div className="sidebar-header">
+          <div className="admin-sidebar-header">
             <div className="logo">
               <img src={logoImage} alt="Green-Cart Logo" className="logo-image" />
               <span className="logo-text">Green-Cart</span>
             </div>
           </div>
 
-          <div className="search-bar">
-            <img src={searchIcon} alt="Search" className="search-icon" />
+          <div className="admin-search-bar">
+            <img src={searchIcon} alt="Search" className="admin-search-icon" />
             <input type="text" placeholder="Search" />
           </div>
 
