@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SideBar from '../components/admin/SideBar';
 import Products from '../components/admin/tabs/Products';
 import Dashboard from '../components/admin/tabs/Dashboard';
@@ -6,7 +6,27 @@ import './styles/Admin.css';
 
 const Admin = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [currentPage, setCurrentPage] = useState('Products');
+  const [currentPage, setCurrentPage] = useState('Dashboard');
+
+  // Set sidebar closed by default on smaller screens
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -35,7 +55,7 @@ const Admin = () => {
       case 'Settings':
         return <div className="page-placeholder">Settings Page - Coming Soon</div>;
       default:
-        return <Products />;
+        return <Dashboard />;
     }
   };
 

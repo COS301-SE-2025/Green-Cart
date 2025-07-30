@@ -7,11 +7,9 @@ import ordersIcon from './icons/ordersIcon.png';
 import productsIcon from './icons/productsIcon.png';
 import paymentsIcon from './icons/paymentsIcon.png';
 import customersIcon from './icons/customersIcon.png';
-// import notificationsIcon from '../icons/notificationsIcon.png';
-// import helpIcon from '../icons/helpIcon.png';
-// import settingsIcon from '../icons/settingsIcon.png';
-import searchIcon from './icons/microscope.png'; // Add this icon to your icons folder
-import logoImage from './icons/microscope.png'; // Add your logo image
+import leafIcon from './icons/leafIcon.png';
+import backIcon from './icons/backIcon.png'; // Add this arrow icon to your icons folder
+import logo from './icons/Green-cart-admin.png'
 
 const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -27,9 +25,9 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
   ];
 
   const supportItems = [
-    { name: 'Notifications', icon: dashboardIcon /*notificationsIcon*/, badge: 7 },
-    { name: 'Help & Support', icon: dashboardIcon /*helpIcon*/ },
-    { name: 'Settings', icon: dashboardIcon /*settingsIcon*/ }
+    { name: 'Notifications', icon: dashboardIcon, badge: 7 },
+    { name: 'Help & Support', icon: dashboardIcon },
+    { name: 'Settings', icon: dashboardIcon }
   ];
 
   const handleNavClick = (itemName) => {
@@ -50,7 +48,7 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
     }
   };
 
-  // Close profile menu when clicking outside
+    // Close profile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -68,7 +66,7 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
     };
   }, []);
 
-  // Close profile menu when sidebar is collapsed
+    // Close profile menu when sidebar is collapsed
   useEffect(() => {
     if (!isOpen) {
       setShowProfileMenu(false);
@@ -79,21 +77,36 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
     <div className={`sidebar ${!isOpen ? 'sidebar-closed' : ''}`}>
       {/* Toggle Button */}
       <button className="sidebar-toggle" onClick={onToggle}>
-        {isOpen ? '←' : '→'}
+        <img 
+          src={backIcon} 
+          alt="Toggle sidebar" 
+          className={`toggle-arrow ${!isOpen ? 'toggle-arrow-closed' : ''}`}
+        />
       </button>
 
       {isOpen && (
         <>
           <div className="admin-sidebar-header">
             <div className="logo">
-              <img src={logoImage} alt="Green-Cart Logo" className="logo-image" />
-              <span className="logo-text">Green-Cart</span>
+              {/* <img src={leafIcon} alt="Green-Cart Logo" className="logo-image" /> */}
+              <span className="logo-text"><img src={logo} className='logo-admin-image'/></span>
             </div>
           </div>
 
           <div className="admin-search-bar">
-            <img src={searchIcon} alt="Search" className="admin-search-icon" />
-            <input type="text" placeholder="Search" />
+            <div className="search-input-container">
+              <svg 
+                className="search-icon" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input type="text" placeholder="Search" />
+            </div>
           </div>
 
           <nav className="sidebar-nav">
@@ -134,7 +147,7 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
       )}
 
       {/* User Profile - Always visible */}
-      <div className="sidebar-user">
+      <div className={isOpen ? "sidebar-user" : "sidebar-user sidebar-user-closed"}>
         <div className="user-avatar">OW</div>
         {isOpen && (
           <>
