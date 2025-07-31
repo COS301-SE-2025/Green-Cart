@@ -113,7 +113,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                 retailer_id: 3, // Hardcoded for now
                 sustainability_metrics: formData.sustainability
             };
-            const response = await fetch('http://localhost:8000/retailer/products', {
+            const response = await fetch('https://api.greencart-cos301.co.za/retailer/products', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

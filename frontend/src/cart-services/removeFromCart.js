@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/cart/remove";
+const API_URL = "https://api.greencart-cos301.co.za/cart/remove";
 
 export const removeFromCart = async ({ user_id, product_id }) => {
     try {

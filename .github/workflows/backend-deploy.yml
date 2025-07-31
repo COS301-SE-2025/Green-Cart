@@ -1,0 +1,36 @@
+name: Deploy Backend to EC2
+
+on:
+  push:
+    branches:
+      - backend-deployment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: 100.26.194.137
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."
+          target: "/home/ubuntu/Green-Cart"
+
+      - name: SSH and restart backend
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: 100.26.194.137
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/Green-Cart
+            git pull origin backend-deployment
+            source venv/bin/activate
+            pip install -r requirements.txt
+            pkill uvicorn || true
+            nohup uvicorn app.main:app --host 0.0.0.0 --port 80 &

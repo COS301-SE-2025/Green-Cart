@@ -31,8 +31,8 @@ export default function RetailerDashboard() {
             try {
                 const retailerId = 3; // 🔁 Use parsedUser.id when backend supports dynamic users
 
-                const metricsRes = await fetch(`http://localhost:8000/retailer/metrics/${retailerId}`);
-                const productsRes = await fetch(`http://localhost:8000/retailer/products/${retailerId}`);
+                const metricsRes = await fetch(`https://api.greencart-cos301.co.za/retailer/metrics/${retailerId}`);
+                const productsRes = await fetch(`https://api.greencart-cos301.co.za/retailer/products/${retailerId}`);
 
                 const [metricsJson, productsJson] = await Promise.all([
                     metricsRes.json(),

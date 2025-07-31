@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/orders/cancelOrder";
+const API_URL = "https://api.greencart-cos301.co.za/orders/cancelOrder";
 
 export const cancelOrder = async (userID, orderID) => {
     try {
