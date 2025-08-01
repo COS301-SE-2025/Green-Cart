@@ -30,7 +30,7 @@ jobs:
           script: |
             cd /home/ubuntu/Green-Cart
             git pull origin backend-deployment
-            docker stop green-cart-backend || true
-            docker rm green-cart-backend || true
-            docker build -t green-cart-backend .
-            docker run -d --name green-cart-backend -p 8000:8000 green-cart-backend
+            sudo docker stop green-cart-backend || true
+            sudo docker rm green-cart-backend || true
+            sudo docker build -t green-cart-backend .
+            sudo docker run -d --name green-cart-backend -p 8000:8000 green-cart-backend
