@@ -30,7 +30,7 @@ jobs:
           script: |
             cd /home/ubuntu/Green-Cart
             git pull origin backend-deployment
-            source venv/bin/activate
-            pip install -r requirements.txt
-            pkill uvicorn || true
-            nohup uvicorn app.main:app --host 0.0.0.0 --port 80 &
+            docker stop green-cart-backend || true
+            docker rm green-cart-backend || true
+            docker build -t green-cart-backend .
+            docker run -d --name green-cart-backend -p 8000:8000 green-cart-backend
