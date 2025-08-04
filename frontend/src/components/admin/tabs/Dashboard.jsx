@@ -1,55 +1,103 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import { getAdminMetrics } from '../../../admin-services/adminMetricsService';
+import { getProductStats } from '../../../admin-services/adminProductService';
+import toast from 'react-hot-toast';
 import '../../styles/admin/tabs/Dashboard.css';
 
 const Dashboard = () => {
   const [exportDropdown, setExportDropdown] = useState(false);
   const [periodDropdown, setPeriodDropdown] = useState(false);
+  const [adminMetrics, setAdminMetrics] = useState({
+    total_users: 0,
+    total_retailers: 0,
+    total_products: 0,
+    verified_products: 0,
+    unverified_products: 0,
+    recent_orders: 0,
+    active_retailers: 0,
+    top_categories: [],
+    monthly_orders: []
+  });
+  const [productStats, setProductStats] = useState({
+    totalProducts: 0,
+    verifiedCount: 0,
+    unverifiedCount: 0,
+    totalValue: '0.00'
+  });
+  const [loading, setLoading] = useState(true);
   const exportRef = useRef(null);
   const periodRef = useRef(null);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      const [metricsResponse, statsResponse] = await Promise.all([
+        getAdminMetrics(),
+        getProductStats()
+      ]);
+
+      if (metricsResponse) {
+        setAdminMetrics(metricsResponse);
+      }
+
+      if (statsResponse.status === 200) {
+        setProductStats(statsResponse.data);
+      }
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      toast.error('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const statsCards = [
     {
       id: 1,
-      title: 'Total Sales',
-      subtitle: '731 Orders',
-      value: '$9,328.55',
-      percentage: '+15.6%',
-      change: '+1.4k this week',
+      title: 'Total Users',
+      subtitle: 'Registered Users',
+      value: adminMetrics.total_users.toString(),
+      percentage: `${adminMetrics.recent_orders} orders this week`,
       trend: 'up',
-      icon: '🛒',
       dark: true
     },
     {
       id: 2,
-      title: 'Visitors',
-      subtitle: 'Avg. time: 4:30m',
-      value: '12,302',
-      percentage: '+12.7%',
-      change: '+1.2k this week',
+      title: 'Total Retailers',
+      subtitle: 'Active Retailers', 
+      value: adminMetrics.total_retailers.toString(),
+      percentage: `${adminMetrics.active_retailers} with products`,
       trend: 'up',
-      icon: '👤',
-      dark: !false
+      dark: true
     },
     {
       id: 3,
-      title: 'Refunds',
-      subtitle: '2 Disputed',
-      value: '963',
-      percentage: '-12.7%',
-      change: '-213',
-      trend: 'down',
-      icon: '↩️',
-      dark: !false
+      title: 'Verified Products',
+      subtitle: 'Approved Products',
+      value: adminMetrics.verified_products.toString(),
+      percentage: adminMetrics.total_products > 0 ? `${Math.round((adminMetrics.verified_products / adminMetrics.total_products) * 100)}% of total` : '0% of total',
+      trend: 'up',
+      dark: true
+    },
+    {
+      id: 4,
+      title: 'Unverified Products',
+      subtitle: 'Pending Review',
+      value: adminMetrics.unverified_products.toString(),
+      percentage: adminMetrics.total_products > 0 ? `${Math.round((adminMetrics.unverified_products / adminMetrics.total_products) * 100)}% of total` : '0% of total',
+      trend: adminMetrics.unverified_products > 0 ? 'down' : 'up',
+      dark: true
     }
   ];
 
-  const categories = [
-    { name: 'Electronics', color: '#1f2937', value: 45 },
-    { name: 'Laptops', color: '#6b7280', value: 30 },
-    { name: 'Phones', color: '#d1d5db', value: 25 }
-  ];
+  // Use real categories data from backend
+  const categories = adminMetrics.top_categories || [];
 
   // Line chart configuration
   const lineChartOptions = {
@@ -69,7 +117,7 @@ const Dashboard = () => {
       enabled: false
     },
     xAxis: {
-      categories: ['03 Wed', '04 Thu', '05 Fri', '06 Sat', '07 Sun', '08 Mon', '09 Tue', '10 Wed', '11 Thu', '12 Fri', '13 Sat', '14 Sun', '15 Mon', '16 Tue'],
+      categories: adminMetrics.monthly_orders.map(item => item.month),
       gridLineWidth: 0,
       lineWidth: 0,
       tickWidth: 0,
@@ -77,7 +125,8 @@ const Dashboard = () => {
         style: {
           color: '#9ca3af',
           fontSize: '12px'
-        }
+        },
+        rotation: -45
       }
     },
     yAxis: {
@@ -93,33 +142,24 @@ const Dashboard = () => {
           fontSize: '12px'
         }
       },
-      min: 0,
-      max: 70
+      min: 0
     },
     plotOptions: {
       line: {
         marker: {
           enabled: true,
-          radius: 3
+          radius: 4
         },
-        lineWidth: 2
+        lineWidth: 3
       }
     },
     series: [
       {
-        name: 'Earnings',
-        data: [30, 40, 46, 37, 42, 62, 55, 13, 35, 38, 20, 10, 32, 48],
+        name: 'Total Orders',
+        data: adminMetrics.monthly_orders.map(item => item.orders),
         color: '#1f2937',
         marker: {
           fillColor: '#1f2937'
-        }
-      },
-      {
-        name: 'Costs',
-        data: [25, 20, 35, 22, 38, 42, 25, 15, 40, 30, 18, 20, 28, 30],
-        color: '#d1d5db',
-        marker: {
-          fillColor: '#d1d5db'
         }
       }
     ],
@@ -137,15 +177,15 @@ const Dashboard = () => {
     }
   };
 
-  // Donut chart configuration
+  // Donut chart configuration for top 3 categories
   const donutChartOptions = {
     chart: {
       type: 'pie',
-      height: 200,
+      height: 220,  // Slightly increased height for better proportion with 3 categories
       backgroundColor: 'transparent'
     },
     title: {
-      text: '$6.2k',
+      text: categories.length > 0 ? `${categories.reduce((sum, cat) => sum + cat.count, 0)}` : '0',
       align: 'center',
       verticalAlign: 'middle',
       style: {
@@ -161,7 +201,18 @@ const Dashboard = () => {
       enabled: false
     },
     tooltip: {
-      enabled: false
+      enabled: true,
+      formatter: function() {
+        return `<b>${this.point.name}</b><br/>
+                Orders: ${this.point.options.custom_count}<br/>
+                Percentage: ${this.y}%`;
+      },
+      backgroundColor: '#1f2937',
+      borderWidth: 0,
+      style: {
+        color: '#ffffff',
+        fontSize: '12px'
+      }
     },
     plotOptions: {
       pie: {
@@ -169,16 +220,17 @@ const Dashboard = () => {
         dataLabels: {
           enabled: false
         },
-        enableMouseTracking: false,
+        enableMouseTracking: true,
         borderWidth: 0
       }
     },
     series: [{
-      data: [
-        { name: 'Electronics', y: 45, color: '#1f2937' },
-        { name: 'Laptops', y: 30, color: '#6b7280' },
-        { name: 'Phones', y: 25, color: '#d1d5db' }
-      ]
+      data: categories.map(category => ({
+        name: category.name,
+        y: category.percentage,
+        color: category.color,
+        custom_count: category.count
+      }))
     }]
   };
 
@@ -224,7 +276,6 @@ const Dashboard = () => {
         {statsCards.map((card) => (
           <div key={card.id} className={`stat-card ${card.dark ? 'stat-card-dark' : ''}`}>
             <div className="stat-card-header">
-              <div className="stat-icon">{card.icon}</div>
               <div className="stat-info">
                 <h3 className="stat-title">{card.title}</h3>
                 <p className="stat-subtitle">{card.subtitle}</p>
@@ -236,9 +287,8 @@ const Dashboard = () => {
             
             <div className="stat-footer">
               <span className={`stat-percentage ${card.trend}`}>
-                📈 {card.percentage}
+                {card.percentage}
               </span>
-              <span className="stat-change">{card.change}</span>
             </div>
           </div>
         ))}
@@ -246,10 +296,10 @@ const Dashboard = () => {
 
       {/* Charts Section */}
       <div className="charts-section">
-        {/* Sales Performance Chart */}
+        {/* Monthly Orders Chart */}
         <div className="chart-container sales-chart">
           <div className="chart-header">
-            <h3 className="chart-title">Sales Performance</h3>
+            <h3 className="chart-title">Monthly Orders</h3>
             <div className="chart-controls">
               <div className="dropdown-container" ref={exportRef}>
                 <button 
@@ -283,18 +333,18 @@ const Dashboard = () => {
                     setExportDropdown(false);
                   }}
                 >
-                  Last 14 Days <span className="dropdown-arrow">⌄</span>
+                  Last 12 Months <span className="dropdown-arrow">⌄</span>
                 </button>
                 {periodDropdown && (
                   <div className="dropdown-menu">
-                    <div className="dropdown-item" onClick={() => handlePeriodClick('7 Days')}>
-                      Last 7 Days
+                    <div className="dropdown-item" onClick={() => handlePeriodClick('6 Months')}>
+                      Last 6 Months
                     </div>
-                    <div className="dropdown-item" onClick={() => handlePeriodClick('14 Days')}>
-                      Last 14 Days
+                    <div className="dropdown-item" onClick={() => handlePeriodClick('12 Months')}>
+                      Last 12 Months
                     </div>
-                    <div className="dropdown-item" onClick={() => handlePeriodClick('30 Days')}>
-                      Last 30 Days
+                    <div className="dropdown-item" onClick={() => handlePeriodClick('24 Months')}>
+                      Last 24 Months
                     </div>
                   </div>
                 )}
@@ -305,11 +355,7 @@ const Dashboard = () => {
           <div className="chart-legend">
             <div className="legend-item">
               <span className="legend-dot earnings"></span>
-              <span>Earnings</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-dot costs"></span>
-              <span>Costs</span>
+              <span>Total Orders</span>
             </div>
           </div>
           
@@ -321,10 +367,10 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Top Categories */}
+        {/* Top 3 Categories by Orders */}
         <div className="chart-container categories-chart">
           <div className="chart-header">
-            <h3 className="chart-title">Top Categories</h3>
+            <h3 className="chart-title">Top 3 Categories by Orders</h3>
           </div>
           
           <div className="donut-chart-wrapper">
