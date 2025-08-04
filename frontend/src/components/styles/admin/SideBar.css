@@ -538,6 +538,10 @@
   }
 
   .sidebar-toggle {
-    left: 3px;
+    left: 180px;
   }
+
+  .sidebar-closed .sidebar-toggle{
+  left: -3px;
+}
 }
