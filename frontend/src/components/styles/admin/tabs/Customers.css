@@ -204,6 +204,58 @@
   gap: 12px;
 }
 
+.adm-cus-avatar-container {
+  position: relative;
+  display: inline-block;
+}
+
+.adm-cus-premium-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: #10b981;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  border: 2px solid white;
+}
+
+.adm-cus-premium-badge.large {
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  top: 0;
+  right: 0;
+}
+
+/* Email and Phone Icons */
+.adm-cus-email-container,
+.adm-cus-phone-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adm-cus-email-icon,
+.adm-cus-phone-icon {
+  font-size: 14px;
+}
+
+/* Clickable row */
+.adm-cus-clickable-row {
+  cursor: pointer;
+}
+
+.adm-cus-clickable-row:hover {
+  background-color: #f0f0f0;
+}
+
 .adm-cus-avatar {
   width: 40px;
   height: 40px;
@@ -270,14 +322,160 @@
 }
 
 .adm-cus-card {
-  background: white;
+  background: #f8f9fa; /* Light gray background instead of white */
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e7eb;
   transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 
+.adm-cus-card-userid {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.adm-cus-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.adm-cus-modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.adm-cus-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.adm-cus-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.adm-cus-modal-close:hover {
+  background-color: #f3f4f6;
+}
+
+.adm-cus-modal-body {
+  padding: 24px;
+}
+
+.adm-cus-modal-card {
+  background: #4a5568; /* Dark background like in the image */
+  border-radius: 12px;
+  padding: 24px;
+  color: white;
+}
+
+.adm-cus-modal-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.adm-cus-modal-title-section h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.adm-cus-modal-userid {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.adm-cus-modal-details {
+  background: #f8f9fa; /* Light background for details section */
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.adm-cus-modal-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
+  color: #1f2937;
+}
+
+.adm-cus-modal-detail-row:last-child {
+  border-bottom: none;
+}
+
+.adm-cus-modal-label {
+  font-weight: 500;
+  color: #6b7280;
+  min-width: 140px;
+}
+
+.adm-cus-modal-value {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adm-cus-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.adm-cus-modal-action-btn {
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adm-cus-modal-action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
 .adm-cus-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
