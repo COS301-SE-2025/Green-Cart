@@ -1,0 +1,86 @@
+.user-card {
+  background: #ffffff;
+  border: 2px solid #a8e6cf;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  max-width: 280px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.user-avatar {
+  margin-bottom: 16px;
+}
+
+.user-avatar img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #f0f0f0;
+}
+
+.avatar-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 32px;
+  font-weight: bold;
+  border: 3px solid #f0f0f0;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  margin-bottom: 8px;
+}
+
+.user-email {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin: 0;
+  font-weight: 400;
+}
+
+.user-telephone {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Responsive design */
+@media (max-width: 320px) {
+  .user-card {
+    max-width: 100%;
+    padding: 20px;
+  }
+  
+  .user-avatar img,
+  .avatar-placeholder {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .avatar-placeholder {
+    font-size: 28px;
+  }
+  
+  .user-name {
+    font-size: 18px;
+  }
+}
