@@ -296,9 +296,9 @@ const Dashboard = () => {
     <div className="dashboard">
       {/* Welcome Header */}
       <div className="dashboard-header">
-        <div className="welcome-section">
-          <h1 className="welcome-title">Welcome back, Matthew</h1>
-          <p className="welcome-subtitle">Here are today's stats from your online store!</p>
+        <div className="dashboard-welcome-section">
+          <h1 className="dashboard-welcome-title">Welcome back, Matthew</h1>
+          <p className="dashboard-welcome-subtitle">Here are today's stats from your online store!</p>
         </div>
       </div>
 
@@ -407,6 +407,7 @@ const Dashboard = () => {
             <HighchartsReact
               highcharts={Highcharts}
               options={lineChartOptions}
+              className="line-chart"
             />
           </div>
         </div>
@@ -445,8 +446,8 @@ const Dashboard = () => {
       {selectedCard && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2 className="modal-title">{selectedCard.title} Details</h2>
+            <div className="admin-modal-header">
+              <h2 className="admin-modal-title">{selectedCard.title} Details</h2>
               <button className="modal-close" onClick={closeModal}>×</button>
             </div>
             <div className="modal-body">

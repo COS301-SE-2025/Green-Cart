@@ -9,20 +9,20 @@
   margin-bottom: 32px;
 }
 
-.welcome-section {
+.dashboard-welcome-section {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.welcome-title {
+.dashboard-welcome-title {
   font-size: 32px;
   font-weight: 700;
   color: #1f2937;
   margin: 0;
 }
 
-.welcome-subtitle {
+.dashboard-welcome-subtitle {
   font-size: 16px;
   color: #6b7280;
   margin: 0;
@@ -292,11 +292,16 @@
 
 /* Chart Wrappers */
 .chart-wrapper {
-  width: 100%;
-  height: auto;
+  width: 100%; /* Occupy full available width */
+  height: 400px;
   display: flex;
   justify-content: center;
   overflow: hidden;
+}
+
+.line-chart{
+  width: 100%;
+  height: 300px;
 }
 
 /* Update the donut chart wrapper for better sizing */
@@ -364,13 +369,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: fadeIn 0.7s ease-out;
+  animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
@@ -383,21 +388,21 @@
 }
 
 .modal-content {
-  background: white;
-  border-radius: 16px;
+  background: #334155;
+  border-radius: 20px;
   padding: 0;
-  max-width: 600px;
+  max-width: 500px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  animation: slideIn 0.3s ease-out;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(-20px) scale(0.95);
+    transform: translateY(-30px) scale(0.9);
   }
   to {
     opacity: 1;
@@ -405,65 +410,80 @@
   }
 }
 
-.modal-header {
+.admin-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 24px 16px 24px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 32px 32px 24px 32px;
+  border-bottom: 1px solid #475569;
 }
 
-.modal-title {
+.admin-modal-title {
   font-size: 24px;
-  font-weight: 700;
-  color: #1f2937;
+  font-weight: 600;
+  color: #ffffff;
   margin: 0;
 }
 
 .modal-close {
   background: none;
   border: none;
-  font-size: 24px;
-  color: #6b7280;
+  font-size: 28px;
+  color: #cbd5e1;
   cursor: pointer;
-  padding: 4px;
+  padding: 8px;
   line-height: 1;
-  transition: color 0.2s;
+  transition: all 0.2s;
+  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-close:hover {
-  color: #1f2937;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .modal-body {
-  padding: 24px;
+  padding: 0 32px 32px 32px;
 }
 
 .modal-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .modal-stat-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  background: #f9fafb;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  padding: 20px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #475569;
+  border-radius: 0;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+
+.modal-stat-item:last-child {
+  border-bottom: none;
 }
 
 .modal-stat-label {
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 500;
+  font-size: 16px;
+  color: #e2e8f0;
+  font-weight: 400;
+  text-transform: capitalize;
 }
 
 .modal-stat-value {
   font-size: 16px;
-  color: #1f2937;
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -523,12 +543,36 @@
     height: 160px;
   }
   
-  .modal-content {
-    width: 95%;
-  }
-  
   .modal-stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Adjust modal styles for smaller screens */
+
+  .modal-content {
+    width: 95%;
+    max-width: 400px;
+  }
+  
+  .admin-modal-header {
+    padding: 24px 24px 20px 24px;
+  }
+  
+  .admin-modal-title {
+    font-size: 20px;
+  }
+  
+  .modal-body {
+    padding: 0 24px 24px 24px;
+  }
+  
+  .modal-stat-item {
+    padding: 16px 0;
+  }
+  
+  .modal-stat-label,
+  .modal-stat-value {
+    font-size: 14px;
   }
 }
 
@@ -561,16 +605,24 @@
   .donut-chart-wrapper {
     height: 140px;
   }
-  
-  .modal-header {
-    padding: 20px 20px 12px 20px;
+
+  /* Adjust modal stats for very small screens */
+
+  .admin-modal-header {
+    padding: 20px 20px 16px 20px;
   }
   
-  .modal-title {
-    font-size: 20px;
+  .admin-modal-title {
+    font-size: 18px;
   }
   
   .modal-body {
-    padding: 20px;
+    padding: 0 20px 20px 20px;
+  }
+  
+  .modal-close {
+    font-size: 24px;
+    width: 36px;
+    height: 36px;
   }
 }
