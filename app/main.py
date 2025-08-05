@@ -11,6 +11,10 @@ from app.routes import retailer_metrics
 import app.models
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import retailer_products
+from app.routes import admin_metrics
+from app.routes import admin_users
+from app.routes import admin_retailers
+from app.routes import admin_products
 
 app = FastAPI()
 
@@ -32,3 +36,7 @@ app.include_router(donation.router)
 app.include_router(retailer_metrics.router) 
 app.include_router(retailer_user.router)
 app.include_router(retailer_products.router)
+app.include_router(admin_metrics.router)
+app.include_router(admin_users.router)
+app.include_router(admin_retailers.router)
+app.include_router(admin_products.router)

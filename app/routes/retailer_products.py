@@ -19,18 +19,6 @@ def update_product(product_id: int, product: CreateProductRequest, db: Session =
     db_product.in_stock = product.quantity > 0
     db_product.brand = product.brand
     db_product.category_id = product.category_id
-
-    # Update sustainability ratings if provided
-    if hasattr(product, 'sustainability_metrics') and product.sustainability_metrics:
-        from app.models.sustainability_ratings import SustainabilityRating
-        # Remove old ratings for this product
-        db.query(SustainabilityRating).filter(SustainabilityRating.product_id == product_id).delete()
-        db.commit()
-        # Add new ratings from array of {id, value}
-        for metric in product.sustainability_metrics:
-            db.add(SustainabilityRating(product_id=product_id, type=metric['id'], value=metric['value']))
-        db.commit()
-
     db.commit()
     db.refresh(db_product)
     return {"status": 200, "message": "Product updated successfully", "data": db_product}

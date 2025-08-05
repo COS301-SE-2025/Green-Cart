@@ -61,7 +61,7 @@ export default function RetailerProducts() {
                 ) : (
                     products.map(product => (
                         <div key={product.id} className="product-card">
-                            <div className="product-image">
+                            <div className="retailer-product-image">
                                 <img
                                     src={product.image_url}
                                     alt={product.name}
