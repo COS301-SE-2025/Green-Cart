@@ -9,20 +9,20 @@
   margin-bottom: 32px;
 }
 
-.welcome-section {
+.dashboard-welcome-section {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.welcome-title {
+.dashboard-welcome-title {
   font-size: 32px;
   font-weight: 700;
   color: #1f2937;
   margin: 0;
 }
 
-.welcome-subtitle {
+.dashboard-welcome-subtitle {
   font-size: 16px;
   color: #6b7280;
   margin: 0;
@@ -43,6 +43,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e7eb;
   transition: transform 0.2s ease;
+  cursor: pointer;
 }
 
 .stat-card:hover {
@@ -63,6 +64,21 @@
   margin-bottom: 16px;
 }
 
+.stat-icon {
+  width: 40px;
+  height: 48px;
+  background: rgba(34, 197, 94, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.stat-card-dark .stat-icon {
+  background: rgba(255, 255, 255, 0.2);
+}
 .stat-info {
   flex: 1;
 }
@@ -70,7 +86,7 @@
 .stat-title {
   font-size: 16px;
   font-weight: 600;
-  margin: 0 0 4px 0;
+  margin: 0 0 0 0;
   color: inherit;
 }
 
@@ -140,6 +156,7 @@
 }
 
 .chart-container {
+  height: 100%;
   background: white;
   border-radius: 16px;
   padding: 24px;
@@ -153,6 +170,23 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+}
+
+/* Add this new style for the icon images */
+.stat-icon-image {
+  width: 20px;
+  height: 30px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+}
+
+.stat-card-dark .stat-icon-image {
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(109deg) brightness(111%) contrast(111%);
+}
+
+/* Ensure the categories chart has enough space */
+.categories-chart {
+  min-height: 400px;
 }
 
 .chart-title {
@@ -253,19 +287,32 @@
   background: #d1d5db;
 }
 
+.stats-icon {
+  width: 20px;
+}
+
 /* Chart Wrappers */
 .chart-wrapper {
-  width: 100%;
-  height: 300px;
+  width: 100%; /* Occupy full available width */
+  height: 400px;
+  display: flex;
+  justify-content: center;
   overflow: hidden;
 }
 
+.line-chart{
+  width: 100%;
+  height: 300px;
+}
+
+/* Update the donut chart wrapper for better sizing */
 .donut-chart-wrapper {
   width: 100%;
-  height: 200px;
+  height: 180px;
   display: flex;
   justify-content: center;
-  margin: 20px 0;
+  align-items: center;
+  margin: 16px 0;
   overflow: hidden;
 }
 
@@ -316,6 +363,131 @@
   cursor: pointer;
 }
 
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: #334155;
+  border-radius: 20px;
+  padding: 0;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.admin-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 32px 24px 32px;
+  border-bottom: 1px solid #475569;
+}
+
+.admin-modal-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #cbd5e1;
+  cursor: pointer;
+  padding: 8px;
+  line-height: 1;
+  transition: all 0.2s;
+  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-body {
+  padding: 0 32px 32px 32px;
+}
+
+.modal-stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.modal-stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #475569;
+  border-radius: 0;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+
+.modal-stat-item:last-child {
+  border-bottom: none;
+}
+
+.modal-stat-label {
+  font-size: 16px;
+  color: #e2e8f0;
+  font-weight: 400;
+  text-transform: capitalize;
+}
+
+.modal-stat-value {
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .charts-section {
@@ -324,10 +496,6 @@
   
   .stats-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  }
-  
-  .chart-wrapper {
-    height: 250px;
   }
 }
 
@@ -349,6 +517,18 @@
     gap: 16px;
   }
   
+  .stat-card {
+    padding: 20px;
+  }
+  
+  .stat-subtitle {
+    display: none; /* Hide subtitle on smaller screens */
+  }
+  
+  .stat-change {
+    display: none; /* Hide change text on smaller screens */
+  }
+  
   .chart-header {
     flex-direction: column;
     align-items: flex-start;
@@ -360,12 +540,40 @@
     justify-content: flex-end;
   }
   
-  .chart-wrapper {
-    height: 200px;
+  .donut-chart-wrapper {
+    height: 160px;
   }
   
-  .donut-chart-wrapper {
-    height: 180px;
+  .modal-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Adjust modal styles for smaller screens */
+
+  .modal-content {
+    width: 95%;
+    max-width: 400px;
+  }
+  
+  .admin-modal-header {
+    padding: 24px 24px 20px 24px;
+  }
+  
+  .admin-modal-title {
+    font-size: 20px;
+  }
+  
+  .modal-body {
+    padding: 0 24px 24px 24px;
+  }
+  
+  .modal-stat-item {
+    padding: 16px 0;
+  }
+  
+  .modal-stat-label,
+  .modal-stat-value {
+    font-size: 14px;
   }
 }
 
@@ -376,6 +584,10 @@
   
   .stat-value {
     font-size: 24px;
+  }
+  
+  .stat-percentage-text {
+    display: none; /* Hide percentage text on very small screens */
   }
   
   .chart-container {
@@ -391,11 +603,27 @@
     padding: 6px 10px;
   }
   
-  .chart-wrapper {
-    height: 180px;
+  .donut-chart-wrapper {
+    height: 140px;
+  }
+
+  /* Adjust modal stats for very small screens */
+
+  .admin-modal-header {
+    padding: 20px 20px 16px 20px;
   }
   
-  .donut-chart-wrapper {
-    height: 150px;
+  .admin-modal-title {
+    font-size: 18px;
+  }
+  
+  .modal-body {
+    padding: 0 20px 20px 20px;
+  }
+  
+  .modal-close {
+    font-size: 24px;
+    width: 36px;
+    height: 36px;
   }
 }
