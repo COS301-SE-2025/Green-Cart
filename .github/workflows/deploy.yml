@@ -3,7 +3,8 @@ name: Deploy Frontend and Backend Test
 on:
   push:
     branches:
-        - 127-backend-endpoints-for-admin
+      - 127-backend-endpoints-for-admin
+  workflow_dispatch:  # Add this line
 
 jobs:
   frontend-deploy:
