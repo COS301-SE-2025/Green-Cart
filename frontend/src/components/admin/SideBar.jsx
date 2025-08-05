@@ -116,6 +116,7 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
               </svg>
               <input type="text" placeholder="Search" />
             </div>
+
           </div>
 
           <nav className="sidebar-nav">

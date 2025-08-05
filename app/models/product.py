@@ -15,6 +15,7 @@ class Product(Base):
     brand = Column(Text)
     category_id = Column(Integer, ForeignKey("categories.id"))
     retailer_id = Column(Integer, ForeignKey("retailer_information.id"))
+    verified = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
     retailer_information = relationship("RetailerInformation", back_populates="products", cascade="all, delete")

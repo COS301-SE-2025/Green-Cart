@@ -65,7 +65,7 @@ export default function ProductCarousel({ products, onEditProduct }) {
                 <div className="carousel-track">
                     {visibleProducts.map((product) => (
                         <div key={product.id} className="product-card">
-                            <div className="product-image">
+                            <div className="retailer-carousel-product-image">
                                 <img
                                     src={product.image_url}
                                     alt={product.name}

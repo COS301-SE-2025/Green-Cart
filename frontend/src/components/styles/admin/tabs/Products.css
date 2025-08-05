@@ -4,11 +4,39 @@
   flex: 1;
 }
 
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
 .content-header h1 {
   font-size: 32px;
   font-weight: 600;
   color: #1f2937;
-  margin: 0 0 32px 0;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.verification-button {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.verification-button:hover {
+  background: #16a34a;
 }
 
 .stats-cards {
@@ -188,6 +216,134 @@
 
 .close-button:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* Tab Badge */
+.tab-badge {
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  margin-left: 6px;
+  font-weight: 600;
+}
+
+/* Table Loading */
+.table-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.table-loading span {
+  color: #666;
+  font-size: 16px;
+}
+
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #002102;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Product Image Placeholder */
+.admin-product-image-placeholder {
+  width: 50px;
+  height: 50px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* Product Description Styling */
+.product-name {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.product-desc-text {
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Status Badge */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-badge.verified {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.unverified {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* Quick Verify Button */
+.quick-verify-btn {
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.2s ease;
+}
+
+.quick-verify-btn:hover {
+  background: #16a34a;
+}
+
+/* Unverified Row Styling */
+.unverified-row {
+  background: #fffbeb;
+}
+
+.unverified-row:hover {
+  background: #fef3c7;
+}
+
+/* No Products Message */
+.no-products {
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+  padding: 40px 20px;
 }
 
 /* Responsive */
