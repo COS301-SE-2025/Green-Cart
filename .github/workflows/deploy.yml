@@ -3,7 +3,7 @@ name: Deploy Frontend and Backend
 on:
   push:
     branches:
-      - main
+        - 127-backend-endpoints-for-admin
 
 jobs:
   frontend-deploy:
@@ -11,6 +11,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Get current branch name
+        id: branch
+        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         run: cd frontend && npm install
@@ -45,6 +49,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Get current branch name
+        id: branch
+        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
       - name: Copy files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -62,7 +70,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu/Green-Cart
-            git pull origin main
+            git pull origin ${{ steps.branch.outputs.branch }}
             sudo docker stop green-cart-backend || true
             sudo docker rm green-cart-backend || true
             sudo docker build -t green-cart-backend .
