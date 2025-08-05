@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8000/admin";
+const API_BASE_URL = "https://api.greencart-cos301.co.za/admin";
 
 /**
  * Get all unverified products

@@ -24,7 +24,7 @@ export default function RetailerProducts() {
 
     const fetchProducts = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/retailer/products/${retailerId}`);
+            const response = await fetch(`https://api.greencart-cos301.co.za/retailer/products/${retailerId}`);
             const data = await response.json();
             if (response.ok && data.status === 200) {
                 setProducts(data.data || []);
@@ -116,7 +116,7 @@ export default function RetailerProducts() {
                 onProductUpdated={async (updatedProduct) => {
                     // Send update to backend
                     try {
-                        const response = await fetch(`http://localhost:8000/retailer/products/${updatedProduct.id}`, {
+                        const response = await fetch(`https://api.greencart-cos301.co.za/retailer/products/${updatedProduct.id}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(updatedProduct)

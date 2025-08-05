@@ -141,7 +141,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                 retailer_id: product.retailer_id,
                 sustainability_metrics: formData.sustainability || {},
             };
-            const response = await fetch(`http://localhost:8000/retailer/products/${product.id}`, {
+            const response = await fetch(`https://api.greencart-cos301.co.za/retailer/products/${product.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

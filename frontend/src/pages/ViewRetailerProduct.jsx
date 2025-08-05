@@ -24,7 +24,7 @@ export default function ViewRetailerProduct() {
     const fetchProduct = async () => {
         try {
             const userData = JSON.parse(localStorage.getItem('user'));
-            const response = await fetch(`http://localhost:8000/products/FetchProduct`, {
+            const response = await fetch(`https://api.greencart-cos301.co.za/products/FetchProduct`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ export default function ViewRetailerProduct() {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8000/retailer/product/${id}`, {
+            const response = await fetch(`https://api.greencart-cos301.co.za/retailer/product/${id}`, {
                 method: 'DELETE'
             });
             const data = await response.json();
@@ -188,7 +188,7 @@ export default function ViewRetailerProduct() {
                 product={product}
                 onProductUpdated={async (updatedProduct) => {
                     try {
-                        const response = await fetch(`http://localhost:8000/retailer/products/${updatedProduct.id}`, {
+                        const response = await fetch(`https://api.greencart-cos301.co.za/retailer/products/${updatedProduct.id}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(updatedProduct)
