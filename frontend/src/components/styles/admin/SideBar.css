@@ -1,6 +1,6 @@
 .sidebar {
   width: 240px;
-  background-color: #002102;
+  background-color: #1f2937;
   color: white;
   display: flex;
   flex-direction: column;
@@ -11,32 +11,46 @@
 }
 
 .sidebar-closed {
-  width: 60px;
+  width: 40px;
+}
+
+.sidebar-closed .sidebar-toggle{
+  left: 25px;
 }
 
 .sidebar-toggle {
   position: absolute;
-  top: 20px;
-  right: 8px;
-  background-color: #22c55e;
+  top: 70px;
+  left: 220px;
+  background-color: rgba(131, 133, 151, 0.3); 
+  backdrop-filter: blur(10px);
   border: none;
   color: white;
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: bold;
   z-index: 10;
   transition: all 0.2s;
 }
 
 .sidebar-toggle:hover {
-  background-color: #16a34a;
+  background-color: #1f2937;
   transform: scale(1.1);
+}
+
+.toggle-arrow {
+  width: 12px;
+  height: 12px;
+  filter: brightness(0) invert(1);
+  transition: transform 0.3s ease;
+}
+
+.toggle-arrow-closed {
+  transform: rotate(180deg);
 }
 
 .admin-sidebar-header {
@@ -44,11 +58,161 @@
   padding-top: 60px;
   padding-bottom: 24px;
   border-bottom: 1px solid #2d3748;
-  background-color: #001a01;
+  background-color: #1f2937;
   opacity: 1;
   visibility: visible;
   display: block;
   animation: slideInDown 0.4s ease-out;
+}
+
+.sidebar-animating .nav-item {
+  animation: shuffleSlideIn 0.6s ease-out both;
+}
+
+/* Shuffled slide-in animation for nav items */
+@keyframes shuffleSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) rotate(-2deg);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(-5px) rotate(1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+/* Enhanced hover effects for animated items */
+.sidebar-animating .nav-item:hover {
+  transform: translateX(5px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth transition for non-animating state */
+.nav-item {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Add a subtle bounce to active items during animation */
+.sidebar-animating .nav-item.active {
+  animation: shuffleSlideInActive 0.6s ease-out both;
+}
+
+@keyframes shuffleSlideInActive {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) translateX(-15px) rotate(-2deg) scale(0.9);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(-5px) translateX(5px) rotate(1deg) scale(1.05);
+  }
+  70% {
+    transform: translateY(2px) translateX(-2px) rotate(-0.5deg) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+  }
+}
+
+/* Enhanced divider animation */
+.sidebar-animating .nav-divider {
+  animation: dividerSlideIn 0.4s ease-out both;
+  animation-delay: 0.5s;
+}
+
+@keyframes dividerSlideIn {
+  0% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+/* Icon animation within nav items */
+.sidebar-animating .nav-icon-img {
+  animation: iconRotateIn 2s ease-out both;
+}
+
+@keyframes iconRotateIn {
+  0% {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.5);
+  }
+  50% {
+    transform: rotate(10deg) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+/* Badge animation */
+.sidebar-animating .notification-badge {
+  animation: badgePop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+  animation-delay: 0.4s;
+}
+
+@keyframes badgePop {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* User profile enhanced animation */
+.sidebar-animating .sidebar-user {
+  animation: userSlideUp 0.5s ease-out both;
+  animation-delay: 0.6s;
+}
+
+@keyframes userSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Search bar animation enhancement */
+.sidebar-animating .admin-search-bar {
+  animation: searchSlideIn 0.4s ease-out both;
+  animation-delay: 0.2s;
+}
+
+@keyframes searchSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Performance optimization */
+.sidebar-animating {
+  will-change: transform;
+}
+
+.sidebar-animating .nav-item {
+  will-change: transform, opacity;
 }
 
 @keyframes slideInDown {
@@ -65,13 +229,12 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
   animation: fadeInScale 0.5s ease-out 0.2s both;
 }
 
 .logo-image {
-  width: 28px;
-  height: 28px;
+  width: 3.5em;
+  height: auto;
   object-fit: contain;
   border-radius: 4px;
 }
@@ -81,6 +244,12 @@
   font-weight: 700;
   color: #22c55e;
   letter-spacing: 0.5px;
+}
+
+.logo-admin-image{
+  /* width: 100px; */
+  height: 2.6em;
+  object-fit: contain;
 }
 
 @keyframes fadeInScale {
@@ -97,26 +266,29 @@
 .admin-search-bar {
   padding: 16px 20px;
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
-.admin-search-icon {
+.search-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
   width: 16px;
   height: 16px;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.7;
-  flex-shrink: 0;
-  /* padding: 5px; */
+  color: #a0aec0;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .admin-search-bar input {
-  flex: 1;
+  width: 100%;
   background-color: #2d3748;
   border: none;
-  padding: 8px 12px;
+  padding: 8px 12px 8px 36px;
   border-radius: 6px;
   color: white;
   font-size: 14px;
@@ -197,8 +369,12 @@
   gap: 12px;
   position: sticky;
   bottom: 0;
-  background-color: #002102;
+  background-color: #1f2937;
   z-index: 5;
+}
+
+.sidebar-user-closed {
+  visibility: hidden;
 }
 
 .user-avatar {
@@ -244,7 +420,7 @@
   bottom: 100%;
   right: 8px;
   background-color: white;
-  border-radius: 0; /* Sharp corners */
+  border-radius: 0;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   border: none;
   min-width: 140px;
@@ -294,7 +470,7 @@
 .profile-menu-divider {
   height: 1px;
   background-color: #e5e7eb;
-  margin: 6px 12px; /* Added horizontal margin for padding */
+  margin: 6px 12px;
 }
 
 /* Responsive */
@@ -304,7 +480,7 @@
   }
   
   .sidebar-closed {
-    width: 50px;
+    width: 10px;
   }
   
   .admin-sidebar-header {
@@ -331,6 +507,7 @@
   
   .sidebar-user {
     padding: 16px;
+    visibility: hidden;
   }
   
   .profile-menu-overlay {
@@ -346,8 +523,8 @@
   }
   
   .sidebar-closed {
-    transform: translateX(-100%);
-    width: 240px;
+    /* transform: translateX(0%); */
+    width: 10px;
   }
   
   .profile-menu-overlay {
@@ -359,4 +536,12 @@
     padding: 12px 14px;
     font-size: 12px;
   }
+
+  .sidebar-toggle {
+    left: 180px;
+  }
+
+  .sidebar-closed .sidebar-toggle{
+  left: -3px;
+}
 }

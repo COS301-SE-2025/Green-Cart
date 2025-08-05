@@ -7,14 +7,13 @@ import ordersIcon from './icons/ordersIcon.png';
 import productsIcon from './icons/productsIcon.png';
 import paymentsIcon from './icons/paymentsIcon.png';
 import customersIcon from './icons/customersIcon.png';
-// import notificationsIcon from '../icons/notificationsIcon.png';
-// import helpIcon from '../icons/helpIcon.png';
-// import settingsIcon from '../icons/settingsIcon.png';
-import searchIcon from './icons/microscope.png'; // Add this icon to your icons folder
-import logoImage from './icons/microscope.png'; // Add your logo image
+import leafIcon from './icons/leafIcon.png';
+import backIcon from './icons/backIcon.png';
+import logo from './icons/Green-cart-admin.png'
 
 const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const profileMenuRef = useRef(null);
   const profileButtonRef = useRef(null);
 
@@ -27,9 +26,9 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
   ];
 
   const supportItems = [
-    { name: 'Notifications', icon: dashboardIcon /*notificationsIcon*/, badge: 7 },
-    { name: 'Help & Support', icon: dashboardIcon /*helpIcon*/ },
-    { name: 'Settings', icon: dashboardIcon /*settingsIcon*/ }
+    { name: 'Notifications', icon: dashboardIcon, badge: 7 },
+    { name: 'Help & Support', icon: dashboardIcon },
+    { name: 'Settings', icon: dashboardIcon }
   ];
 
   const handleNavClick = (itemName) => {
@@ -68,39 +67,65 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
     };
   }, []);
 
-  // Close profile menu when sidebar is collapsed
+  // Handle sidebar animation state
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      setIsAnimating(true);
+      // Reset animation state after animation completes
+      const timer = setTimeout(() => {
+        setIsAnimating(false);
+      }, 800); // Adjust based on your longest animation delay
+      
+      return () => clearTimeout(timer);
+    } else {
       setShowProfileMenu(false);
+      setIsAnimating(false);
     }
   }, [isOpen]);
 
   return (
-    <div className={`sidebar ${!isOpen ? 'sidebar-closed' : ''}`}>
+    <div className={`sidebar ${!isOpen ? 'sidebar-closed' : ''} ${isAnimating ? 'sidebar-animating' : ''}`}>
       {/* Toggle Button */}
       <button className="sidebar-toggle" onClick={onToggle}>
-        {isOpen ? '←' : '→'}
+        <img 
+          src={backIcon} 
+          alt="Toggle sidebar" 
+          className={`toggle-arrow ${!isOpen ? 'toggle-arrow-closed' : ''}`}
+        />
       </button>
 
       {isOpen && (
         <>
           <div className="admin-sidebar-header">
             <div className="logo">
-              <img src={logoImage} alt="Green-Cart Logo" className="logo-image" />
-              <span className="logo-text">Green-Cart</span>
+              <span className="logo-text"><img src={logo} className='logo-admin-image'/></span>
             </div>
           </div>
 
           <div className="admin-search-bar">
-            <img src={searchIcon} alt="Search" className="admin-search-icon" />
-            <input type="text" placeholder="Search" />
+            <div className="search-input-container">
+              <svg 
+                className="search-icon" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input type="text" placeholder="Search" />
+            </div>
           </div>
 
           <nav className="sidebar-nav">
-            {navigationItems.map((item) => (
+            {navigationItems.map((item, index) => (
               <div 
                 key={item.name}
                 className={`nav-item ${currentPage === item.name ? 'active' : ''}`}
+                style={{ 
+                  animationDelay: isAnimating ? `${index * 0.1}s` : '0s' 
+                }}
                 onClick={() => handleNavClick(item.name)}
               >
                 <img 
@@ -114,10 +139,13 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
 
             <div className="nav-divider"></div>
 
-            {supportItems.map((item) => (
+            {supportItems.map((item, index) => (
               <div 
                 key={item.name}
                 className={`nav-item ${currentPage === item.name ? 'active' : ''}`}
+                style={{ 
+                  animationDelay: isAnimating ? `${(navigationItems.length + index) * 0.1}s` : '0s' 
+                }}
                 onClick={() => handleNavClick(item.name)}
               >
                 <img 
@@ -134,7 +162,7 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
       )}
 
       {/* User Profile - Always visible */}
-      <div className="sidebar-user">
+      <div className={isOpen ? "sidebar-user" : "sidebar-user sidebar-user-closed"}>
         <div className="user-avatar">OW</div>
         {isOpen && (
           <>

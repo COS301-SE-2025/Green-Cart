@@ -3,45 +3,97 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import '../../styles/admin/tabs/Dashboard.css';
 
+// Import real icons
+import retailerIcon from '../icons/retailerIcon.png';
+import customerIcon from '../icons/customersIcon.png';
+import verifiedIcon from '../icons/verifiedIcon.png';
+import unverifiedIcon from '../icons/unverifiedIcon.png';
+import statsLossIcon from '../icons/statsLossIcon.png';
+import statsProfitIcon from '../icons/statsProfitIcon.png';
+
 const Dashboard = () => {
   const [exportDropdown, setExportDropdown] = useState(false);
   const [periodDropdown, setPeriodDropdown] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
   const exportRef = useRef(null);
   const periodRef = useRef(null);
 
   const statsCards = [
     {
       id: 1,
-      title: 'Total Sales',
+      title: 'Total Customers',
       subtitle: '731 Orders',
-      value: '$9,328.55',
+      value: 'R9,328.55',
       percentage: '+15.6%',
       change: '+1.4k this week',
       trend: 'up',
-      icon: '🛒',
-      dark: true
+      icon: customerIcon,
+      dark: true,
+      details: {
+        totalCustomers: '12,302',
+        newThisMonth: '1,428',
+        activeCustomers: '8,945',
+        averageOrderValue: '$127.50',
+        topLocation: 'California',
+        growthRate: '+15.6%'
+      }
     },
     {
       id: 2,
-      title: 'Visitors',
+      title: 'Total Retailers',
       subtitle: 'Avg. time: 4:30m',
       value: '12,302',
       percentage: '+12.7%',
       change: '+1.2k this week',
       trend: 'up',
-      icon: '👤',
-      dark: !false
+      icon: retailerIcon,
+      dark: true,
+      details: {
+        totalRetailers: '12,302',
+        newThisMonth: '842',
+        activeRetailers: '9,156',
+        averageResponseTime: '4:30m',
+        topCategory: 'Electronics',
+        growthRate: '+12.7%'
+      }
     },
     {
       id: 3,
-      title: 'Refunds',
+      title: 'Verified Products',
       subtitle: '2 Disputed',
       value: '963',
       percentage: '-12.7%',
       change: '-213',
       trend: 'down',
-      icon: '↩️',
-      dark: !false
+      icon: verifiedIcon,
+      dark: true,
+      details: {
+        totalVerified: '963',
+        pendingVerification: '156',
+        disputed: '2',
+        averageVerificationTime: '2.5 days',
+        successRate: '94.2%',
+        changeRate: '-12.7%'
+      }
+    },
+    {
+      id: 4,
+      title: 'Unverified Products',
+      subtitle: '2 Disputed',
+      value: '963',
+      percentage: '-12.7%',
+      change: '-213',
+      trend: 'down',
+      icon: unverifiedIcon,
+      dark: true,
+      details: {
+        totalUnverified: '963',
+        awaitingReview: '456',
+        rejected: '89',
+        averageWaitTime: '5.2 days',
+        rejectionRate: '8.5%',
+        changeRate: '-12.7%'
+      }
     }
   ];
 
@@ -51,11 +103,10 @@ const Dashboard = () => {
     { name: 'Phones', color: '#d1d5db', value: 25 }
   ];
 
-  // Line chart configuration
+  // Responsive line chart configuration
   const lineChartOptions = {
     chart: {
       type: 'line',
-      height: 300,
       backgroundColor: 'transparent',
       spacing: [20, 20, 20, 20]
     },
@@ -124,32 +175,55 @@ const Dashboard = () => {
       }
     ],
     responsive: {
-      rules: [{
-        condition: {
-          maxWidth: 500
+      rules: [
+        {
+          condition: {
+            maxWidth: 768
+          },
+          chartOptions: {
+            xAxis: {
+              categories: ['03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16'],
+              labels: {
+                style: {
+                  fontSize: '10px'
+                }
+              }
+            }
+          }
         },
-        chartOptions: {
-          chart: {
-            height: 250
+        {
+          condition: {
+            maxWidth: 480
+          },
+          chartOptions: {
+            xAxis: {
+              categories: ['3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'],
+              labels: {
+                step: 2,
+                style: {
+                  fontSize: '9px'
+                }
+              }
+            }
           }
         }
-      }]
+      ]
     }
   };
 
-  // Donut chart configuration
   const donutChartOptions = {
     chart: {
       type: 'pie',
-      height: 200,
-      backgroundColor: 'transparent'
+      height: 180,
+      backgroundColor: 'transparent',
+      margin: [10, 10, 10, 10]
     },
     title: {
       text: '$6.2k',
       align: 'center',
       verticalAlign: 'middle',
       style: {
-        fontSize: '24px',
+        fontSize: '20px',
         fontWeight: '700',
         color: '#1f2937'
       }
@@ -165,12 +239,13 @@ const Dashboard = () => {
     },
     plotOptions: {
       pie: {
-        innerSize: '70%',
+        innerSize: '65%',
         dataLabels: {
           enabled: false
         },
         enableMouseTracking: false,
-        borderWidth: 0
+        borderWidth: 0,
+        size: '85%'
       }
     },
     series: [{
@@ -209,34 +284,49 @@ const Dashboard = () => {
     setPeriodDropdown(false);
   };
 
+  const handleCardClick = (card) => {
+    setSelectedCard(card);
+  };
+
+  const closeModal = () => {
+    setSelectedCard(null);
+  };
+
   return (
     <div className="dashboard">
       {/* Welcome Header */}
       <div className="dashboard-header">
-        <div className="welcome-section">
-          <h1 className="welcome-title">Welcome back, Matthew</h1>
-          <p className="welcome-subtitle">Here are today's stats from your online store!</p>
+        <div className="dashboard-welcome-section">
+          <h1 className="dashboard-welcome-title">Welcome back, Matthew</h1>
+          <p className="dashboard-welcome-subtitle">Here are today's stats from your online store!</p>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="stats-grid">
         {statsCards.map((card) => (
-          <div key={card.id} className={`stat-card ${card.dark ? 'stat-card-dark' : ''}`}>
+          <div 
+            key={card.id} 
+            className={`stat-card ${card.dark ? 'stat-card-dark' : ''}`}
+            onClick={() => handleCardClick(card)}
+          >
             <div className="stat-card-header">
-              <div className="stat-icon">{card.icon}</div>
+              <div className="stat-icon">
+                <img src={card.icon} alt={card.title} className="stat-icon-image" />
+              </div>
               <div className="stat-info">
                 <h3 className="stat-title">{card.title}</h3>
                 <p className="stat-subtitle">{card.subtitle}</p>
               </div>
-              <div className="stat-arrow">›</div>
+              {/* <div className="stat-arrow">›</div> */}
             </div>
             
             <div className="stat-value">{card.value}</div>
             
             <div className="stat-footer">
               <span className={`stat-percentage ${card.trend}`}>
-                📈 {card.percentage}
+                <img src={card.percentage.charAt(0) === '-' ? statsLossIcon : statsProfitIcon} alt='stats-icon' className='stats-icon'/> 
+                <span className="stat-percentage-text">{card.percentage}</span>
               </span>
               <span className="stat-change">{card.change}</span>
             </div>
@@ -317,6 +407,7 @@ const Dashboard = () => {
             <HighchartsReact
               highcharts={Highcharts}
               options={lineChartOptions}
+              className="line-chart"
             />
           </div>
         </div>
@@ -350,6 +441,30 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal Overlay */}
+      {selectedCard && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <h2 className="admin-modal-title">{selectedCard.title} Details</h2>
+              <button className="modal-close" onClick={closeModal}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="modal-stats-grid">
+                {Object.entries(selectedCard.details).map(([key, value]) => (
+                  <div key={key} className="modal-stat-item">
+                    <span className="modal-stat-label">
+                      {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                    </span>
+                    <span className="modal-stat-value">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

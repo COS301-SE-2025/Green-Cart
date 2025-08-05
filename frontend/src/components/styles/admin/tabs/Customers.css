@@ -1,0 +1,592 @@
+.adm-cus-container {
+  padding: 24px;
+  background-color: #f5f5f5; /* Changed from white to light gray */
+  min-height: 100vh;
+}
+
+.adm-cus-header {
+  margin-bottom: 24px;
+}
+
+.adm-cus-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+/* Stats Cards */
+.adm-cus-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.adm-cus-stats-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.adm-cus-stats-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.adm-cus-stats-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.adm-cus-stats-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a202c;
+}
+
+.adm-cus-stats-change {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.adm-cus-change {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.adm-cus-change.positive {
+  color: #059669;
+  background-color: #d1fae5;
+}
+
+.adm-cus-change.negative {
+  color: #dc2626;
+  background-color: #fee2e2;
+}
+
+.adm-cus-period {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Controls */
+.adm-cus-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.adm-cus-search-container {
+  flex: 1;
+  max-width: 400px;
+}
+
+.adm-cus-search-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  transition: border-color 0.2s;
+}
+
+.adm-cus-search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.adm-cus-control-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adm-cus-filter-btn,
+.adm-cus-sort-btn {
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.adm-cus-filter-btn:hover,
+.adm-cus-sort-btn:hover {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+}
+
+.adm-cus-view-toggle {
+  display: flex;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.adm-cus-view-btn {
+  padding: 10px 12px;
+  border: none;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-right: 1px solid #d1d5db;
+}
+
+.adm-cus-view-btn:last-child {
+  border-right: none;
+}
+
+.adm-cus-view-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.adm-cus-view-btn.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Table View */
+.adm-cus-table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.adm-cus-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.adm-cus-table th {
+  background-color: #f8fafc;
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.adm-cus-table td {
+  padding: 16px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #1f2937;
+}
+
+.adm-cus-table tr:hover {
+  background-color: #f9fafb;
+}
+
+.adm-cus-customer-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adm-cus-avatar-container {
+  position: relative;
+  display: inline-block;
+}
+
+.adm-cus-premium-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: #10b981;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  border: 2px solid white;
+}
+
+.adm-cus-premium-badge.large {
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  top: 0;
+  right: 0;
+}
+
+/* Email and Phone Icons */
+.adm-cus-email-container,
+.adm-cus-phone-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adm-cus-email-icon,
+.adm-cus-phone-icon {
+  font-size: 14px;
+}
+
+/* Clickable row */
+.adm-cus-clickable-row {
+  cursor: pointer;
+}
+
+.adm-cus-clickable-row:hover {
+  background-color: #f0f0f0;
+}
+
+.adm-cus-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.adm-cus-name {
+  font-weight: 500;
+  color: #111827;
+}
+
+.adm-cus-receivables {
+  font-weight: 600;
+  color: #059669;
+}
+
+.adm-cus-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.adm-cus-status-accepted {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.adm-cus-status-pending {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.adm-cus-status-cancel {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.adm-cus-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.adm-cus-action-btn {
+  padding: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.adm-cus-action-btn:hover {
+  background-color: #f3f4f6;
+}
+
+/* Cards View */
+.adm-cus-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.adm-cus-card {
+  background: #f8f9fa; /* Light gray background instead of white */
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.adm-cus-card-userid {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.adm-cus-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.adm-cus-modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.adm-cus-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.adm-cus-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.adm-cus-modal-close:hover {
+  background-color: #f3f4f6;
+}
+
+.adm-cus-modal-body {
+  padding: 24px;
+}
+
+.adm-cus-modal-card {
+  background: #4a5568; /* Dark background like in the image */
+  border-radius: 12px;
+  padding: 24px;
+  color: white;
+}
+
+.adm-cus-modal-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.adm-cus-modal-title-section h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.adm-cus-modal-userid {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.adm-cus-modal-details {
+  background: #f8f9fa; /* Light background for details section */
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.adm-cus-modal-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
+  color: #1f2937;
+}
+
+.adm-cus-modal-detail-row:last-child {
+  border-bottom: none;
+}
+
+.adm-cus-modal-label {
+  font-weight: 500;
+  color: #6b7280;
+  min-width: 140px;
+}
+
+.adm-cus-modal-value {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adm-cus-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.adm-cus-modal-action-btn {
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adm-cus-modal-action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.adm-cus-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.adm-cus-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.adm-cus-card-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.adm-cus-card-info {
+  flex: 1;
+}
+
+.adm-cus-card-name {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.adm-cus-card-company {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.adm-cus-card-details {
+  margin-bottom: 16px;
+}
+
+.adm-cus-card-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.adm-cus-card-detail:last-child {
+  border-bottom: none;
+}
+
+.adm-cus-detail-label {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.adm-cus-detail-value {
+  font-size: 13px;
+  color: #111827;
+  font-weight: 500;
+}
+
+.adm-cus-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .adm-cus-container {
+    padding: 16px;
+  }
+  
+  .adm-cus-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  
+  .adm-cus-control-buttons {
+    justify-content: space-between;
+  }
+  
+  .adm-cus-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .adm-cus-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .adm-cus-table-container {
+    overflow-x: auto;
+  }
+
+  .adm-cus-modal-content {
+    width: 95%;
+    margin: 16px;
+  }
+  
+  .adm-cus-modal-actions {
+    flex-direction: column;
+  }
+  
+  .adm-cus-modal-action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
