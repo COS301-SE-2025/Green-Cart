@@ -309,7 +309,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                     </div>
                 ) : currentProduct ? (
                     <div className="verification-content">
-                        <div className="product-details">
+                        <div className="admin-productverification-product-details">
                             <div className="product-info">
                                 {isEditing ? (
                                     <div className="edit-form">

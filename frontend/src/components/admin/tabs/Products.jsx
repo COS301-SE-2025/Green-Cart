@@ -186,7 +186,7 @@ const Products = () => {
                         <img 
                           src={product.images[0]} 
                           alt={product.name}
-                          className="product-image"
+                          className="admin-product-image"
                           onClick={() => handleImageClick(product.images[0])}
                           onError={(e) => {
                             e.target.onerror = null;
@@ -194,7 +194,7 @@ const Products = () => {
                           }}
                         />
                       ) : (
-                        <div className="product-image-placeholder">
+                        <div className="admin-product-image-placeholder">
                           <span>IMG</span>
                         </div>
                       )}

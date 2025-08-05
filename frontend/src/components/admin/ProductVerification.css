@@ -101,7 +101,7 @@
     background: #ffffff;
 }
 
-.product-details {
+.admin-productverification-product-details {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 32px;
@@ -346,7 +346,7 @@
         margin: 20px;
     }
     
-    .product-details {
+    .admin-productverification-product-details {
         grid-template-columns: 1fr;
         gap: 20px;
     }
