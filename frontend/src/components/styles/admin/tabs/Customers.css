@@ -575,4 +575,18 @@
   .adm-cus-table-container {
     overflow-x: auto;
   }
+
+  .adm-cus-modal-content {
+    width: 95%;
+    margin: 16px;
+  }
+  
+  .adm-cus-modal-actions {
+    flex-direction: column;
+  }
+  
+  .adm-cus-modal-action-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
