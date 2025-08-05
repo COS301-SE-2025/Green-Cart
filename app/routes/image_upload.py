@@ -12,7 +12,19 @@ UPLOAD_DIR = Path("uploads/products")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # Base URL for serving static files
-BASE_URL = "http://localhost:8000"
+import os
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from sqlalchemy.orm import Session
+from app.db.session import get_db
+from app.models.product_images import ProductImage
+from app.models.product import Product
+import uuid
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Use environment variable for base URL, fallback to production URL
+BASE_URL = os.getenv("BASE_URL", "https://api.greencart-cos301.co.za")
 
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
