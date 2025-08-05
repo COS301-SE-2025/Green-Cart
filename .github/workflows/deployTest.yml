@@ -71,12 +71,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu/Green-Cart
-            git fetch --all
-            git checkout ${{ steps.branch.outputs.branch }}
-            git pull origin ${{ steps.branch.outputs.branch }}
-            sudo docker stop green-cart-backend || true
-            sudo docker rm green-cart-backend || true
-            sudo docker build -t green-cart-backend .
+            
             # Deploy to EC2
             echo "Current branch: $GITHUB_REF_NAME"
             echo "Deploying backend from branch: $GITHUB_REF_NAME"
