@@ -77,4 +77,18 @@ jobs:
             sudo docker stop green-cart-backend || true
             sudo docker rm green-cart-backend || true
             sudo docker build -t green-cart-backend .
-            sudo docker run -d --name green-cart-backend -p 8000:8000 green-cart-backend
+            # Deploy to EC2
+            echo "Current branch: $GITHUB_REF_NAME"
+            echo "Deploying backend from branch: $GITHUB_REF_NAME"
+            git fetch --all
+            git checkout $GITHUB_REF_NAME
+            git pull origin $GITHUB_REF_NAME
+            
+            # Stop existing container if running
+            sudo docker stop green-cart-backend || true
+            sudo docker rm green-cart-backend || true
+            
+            # Build and run new container with environment file
+            sudo docker build -t green-cart-backend .
+            sudo docker run -d --name green-cart-backend -p 8000:8000 --env-file .env green-cart-backend
+            echo "Backend deployment completed for branch: $GITHUB_REF_NAME"
