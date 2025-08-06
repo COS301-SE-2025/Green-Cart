@@ -3,19 +3,18 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 import uuid
 import os
+from decimal import Decimal
 
 from ..db.session import get_db
 from ..services.s3_service import S3Service
-from ..services.product_creation_service import ProductCreationService
-from ..schemas.product import ProductCreate
 from ..models.product import Product
 from ..models.product_images import ProductImage
+from ..models.categories import Category
 
 router = APIRouter(prefix="/product-images", tags=["Products with Images"])
 
 # Initialize services
 s3_service = S3Service()
-product_service = ProductCreationService()
 
 @router.post("/products/", status_code=status.HTTP_201_CREATED)
 async def create_product_with_images(
@@ -47,18 +46,25 @@ async def create_product_with_images(
                     detail=f"File {image.filename} is too large. Maximum size is 5MB"
                 )
 
-        # Create product data
-        product_data = ProductCreate(
+        # Validate category exists
+        category = db.query(Category).filter(Category.id == category_id).first()
+        if not category:
+            raise HTTPException(status_code=400, detail="Invalid category_id")
+
+        # Create the product directly
+        new_product = Product(
             name=name,
             description=description,
-            price=price,
+            price=Decimal(str(price)),
+            quantity=stock_quantity,
             category_id=category_id,
             retailer_id=retailer_id,
-            stock_quantity=stock_quantity
+            in_stock=True if stock_quantity > 0 else False
         )
-
-        # Create the product
-        product = product_service.create_product(db, product_data)
+        
+        db.add(new_product)
+        db.flush()  # Flush to get the ID without committing
+        product_id = new_product.id
         
         # Upload images to S3
         image_urls = []
@@ -66,7 +72,7 @@ async def create_product_with_images(
             try:
                 # Generate unique filename
                 file_extension = os.path.splitext(image.filename)[1]
-                unique_filename = f"products/{product.id}/{uuid.uuid4()}{file_extension}"
+                unique_filename = f"products/{product_id}/{uuid.uuid4()}{file_extension}"
                 
                 # Upload to S3
                 image_url = await s3_service.upload_file(image, unique_filename)
@@ -74,9 +80,9 @@ async def create_product_with_images(
                 
                 # Save image URL to database
                 product_image = ProductImage(
-                    product_id=product.id,
+                    product_id=product_id,
                     image_url=image_url,
-                    alt_text=f"{product.name} image"
+                    alt_text=f"{name} image"
                 )
                 db.add(product_image)
                 
@@ -92,8 +98,8 @@ async def create_product_with_images(
         
         return {
             "message": "Product created successfully with images",
-            "product_id": product.id,
-            "product_name": product.name,
+            "product_id": product_id,
+            "product_name": name,
             "image_urls": image_urls,
             "total_images": len(image_urls)
         }
