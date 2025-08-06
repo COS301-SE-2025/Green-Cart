@@ -85,20 +85,46 @@ async def create_product_with_images(
         
         # Get sustainability type mappings
         sustainability_types = db.query(SustainabilityType).all()
-        type_map = {st.type_name.lower().replace(' ', '_'): st.id for st in sustainability_types}
+        
+        # Create multiple mapping strategies for robust matching
+        type_map = {}
+        for st in sustainability_types:
+            # Normalize the type name to lowercase with underscores
+            normalized_name = st.type_name.lower().replace(' ', '_')
+            type_map[normalized_name] = st.id
+            # Also map the exact original name
+            type_map[st.type_name] = st.id
+        
+        print(f"DEBUG: Available sustainability types: {[st.type_name for st in sustainability_types]}")
+        print(f"DEBUG: Type mapping: {type_map}")
+        print(f"DEBUG: Sustainability metrics to process: {sustainability_metrics}")
         
         ratings_added = 0
         for metric_name, value in sustainability_metrics.items():
-            if value is not None:
-                # Try exact match first, then with spaces replaced by underscores
+            if value is not None and value != 0:  # Skip None and 0 values
                 type_id = None
+                
+                # Strategy 1: Direct match with metric name
                 if metric_name in type_map:
                     type_id = type_map[metric_name]
-                elif metric_name.replace('_', ' ') in [st.type_name.lower() for st in sustainability_types]:
-                    # Find the type by space-separated name
+                    print(f"DEBUG: Direct match for {metric_name} -> type_id {type_id}")
+                
+                # Strategy 2: Convert underscores to spaces and match
+                elif metric_name.replace('_', ' ') in type_map:
+                    type_id = type_map[metric_name.replace('_', ' ')]
+                    print(f"DEBUG: Space match for {metric_name} -> type_id {type_id}")
+                
+                # Strategy 3: Title case match
+                elif metric_name.replace('_', ' ').title() in type_map:
+                    type_id = type_map[metric_name.replace('_', ' ').title()]
+                    print(f"DEBUG: Title case match for {metric_name} -> type_id {type_id}")
+                
+                # Strategy 4: Fuzzy matching based on keywords
+                else:
                     for st in sustainability_types:
-                        if st.type_name.lower() == metric_name.replace('_', ' '):
+                        if metric_name.lower() in st.type_name.lower() or st.type_name.lower() in metric_name.lower():
                             type_id = st.id
+                            print(f"DEBUG: Fuzzy match for {metric_name} -> {st.type_name} (type_id {type_id})")
                             break
                 
                 if type_id:
@@ -110,6 +136,11 @@ async def create_product_with_images(
                     )
                     db.add(new_rating)
                     ratings_added += 1
+                    print(f"DEBUG: Added rating for {metric_name}: {value} (type_id: {type_id})")
+                else:
+                    print(f"DEBUG: No matching sustainability type found for {metric_name}")
+        
+        print(f"DEBUG: Total sustainability ratings added: {ratings_added}")
         
         # Upload images to S3
         image_urls = []
