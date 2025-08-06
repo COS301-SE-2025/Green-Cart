@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import '../styles/retailer/AddProduct.css';
 
 export default function AddProduct({ isOpen, onClose, onProductAdded }) {
