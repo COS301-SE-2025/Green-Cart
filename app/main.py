@@ -16,14 +16,30 @@ from app.routes import admin_users
 from app.routes import admin_retailers
 from app.routes import admin_products
 from app.routes import images
+import logging
 
-app = FastAPI()
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+app = FastAPI(title="Green Cart API", version="1.0.0")
+
+# Add health check endpoint
+@app.get("/health")
+async def health_check():
+    logger.info("Health check endpoint called")
+    return {"status": "healthy", "message": "Backend is running"}
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://www.greencart-cos301.co.za",
+        "https://greencart-cos301.co.za", 
+        "http://localhost:3000",  # For development
+        "http://localhost:5173",  # For Vite dev server
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
