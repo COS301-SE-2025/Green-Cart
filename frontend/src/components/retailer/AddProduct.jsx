@@ -118,6 +118,13 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             formDataSubmit.append('retailer_id', 3); // Hardcoded for now
             formDataSubmit.append('stock_quantity', formData.quantity);
             
+            // Add sustainability ratings with the field names expected by backend
+            formDataSubmit.append('energy_efficiency', formData.sustainability.energyEfficiency);
+            formDataSubmit.append('carbon_footprint', formData.sustainability.carbonFootprint);
+            formDataSubmit.append('recyclability', formData.sustainability.recyclability);
+            formDataSubmit.append('durability', formData.sustainability.durability);
+            formDataSubmit.append('material_sustainability', formData.sustainability.materialSustainability);
+            
             // Add image files directly
             imageFiles.forEach((file, index) => {
                 formDataSubmit.append('images', file);
