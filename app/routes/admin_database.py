@@ -202,68 +202,74 @@ async def clear_all_products(db: Session = Depends(get_db)):
     try:
         logger.info("🗑️  Starting product deletion process...")
         
-        # Step 1: Get counts before deletion
-        products_count = db.execute(text("SELECT COUNT(*) FROM products")).scalar()
-        images_count = db.execute(text("SELECT COUNT(*) FROM product_images")).scalar()
-        sustainability_count = db.execute(text("SELECT COUNT(*) FROM sustainability_ratings")).scalar()
-        cart_items_count = db.execute(text("SELECT COUNT(*) FROM cart_items")).scalar()
+        # Step 1: Find all tables that reference products table
+        foreign_key_query = text("""
+            SELECT 
+                tc.table_name, 
+                kcu.column_name
+            FROM 
+                information_schema.table_constraints AS tc 
+                JOIN information_schema.key_column_usage AS kcu
+                  ON tc.constraint_name = kcu.constraint_name
+                  AND tc.table_schema = kcu.table_schema
+                JOIN information_schema.constraint_column_usage AS ccu
+                  ON ccu.constraint_name = tc.constraint_name
+                  AND ccu.table_schema = tc.table_schema
+            WHERE tc.constraint_type = 'FOREIGN KEY' 
+              AND ccu.table_name='products'
+              AND tc.table_schema = 'public'
+        """)
         
-        # Check for product_sales table
-        product_sales_count = 0
-        try:
-            product_sales_count = db.execute(text("SELECT COUNT(*) FROM product_sales")).scalar()
-        except Exception as e:
-            logger.info(f"product_sales table might not exist: {e}")
+        foreign_key_results = db.execute(foreign_key_query).fetchall()
+        referencing_tables = [(row[0], row[1]) for row in foreign_key_results]
+        
+        logger.info(f"Found {len(referencing_tables)} tables referencing products: {referencing_tables}")
+        
+        # Step 2: Get counts before deletion
+        products_count = db.execute(text("SELECT COUNT(*) FROM products")).scalar()
+        
+        counts = {"products": products_count}
+        deleted_counts = {}
+        
+        # Get counts for all referencing tables
+        for table_name, column_name in referencing_tables:
+            try:
+                count = db.execute(text(f"SELECT COUNT(*) FROM {table_name}")).scalar()
+                counts[table_name] = count
+            except Exception as e:
+                logger.warning(f"Could not count {table_name}: {e}")
+                counts[table_name] = 0
         
         if products_count == 0:
             return {
                 "message": "Database is already clean - no products to delete",
-                "counts": {
-                    "products": 0,
-                    "images": 0,
-                    "sustainability_ratings": 0,
-                    "cart_items": 0,
-                    "product_sales": 0
-                }
+                "counts": counts
             }
         
-        # Step 2: Clear in correct order (foreign key constraints)
-        
-        # Clear product_sales first (if it exists and references products)
-        product_sales_deleted = 0
-        if product_sales_count > 0:
+        # Step 3: Clear referencing tables first (in reverse dependency order)
+        for table_name, column_name in referencing_tables:
             try:
-                sales_result = db.execute(text("DELETE FROM product_sales"))
-                product_sales_deleted = sales_result.rowcount
-                logger.info(f"Deleted {product_sales_deleted} product sales records")
+                result = db.execute(text(f"DELETE FROM {table_name}"))
+                deleted_count = result.rowcount
+                deleted_counts[table_name] = deleted_count
+                logger.info(f"Deleted {deleted_count} records from {table_name}")
             except Exception as e:
-                logger.error(f"Failed to delete product_sales: {e}")
-                raise HTTPException(status_code=500, detail=f"Failed to delete product_sales: {e}")
+                logger.error(f"Failed to delete from {table_name}: {e}")
+                # Continue with other tables, don't fail completely
+                deleted_counts[table_name] = 0
         
-        # Clear cart items (they reference products)
-        cart_result = db.execute(text("DELETE FROM cart_items"))
-        cart_deleted = cart_result.rowcount
-        
-        # Clear sustainability ratings (foreign key to products)
-        sust_result = db.execute(text("DELETE FROM sustainability_ratings"))
-        sust_deleted = sust_result.rowcount
-        
-        # Clear product images (foreign key to products)
-        img_result = db.execute(text("DELETE FROM product_images"))
-        img_deleted = img_result.rowcount
-        
-        # Clear products (main table)
+        # Step 4: Clear products (main table)
         prod_result = db.execute(text("DELETE FROM products"))
         prod_deleted = prod_result.rowcount
+        deleted_counts["products"] = prod_deleted
         
-        # Reset auto-increment sequences
+        # Step 5: Reset auto-increment sequences
         try:
             db.execute(text("ALTER SEQUENCE products_id_seq RESTART WITH 1"))
-            db.execute(text("ALTER SEQUENCE product_images_id_seq RESTART WITH 1"))
-            db.execute(text("ALTER SEQUENCE sustainability_ratings_id_seq RESTART WITH 1"))
-            if product_sales_count > 0:
+            # Reset sequences for referencing tables too
+            for table_name, _ in referencing_tables:
                 try:
-                    db.execute(text("ALTER SEQUENCE product_sales_id_seq RESTART WITH 1"))
+                    db.execute(text(f"ALTER SEQUENCE {table_name}_id_seq RESTART WITH 1"))
                 except:
                     pass  # Sequence might not exist
         except Exception as e:
@@ -276,20 +282,9 @@ async def clear_all_products(db: Session = Depends(get_db)):
         
         return {
             "message": "ALL PRODUCTS AND RELATED DATA CLEARED SUCCESSFULLY",
-            "deleted_counts": {
-                "products": prod_deleted,
-                "product_images": img_deleted,
-                "sustainability_ratings": sust_deleted,
-                "cart_items": cart_deleted,
-                "product_sales": product_sales_deleted
-            },
-            "original_counts": {
-                "products": products_count,
-                "product_images": images_count,
-                "sustainability_ratings": sustainability_count,
-                "cart_items": cart_items_count,
-                "product_sales": product_sales_count
-            }
+            "deleted_counts": deleted_counts,
+            "original_counts": counts,
+            "tables_processed": [table for table, _ in referencing_tables] + ["products"]
         }
         
     except Exception as e:
@@ -304,26 +299,44 @@ async def clear_all_products(db: Session = Depends(get_db)):
 async def get_product_counts(db: Session = Depends(get_db)):
     """Get current counts of products and related data"""
     try:
-        products_count = db.execute(text("SELECT COUNT(*) FROM products")).scalar()
-        images_count = db.execute(text("SELECT COUNT(*) FROM product_images")).scalar()
-        sustainability_count = db.execute(text("SELECT COUNT(*) FROM sustainability_ratings")).scalar()
-        cart_items_count = db.execute(text("SELECT COUNT(*) FROM cart_items")).scalar()
+        # Find all tables that reference products table
+        foreign_key_query = text("""
+            SELECT 
+                tc.table_name, 
+                kcu.column_name
+            FROM 
+                information_schema.table_constraints AS tc 
+                JOIN information_schema.key_column_usage AS kcu
+                  ON tc.constraint_name = kcu.constraint_name
+                  AND tc.table_schema = kcu.table_schema
+                JOIN information_schema.constraint_column_usage AS ccu
+                  ON ccu.constraint_name = tc.constraint_name
+                  AND ccu.table_schema = tc.table_schema
+            WHERE tc.constraint_type = 'FOREIGN KEY' 
+              AND ccu.table_name='products'
+              AND tc.table_schema = 'public'
+        """)
         
-        # Check for product_sales table
-        product_sales_count = 0
-        try:
-            product_sales_count = db.execute(text("SELECT COUNT(*) FROM product_sales")).scalar()
-        except Exception as e:
-            logger.info(f"product_sales table might not exist: {e}")
+        foreign_key_results = db.execute(foreign_key_query).fetchall()
+        referencing_tables = [(row[0], row[1]) for row in foreign_key_results]
+        
+        # Get product count
+        products_count = db.execute(text("SELECT COUNT(*) FROM products")).scalar()
+        
+        counts = {"products": products_count}
+        
+        # Get counts for all referencing tables
+        for table_name, column_name in referencing_tables:
+            try:
+                count = db.execute(text(f"SELECT COUNT(*) FROM {table_name}")).scalar()
+                counts[table_name] = count
+            except Exception as e:
+                logger.warning(f"Could not count {table_name}: {e}")
+                counts[table_name] = 0
         
         return {
-            "counts": {
-                "products": products_count,
-                "product_images": images_count,
-                "sustainability_ratings": sustainability_count,
-                "cart_items": cart_items_count,
-                "product_sales": product_sales_count
-            },
+            "counts": counts,
+            "referencing_tables": [table for table, _ in referencing_tables],
             "status": "clean" if products_count == 0 else f"{products_count} products found"
         }
         
