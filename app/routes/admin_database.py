@@ -208,6 +208,13 @@ async def clear_all_products(db: Session = Depends(get_db)):
         sustainability_count = db.execute(text("SELECT COUNT(*) FROM sustainability_ratings")).scalar()
         cart_items_count = db.execute(text("SELECT COUNT(*) FROM cart_items")).scalar()
         
+        # Check for product_sales table
+        product_sales_count = 0
+        try:
+            product_sales_count = db.execute(text("SELECT COUNT(*) FROM product_sales")).scalar()
+        except Exception as e:
+            logger.info(f"product_sales table might not exist: {e}")
+        
         if products_count == 0:
             return {
                 "message": "Database is already clean - no products to delete",
@@ -215,13 +222,25 @@ async def clear_all_products(db: Session = Depends(get_db)):
                     "products": 0,
                     "images": 0,
                     "sustainability_ratings": 0,
-                    "cart_items": 0
+                    "cart_items": 0,
+                    "product_sales": 0
                 }
             }
         
         # Step 2: Clear in correct order (foreign key constraints)
         
-        # Clear cart items first (they reference products)
+        # Clear product_sales first (if it exists and references products)
+        product_sales_deleted = 0
+        if product_sales_count > 0:
+            try:
+                sales_result = db.execute(text("DELETE FROM product_sales"))
+                product_sales_deleted = sales_result.rowcount
+                logger.info(f"Deleted {product_sales_deleted} product sales records")
+            except Exception as e:
+                logger.error(f"Failed to delete product_sales: {e}")
+                raise HTTPException(status_code=500, detail=f"Failed to delete product_sales: {e}")
+        
+        # Clear cart items (they reference products)
         cart_result = db.execute(text("DELETE FROM cart_items"))
         cart_deleted = cart_result.rowcount
         
@@ -242,6 +261,11 @@ async def clear_all_products(db: Session = Depends(get_db)):
             db.execute(text("ALTER SEQUENCE products_id_seq RESTART WITH 1"))
             db.execute(text("ALTER SEQUENCE product_images_id_seq RESTART WITH 1"))
             db.execute(text("ALTER SEQUENCE sustainability_ratings_id_seq RESTART WITH 1"))
+            if product_sales_count > 0:
+                try:
+                    db.execute(text("ALTER SEQUENCE product_sales_id_seq RESTART WITH 1"))
+                except:
+                    pass  # Sequence might not exist
         except Exception as e:
             logger.warning(f"Could not reset sequences: {e}")
         
@@ -256,13 +280,15 @@ async def clear_all_products(db: Session = Depends(get_db)):
                 "products": prod_deleted,
                 "product_images": img_deleted,
                 "sustainability_ratings": sust_deleted,
-                "cart_items": cart_deleted
+                "cart_items": cart_deleted,
+                "product_sales": product_sales_deleted
             },
             "original_counts": {
                 "products": products_count,
                 "product_images": images_count,
                 "sustainability_ratings": sustainability_count,
-                "cart_items": cart_items_count
+                "cart_items": cart_items_count,
+                "product_sales": product_sales_count
             }
         }
         
@@ -283,12 +309,20 @@ async def get_product_counts(db: Session = Depends(get_db)):
         sustainability_count = db.execute(text("SELECT COUNT(*) FROM sustainability_ratings")).scalar()
         cart_items_count = db.execute(text("SELECT COUNT(*) FROM cart_items")).scalar()
         
+        # Check for product_sales table
+        product_sales_count = 0
+        try:
+            product_sales_count = db.execute(text("SELECT COUNT(*) FROM product_sales")).scalar()
+        except Exception as e:
+            logger.info(f"product_sales table might not exist: {e}")
+        
         return {
             "counts": {
                 "products": products_count,
                 "product_images": images_count,
                 "sustainability_ratings": sustainability_count,
-                "cart_items": cart_items_count
+                "cart_items": cart_items_count,
+                "product_sales": product_sales_count
             },
             "status": "clean" if products_count == 0 else f"{products_count} products found"
         }
