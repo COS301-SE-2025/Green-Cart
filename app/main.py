@@ -18,6 +18,7 @@ from app.routes import admin_retailers
 from app.routes import admin_products
 from app.routes import images
 from app.routes import admin_fix_images
+from app.routes import admin_database
 import logging
 
 # Configure logging
@@ -61,6 +62,7 @@ app.include_router(admin_retailers.router)
 app.include_router(admin_products.router)
 app.include_router(images.router)
 app.include_router(admin_fix_images.router)
+app.include_router(admin_database.router)
 
 # Mount static files for serving uploaded images
 app.mount("/static", StaticFiles(directory="uploads"), name="static")
