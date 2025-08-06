@@ -1,20 +1,60 @@
-import boto3
 import os
 import uuid
 from typing import List
 from fastapi import HTTPException, UploadFile
-from botocore.exceptions import ClientError
+
+# Try to import required dependencies
+try:
+    import boto3
+    from botocore.exceptions import ClientError
+    BOTO3_AVAILABLE = True
+except ImportError:
+    BOTO3_AVAILABLE = False
+    boto3 = None
+    ClientError = Exception
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # dotenv not available, environment variables should be set directly
+    pass
 
 class S3Service:
     def __init__(self):
-        self.s3_client = boto3.client(
-            's3',
-            aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
-            aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
-            region_name=os.getenv('AWS_REGION')
-        )
+        if not BOTO3_AVAILABLE:
+            raise ImportError("boto3 is required for S3 operations. Please install boto3: pip install boto3")
+            
+        # Get environment variables
+        self.aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+        self.aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+        self.aws_region = os.getenv('AWS_REGION')
         self.bucket_name = os.getenv('AWS_S3_BUCKET_NAME')
-        self.base_url = f"https://{self.bucket_name}.s3.{os.getenv('AWS_REGION')}.amazonaws.com"
+        
+        # Validate required environment variables
+        missing_vars = []
+        if not self.aws_access_key_id:
+            missing_vars.append('AWS_ACCESS_KEY_ID')
+        if not self.aws_secret_access_key:
+            missing_vars.append('AWS_SECRET_ACCESS_KEY')
+        if not self.aws_region:
+            missing_vars.append('AWS_REGION')
+        if not self.bucket_name:
+            missing_vars.append('AWS_S3_BUCKET_NAME')
+            
+        if missing_vars:
+            raise ValueError(f"Missing required AWS environment variables: {', '.join(missing_vars)}")
+        
+        try:
+            self.s3_client = boto3.client(
+                's3',
+                aws_access_key_id=self.aws_access_key_id,
+                aws_secret_access_key=self.aws_secret_access_key,
+                region_name=self.aws_region
+            )
+            self.base_url = f"https://{self.bucket_name}.s3.{self.aws_region}.amazonaws.com"
+        except Exception as e:
+            raise ValueError(f"Failed to initialize S3 client: {str(e)}")
 
     async def upload_file(self, file: UploadFile, folder: str = "products") -> str:
         """Upload a single file to S3 and return the URL"""
@@ -33,7 +73,6 @@ class S3Service:
                 Key=object_key,
                 Body=file_content,
                 ContentType=file.content_type or 'image/jpeg'
-                # Removed ACL='public-read' as the bucket doesn't support ACLs
             )
             
             # Return the public URL
