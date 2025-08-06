@@ -82,9 +82,16 @@ def delete_product(product_id: int, retailer_id: int, db: Session = Depends(get_
 @router.post("/products", response_model=ProductResponse)
 async def create_product(product: CreateProductRequest, db: Session = Depends(get_db)):
     try:
-        print(f"Received product data: {product.model_dump()}")
-        result = createRetailerProduct(product.model_dump(), db)
-        print(f"Product created successfully: {result}")
+        product_data = product.model_dump()
+        print(f"=== FRONTEND REQUEST RECEIVED ===")
+        print(f"Product name: {product_data.get('name')}")
+        print(f"Product price: {product_data.get('price')}")
+        print(f"Sustainability metrics received: {product_data.get('sustainability_metrics')}")
+        print(f"Full product data: {product_data}")
+        print(f"=== END REQUEST DATA ===")
+        
+        result = createRetailerProduct(product_data, db)
+        print(f"Product created successfully with ID: {result.get('id')}")
         return result
     except ValueError as ve:
         print(f"Validation error: {str(ve)}")
@@ -94,6 +101,8 @@ async def create_product(product: CreateProductRequest, db: Session = Depends(ge
         )
     except Exception as e:
         print(f"Error creating product: {str(e)}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An unexpected error occurred while creating the product: {str(e)}"

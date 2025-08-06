@@ -79,6 +79,9 @@ def deleteRetailerProduct(product_id: int, retailer_id: int, db: Session):
 
 def createRetailerProduct(product_data: dict, db: Session):
     try:
+        print(f"=== SERVICE: Processing product creation ===")
+        print(f"Product data keys: {list(product_data.keys())}")
+        
         # Create new product
         new_product = Product(
             name=product_data["name"],
@@ -92,58 +95,88 @@ def createRetailerProduct(product_data: dict, db: Session):
         )
         db.add(new_product)
         db.flush()  # Get the ID without committing
+        
+        print(f"Product created with ID: {new_product.id}")
+        
         # Create sustainability ratings if provided
+        sustainability_ratings_added = 0
         if "sustainability_metrics" in product_data:
             metrics = product_data["sustainability_metrics"]
+            print(f"=== PROCESSING SUSTAINABILITY METRICS ===")
+            print(f"Metrics received: {metrics}")
+            print(f"Metrics type: {type(metrics)}")
             
-            # Import sustainability models
-            from ..models.sustainability_type import SustainabilityType
-            from ..models.sustainability_ratings import SustainabilityRating
-            
-            # Get sustainability type mappings
-            sustainability_types = db.query(SustainabilityType).all()
-            
-            # Create multiple mapping strategies for robust matching
-            type_map = {}
-            for st in sustainability_types:
-                # Normalize the type name to lowercase with underscores
-                normalized_name = st.type_name.lower().replace(' ', '_')
-                type_map[normalized_name] = st.id
-                # Also map the exact original name
-                type_map[st.type_name] = st.id
-            
-            # Process each metric
-            for metric_name, value in metrics.items():
-                if value is not None and value != 0:  # Skip None and 0 values
-                    type_id = None
+            if metrics:  # Check if metrics is not empty
+                # Import sustainability models
+                from ..models.sustainability_type import SustainabilityType
+                from ..models.sustainability_ratings import SustainabilityRating
+                
+                # Get sustainability type mappings
+                sustainability_types = db.query(SustainabilityType).all()
+                print(f"Available sustainability types: {[st.type_name for st in sustainability_types]}")
+                
+                # Create multiple mapping strategies for robust matching
+                type_map = {}
+                for st in sustainability_types:
+                    # Normalize the type name to lowercase with underscores
+                    normalized_name = st.type_name.lower().replace(' ', '_')
+                    type_map[normalized_name] = st.id
+                    # Also map the exact original name
+                    type_map[st.type_name] = st.id
+                
+                print(f"Type mapping created: {type_map}")
+                
+                # Process each metric
+                for metric_name, value in metrics.items():
+                    print(f"Processing metric: {metric_name} = {value} (type: {type(value)})")
                     
-                    # Strategy 1: Direct match with metric name
-                    if metric_name in type_map:
-                        type_id = type_map[metric_name]
-                    
-                    # Strategy 2: Convert underscores to spaces and match
-                    elif metric_name.replace('_', ' ') in type_map:
-                        type_id = type_map[metric_name.replace('_', ' ')]
-                    
-                    # Strategy 3: Title case match
-                    elif metric_name.replace('_', ' ').title() in type_map:
-                        type_id = type_map[metric_name.replace('_', ' ').title()]
-                    
-                    # Strategy 4: Fuzzy matching based on keywords
+                    if value is not None and value != 0:  # Skip None and 0 values
+                        type_id = None
+                        
+                        # Strategy 1: Direct match with metric name
+                        if metric_name in type_map:
+                            type_id = type_map[metric_name]
+                            print(f"Direct match: {metric_name} -> type_id {type_id}")
+                        
+                        # Strategy 2: Convert underscores to spaces and match
+                        elif metric_name.replace('_', ' ') in type_map:
+                            type_id = type_map[metric_name.replace('_', ' ')]
+                            print(f"Space match: {metric_name} -> type_id {type_id}")
+                        
+                        # Strategy 3: Title case match
+                        elif metric_name.replace('_', ' ').title() in type_map:
+                            type_id = type_map[metric_name.replace('_', ' ').title()]
+                            print(f"Title case match: {metric_name} -> type_id {type_id}")
+                        
+                        # Strategy 4: Fuzzy matching based on keywords
+                        else:
+                            for st in sustainability_types:
+                                if metric_name.lower() in st.type_name.lower() or st.type_name.lower() in metric_name.lower():
+                                    type_id = st.id
+                                    print(f"Fuzzy match: {metric_name} -> {st.type_name} (type_id {type_id})")
+                                    break
+                        
+                        if type_id:
+                            new_rating = SustainabilityRating(
+                                product_id=new_product.id,
+                                type=type_id,
+                                value=float(value),
+                                verification=False
+                            )
+                            db.add(new_rating)
+                            sustainability_ratings_added += 1
+                            print(f"✅ Added sustainability rating: {metric_name} = {value}")
+                        else:
+                            print(f"❌ No matching type found for metric: {metric_name}")
                     else:
-                        for st in sustainability_types:
-                            if metric_name.lower() in st.type_name.lower() or st.type_name.lower() in metric_name.lower():
-                                type_id = st.id
-                                break
-                    
-                    if type_id:
-                        new_rating = SustainabilityRating(
-                            product_id=new_product.id,
-                            type=type_id,
-                            value=float(value),
-                            verification=False
-                        )
-                        db.add(new_rating)
+                        print(f"⏭️ Skipping metric {metric_name} (value: {value})")
+            else:
+                print("⚠️ Sustainability metrics is empty or None")
+        else:
+            print("⚠️ No sustainability_metrics key in product_data")
+        
+        print(f"Total sustainability ratings added: {sustainability_ratings_added}")
+        print(f"=== END SUSTAINABILITY PROCESSING ===")
         db.commit()
         # Return product with calculated sustainability rating
         req = {"product_id": new_product.id}
