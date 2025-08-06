@@ -95,7 +95,55 @@ def createRetailerProduct(product_data: dict, db: Session):
         # Create sustainability ratings if provided
         if "sustainability_metrics" in product_data:
             metrics = product_data["sustainability_metrics"]
-            # We'll implement this part later based on your sustainability ratings model
+            
+            # Import sustainability models
+            from ..models.sustainability_type import SustainabilityType
+            from ..models.sustainability_ratings import SustainabilityRating
+            
+            # Get sustainability type mappings
+            sustainability_types = db.query(SustainabilityType).all()
+            
+            # Create multiple mapping strategies for robust matching
+            type_map = {}
+            for st in sustainability_types:
+                # Normalize the type name to lowercase with underscores
+                normalized_name = st.type_name.lower().replace(' ', '_')
+                type_map[normalized_name] = st.id
+                # Also map the exact original name
+                type_map[st.type_name] = st.id
+            
+            # Process each metric
+            for metric_name, value in metrics.items():
+                if value is not None and value != 0:  # Skip None and 0 values
+                    type_id = None
+                    
+                    # Strategy 1: Direct match with metric name
+                    if metric_name in type_map:
+                        type_id = type_map[metric_name]
+                    
+                    # Strategy 2: Convert underscores to spaces and match
+                    elif metric_name.replace('_', ' ') in type_map:
+                        type_id = type_map[metric_name.replace('_', ' ')]
+                    
+                    # Strategy 3: Title case match
+                    elif metric_name.replace('_', ' ').title() in type_map:
+                        type_id = type_map[metric_name.replace('_', ' ').title()]
+                    
+                    # Strategy 4: Fuzzy matching based on keywords
+                    else:
+                        for st in sustainability_types:
+                            if metric_name.lower() in st.type_name.lower() or st.type_name.lower() in metric_name.lower():
+                                type_id = st.id
+                                break
+                    
+                    if type_id:
+                        new_rating = SustainabilityRating(
+                            product_id=new_product.id,
+                            type=type_id,
+                            value=float(value),
+                            verification=False
+                        )
+                        db.add(new_rating)
         db.commit()
         # Return product with calculated sustainability rating
         req = {"product_id": new_product.id}
