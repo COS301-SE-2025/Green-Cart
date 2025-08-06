@@ -10,6 +10,8 @@ from ..services.s3_service import S3Service
 from ..models.product import Product
 from ..models.product_images import ProductImage
 from ..models.categories import Category
+from ..models.sustainability_ratings import SustainabilityRating
+from ..models.sustainability_type import SustainabilityType
 
 router = APIRouter(prefix="/product-images", tags=["Products with Images"])
 
@@ -22,9 +24,15 @@ async def create_product_with_images(
     description: str = Form(...),
     price: float = Form(...),
     category_id: int = Form(...),
-    retailer_id: int = Form(...),
+    retailer_id: Optional[int] = Form(None),
     stock_quantity: int = Form(0),
     images: List[UploadFile] = File(...),
+    # Optional sustainability ratings (matching frontend field names)
+    energy_efficiency: Optional[float] = Form(None),
+    carbon_footprint: Optional[float] = Form(None),
+    recyclability: Optional[float] = Form(None),
+    durability: Optional[float] = Form(None),
+    material_sustainability: Optional[float] = Form(None),
     db: Session = Depends(get_db)
 ):
     """
@@ -66,6 +74,43 @@ async def create_product_with_images(
         db.flush()  # Flush to get the ID without committing
         product_id = new_product.id
         
+        # Add sustainability ratings if provided
+        sustainability_metrics = {
+            'energy_efficiency': energy_efficiency,
+            'carbon_footprint': carbon_footprint,
+            'recyclability': recyclability,
+            'durability': durability,
+            'material_sustainability': material_sustainability
+        }
+        
+        # Get sustainability type mappings
+        sustainability_types = db.query(SustainabilityType).all()
+        type_map = {st.type_name.lower().replace(' ', '_'): st.id for st in sustainability_types}
+        
+        ratings_added = 0
+        for metric_name, value in sustainability_metrics.items():
+            if value is not None:
+                # Try exact match first, then with spaces replaced by underscores
+                type_id = None
+                if metric_name in type_map:
+                    type_id = type_map[metric_name]
+                elif metric_name.replace('_', ' ') in [st.type_name.lower() for st in sustainability_types]:
+                    # Find the type by space-separated name
+                    for st in sustainability_types:
+                        if st.type_name.lower() == metric_name.replace('_', ' '):
+                            type_id = st.id
+                            break
+                
+                if type_id:
+                    new_rating = SustainabilityRating(
+                        product_id=product_id,
+                        type=type_id,
+                        value=value,
+                        verification=False
+                    )
+                    db.add(new_rating)
+                    ratings_added += 1
+        
         # Upload images to S3
         image_urls = []
         for image in images:
@@ -81,8 +126,7 @@ async def create_product_with_images(
                 # Save image URL to database
                 product_image = ProductImage(
                     product_id=product_id,
-                    image_url=image_url,
-                    alt_text=f"{name} image"
+                    image_url=image_url
                 )
                 db.add(product_image)
                 
@@ -101,7 +145,8 @@ async def create_product_with_images(
             "product_id": product_id,
             "product_name": name,
             "image_urls": image_urls,
-            "total_images": len(image_urls)
+            "total_images": len(image_urls),
+            "sustainability_ratings_added": ratings_added
         }
         
     except HTTPException:

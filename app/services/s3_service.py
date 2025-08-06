@@ -22,8 +22,14 @@ except ImportError:
 
 class S3Service:
     def __init__(self):
+        self.is_configured = False
+        self.s3_client = None
+        self.base_url = None
+        self.bucket_name = None
+        
         if not BOTO3_AVAILABLE:
-            raise ImportError("boto3 is required for S3 operations. Please install boto3: pip install boto3")
+            print("WARNING: boto3 is not available. S3 operations will be disabled.")
+            return
             
         # Get environment variables
         self.aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
@@ -31,7 +37,7 @@ class S3Service:
         self.aws_region = os.getenv('AWS_REGION')
         self.bucket_name = os.getenv('AWS_S3_BUCKET_NAME')
         
-        # Validate required environment variables
+        # Check if required environment variables are present
         missing_vars = []
         if not self.aws_access_key_id:
             missing_vars.append('AWS_ACCESS_KEY_ID')
@@ -43,7 +49,8 @@ class S3Service:
             missing_vars.append('AWS_S3_BUCKET_NAME')
             
         if missing_vars:
-            raise ValueError(f"Missing required AWS environment variables: {', '.join(missing_vars)}")
+            print(f"WARNING: Missing required AWS environment variables: {', '.join(missing_vars)}. S3 operations will be disabled.")
+            return
         
         try:
             self.s3_client = boto3.client(
@@ -53,11 +60,16 @@ class S3Service:
                 region_name=self.aws_region
             )
             self.base_url = f"https://{self.bucket_name}.s3.{self.aws_region}.amazonaws.com"
+            self.is_configured = True
         except Exception as e:
-            raise ValueError(f"Failed to initialize S3 client: {str(e)}")
+            print(f"WARNING: Failed to initialize S3 client: {str(e)}. S3 operations will be disabled.")
+            return
 
     async def upload_file(self, file: UploadFile, folder: str = "products") -> str:
         """Upload a single file to S3 and return the URL"""
+        if not self.is_configured:
+            raise HTTPException(status_code=503, detail="S3 service is not properly configured")
+            
         try:
             # Generate unique filename
             file_extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
@@ -85,6 +97,9 @@ class S3Service:
 
     async def upload_multiple_files(self, files: List[UploadFile], folder: str = "products") -> List[str]:
         """Upload multiple files to S3 and return list of URLs"""
+        if not self.is_configured:
+            raise HTTPException(status_code=503, detail="S3 service is not properly configured")
+            
         urls = []
         for file in files:
             # Reset file position for each upload
@@ -95,6 +110,9 @@ class S3Service:
 
     def delete_file(self, file_url: str) -> bool:
         """Delete a file from S3 using its URL"""
+        if not self.is_configured:
+            return False
+            
         try:
             # Extract object key from URL
             object_key = file_url.replace(f"{self.base_url}/", "")
@@ -106,6 +124,21 @@ class S3Service:
             return True
         except ClientError as e:
             print(f"Failed to delete file: {str(e)}")
+            return False
+    
+    def is_available(self) -> bool:
+        """Check if S3 service is available and properly configured"""
+        if not BOTO3_AVAILABLE or not self.is_configured:
+            return False
+            
+        try:
+            # Try to list objects in the bucket (this is a low-cost operation)
+            self.s3_client.list_objects_v2(
+                Bucket=self.bucket_name,
+                MaxKeys=1
+            )
+            return True
+        except Exception:
             return False
 
 # Create singleton instance

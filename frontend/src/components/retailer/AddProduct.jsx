@@ -19,6 +19,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
         }
     });
     const [images, setImages] = useState([]);
+    const [imageFiles, setImageFiles] = useState([]); // Store actual File objects
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
 
@@ -70,13 +71,15 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             return;
         }
 
-        // Create preview URLs
+        // Store both file objects and preview URLs
+        setImageFiles(files);
         const imageUrls = files.map(file => URL.createObjectURL(file));
         setImages(imageUrls);
     };
 
     const removeImage = (index) => {
         setImages(prev => prev.filter((_, i) => i !== index));
+        setImageFiles(prev => prev.filter((_, i) => i !== index));
     };
 
     const validateForm = () => {
@@ -104,22 +107,26 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
         if (!validateForm()) return;
         setIsSubmitting(true);
         try {
-            const productData = {
-                name: formData.name,
-                description: formData.description,
-                price: parseFloat(formData.price),
-                quantity: parseInt(formData.quantity),
-                brand: formData.brand,
-                category_id: categories.indexOf(formData.category) + 1,
-                retailer_id: 3, // Hardcoded for now
-                sustainability_metrics: formData.sustainability
-            };
-            const response = await fetch('https://api.greencart-cos301.co.za/retailer/products', {
+            // Create FormData for multipart form submission with images
+            const formDataSubmit = new FormData();
+            
+            // Add product data
+            formDataSubmit.append('name', formData.name);
+            formDataSubmit.append('description', formData.description);
+            formDataSubmit.append('price', formData.price);
+            formDataSubmit.append('category_id', categories.indexOf(formData.category) + 1);
+            formDataSubmit.append('retailer_id', 3); // Hardcoded for now
+            formDataSubmit.append('stock_quantity', formData.quantity);
+            
+            // Add image files directly
+            imageFiles.forEach((file, index) => {
+                formDataSubmit.append('images', file);
+            });
+            
+            // Use the S3-enabled product creation endpoint
+            const response = await fetch('https://api.greencart-cos301.co.za/product-images/products/', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(productData)
+                body: formDataSubmit // No Content-Type header for FormData
             });
             if (!response.ok) {
                 const error = await response.json();
@@ -145,6 +152,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                 }
             });
             setImages([]);
+            setImageFiles([]);
             
             toast.success('Product added successfully!');
             onClose();
