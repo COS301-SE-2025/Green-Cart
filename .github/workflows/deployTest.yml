@@ -60,10 +60,54 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "."
+          source: "app,requirements.txt,Dockerfile,.env"
           target: "/home/ubuntu/Green-Cart"
+          rm: true
 
-      - name: SSH and restart backend
+      - name: Cleanup EC2 disk space
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Clean up disk space first
+            echo "Checking disk usage before cleanup..."
+            df -h
+            
+            # Stop and remove existing containers
+            sudo docker stop green-cart-backend || true
+            sudo docker rm green-cart-backend || true
+            
+            # Clean up Docker images and containers
+            sudo docker system prune -af --volumes || true
+            
+            # Clean up old builds and logs
+            sudo apt-get autoremove -y || true
+            sudo apt-get autoclean || true
+            
+            # Remove old deployment files but keep .env
+            cd /home/ubuntu
+            sudo rm -rf Green-Cart-backup || true
+            if [ -d "Green-Cart" ]; then
+              cp Green-Cart/.env /tmp/.env-backup || true
+              sudo rm -rf Green-Cart || true
+            fi
+            
+            echo "Disk usage after cleanup:"
+            df -h
+            
+            echo "Creating fresh directory..."
+            mkdir -p Green-Cart
+            cd Green-Cart
+            
+            # Restore .env file
+            if [ -f "/tmp/.env-backup" ]; then
+              cp /tmp/.env-backup .env
+              rm /tmp/.env-backup
+            fi
+
+      - name: Deploy backend after cleanup  
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -72,18 +116,14 @@ jobs:
           script: |
             cd /home/ubuntu/Green-Cart
             
-            # Deploy to EC2
-            echo "Current branch: $GITHUB_REF_NAME"
-            echo "Deploying backend from branch: $GITHUB_REF_NAME"
-            git fetch --all
-            git checkout $GITHUB_REF_NAME
-            git pull origin $GITHUB_REF_NAME
-            
-            # Stop existing container if running
-            sudo docker stop green-cart-backend || true
-            sudo docker rm green-cart-backend || true
+            echo "Building and deploying backend..."
+            echo "Files in directory:"
+            ls -la
             
             # Build and run new container with environment file
             sudo docker build -t green-cart-backend .
             sudo docker run -d --name green-cart-backend -p 8000:8000 --env-file .env green-cart-backend
-            echo "Backend deployment completed for branch: $GITHUB_REF_NAME"
+            
+            echo "Deployment completed!"
+            echo "Final disk usage:"
+            df -h

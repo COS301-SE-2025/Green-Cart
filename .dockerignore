@@ -44,7 +44,7 @@ README.md
 *.md
 documents/
 
-# Frontend
+# Frontend (not needed for backend)
 frontend/
 node_modules/
 
@@ -60,8 +60,7 @@ pytest.ini
 *.log
 
 # Environment files (will be mounted separately)
-.env
-.env.*
+.env.example
 
 # Temporary files
 *.tmp
@@ -70,3 +69,13 @@ pytest.ini
 # Archives
 *.zip
 *.tar.gz
+
+# Large files that aren't needed for backend
+uploads/
+*.webp
+*.avif
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.svg
