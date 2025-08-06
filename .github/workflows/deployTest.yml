@@ -1,0 +1,200 @@
+name: Deploy Frontend and Backend Test
+
+on:
+  push:
+    branches:
+      - 127-backend-endpoints-for-admin
+  workflow_dispatch:
+
+jobs:
+  frontend-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get current branch name
+        id: branch
+        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: cd frontend && npm install
+
+      - name: Build frontend
+        run: cd frontend && npm run build
+
+      - name: Sync to S3
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: 'frontend/dist'
+
+      - name: Invalidate CloudFront
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          PATHS: '/*'
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  backend-deploy:
+    runs-on: ubuntu-latest
+    needs: frontend-deploy
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy backend using Git Clone
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "=== Starting Backend Deployment ==="
+            
+            # Clean up disk space first
+            echo "Checking disk usage before cleanup..."
+            df -h
+            
+            # Stop and remove existing containers
+            sudo docker stop green-cart-backend || true
+            sudo docker rm green-cart-backend || true
+            
+            # Clean up Docker images and old files
+            sudo docker system prune -af --volumes || true
+            sudo apt-get autoremove -y || true
+            sudo apt-get autoclean || true
+            
+            # Remove old deployment
+            cd /home/ubuntu
+            sudo rm -rf Green-Cart || true
+            
+            echo "=== Cloning Latest Code ==="
+            # Clone the latest code
+            git clone https://github.com/COS301-SE-2025/Green-Cart.git
+            cd Green-Cart
+            git checkout 127-backend-endpoints-for-admin
+            git pull origin 127-backend-endpoints-for-admin
+            
+            echo "=== Verifying Files ==="
+            echo "Files in directory:"
+            ls -la
+            
+            # Check if required files exist
+            if [ ! -f "Dockerfile" ]; then
+              echo "ERROR: Dockerfile not found!"
+              exit 1
+            fi
+            
+            if [ ! -f "requirements.txt" ]; then
+              echo "ERROR: requirements.txt not found!"
+              exit 1
+            fi
+            
+            if [ ! -d "app" ]; then
+              echo "ERROR: app directory not found!"
+              exit 1
+            fi
+            
+            echo "✅ All required files present"
+            
+            echo "=== Creating Production Environment ==="
+            cat > .env << EOF
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET }}
+            BASE_URL=https://api.greencart-cos301.co.za
+            EOF
+            
+            echo "=== Building Docker Image ==="
+            sudo docker build -t green-cart-backend .
+            
+            if [ $? -ne 0 ]; then
+              echo "ERROR: Docker build failed!"
+              exit 1
+            fi
+            
+            echo "=== Starting Container ==="
+            sudo docker run -d \
+              --name green-cart-backend \
+              --restart unless-stopped \
+              -p 8000:8000 \
+              --env-file .env \
+              green-cart-backend
+            
+            if [ $? -ne 0 ]; then
+              echo "ERROR: Container failed to start!"
+              exit 1
+            fi
+            
+            echo "=== Validating Deployment ==="
+            sleep 10
+            
+            # Check if container is running
+            if ! sudo docker ps | grep green-cart-backend; then
+              echo "ERROR: Container is not running!"
+              echo "Container logs:"
+              sudo docker logs green-cart-backend
+              exit 1
+            fi
+            
+            # Test health endpoint
+            echo "Testing health endpoint..."
+            for i in {1..30}; do
+              if curl -f http://localhost:8000/health; then
+                echo "✅ Backend is healthy!"
+                break
+              fi
+              if [ $i -eq 30 ]; then
+                echo "ERROR: Health check failed after 30 attempts!"
+                echo "Container logs:"
+                sudo docker logs green-cart-backend
+                exit 1
+              fi
+              echo "Attempt $i/30: Health check failed, retrying..."
+              sleep 2
+            done
+            
+            # Test external API
+            echo "Testing external API..."
+            if curl -f https://api.greencart-cos301.co.za/health; then
+              echo "✅ External API is working!"
+            else
+              echo "⚠️  External API test failed, but backend is running locally"
+            fi
+            
+            echo "=== Fixing Database URLs ==="
+            sleep 5
+            
+            # Check for localhost URLs and fix them
+            LOCALHOST_COUNT=$(curl -s http://localhost:8000/admin/check-localhost-urls | grep -o '"localhost_urls_count":[0-9]*' | grep -o '[0-9]*' || echo "0")
+            echo "Found $LOCALHOST_COUNT localhost URLs in database"
+            
+            if [ "$LOCALHOST_COUNT" -gt 0 ]; then
+              echo "Fixing localhost URLs..."
+              if curl -X POST -f http://localhost:8000/admin/fix-image-urls; then
+                echo "✅ Successfully fixed $LOCALHOST_COUNT image URLs!"
+              else
+                echo "⚠️  Warning: Could not fix image URLs automatically"
+              fi
+            else
+              echo "✅ No localhost URLs found in database"
+            fi
+            
+            echo "=== Deployment Complete ==="
+            echo "Final disk usage:"
+            df -h
+            
+            echo "Container status:"
+            sudo docker ps | grep green-cart-backend
+            
+            echo "🚀 Backend deployment successful!"
