@@ -99,3 +99,79 @@ async def check_database_health(db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Error checking database health: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error checking database: {str(e)}")
+
+@router.post("/fix-localhost-urls")
+async def fix_localhost_urls(db: Session = Depends(get_db)):
+    """
+    Fix any localhost URLs in the database to use S3 bucket URLs
+    """
+    try:
+        # S3 bucket base URL
+        s3_base_url = "https://greencart-images-cos-301.s3.amazonaws.com"
+        
+        # Check product_images table schema first
+        image_check = text("SELECT column_name FROM information_schema.columns WHERE table_name = 'product_images'")
+        image_columns = db.execute(image_check).fetchall()
+        image_column_names = [row[0] for row in image_columns]
+        
+        updates_made = 0
+        
+        # Update localhost URLs based on available columns
+        if 'url' in image_column_names:
+            update_query = text("""
+                UPDATE product_images 
+                SET url = REPLACE(url, 'http://localhost:8000/images/', :s3_base_url || '/')
+                WHERE url LIKE 'http://localhost:8000/images/%'
+            """)
+            result = db.execute(update_query, {"s3_base_url": s3_base_url})
+            updates_made += result.rowcount
+            
+        elif 'image_url' in image_column_names:
+            update_query = text("""
+                UPDATE product_images 
+                SET image_url = REPLACE(image_url, 'http://localhost:8000/images/', :s3_base_url || '/')
+                WHERE image_url LIKE 'http://localhost:8000/images/%'
+            """)
+            result = db.execute(update_query, {"s3_base_url": s3_base_url})
+            updates_made += result.rowcount
+            
+        elif 'file_path' in image_column_names:
+            update_query = text("""
+                UPDATE product_images 
+                SET file_path = REPLACE(file_path, 'http://localhost:8000/images/', :s3_base_url || '/')
+                WHERE file_path LIKE 'http://localhost:8000/images/%'
+            """)
+            result = db.execute(update_query, {"s3_base_url": s3_base_url})
+            updates_made += result.rowcount
+        
+        # Also check products table for any image URLs
+        try:
+            product_check = text("SELECT column_name FROM information_schema.columns WHERE table_name = 'products'")
+            product_columns = db.execute(product_check).fetchall()
+            product_column_names = [row[0] for row in product_columns]
+            
+            if 'image_url' in product_column_names:
+                product_update = text("""
+                    UPDATE products 
+                    SET image_url = REPLACE(image_url, 'http://localhost:8000/images/', :s3_base_url || '/')
+                    WHERE image_url LIKE 'http://localhost:8000/images/%'
+                """)
+                result = db.execute(product_update, {"s3_base_url": s3_base_url})
+                updates_made += result.rowcount
+        except:
+            pass  # Products table might not have image_url column
+        
+        db.commit()
+        
+        return {
+            "status": "success",
+            "message": f"Fixed {updates_made} localhost URLs",
+            "s3_base_url": s3_base_url,
+            "updates_made": updates_made,
+            "columns_found": image_column_names
+        }
+        
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error fixing localhost URLs: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fixing URLs: {str(e)}")
