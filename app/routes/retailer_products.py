@@ -83,6 +83,27 @@ def delete_product(product_id: int, retailer_id: int, db: Session = Depends(get_
 async def create_product(product: CreateProductRequest, db: Session = Depends(get_db)):
     try:
         product_data = product.model_dump()
+        
+        # Log to both console and file
+        import datetime
+        timestamp = datetime.datetime.now().isoformat()
+        log_message = f"""
+{timestamp} - FRONTEND REQUEST RECEIVED
+Product name: {product_data.get('name')}
+Product price: {product_data.get('price')}
+Sustainability metrics: {product_data.get('sustainability_metrics')}
+Full data: {product_data}
+---
+"""
+        
+        # Write to file (free logging)
+        try:
+            with open('/tmp/product_creation_debug.log', 'a') as f:
+                f.write(log_message)
+        except:
+            pass  # Don't fail if logging fails
+        
+        # Also print to console
         print(f"=== FRONTEND REQUEST RECEIVED ===")
         print(f"Product name: {product_data.get('name')}")
         print(f"Product price: {product_data.get('price')}")
@@ -107,3 +128,25 @@ async def create_product(product: CreateProductRequest, db: Session = Depends(ge
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An unexpected error occurred while creating the product: {str(e)}"
         )
+
+@router.get("/debug-logs")
+async def get_debug_logs():
+    """Get the latest product creation debug logs - FREE debugging"""
+    try:
+        with open('/tmp/product_creation_debug.log', 'r') as f:
+            logs = f.read()
+        return {"logs": logs}
+    except FileNotFoundError:
+        return {"logs": "No logs found yet. Try creating a product first."}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/clear-debug-logs")
+async def clear_debug_logs():
+    """Clear the debug logs"""
+    try:
+        with open('/tmp/product_creation_debug.log', 'w') as f:
+            f.write("")
+        return {"message": "Debug logs cleared"}
+    except Exception as e:
+        return {"error": str(e)}
