@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import '../styles/login/LoginForm.css';
 import { loginUser } from '../../user-services/loginService'; // External function
+import GoogleIcon from '../../assets/icons/googleColored.png'; // Import Google icon
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -98,7 +99,7 @@ const LoginForm = () => {
             onClick={handleGoogleSignIn}
           >
             <img
-              src="/src/assets/icons/googleColored.png"
+              src={GoogleIcon}
               alt="Google"
               className="google-icon"
             />

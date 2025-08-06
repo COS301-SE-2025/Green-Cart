@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  base: './',
   test: {
     globals: true,
     environment: 'jsdom',
@@ -19,7 +19,7 @@ export default defineConfig({
           const info = assetInfo.name.split('.')
           const extType = info[info.length - 1]
           if (/\.(png|jpe?g|svg|gif|tiff|bmp|ico|webp|avif)$/i.test(assetInfo.name)) {
-            return `images/[name]-[hash][extname]`
+            return `assets/[name]-[hash][extname]`
           }
           return `assets/[name]-[hash][extname]`
         }
