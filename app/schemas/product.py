@@ -15,6 +15,7 @@ class ProductResponse(BaseModel):
     category_id: Optional[int] = None
     retailer_id: Optional[int] = None
     created_at: Optional[datetime] = None
+    image_url: Optional[str] = None
 
     class Config:
         from_attributes = True

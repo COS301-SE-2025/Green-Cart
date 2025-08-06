@@ -18,7 +18,29 @@ def get_category_id_by_name(category_name: str, db_session_id: str):
     pass
 
 def get_all_products(db: Session):
-    return db.query(Product).all()
+    """Get all products with their first image URL included"""
+    products = db.query(Product).all()
+    
+    if not products:
+        return []
+    
+    # Get first image for each product
+    product_ids = [product.id for product in products]
+    image_query = db.query(ProductImage).filter(
+        ProductImage.product_id.in_(product_ids)
+    ).order_by(ProductImage.product_id, ProductImage.id).all()
+    
+    # Create image mapping (first image per product)
+    image_map = {}
+    for img in image_query:
+        if img.product_id not in image_map:
+            image_map[img.product_id] = img.image_url
+    
+    # Add image_url attribute to each product
+    for product in products:
+        product.image_url = image_map.get(product.id, "https://via.placeholder.com/300x300/7BB540/FFFFFF?text=Product")
+    
+    return products
 
 def fetchProductImages(db: Session, product_id: int, limit: int = 1):
     query = db.query(ProductImage).filter(ProductImage.product_id == product_id)

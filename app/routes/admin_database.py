@@ -3,10 +3,46 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.db.session import get_db
 from app.models.categories import Category
+from app.models.product_images import ProductImage
+from pydantic import BaseModel
 import logging
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 logger = logging.getLogger(__name__)
+
+class UpdateProductImageRequest(BaseModel):
+    product_id: int
+    image_url: str
+
+@router.post("/update-product-image")
+async def update_product_image(request: UpdateProductImageRequest, db: Session = Depends(get_db)):
+    """
+    Update the image URL for a specific product
+    """
+    try:
+        # Find the product image record
+        product_image = db.query(ProductImage).filter(ProductImage.product_id == request.product_id).first()
+        
+        if not product_image:
+            raise HTTPException(status_code=404, detail=f"Product image not found for product_id {request.product_id}")
+        
+        # Update the image URL
+        product_image.image_url = request.image_url
+        db.commit()
+        
+        return {
+            "status": "success",
+            "message": f"Image URL updated for product {request.product_id}",
+            "product_id": request.product_id,
+            "image_url": request.image_url
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating product image: {str(e)}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error updating product image: {str(e)}")
 
 @router.post("/initialize-database")
 async def initialize_database(db: Session = Depends(get_db)):
@@ -400,4 +436,282 @@ async def update_categories(db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=500,
             detail=f"Failed to update categories: {str(e)}"
+        )
+
+@router.post("/add-sample-products")
+async def add_sample_products(db: Session = Depends(get_db)):
+    """
+    Add 20 eco-friendly sample products with direct image URLs (no S3 upload needed)
+    """
+    try:
+        from ..models.product import Product
+        from ..models.product_images import ProductImage
+        from ..models.sustainability_ratings import SustainabilityRating
+        from ..models.sustainability_type import SustainabilityType
+        from decimal import Decimal
+        
+        logger.info("🌱 Adding 20 eco-friendly sample products...")
+        
+        # Sample eco-friendly products with ZAR pricing and clean image URLs
+        products_data = [
+            {
+                "name": "Bamboo Coffee Mug with Lid",
+                "description": "Sustainable bamboo coffee mug with silicone lid. Perfect for hot beverages on the go. 100% biodegradable and reusable.",
+                "price": 185.99,
+                "category_id": 3,  # Home & Garden
+                "stock_quantity": 45,
+                "image_urls": ["https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=500"],
+                "sustainability": {"energy_efficiency": 85, "carbon_footprint": 90, "recyclability": 95, "durability": 80, "material_sustainability": 95}
+            },
+            {
+                "name": "Solar Portable Phone Charger",
+                "description": "Eco-friendly solar-powered portable charger with 10,000mAh capacity. Charges phones using renewable solar energy.",
+                "price": 449.99,
+                "category_id": 1,  # Electronics
+                "stock_quantity": 25,
+                "image_urls": ["https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?w=500"],
+                "sustainability": {"energy_efficiency": 95, "carbon_footprint": 85, "recyclability": 70, "durability": 90, "material_sustainability": 80}
+            },
+            {
+                "name": "Recycled Ocean Plastic Phone Case",
+                "description": "Protective phone case made from 100% recycled ocean plastic. Available for iPhone and Samsung models.",
+                "price": 125.50,
+                "category_id": 1,  # Electronics
+                "stock_quantity": 60,
+                "image_urls": ["https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500"],
+                "sustainability": {"energy_efficiency": 75, "carbon_footprint": 88, "recyclability": 100, "durability": 85, "material_sustainability": 95}
+            },
+            {
+                "name": "Bamboo Kitchen Utensil Set",
+                "description": "Complete set of bamboo kitchen utensils including spoons, forks, and chopsticks. Naturally antibacterial.",
+                "price": 89.99,
+                "category_id": 3,  # Home & Garden
+                "stock_quantity": 35,
+                "image_urls": ["https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=500"],
+                "sustainability": {"energy_efficiency": 80, "carbon_footprint": 92, "recyclability": 100, "durability": 85, "material_sustainability": 95}
+            },
+            {
+                "name": "Energy-Efficient LED Smart Bulb",
+                "description": "WiFi-enabled LED smart bulb with 90% energy savings. Adjustable brightness and color temperature.",
+                "price": 159.99,
+                "category_id": 1,  # Electronics
+                "stock_quantity": 50,
+                "image_urls": ["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500"],
+                "sustainability": {"energy_efficiency": 95, "carbon_footprint": 85, "recyclability": 75, "durability": 90, "material_sustainability": 80}
+            },
+            {
+                "name": "Recycled Paper Notebook Set",
+                "description": "Set of 3 notebooks made from 100% recycled paper. Perfect for eco-conscious note-taking and journaling.",
+                "price": 65.99,
+                "category_id": 6,  # Books & Media
+                "stock_quantity": 40,
+                "image_urls": ["https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500"],
+                "sustainability": {"energy_efficiency": 70, "carbon_footprint": 85, "recyclability": 100, "durability": 75, "material_sustainability": 95}
+            },
+            {
+                "name": "Stainless Steel Water Bottle",
+                "description": "Double-wall insulated stainless steel water bottle. Keeps drinks cold for 24hrs or hot for 12hrs. BPA-free.",
+                "price": 275.00,
+                "category_id": 3,  # Home & Garden
+                "stock_quantity": 30,
+                "image_urls": ["https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=500"],
+                "sustainability": {"energy_efficiency": 85, "carbon_footprint": 80, "recyclability": 90, "durability": 95, "material_sustainability": 90}
+            },
+            {
+                "name": "Organic Cotton Shopping Bags (3-Pack)",
+                "description": "Set of 3 reusable shopping bags made from organic cotton. Strong, washable, and plastic-free.",
+                "price": 99.99,
+                "category_id": 3,  # Home & Garden
+                "stock_quantity": 55,
+                "image_urls": ["https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500"],
+                "sustainability": {"energy_efficiency": 75, "carbon_footprint": 90, "recyclability": 95, "durability": 85, "material_sustainability": 95}
+            },
+            {
+                "name": "Bamboo Toothbrush Set (4-Pack)",
+                "description": "Biodegradable bamboo toothbrushes with soft bristles. Eco-friendly alternative to plastic toothbrushes.",
+                "price": 45.99,
+                "category_id": 4,  # Beauty & Personal Care
+                "stock_quantity": 70,
+                "image_urls": ["https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500"],
+                "sustainability": {"energy_efficiency": 80, "carbon_footprint": 95, "recyclability": 100, "durability": 70, "material_sustainability": 98}
+            },
+            {
+                "name": "Solar Garden Light Set",
+                "description": "Set of 6 solar-powered garden lights. Automatic on/off with built-in light sensor. Weather-resistant design.",
+                "price": 329.99,
+                "category_id": 3,  # Home & Garden
+                "stock_quantity": 20,
+                "image_urls": ["https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500"],
+                "sustainability": {"energy_efficiency": 100, "carbon_footprint": 90, "recyclability": 80, "durability": 85, "material_sustainability": 85}
+            },
+            {
+                "name": "Eco-Friendly Laundry Detergent",
+                "description": "Plant-based laundry detergent in concentrated form. Biodegradable formula safe for sensitive skin.",
+                "price": 89.50,
+                "category_id": 3,  # Home & Garden
+                "stock_quantity": 25,
+                "image_urls": ["https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500"],
+                "sustainability": {"energy_efficiency": 75, "carbon_footprint": 85, "recyclability": 90, "durability": 80, "material_sustainability": 95}
+            },
+            {
+                "name": "Cork Yoga Mat",
+                "description": "Natural cork yoga mat with rubber base. Non-slip, antimicrobial, and sustainably harvested materials.",
+                "price": 549.99,
+                "category_id": 5,  # Sports & Outdoors
+                "stock_quantity": 15,
+                "image_urls": ["https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500"],
+                "sustainability": {"energy_efficiency": 80, "carbon_footprint": 88, "recyclability": 85, "durability": 90, "material_sustainability": 95}
+            },
+            {
+                "name": "Beeswax Food Wrap Set",
+                "description": "Reusable beeswax wraps for food storage. Natural alternative to plastic wrap. Set includes 3 sizes.",
+                "price": 125.99,
+                "category_id": 3,  # Home & Garden
+                "stock_quantity": 35,
+                "image_urls": ["https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500"],
+                "sustainability": {"energy_efficiency": 85, "carbon_footprint": 92, "recyclability": 100, "durability": 80, "material_sustainability": 98}
+            },
+            {
+                "name": "Wooden Desk Organizer",
+                "description": "Handcrafted wooden desk organizer made from sustainably sourced bamboo. Perfect for office organization.",
+                "price": 199.99,
+                "category_id": 3,  # Home & Garden
+                "stock_quantity": 22,
+                "image_urls": ["https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500"],
+                "sustainability": {"energy_efficiency": 75, "carbon_footprint": 85, "recyclability": 90, "durability": 95, "material_sustainability": 90}
+            },
+            {
+                "name": "Biodegradable Phone Screen Protector",
+                "description": "Plant-based biodegradable screen protector. Crystal clear protection that decomposes naturally.",
+                "price": 75.50,
+                "category_id": 1,  # Electronics
+                "stock_quantity": 80,
+                "image_urls": ["https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=500"],
+                "sustainability": {"energy_efficiency": 70, "carbon_footprint": 80, "recyclability": 100, "durability": 85, "material_sustainability": 95}
+            },
+            {
+                "name": "Organic Cotton T-Shirt",
+                "description": "Soft organic cotton t-shirt made with GOTS certified organic cotton. Available in multiple colors.",
+                "price": 189.99,
+                "category_id": 2,  # Fashion
+                "stock_quantity": 45,
+                "image_urls": ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500"],
+                "sustainability": {"energy_efficiency": 80, "carbon_footprint": 85, "recyclability": 90, "durability": 85, "material_sustainability": 95}
+            },
+            {
+                "name": "Solar-Powered Bluetooth Speaker",
+                "description": "Portable Bluetooth speaker with built-in solar panel. Waterproof design perfect for outdoor activities.",
+                "price": 399.99,
+                "category_id": 1,  # Electronics
+                "stock_quantity": 18,
+                "image_urls": ["https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500"],
+                "sustainability": {"energy_efficiency": 95, "carbon_footprint": 82, "recyclability": 75, "durability": 90, "material_sustainability": 80}
+            },
+            {
+                "name": "Compostable Phone Case",
+                "description": "100% compostable phone case made from plant-based materials. Breaks down in 6 months in compost.",
+                "price": 95.99,
+                "category_id": 1,  # Electronics
+                "stock_quantity": 65,
+                "image_urls": ["https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500"],
+                "sustainability": {"energy_efficiency": 75, "carbon_footprint": 90, "recyclability": 100, "durability": 75, "material_sustainability": 100}
+            },
+            {
+                "name": "Bamboo Cutting Board Set",
+                "description": "Set of 3 bamboo cutting boards in different sizes. Naturally antimicrobial and knife-friendly surface.",
+                "price": 149.99,
+                "category_id": 3,  # Home & Garden
+                "stock_quantity": 28,
+                "image_urls": ["https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=500"],
+                "sustainability": {"energy_efficiency": 80, "carbon_footprint": 90, "recyclability": 95, "durability": 90, "material_sustainability": 95}
+            },
+            {
+                "name": "Recycled Plastic Outdoor Furniture",
+                "description": "Weather-resistant outdoor chair made from 100% recycled plastic bottles. UV-resistant and maintenance-free.",
+                "price": 899.99,
+                "category_id": 3,  # Home & Garden
+                "stock_quantity": 8,
+                "image_urls": ["https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500"],
+                "sustainability": {"energy_efficiency": 85, "carbon_footprint": 85, "recyclability": 100, "durability": 95, "material_sustainability": 95}
+            }
+        ]
+        
+        # Get sustainability type mappings
+        sustainability_types = db.query(SustainabilityType).all()
+        type_map = {}
+        for st in sustainability_types:
+            normalized_name = st.type_name.lower().replace(' ', '_')
+            type_map[normalized_name] = st.id
+        
+        products_created = 0
+        total_images = 0
+        total_ratings = 0
+        
+        for product_data in products_data:
+            # Create product
+            new_product = Product(
+                name=product_data["name"],
+                description=product_data["description"],
+                price=Decimal(str(product_data["price"])),
+                quantity=product_data["stock_quantity"],
+                category_id=product_data["category_id"],
+                retailer_id=3,  # Default retailer
+                in_stock=True
+            )
+            
+            db.add(new_product)
+            db.flush()  # Get product ID
+            
+            # Add images (direct URLs, no S3 upload)
+            for image_url in product_data["image_urls"]:
+                product_image = ProductImage(
+                    product_id=new_product.id,
+                    image_url=image_url
+                )
+                db.add(product_image)
+                total_images += 1
+            
+            # Add sustainability ratings
+            for metric_name, value in product_data["sustainability"].items():
+                # Find matching sustainability type
+                type_id = None
+                if metric_name in type_map:
+                    type_id = type_map[metric_name]
+                else:
+                    # Try alternate matching strategies
+                    for st in sustainability_types:
+                        if metric_name.lower() in st.type_name.lower():
+                            type_id = st.id
+                            break
+                
+                if type_id:
+                    new_rating = SustainabilityRating(
+                        product_id=new_product.id,
+                        type=type_id,
+                        value=value,
+                        verification=False
+                    )
+                    db.add(new_rating)
+                    total_ratings += 1
+            
+            products_created += 1
+            logger.info(f"✅ Created product: {product_data['name']}")
+        
+        db.commit()
+        
+        return {
+            "status": "success",
+            "message": f"Successfully added {products_created} eco-friendly products",
+            "products_created": products_created,
+            "images_added": total_images,
+            "sustainability_ratings_added": total_ratings,
+            "note": "Images are direct URLs from Unsplash - no S3 storage needed"
+        }
+        
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to add sample products: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to add sample products: {str(e)}"
         )
