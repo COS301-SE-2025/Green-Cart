@@ -39,6 +39,44 @@ async def create_product_with_images(
     Create a new product with images uploaded to S3
     """
     try:
+        # Log the received FormData for debugging
+        import datetime
+        timestamp = datetime.datetime.now().isoformat()
+        
+        print(f"=== FORMDATA ENDPOINT HIT ===")
+        print(f"Timestamp: {timestamp}")
+        print(f"Product name: {name}")
+        print(f"Product description: {description}")
+        print(f"Product price: {price}")
+        print(f"Category ID: {category_id}")
+        print(f"Retailer ID: {retailer_id}")
+        print(f"Stock quantity: {stock_quantity}")
+        print(f"Number of images: {len(images)}")
+        print(f"=== SUSTAINABILITY RATINGS RECEIVED ===")
+        print(f"Energy efficiency: {energy_efficiency} (type: {type(energy_efficiency)})")
+        print(f"Carbon footprint: {carbon_footprint} (type: {type(carbon_footprint)})")
+        print(f"Recyclability: {recyclability} (type: {type(recyclability)})")
+        print(f"Durability: {durability} (type: {type(durability)})")
+        print(f"Material sustainability: {material_sustainability} (type: {type(material_sustainability)})")
+        print(f"=== END FORMDATA DEBUG ===")
+        
+        # Log to file as well
+        try:
+            log_message = f"""
+{timestamp} - FORMDATA ENDPOINT REQUEST
+Name: {name}
+Price: {price}
+Energy efficiency: {energy_efficiency}
+Carbon footprint: {carbon_footprint}
+Recyclability: {recyclability}
+Durability: {durability}
+Material sustainability: {material_sustainability}
+---
+"""
+            with open('/tmp/formdata_debug.log', 'a') as f:
+                f.write(log_message)
+        except:
+            pass  # Don't fail if logging fails
         # Validate images
         for image in images:
             if not image.content_type or not image.content_type.startswith('image/'):
@@ -184,3 +222,15 @@ async def health_check():
         "service": "product-images",
         "s3_available": s3_service.is_available()
     }
+
+@router.get("/debug-formdata-logs")
+async def get_formdata_debug_logs():
+    """Get the latest FormData debug logs - FREE debugging"""
+    try:
+        with open('/tmp/formdata_debug.log', 'r') as f:
+            logs = f.read()
+        return {"logs": logs}
+    except FileNotFoundError:
+        return {"logs": "No FormData logs found yet. Try creating a product first."}
+    except Exception as e:
+        return {"error": str(e)}
