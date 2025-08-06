@@ -14,16 +14,18 @@ async def initialize_database(db: Session = Depends(get_db)):
     Initialize database with required categories and fix any schema issues
     """
     try:
-        # Create categories if they don't exist
+        # Create categories if they don't exist (matching frontend categories)
         categories = [
-            {"id": 1, "name": "Fruits & Vegetables", "description": "Fresh produce"},
-            {"id": 2, "name": "Dairy & Eggs", "description": "Dairy products and eggs"},
-            {"id": 3, "name": "Meat & Seafood", "description": "Fresh meat and seafood"},
-            {"id": 4, "name": "Pantry Staples", "description": "Rice, pasta, grains, canned goods"},
-            {"id": 5, "name": "Snacks & Beverages", "description": "Snacks and drinks"},
-            {"id": 6, "name": "Health & Beauty", "description": "Personal care products"},
-            {"id": 7, "name": "Household Items", "description": "Cleaning supplies and household goods"},
-            {"id": 8, "name": "Organic", "description": "Certified organic products"}
+            {"id": 1, "name": "Electronics", "description": "Electronic devices and gadgets"},
+            {"id": 2, "name": "Fashion", "description": "Clothing and accessories"},
+            {"id": 3, "name": "Home & Garden", "description": "Home improvement and gardening items"},
+            {"id": 4, "name": "Beauty & Personal Care", "description": "Beauty and personal care products"},
+            {"id": 5, "name": "Sports & Outdoors", "description": "Sports equipment and outdoor gear"},
+            {"id": 6, "name": "Books & Media", "description": "Books, movies, music and media"},
+            {"id": 7, "name": "Food & Beverages", "description": "Food items and beverages"},
+            {"id": 8, "name": "Automotive", "description": "Car parts and automotive accessories"},
+            {"id": 9, "name": "Health & Wellness", "description": "Health and wellness products"},
+            {"id": 10, "name": "Baby & Kids", "description": "Baby and children's products"}
         ]
         
         for cat_data in categories:
@@ -345,4 +347,57 @@ async def get_product_counts(db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=500,
             detail=f"Failed to get counts: {str(e)}"
+        )
+
+@router.post("/update-categories")
+async def update_categories(db: Session = Depends(get_db)):
+    """
+    Update categories to match frontend expectations
+    """
+    try:
+        logger.info("🔄 Updating categories to match frontend...")
+        
+        # Clear existing categories first
+        db.execute(text("DELETE FROM categories"))
+        
+        # Frontend categories (matching AddProduct.jsx)
+        categories = [
+            {"id": 1, "name": "Electronics", "description": "Electronic devices and gadgets"},
+            {"id": 2, "name": "Fashion", "description": "Clothing and accessories"},
+            {"id": 3, "name": "Home & Garden", "description": "Home improvement and gardening items"},
+            {"id": 4, "name": "Beauty & Personal Care", "description": "Beauty and personal care products"},
+            {"id": 5, "name": "Sports & Outdoors", "description": "Sports equipment and outdoor gear"},
+            {"id": 6, "name": "Books & Media", "description": "Books, movies, music and media"},
+            {"id": 7, "name": "Food & Beverages", "description": "Food items and beverages"},
+            {"id": 8, "name": "Automotive", "description": "Car parts and automotive accessories"},
+            {"id": 9, "name": "Health & Wellness", "description": "Health and wellness products"},
+            {"id": 10, "name": "Baby & Kids", "description": "Baby and children's products"}
+        ]
+        
+        # Insert categories
+        for cat_data in categories:
+            category = Category(
+                id=cat_data["id"],
+                name=cat_data["name"],
+                description=cat_data["description"]
+            )
+            db.add(category)
+        
+        # Reset sequence to start from 11
+        db.execute(text("ALTER SEQUENCE categories_id_seq RESTART WITH 11"))
+        
+        db.commit()
+        
+        return {
+            "status": "success",
+            "message": "Categories updated to match frontend",
+            "categories": categories
+        }
+        
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to update categories: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to update categories: {str(e)}"
         )
