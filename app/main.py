@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from app.routes import product
 from app.routes import authentication
 from app.routes import users
@@ -60,3 +61,6 @@ app.include_router(admin_retailers.router)
 app.include_router(admin_products.router)
 app.include_router(images.router)
 app.include_router(admin_fix_images.router)
+
+# Mount static files for serving uploaded images
+app.mount("/static", StaticFiles(directory="uploads"), name="static")
