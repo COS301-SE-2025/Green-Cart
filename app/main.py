@@ -30,8 +30,8 @@ app = FastAPI(title="Green Cart API", version="1.0.0")
 # Add health check endpoint
 @app.get("/health")
 async def health_check():
-    logger.info("Health check endpoint called - v1.1")
-    return {"status": "healthy", "message": "Backend is running", "version": "1.1"}
+    logger.info("Health check endpoint called - v1.2")
+    return {"status": "healthy", "message": "Backend is running", "version": "1.2"}
 
 app.add_middleware(
     CORSMiddleware,
