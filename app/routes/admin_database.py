@@ -175,3 +175,20 @@ async def fix_localhost_urls(db: Session = Depends(get_db)):
         db.rollback()
         logger.error(f"Error fixing localhost URLs: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fixing URLs: {str(e)}")
+
+@router.get("/debug-env")
+async def debug_environment():
+    """
+    Debug endpoint to check environment variables (remove in production)
+    """
+    import os
+    
+    return {
+        "status": "debug",
+        "environment": {
+            "AWS_REGION": os.getenv("AWS_REGION", "NOT_SET"),
+            "AWS_S3_BUCKET_NAME": os.getenv("AWS_S3_BUCKET_NAME", "NOT_SET"),
+            "BASE_URL": os.getenv("BASE_URL", "NOT_SET"),
+            "DATABASE_URL": "***HIDDEN***" if os.getenv("DATABASE_URL") else "NOT_SET"
+        }
+    }
