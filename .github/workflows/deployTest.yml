@@ -60,7 +60,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "app,requirements.txt,Dockerfile,.env"
+          source: "app,requirements.txt,Dockerfile"
           target: "/home/ubuntu/Green-Cart"
           rm: true
 
@@ -90,7 +90,6 @@ jobs:
             cd /home/ubuntu
             sudo rm -rf Green-Cart-backup || true
             if [ -d "Green-Cart" ]; then
-              cp Green-Cart/.env /tmp/.env-backup || true
               sudo rm -rf Green-Cart || true
             fi
             
@@ -99,13 +98,6 @@ jobs:
             
             echo "Creating fresh directory..."
             mkdir -p Green-Cart
-            cd Green-Cart
-            
-            # Restore .env file
-            if [ -f "/tmp/.env-backup" ]; then
-              cp /tmp/.env-backup .env
-              rm /tmp/.env-backup
-            fi
 
       - name: Deploy backend after cleanup  
         uses: appleboy/ssh-action@v0.1.10
@@ -116,14 +108,111 @@ jobs:
           script: |
             cd /home/ubuntu/Green-Cart
             
-            echo "Building and deploying backend..."
+            echo "=== Creating production .env file ==="
+            cat > .env << 'EOF'
+            # AWS RDS PostgreSQL Configuration (PRIMARY DATABASE)
+            DATABASE_URL=postgresql://postgres:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}:5432/postgres
+            
+            # AWS S3 Configuration
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
+            
+            # Backend API Configuration
+            BASE_URL=https://api.greencart-cos301.co.za
+            EOF
+            
+            echo "=== Building and deploying backend ==="
             echo "Files in directory:"
             ls -la
             
-            # Build and run new container with environment file
-            sudo docker build -t green-cart-backend .
-            sudo docker run -d --name green-cart-backend -p 8000:8000 --env-file .env green-cart-backend
+            # Stop and remove existing container
+            sudo docker stop green-cart-backend || true
+            sudo docker rm green-cart-backend || true
             
-            echo "Deployment completed!"
+            # Build new image
+            echo "Building Docker image..."
+            sudo docker build -t green-cart-backend .
+            
+            if [ $? -ne 0 ]; then
+              echo "ERROR: Docker build failed!"
+              exit 1
+            fi
+            
+            # Run new container with restart policy
+            echo "Starting container..."
+            sudo docker run -d \
+              --name green-cart-backend \
+              --restart unless-stopped \
+              -p 8000:8000 \
+              --env-file .env \
+              green-cart-backend
+            
+            if [ $? -ne 0 ]; then
+              echo "ERROR: Container failed to start!"
+              exit 1
+            fi
+            
+            # Wait for container to be ready
+            echo "Waiting for backend to start..."
+            sleep 10
+            
+            # Check if container is running
+            if ! sudo docker ps | grep green-cart-backend; then
+              echo "ERROR: Container is not running!"
+              echo "Container logs:"
+              sudo docker logs green-cart-backend
+              exit 1
+            fi
+            
+            # Test health endpoint
+            echo "Testing health endpoint..."
+            for i in {1..30}; do
+              if curl -f http://localhost:8000/health; then
+                echo "✅ Backend is healthy!"
+                break
+              fi
+              if [ $i -eq 30 ]; then
+                echo "ERROR: Health check failed after 30 attempts!"
+                echo "Container logs:"
+                sudo docker logs green-cart-backend
+                exit 1
+              fi
+              echo "Attempt $i/30: Health check failed, retrying..."
+              sleep 2
+            done
+            
+            # Test external API
+            echo "Testing external API..."
+            if curl -f https://api.greencart-cos301.co.za/health; then
+              echo "✅ External API is working!"
+            else
+              echo "⚠️  External API test failed, but backend is running locally"
+            fi
+            
+            echo "=== Deployment completed successfully! ==="
             echo "Final disk usage:"
             df -h
+            
+            echo "Container status:"
+            sudo docker ps | grep green-cart-backend
+            
+            # Fix database image URLs automatically
+            echo "=== Fixing database image URLs ==="
+            sleep 5  # Give the database connection time to establish
+            
+            # Check for localhost URLs
+            LOCALHOST_COUNT=$(curl -s http://localhost:8000/admin/check-localhost-urls | grep -o '"localhost_urls_count":[0-9]*' | grep -o '[0-9]*' || echo "0")
+            echo "Found $LOCALHOST_COUNT localhost URLs in database"
+            
+            if [ "$LOCALHOST_COUNT" -gt 0 ]; then
+              echo "Fixing localhost URLs..."
+              if curl -X POST -f http://localhost:8000/admin/fix-image-urls; then
+                echo "✅ Successfully fixed $LOCALHOST_COUNT image URLs!"
+              else
+                echo "⚠️  Warning: Could not fix image URLs automatically"
+              fi
+            else
+              echo "✅ No localhost URLs found in database"
+            fi
