@@ -16,6 +16,7 @@ from app.routes import admin_users
 from app.routes import admin_retailers
 from app.routes import admin_products
 from app.routes import images
+from app.routes import admin_fix_images
 import logging
 
 # Configure logging
@@ -58,3 +59,4 @@ app.include_router(admin_users.router)
 app.include_router(admin_retailers.router)
 app.include_router(admin_products.router)
 app.include_router(images.router)
+app.include_router(admin_fix_images.router)
