@@ -1,14 +1,45 @@
-import React from 'react';
+import React, {useState} from 'react';
+
+const AvatarWithInitials = ({ src, alt, name }) => {
+  const [imageError, setImageError] = useState(false);
+  
+  const getInitials = (fullName) => {
+    return fullName
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  if (imageError || !src) {
+    return (
+      <div className="adm-cus-avatar-initials">
+        {getInitials(name)}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="adm-cus-card-avatar"
+      onError={() => setImageError(true)}
+    />
+  );
+};
+
 
 const CustomerCard = ({ customer, getStatusClass, onClick }) => {
   return (
     <div className="adm-cus-card" onClick={onClick}>
       <div className="adm-cus-card-header">
         <div className="adm-cus-avatar-container">
-          <img
+          <AvatarWithInitials 
             src={customer.avatar}
             alt={customer.name}
-            className="adm-cus-card-avatar"
+            name={customer.name}
           />
           {customer.isPremium && <div className="adm-cus-premium-badge">G</div>}
         </div>
@@ -44,13 +75,6 @@ const CustomerCard = ({ customer, getStatusClass, onClick }) => {
             {customer.contact}
           </span>
         </div>
-      </div>
-      
-      <div className="adm-cus-card-actions" onClick={(e) => e.stopPropagation()}>
-        <button className="adm-cus-action-btn">🗑️</button>
-        <button className="adm-cus-action-btn">✏️</button>
-        <button className="adm-cus-action-btn">📞</button>
-        <button className="adm-cus-action-btn">✉️</button>
       </div>
     </div>
   );
