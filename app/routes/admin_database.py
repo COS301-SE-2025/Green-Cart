@@ -44,6 +44,55 @@ async def update_product_image(request: UpdateProductImageRequest, db: Session =
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error updating product image: {str(e)}")
 
+@router.delete("/delete-product/{product_id}")
+async def delete_single_product(product_id: int, db: Session = Depends(get_db)):
+    """
+    Delete a specific product and all its related data by ID
+    """
+    try:
+        from app.models.product import Product
+        from app.models.product_images import ProductImage
+        from app.models.sustainability_ratings import SustainabilityRating
+        
+        # Check if product exists
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            raise HTTPException(status_code=404, detail=f"Product with ID {product_id} not found")
+        
+        product_name = product.name
+        
+        # Delete related records first (foreign key constraints)
+        # Delete sustainability ratings for this specific product
+        ratings_deleted = db.query(SustainabilityRating).filter(SustainabilityRating.product_id == product_id).delete(synchronize_session='fetch')
+        
+        # Delete product images for this specific product
+        images_deleted = db.query(ProductImage).filter(ProductImage.product_id == product_id).delete(synchronize_session='fetch')
+        
+        # Delete the product itself
+        products_deleted = db.query(Product).filter(Product.id == product_id).delete(synchronize_session='fetch')
+        
+        db.commit()
+        
+        logger.info(f"Successfully deleted product {product_id}: {product_name}")
+        
+        return {
+            "status": "success",
+            "message": f"Product '{product_name}' deleted successfully",
+            "product_id": product_id,
+            "deleted_counts": {
+                "products": products_deleted,
+                "product_images": images_deleted,
+                "sustainability_ratings": ratings_deleted
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting product {product_id}: {str(e)}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error deleting product: {str(e)}")
+
 @router.post("/initialize-database")
 async def initialize_database(db: Session = Depends(get_db)):
     """

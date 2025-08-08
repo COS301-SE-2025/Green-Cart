@@ -58,6 +58,9 @@ async def create_product_with_images(
         print(f"Recyclability: {recyclability} (type: {type(recyclability)})")
         print(f"Durability: {durability} (type: {type(durability)})")
         print(f"Material sustainability: {material_sustainability} (type: {type(material_sustainability)})")
+        print(f"=== IMAGES DEBUG ===")
+        for i, img in enumerate(images):
+            print(f"Image {i+1}: {img.filename}, Size: {img.size if hasattr(img, 'size') else 'unknown'}, Content-Type: {img.content_type}")
         print(f"=== END FORMDATA DEBUG ===")
         
         # Log to file as well

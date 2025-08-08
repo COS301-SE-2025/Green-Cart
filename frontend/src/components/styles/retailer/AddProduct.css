@@ -213,6 +213,45 @@
   background: rgba(239, 68, 68, 1);
 }
 
+/* Image Upload Enhancements */
+.image-count-badge {
+  background: #10b981;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+.upload-hint {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-style: italic;
+}
+
+.image-actions {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.clear-all-images-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.clear-all-images-btn:hover {
+  background: #dc2626;
+}
+
 /* Sustainability Section */
 .sustainability-grid {
   display: grid;

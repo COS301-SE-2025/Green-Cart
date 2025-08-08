@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import '../styles/retailer/AddProduct.css';
 
@@ -22,6 +22,18 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
     const [imageFiles, setImageFiles] = useState([]); // Store actual File objects
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
+
+    // Clean up object URLs when component unmounts or images change
+    useEffect(() => {
+        return () => {
+            // Clean up all object URLs to prevent memory leaks
+            images.forEach(url => {
+                if (url.startsWith('blob:')) {
+                    URL.revokeObjectURL(url);
+                }
+            });
+        };
+    }, [images]);
 
     const categories = [
         'Electronics',
@@ -63,23 +75,91 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
     };
 
     const handleImageUpload = (e) => {
-        const files = Array.from(e.target.files);
+        const newFiles = Array.from(e.target.files);
         
-        // Limit to 5 images
-        if (files.length > 5) {
-            toast.error('You can upload a maximum of 5 images');
+        console.log('🖼️ Image upload triggered:', {
+            newFilesCount: newFiles.length,
+            existingFilesCount: imageFiles.length,
+            newFileNames: newFiles.map(f => f.name),
+            newFileSizes: newFiles.map(f => f.size)
+        });
+        
+        // Check if adding new files would exceed the limit
+        const totalFiles = imageFiles.length + newFiles.length;
+        if (totalFiles > 5) {
+            console.warn('❌ Too many images total:', totalFiles);
+            toast.error(`You can only upload a maximum of 5 images. You currently have ${imageFiles.length} images.`);
+            e.target.value = ''; // Clear the file input
             return;
         }
 
-        // Store both file objects and preview URLs
-        setImageFiles(files);
-        const imageUrls = files.map(file => URL.createObjectURL(file));
-        setImages(imageUrls);
+        // Validate file types and sizes
+        const validFiles = [];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        
+        for (const file of newFiles) {
+            if (!allowedTypes.includes(file.type)) {
+                toast.error(`${file.name} is not a valid image type`);
+                continue;
+            }
+            if (file.size > maxSize) {
+                toast.error(`${file.name} is too large. Maximum size is 5MB`);
+                continue;
+            }
+            validFiles.push(file);
+        }
+        
+        if (validFiles.length === 0) {
+            console.warn('❌ No valid files after validation');
+            e.target.value = ''; // Clear the file input
+            return;
+        }
+        
+        console.log('✅ Valid files:', validFiles.length);
+
+        // Add new files to existing files
+        const updatedFiles = [...imageFiles, ...validFiles];
+        setImageFiles(updatedFiles);
+        
+        // Create preview URLs for new files and add to existing previews
+        const newImageUrls = validFiles.map(file => URL.createObjectURL(file));
+        const updatedImages = [...images, ...newImageUrls];
+        setImages(updatedImages);
+        
+        console.log('📸 Images updated:', {
+            totalFiles: updatedFiles.length,
+            totalPreviews: updatedImages.length
+        });
+        
+        // Clear the file input so the same file can be selected again if needed
+        e.target.value = '';
     };
 
     const removeImage = (index) => {
+        console.log('🗑️ Removing image at index:', index);
+        
+        // Clean up the object URL to prevent memory leaks
+        if (images[index]) {
+            URL.revokeObjectURL(images[index]);
+        }
+        
         setImages(prev => prev.filter((_, i) => i !== index));
         setImageFiles(prev => prev.filter((_, i) => i !== index));
+        
+        console.log('✅ Image removed. Remaining:', imageFiles.length - 1);
+    };
+
+    const clearAllImages = () => {
+        console.log('🧹 Clearing all images');
+        // Clean up all object URLs
+        images.forEach(url => {
+            if (url.startsWith('blob:')) {
+                URL.revokeObjectURL(url);
+            }
+        });
+        setImages([]);
+        setImageFiles([]);
     };
 
     const validateForm = () => {
@@ -106,6 +186,13 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
         e.preventDefault();
         if (!validateForm()) return;
         setIsSubmitting(true);
+        
+        console.log('🚀 Form submission started:', {
+            productName: formData.name,
+            imageFilesCount: imageFiles.length,
+            imageFiles: imageFiles.map(f => ({ name: f.name, size: f.size, type: f.type }))
+        });
+        
         try {
             // Create FormData for multipart form submission with images
             const formDataSubmit = new FormData();
@@ -126,20 +213,49 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             formDataSubmit.append('material_sustainability', formData.sustainability.materialSustainability);
             
             // Add image files directly
+            console.log('📤 Adding images to FormData:', imageFiles.length);
             imageFiles.forEach((file, index) => {
+                console.log(`   Adding image ${index + 1}: ${file.name}`);
                 formDataSubmit.append('images', file);
             });
             
+            // Log FormData contents for debugging
+            console.log('📋 FormData contents:');
+            for (let [key, value] of formDataSubmit.entries()) {
+                if (value instanceof File) {
+                    console.log(`   ${key}: [File] ${value.name} (${value.size} bytes)`);
+                } else {
+                    console.log(`   ${key}: ${value}`);
+                }
+            }
+            
             // Use the S3-enabled product creation endpoint
-            const response = await fetch('https://api.greencart-cos301.co.za/product-images/products/', {
+            console.log('🌐 Sending request to backend...');
+            const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                ? 'http://localhost:8000' 
+                : 'https://api.greencart-cos301.co.za';
+            const endpoint = `${API_BASE_URL}/product-images/products/`;
+            console.log('🔗 Using endpoint:', endpoint);
+            
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 body: formDataSubmit // No Content-Type header for FormData
             });
+            
+            console.log('📥 Response received:', {
+                status: response.status,
+                statusText: response.statusText,
+                ok: response.ok
+            });
+            
             if (!response.ok) {
                 const error = await response.json();
+                console.error('❌ Backend error:', error);
                 throw new Error(error.detail || 'Failed to create product');
             }
             const newProduct = await response.json();
+            console.log('✅ Product created successfully:', newProduct);
+            
             if (onProductAdded) {
                 onProductAdded(newProduct);
             }
@@ -158,13 +274,12 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                     materialSustainability: 68,
                 }
             });
-            setImages([]);
-            setImageFiles([]);
+            clearAllImages();
             
             toast.success('Product added successfully!');
             onClose();
         } catch (error) {
-            console.error('Error adding product:', error);
+            console.error('💥 Error adding product:', error);
             toast.error('Failed to add product. Please try again.');
         } finally {
             setIsSubmitting(false);
@@ -293,7 +408,14 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                             <h3>Product Images</h3>
                             
                             <div className="form-group">
-                                <label htmlFor="images" className='label'>Upload Images * (Max 5)</label>
+                                <label htmlFor="images" className='label'>
+                                    Upload Images * (Max 5) 
+                                    {images.length > 0 && (
+                                        <span className="image-count-badge">
+                                            {images.length}/5 selected
+                                        </span>
+                                    )}
+                                </label>
                                 <input
                                     type="file"
                                     id="images"
@@ -302,25 +424,46 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                     onChange={handleImageUpload}
                                     className={errors.images ? 'error' : 'input'}
                                 />
+                                {images.length === 0 && (
+                                    <p className="upload-hint">
+                                        You can select multiple images at once or add them one by one. Maximum 5 images per product.
+                                    </p>
+                                )}
+                                {images.length > 0 && images.length < 5 && (
+                                    <p className="upload-hint">
+                                        You can add {5 - images.length} more images by clicking "Choose Files" again.
+                                    </p>
+                                )}
                                 {errors.images && <span className="add-product-error-message">{errors.images}</span>}
                             </div>
 
                             {images.length > 0 && (
-                                <div className="image-preview-grid">
-                                    {images.map((image, index) => (
-                                        <div key={index} className="image-preview">
-                                            <img src={image} alt={`Preview ${index + 1}`} />
-                                            <button
-                                                type="button"
-                                                className="remove-image-btn"
-                                                onClick={() => removeImage(index)}
-                                                aria-label={`Remove image ${index + 1}`}
-                                            >
-                                                ✕
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
+                                <>
+                                    <div className="image-preview-grid">
+                                        {images.map((image, index) => (
+                                            <div key={index} className="image-preview">
+                                                <img src={image} alt={`Preview ${index + 1}`} />
+                                                <button
+                                                    type="button"
+                                                    className="remove-image-btn"
+                                                    onClick={() => removeImage(index)}
+                                                    aria-label={`Remove image ${index + 1}`}
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="image-actions">
+                                        <button
+                                            type="button"
+                                            className="clear-all-images-btn"
+                                            onClick={clearAllImages}
+                                        >
+                                            Clear All Images
+                                        </button>
+                                    </div>
+                                </>
                             )}
                         </div>
 

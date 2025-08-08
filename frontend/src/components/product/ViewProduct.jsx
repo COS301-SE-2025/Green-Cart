@@ -18,6 +18,7 @@ export default function ViewProduct() {
     const [imageLoaded, setImageLoaded] = useState(false);
     const { refreshCart } = useCart();
     const [sustainability, setSustainability] = useState({});
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     async function fetch_Product() {
         const product_id = parseInt(id);
@@ -43,6 +44,7 @@ export default function ViewProduct() {
         fetch_Product();
         //set image load
         setImageLoaded(false);
+        setCurrentImageIndex(0); // Reset image index when product changes
     }, [id]);
 
     const handlImageLoad = () => {
@@ -79,6 +81,22 @@ export default function ViewProduct() {
             console.error("Error adding to cart:", error);
             toast.error("Failed to add item to cart. Please try again.");
         }
+    };
+
+    const nextImage = () => {
+        setCurrentImageIndex((prevIndex) => 
+            prevIndex === image.length - 1 ? 0 : prevIndex + 1
+        );
+    };
+
+    const prevImage = () => {
+        setCurrentImageIndex((prevIndex) => 
+            prevIndex === 0 ? image.length - 1 : prevIndex - 1
+        );
+    };
+
+    const goToImage = (index) => {
+        setCurrentImageIndex(index);
     };
 
     // if (isLoading) {
@@ -134,9 +152,66 @@ export default function ViewProduct() {
             </button>
             <div className="view-product">
                 <div className="product-image-container">
-                    <img src={image[0]} alt={product.name} />
-                    {!product.in_stock && (
-                        <div className="out-of-stock-overlay">Out of Stock</div>
+                    {image && image.length > 0 ? (
+                        <div className="image-gallery">
+                            <div className="main-image-container">
+                                <img 
+                                    src={image[currentImageIndex]} 
+                                    alt={`${product.name} - Image ${currentImageIndex + 1}`} 
+                                    className="main-product-image"
+                                />
+                                {!product.in_stock && (
+                                    <div className="out-of-stock-overlay">Out of Stock</div>
+                                )}
+                                
+                                {/* Navigation arrows for multiple images */}
+                                {image.length > 1 && (
+                                    <>
+                                        <button 
+                                            className="image-nav-btn prev-btn" 
+                                            onClick={prevImage}
+                                            aria-label="Previous image"
+                                        >
+                                            ‹
+                                        </button>
+                                        <button 
+                                            className="image-nav-btn next-btn" 
+                                            onClick={nextImage}
+                                            aria-label="Next image"
+                                        >
+                                            ›
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                            
+                            {/* Thumbnail navigation for multiple images */}
+                            {image.length > 1 && (
+                                <div className="image-thumbnails">
+                                    {image.map((img, index) => (
+                                        <button
+                                            key={index}
+                                            className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
+                                            onClick={() => goToImage(index)}
+                                            aria-label={`View image ${index + 1}`}
+                                        >
+                                            <img src={img} alt={`Thumbnail ${index + 1}`} />
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {/* Image counter */}
+                            {image.length > 1 && (
+                                <div className="image-counter">
+                                    {currentImageIndex + 1} of {image.length}
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="no-image-placeholder">
+                            <span>No image available</span>
+                        </div>
                     )}
                 </div>
 
