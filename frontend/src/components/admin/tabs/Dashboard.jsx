@@ -8,6 +8,7 @@ import '../../styles/admin/tabs/Dashboard.css';
 import DashboardStatsGrid from '../elements/DashboardStatsGrid';
 import DashboardMetricsChart from '../elements/DashboardMetricsChart';
 import DashboardCategoriesChart from '../elements/DashboardCategoriesChart';
+import GenericModal from '../elements/GenericModal'; // Import the new modal
 
 // Import real icons
 import retailerIcon from '../icons/retailerIcon.png';
@@ -16,7 +17,8 @@ import verifiedIcon from '../icons/verifiedIcon.png';
 import unverifiedIcon from '../icons/unverifiedIcon.png';
 
 const Dashboard = () => {
-  const [selectedCard, setSelectedCard] = useState(null);
+  const [modalData, setModalData] = useState(null);
+  const [modalTitle, setModalTitle] = useState('');
   const [adminMetrics, setAdminMetrics] = useState({
     total_users: 0,
     total_retailers: 0,
@@ -86,12 +88,22 @@ const Dashboard = () => {
         icon: customerIcon,
         dark: true,
         details: {
-          totalCustomers: users.total.toLocaleString(),
-          newThisMonth: users.newThisMonth.toLocaleString(),
-          activeCustomers: users.activeUsers.toLocaleString(),
-          averageOrderValue: users.averageOrderValue,
-          topLocation: users.topLocation,
-          growthRate: `${users.growthRate >= 0 ? '+' : ''}${users.growthRate}%`
+          overview: {
+            totalCustomers: users.total.toLocaleString(),
+            newThisMonth: users.newThisMonth.toLocaleString(),
+            activeCustomers: users.activeUsers.toLocaleString(),
+            growthRate: `${users.growthRate >= 0 ? '+' : ''}${users.growthRate}%`
+          },
+          statistics: {
+            averageOrderValue: users.averageOrderValue,
+            topLocation: users.topLocation,
+            weeklyChange: `${users.weeklyChange >= 0 ? '+' : ''}${users.weeklyChange} this week`
+          },
+          recentActivity: [
+            { date: '2024-01-15', action: 'New registrations', count: 23 },
+            { date: '2024-01-14', action: 'Profile updates', count: 45 },
+            { date: '2024-01-13', action: 'Orders placed', count: 78 }
+          ]
         }
       },
       {
@@ -105,12 +117,22 @@ const Dashboard = () => {
         icon: retailerIcon,
         dark: true,
         details: {
-          totalRetailers: retailers.total.toLocaleString(),
-          newThisMonth: retailers.newThisMonth.toLocaleString(),
-          activeRetailers: retailers.activeRetailers.toLocaleString(),
-          averageDeliveryTime: retailers.averageDeliveryTime,
-          topCategory: retailers.topCategory,
-          growthRate: `${retailers.growthRate >= 0 ? '+' : ''}${retailers.growthRate}%`
+          overview: {
+            totalRetailers: retailers.total.toLocaleString(),
+            newThisMonth: retailers.newThisMonth.toLocaleString(),
+            activeRetailers: retailers.activeRetailers.toLocaleString(),
+            growthRate: `${retailers.growthRate >= 0 ? '+' : ''}${retailers.growthRate}%`
+          },
+          performance: {
+            averageDeliveryTime: retailers.averageDeliveryTime,
+            topCategory: retailers.topCategory,
+            weeklyChange: `${retailers.weeklyChange >= 0 ? '+' : ''}${retailers.weeklyChange} this week`
+          },
+          topRetailers: [
+            { name: 'Electronics Plus', revenue: 'R45,231', orders: 156 },
+            { name: 'Fashion Forward', revenue: 'R38,945', orders: 134 },
+            { name: 'Home & Garden Co', revenue: 'R32,678', orders: 98 }
+          ]
         }
       },
       {
@@ -124,12 +146,21 @@ const Dashboard = () => {
         icon: verifiedIcon,
         dark: true,
         details: {
-          totalRevenue: `R${verifiedProducts.totalRevenue}`,
-          totalRevenueToRetailer: `R${verifiedProducts.totalRevenueToRetailer}`,
-          outOfStock: verifiedProducts.outOfStock.toLocaleString(),
-          totalUnits: verifiedProducts.totalUnits.toLocaleString(),
-          averageUnitsByRetailer: verifiedProducts.averageUnitsByRetailer.toLocaleString(),
-          averageVerificationTime: verifiedProducts.averageVerificationTime
+          revenue: {
+            totalRevenue: `R${verifiedProducts.totalRevenue}`,
+            totalRevenueToRetailer: `R${verifiedProducts.totalRevenueToRetailer}`,
+            averageProductValue: `R${(verifiedProducts.totalRevenue / verifiedProducts.total).toFixed(2)}`
+          },
+          inventory: {
+            totalUnits: verifiedProducts.totalUnits.toLocaleString(),
+            outOfStock: verifiedProducts.outOfStock.toLocaleString(),
+            averageUnitsByRetailer: verifiedProducts.averageUnitsByRetailer.toLocaleString()
+          },
+          verification: {
+            averageVerificationTime: verifiedProducts.averageVerificationTime,
+            verificationRate: `${((verifiedProducts.total / (verifiedProducts.total + 450)) * 100).toFixed(1)}%`,
+            weeklyVerified: verifiedProducts.weeklyChange.toString()
+          }
         }
       },
       {
@@ -143,12 +174,21 @@ const Dashboard = () => {
         icon: unverifiedIcon,
         dark: true,
         details: {
-          totalUnverified: unverifiedProducts.total.toLocaleString(),
-          totalUnits: unverifiedProducts.totalUnits.toLocaleString(),
-          rejected: unverifiedProducts.rejected.toLocaleString(),
-          averageWaitTime: unverifiedProducts.averageWaitTime,
-          rejectionRate: unverifiedProducts.rejectionRate,
-          changeRate: `${unverifiedProducts.growthRate >= 0 ? '+' : ''}${unverifiedProducts.growthRate}%`
+          pending: {
+            totalUnverified: unverifiedProducts.total.toLocaleString(),
+            totalUnits: unverifiedProducts.totalUnits.toLocaleString(),
+            averageWaitTime: unverifiedProducts.averageWaitTime
+          },
+          rejection: {
+            rejected: unverifiedProducts.rejected.toLocaleString(),
+            rejectionRate: unverifiedProducts.rejectionRate,
+            changeRate: `${unverifiedProducts.growthRate >= 0 ? '+' : ''}${unverifiedProducts.growthRate}%`
+          },
+          categories: [
+            { name: 'Electronics', pending: 89, rejected: 12 },
+            { name: 'Clothing', pending: 76, rejected: 8 },
+            { name: 'Home & Garden', pending: 45, rejected: 5 }
+          ]
         }
       }
     ];
@@ -158,11 +198,13 @@ const Dashboard = () => {
   const categories = adminMetrics.top_categories || [];
 
   const handleCardClick = (card) => {
-    setSelectedCard(card);
+    setModalData(card.details);
+    setModalTitle(`${card.title} Details`);
   };
 
   const closeModal = () => {
-    setSelectedCard(null);
+    setModalData(null);
+    setModalTitle('');
   };
 
   return (
@@ -194,29 +236,13 @@ const Dashboard = () => {
         />
       </div>
 
-      {/* Modal Overlay */}
-      {selectedCard && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h2 className="admin-modal-title">{selectedCard.title} Details</h2>
-              <button className="modal-close" onClick={closeModal}>×</button>
-            </div>
-            <div className="modal-body">
-              <div className="modal-stats-grid">
-                {Object.entries(selectedCard.details).map(([key, value]) => (
-                  <div key={key} className="modal-stat-item">
-                    <span className="modal-stat-label">
-                      {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                    </span>
-                    <span className="modal-stat-value">{value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Generic Modal */}
+      <GenericModal
+        isOpen={!!modalData}
+        onClose={closeModal}
+        data={modalData}
+        title={modalTitle}
+      />
     </div>
   );
 };

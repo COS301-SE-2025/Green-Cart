@@ -1,7 +1,7 @@
 // CustomersTable.jsx
 import React, { useState } from 'react';
 
-const CustomersTable = ({ customers, onCustomerClick, getStatusClass }) => {
+const CustomersTable = ({ customers, onCustomerClick }) => {
   const getSustainabilityWidth = (value) => `${value}%`;
   const AvatarWithInitials = ({ src, alt, name }) => {
     const [imageError, setImageError] = useState(false);
@@ -39,11 +39,10 @@ const CustomersTable = ({ customers, onCustomerClick, getStatusClass }) => {
         <thead>
             <tr>
                 <th></th>
-                <th>Plan</th>
+                <th>Type</th>
                 <th>User ID</th>
                 <th>Phone Number</th>
                 <th>Sustainability</th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -63,7 +62,7 @@ const CustomersTable = ({ customers, onCustomerClick, getStatusClass }) => {
                     </div>
                 </td>
                 <td>
-                    <span className="adm-cus-plan">{customer.plan}</span>
+                    <span className="adm-cus-plan">{customer.type}</span>
                 </td>
                 <td className="adm-cus-userid">{customer.userId}</td>
                 <td className="adm-cus-phone">{customer.phone}</td>
@@ -76,18 +75,6 @@ const CustomersTable = ({ customers, onCustomerClick, getStatusClass }) => {
                         ></div>
                     </div>
                     </div>
-                </td>
-                <td>
-                    <button 
-                    className="adm-cus-options-btn"
-                    onClick={(e) => e.stopPropagation()}
-                    >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-                        <circle cx="12" cy="5" r="1.5" fill="currentColor"/>
-                        <circle cx="12" cy="19" r="1.5" fill="currentColor"/>
-                    </svg>
-                    </button>
                 </td>
             </tr>
           ))}

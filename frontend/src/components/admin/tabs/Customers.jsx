@@ -13,6 +13,7 @@ import blackGridIcon from '../icons/blackGridIcon.png';
 import blackListIcon from '../icons/blackListIcon.png';
 import whiteGridIcon from '../icons/whiteGridIcon.png';
 import whiteListIcon from '../icons/whiteListIcon.png';
+import retailerBadgeIcon from '../icons/retailerBadgeIcon.png';
 
 const Customers = () => {
   const [viewMode, setViewMode] = useState('list');
@@ -35,8 +36,8 @@ const Customers = () => {
       receivables: "USD 43,648.00",
       status: "Accepted",
       avatar: "/api/placeholder/40/40",
-      isPremium: true,
-      plan: "Premium",
+      isRetailer: true,
+      type: "Retailer",
       registrationDate: "02 March 2025",
       accountType: "Google",
       lastLogin: "2 hours ago",
@@ -55,8 +56,8 @@ const Customers = () => {
       receivables: "USD 35,234.00",
       status: "Accepted",
       avatar: "/api/placeholder/40/40",
-      isPremium: false,
-      plan: "Basic",
+      isRetailer: false,
+      type: "Customer",
       registrationDate: "15 February 2025",
       accountType: "Email",
       lastLogin: "1 day ago",
@@ -75,8 +76,8 @@ const Customers = () => {
       receivables: "USD 12,643.00",
       status: "Pending",
       avatar: "/api/placeholder/40/40",
-      isPremium: true,
-      plan: "Premium",
+      isRetailer: true,
+      type: "Retailer",
       registrationDate: "20 January 2025",
       accountType: "Google",
       lastLogin: "3 days ago",
@@ -95,8 +96,8 @@ const Customers = () => {
       receivables: "USD 23,123.00",
       status: "Cancel",
       avatar: "/api/placeholder/40/40",
-      isPremium: false,
-      plan: "Basic",
+      isRetailer: false,
+      type: "Customer",
       registrationDate: "05 December 2024",
       accountType: "Email",
       lastLogin: "1 week ago",
@@ -115,8 +116,8 @@ const Customers = () => {
       receivables: "USD 17,890.00",
       status: "Accepted",
       avatar: "/api/placeholder/40/40",
-      isPremium: true,
-      plan: "Premium",
+      isRetailer: true,
+      type: "Retailer",
       registrationDate: "10 January 2025",
       accountType: "Google",
       lastLogin: "5 hours ago",
@@ -135,8 +136,8 @@ const Customers = () => {
       receivables: "USD 14,159.00",
       status: "Accepted",
       avatar: "/api/placeholder/40/40",
-      isPremium: false,
-      plan: "Basic",
+      isRetailer: false,
+      type: "Customer",
       registrationDate: "25 February 2025",
       accountType: "Email",
       lastLogin: "2 days ago",
@@ -156,8 +157,8 @@ const Customers = () => {
       receivables: "USD 19,500.00",
       status: "Accepted",
       avatar: "/api/placeholder/40/40",
-      isPremium: true,
-      plan: "Premium",
+      isRetailer: true,
+      type: "Retailer",
       registrationDate: "12 March 2025",
       accountType: "Google",
       lastLogin: "30 minutes ago",
@@ -176,8 +177,8 @@ const Customers = () => {
       receivables: "USD 28,750.00",
       status: "Pending",
       avatar: "/api/placeholder/40/40",
-      isPremium: false,
-      plan: "Basic",
+      isRetailer: false,
+      type: "Customer",
       registrationDate: "08 February 2025",
       accountType: "Email",
       lastLogin: "4 hours ago",
@@ -197,8 +198,8 @@ const Customers = () => {
       receivables: "USD 31,200.00",
       status: "Accepted",
       avatar: "/api/placeholder/40/40",
-      isPremium: true,
-      plan: "Premium",
+      isRetailer: true,
+      type: "Retailer",
       registrationDate: "18 January 2025",
       accountType: "Google",
       lastLogin: "1 hour ago",
@@ -217,8 +218,8 @@ const Customers = () => {
       receivables: "USD 16,890.00",
       status: "Cancel",
       avatar: "/api/placeholder/40/40",
-      isPremium: false,
-      plan: "Basic",
+      isRetailer: false,
+      type: "Customer",
       registrationDate: "30 December 2024",
       accountType: "Email",
       lastLogin: "2 weeks ago",
@@ -266,19 +267,6 @@ const Customers = () => {
   const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedCustomers = filteredCustomers.slice(startIndex, startIndex + itemsPerPage);
-
-  const getStatusClass = (status) => {
-    switch (status.toLowerCase()) {
-      case 'accepted':
-        return 'adm-cus-status-accepted';
-      case 'pending':
-        return 'adm-cus-status-pending';
-      case 'cancel':
-        return 'adm-cus-status-cancel';
-      default:
-        return 'adm-cus-status-default';
-    }
-  };
 
   const handleCustomerClick = (customer) => {
     setSelectedCustomer(customer);
@@ -354,7 +342,6 @@ const Customers = () => {
         <CustomersTable 
           customers={paginatedCustomers}
           onCustomerClick={handleCustomerClick}
-          getStatusClass={getStatusClass}
         />
       ) : (
         <div className="adm-cus-cards-grid">
@@ -362,8 +349,8 @@ const Customers = () => {
             <CustomerCard
               key={customer.id}
               customer={customer}
-              getStatusClass={getStatusClass}
               onClick={() => handleCustomerClick(customer)}
+              retailerIcon={retailerBadgeIcon} // Pass the premium icon
             />
           ))}
         </div>
@@ -383,7 +370,6 @@ const Customers = () => {
         <CustomerModal
           customer={selectedCustomer}
           onClose={handleCloseModal}
-          getStatusClass={getStatusClass}
         />
       )}
     </div>

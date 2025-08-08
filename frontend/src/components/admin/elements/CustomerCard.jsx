@@ -30,8 +30,10 @@ const AvatarWithInitials = ({ src, alt, name }) => {
   );
 };
 
-
-const CustomerCard = ({ customer, getStatusClass, onClick }) => {
+const CustomerCard = ({ customer, onClick, retailerIcon }) => {
+  // Only show status if it's "Accepted" (Active)
+  const isActive = customer.status.toLowerCase() === 'accepted';
+  
   return (
     <div className="adm-cus-card" onClick={onClick}>
       <div className="adm-cus-card-header">
@@ -41,15 +43,25 @@ const CustomerCard = ({ customer, getStatusClass, onClick }) => {
             alt={customer.name}
             name={customer.name}
           />
-          {customer.isPremium && <div className="adm-cus-premium-badge">G</div>}
+          {customer.isRetailer && (
+            <div className="adm-cus-premium-badge">
+              <img 
+                src={retailerIcon} 
+                alt="Premium" 
+                className="adm-cus-premium-icon"
+              />
+            </div>
+          )}
         </div>
         <div className="adm-cus-card-info">
           <h3 className="adm-cus-card-name">{customer.name}</h3>
           <p className="adm-cus-card-userid">UserId: {customer.userId}</p>
         </div>
-        <span className={`adm-cus-status ${getStatusClass(customer.status)}`}>
-          {customer.status}
-        </span>
+        {isActive && (
+          <span className="adm-cus-status-active">
+            Active
+          </span>
+        )}
       </div>
       
       <div className="adm-cus-card-details">
@@ -64,14 +76,12 @@ const CustomerCard = ({ customer, getStatusClass, onClick }) => {
         <div className="adm-cus-card-detail">
           <span className="adm-cus-detail-label">Email:</span>
           <span className="adm-cus-detail-value">
-            <span className="adm-cus-email-icon">✉️</span>
             {customer.email}
           </span>
         </div>
         <div className="adm-cus-card-detail">
           <span className="adm-cus-detail-label">Contact:</span>
           <span className="adm-cus-detail-value">
-            <span className="adm-cus-phone-icon">📞</span>
             {customer.contact}
           </span>
         </div>

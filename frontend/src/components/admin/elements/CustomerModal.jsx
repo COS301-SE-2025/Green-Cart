@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CustomerModal = ({ customer, onClose, getStatusClass }) => {
+const CustomerModal = ({ customer, onClose }) => {
   return (
     <div className="adm-cus-modal-overlay" onClick={onClose}>
       <div className="adm-cus-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -46,14 +46,6 @@ const CustomerModal = ({ customer, onClose, getStatusClass }) => {
                   {customer.contact}
                 </span>
               </div>
-
-              <div className="adm-cus-modal-detail-row">
-                <span className="adm-cus-modal-label">Status:</span>
-                <span className={`adm-cus-status ${getStatusClass(customer.status)}`}>
-                  {customer.status}
-                </span>
-              </div>
-
               <div className="adm-cus-modal-detail-row">
                 <span className="adm-cus-modal-label">Member Since:</span>
                 <span className="adm-cus-modal-value">{customer.memberSince}</span>
