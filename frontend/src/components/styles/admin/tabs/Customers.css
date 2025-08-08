@@ -52,7 +52,7 @@
 }
 
 .adm-cus-stats-card {
-  background: #374151;
+  background: #1f2937;
   border-radius: 12px;
   padding: 24px;
   color: white;
@@ -86,13 +86,7 @@
 }
 
 .adm-cus-stats-menu {
-  background: none;
-  border: none;
-  color: #9ca3af;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  display: none;
 }
 
 .adm-cus-stats-menu:hover {
@@ -101,15 +95,18 @@
 
 .adm-cus-stats-content {
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-end;
+  justify-content: space-between; /* Changed from flex-start to space-between */
+  align-items: center;
+  width: 100%;
 }
 
 .adm-cus-stats-value-row {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  width: 100%; /* Add full width */
+  justify-content: space-between;
 }
 
 .adm-cus-stats-main {
@@ -120,13 +117,13 @@
   font-size: 36px;
   font-weight: 700;
   color: white;
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .adm-cus-stats-change {
   display: flex;
   align-items: center;
-  align-self: flex-end;
+  align-self: center;
   gap: 8px;
 }
 
@@ -134,7 +131,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #000000;
+  background-color: #1f2937;
   color: white;
   display: flex;
   align-items: center;
@@ -179,6 +176,10 @@
   margin-left: 0;
 }
 
+.adm-cus-table th:nth-child(6) {
+  width: 100px;
+  /* min-width: 140px; */
+}
 /* Filters */
 .adm-cus-filters {
   display: flex;
@@ -242,6 +243,7 @@
 
 .adm-cus-search-container {
   max-width: none;
+  flex: 0 0 auto; /* Don't allow search to grow */
 }
 
 .adm-cus-search-wrapper {
@@ -258,14 +260,15 @@
 }
 
 .adm-cus-search-input {
-  width: 12%;
+  width: 300px; /* Changed from 12% to fixed width for better control */
   padding: 12px 16px 12px 40px;
   border: none;
   border-bottom: 2px solid #e5e7eb;
-  background: transparent;
+  background: white;
   font-size: 14px;
   transition: border-color 0.2s;
   outline: none;
+  color: black
 }
 
 .adm-cus-search-input:focus {
@@ -342,8 +345,10 @@
 
 .adm-cus-control-buttons {
  display: flex;
- align-items: center;
- gap: 12px;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  justify-content: flex-end; /* Don't allow to grow */
 }
 
 .adm-cus-filter-btn,
@@ -393,7 +398,8 @@
 }
 
 .adm-cus-view-btn.active {
- background-color: #374151;
+ background-color: #1f2937;
+  border-color: #1f2937;
  color: white;
 }
 
@@ -411,31 +417,34 @@
 /* Table View */
 .adm-cus-table-container {
  background: white;
- border-radius: 12px;
- overflow: hidden;
- box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
- border: 1px solid #e5e7eb;
- margin-bottom: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  margin-bottom: 24px;
+  overflow-x: auto; /* Allow horizontal scroll if needed */
 }
 
 .adm-cus-table {
  width: 100%;
- border-collapse: collapse;
+  border-collapse: collapse;
+  min-width: 800px; /* Add minimum width to prevent column cutoff */
 }
 
 .adm-cus-table th {
- background-color: #f8fafc;
- padding: 16px;
- text-align: left;
- font-weight: 600;
- color: #374151;
- border-bottom: 1px solid #e5e7eb;
- font-size: 14px;
- white-space: nowrap;
+background-color: #1f2937;
+  color: white;
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid #4b5563;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 .adm-cus-table th:first-child {
  width: 300px;
+ min-width: 300px;
 }
 
 .adm-cus-table td {
@@ -515,9 +524,17 @@
  position: relative;
 }
 
+.adm-cus-search-and-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
 .adm-cus-sustainability-fill {
   height: 100%;
-  background-color: #374151;
+  background-color: #1f2937;
   transition: width 0.3s ease;
   border-radius: 4px;
 }
@@ -895,8 +912,8 @@
 /* Responsive */
 @media (max-width: 1024px) {
  .adm-cus-stats-grid {
-   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
- }
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
  
  .adm-cus-filters {
    flex-direction: column;
@@ -917,7 +934,7 @@
  }
 
  .adm-cus-control-buttons {
-    justify-content: space-between;
+    flex: 0 0 auto;
   }
 }
 
@@ -927,9 +944,9 @@
  }
 
  .adm-cus-search-and-controls {
-   flex-direction: column;
-   align-items: stretch;
-   gap: 16px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
  }
  
  .adm-cus-header {
@@ -946,6 +963,7 @@
  
  .adm-cus-control-buttons {
    justify-content: space-between;
+    flex: 1 1 auto;
  }
  
  .adm-cus-stats-grid {
@@ -955,10 +973,24 @@
  .adm-cus-cards-grid {
    grid-template-columns: 1fr;
  }
+
+ .adm-cus-stats-value-row {
+    flex-direction: column; /* Stack vertically on mobile for better fit */
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+   .adm-cus-stats-change {
+    align-self: flex-start;
+  }
+
+  .adm-cus-table {
+    min-width: 600px;
+  }
  
  .adm-cus-table-container {
-   overflow-x: auto;
- }
+    overflow-x: scroll;
+  }
  
  .adm-cus-table th,
  .adm-cus-table td {

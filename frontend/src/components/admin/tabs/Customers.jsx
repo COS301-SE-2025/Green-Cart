@@ -7,6 +7,13 @@ import CustomerModal from '../elements/CustomerModal';
 import CustomersTable from '../elements/CustomersTable';
 import CustomersPagination from '../elements/CustomersPagination';
 
+//icons
+
+import blackGridIcon from '../icons/blackGridIcon.png';
+import blackListIcon from '../icons/blackListIcon.png';
+import whiteGridIcon from '../icons/whiteGridIcon.png';
+import whiteListIcon from '../icons/whiteListIcon.png';
+
 const Customers = () => {
   const [viewMode, setViewMode] = useState('list');
   const [searchTerm, setSearchTerm] = useState('');
@@ -330,13 +337,13 @@ const Customers = () => {
               className={`adm-cus-view-btn ${viewMode === 'list' ? 'active' : ''}`}
               onClick={() => setViewMode('list')}
             >
-              <img src="/api/placeholder/16/16" alt="List view" />
+              <img src={viewMode === 'list' ? whiteListIcon : blackListIcon} alt="List view" />
             </button>
             <button
               className={`adm-cus-view-btn ${viewMode === 'cards' ? 'active' : ''}`}
               onClick={() => setViewMode('cards')}
             >
-              <img src="/api/placeholder/16/16" alt="Card view" />
+              <img src={viewMode === 'cards' ? whiteGridIcon : blackGridIcon} alt="Card view" />
             </button>
           </div>
         </div>

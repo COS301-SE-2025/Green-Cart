@@ -43,6 +43,7 @@ const CustomersTable = ({ customers, onCustomerClick, getStatusClass }) => {
                 <th>User ID</th>
                 <th>Phone Number</th>
                 <th>Sustainability</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
