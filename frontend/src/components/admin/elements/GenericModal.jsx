@@ -2,7 +2,15 @@
 import React, { useState } from 'react';
 import '../../styles/admin/GenericModal.css';
 
-const GenericModal = ({ isOpen, onClose, data, title }) => {
+const GenericModal = ({ 
+  isOpen, 
+  onClose, 
+  data, 
+  title, 
+  subtitle, 
+  showViewProfileButton = false, 
+  onViewProfile 
+}) => {
   const [expandedArrays, setExpandedArrays] = useState({});
 
   if (!isOpen || !data) return null;
@@ -29,7 +37,7 @@ const GenericModal = ({ isOpen, onClose, data, title }) => {
     const isExpanded = expandedArrays[key];
     
     return (
-      <div className="modal-data-item" style={{ paddingLeft: `${level * 5}px` }}>
+      <div className="modal-data-item" style={{ paddingLeft: `${level * 20}px` }}>
         <div className="modal-data-header" onClick={() => toggleArrayExpansion(key)}>
           <span className="modal-data-label">
             {formatLabel(key)}
@@ -86,7 +94,10 @@ const GenericModal = ({ isOpen, onClose, data, title }) => {
     <div className="generic-modal-overlay" onClick={onClose}>
       <div className="generic-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="generic-modal-header">
-          <h2 className="generic-modal-title">{title || 'Details'}</h2>
+          <div className="generic-modal-title-section">
+            <h2 className="generic-modal-title">{title || 'Details'}</h2>
+            {subtitle && <span className="generic-modal-subtitle">{subtitle}</span>}
+          </div>
           <button className="generic-modal-close" onClick={onClose}>×</button>
         </div>
         <div className="generic-modal-body">
@@ -97,6 +108,16 @@ const GenericModal = ({ isOpen, onClose, data, title }) => {
               </div>
             ))}
           </div>
+          {showViewProfileButton && (
+            <div className="generic-modal-actions">
+              <button 
+                className="generic-modal-view-profile-btn"
+                onClick={onViewProfile}
+              >
+                View Full Profile
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

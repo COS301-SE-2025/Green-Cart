@@ -5,22 +5,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(1px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .generic-modal-content {
@@ -32,19 +22,7 @@
   max-height: 80vh;
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 .generic-modal-header {
@@ -64,6 +42,42 @@
   margin: 0;
 }
 
+.generic-modal-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.generic-modal-subtitle {
+  font-size: 14px;
+  color: #9ca3af;
+  font-weight: 400;
+  margin: 0;
+}
+
+.generic-modal-actions {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.generic-modal-view-profile-btn {
+  width: 100%;
+  padding: 12px 24px;
+  background: #1f2937;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.generic-modal-view-profile-btn:hover {
+  background: #374151;
+}
+
 .generic-modal-close {
   background: rgba(255, 255, 255, 0.1);
   border: none;
@@ -72,7 +86,6 @@
   cursor: pointer;
   padding: 8px;
   line-height: 1;
-  transition: all 0.2s ease;
   border-radius: 8px;
   width: 32px;
   height: 32px;
@@ -88,7 +101,7 @@
 
 .generic-modal-body {
   padding: 28px;
-  background: rgba(3, 40, 152, 0.05);
+  background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(20px);
   border-radius: 0 0 16px 16px;
   max-height: calc(80vh - 100px);
@@ -119,24 +132,12 @@
 }
 
 .modal-data-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  gap: 16px;
-  transition: all 0.2s ease;
+  display: block; /* Changed from flex */
+  padding: 8px 0;
 }
 
 .modal-data-item:last-child {
   border-bottom: none;
-}
-
-.modal-data-item:hover {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  margin: 0 -8px;
-  padding-left: 20px;
-  padding-right: 20px;
 }
 
 .modal-data-header {
@@ -148,28 +149,21 @@
   padding: 8px 0;
 }
 
-.modal-data-header:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
-  padding: 8px 12px;
-  margin: 0 -12px;
-}
-
 .modal-data-label {
   font-size: 15px;
   color: #e2e8f0;
   font-weight: 500;
   text-transform: capitalize;
-  flex-shrink: 0;
-  min-width: 140px;
+  display: inline; /* Changed from flex-shrink: 0 */
+  min-width: unset; /* Removed min-width */
+  margin-right: 12px; /* Small gap after label */
 }
 
 .modal-data-value {
   font-size: 15px;
   color: #ffffff;
   font-weight: 600;
-  flex: 1;
-  text-align: left;
+  display: inline; /* Changed from flex: 1 */
 }
 
 .object-label {
@@ -177,12 +171,14 @@
   font-weight: 600;
   font-size: 16px;
   margin-bottom: 8px;
+  display: block;
+  margin-right: 0;
 }
 
 .modal-data-object-content {
-  margin-left: 20px;
-  border-left: 2px solid rgba(255, 255, 255, 0.1);
-  padding-left: 16px;
+  margin-left: 0;
+  border-left: none;
+  padding-left: 0;
 }
 
 .array-indicator {
@@ -195,7 +191,6 @@
 .modal-dropdown-arrow {
   font-size: 12px;
   color: #94a3b8;
-  transition: transform 0.3s ease;
   user-select: none;
 }
 
@@ -206,8 +201,8 @@
 .modal-data-array-content {
   width: 100%;
   margin-top: 8px;
-  border-left: 2px solid rgba(255, 255, 255, 0.1);
-  padding-left: 16px;
+  border-left: none;
+  padding-left: 0;
 }
 
 .modal-data-array-item {
@@ -239,18 +234,34 @@
   }
   
   .modal-data-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    padding: 10px 0;
   }
   
   .modal-data-label {
-    min-width: unset;
+    margin-right: 8px;
   }
   
   .modal-data-value {
     text-align: left;
     margin-left: 0;
+  }
+
+    .generic-modal-title-section {
+    gap: 2px;
+  }
+  
+  .generic-modal-subtitle {
+    font-size: 12px;
+  }
+  
+  .generic-modal-actions {
+    margin-top: 20px;
+    padding-top: 16px;
+  }
+  
+  .generic-modal-view-profile-btn {
+    padding: 10px 20px;
+    font-size: 13px;
   }
 }
 
@@ -282,8 +293,12 @@
     font-size: 14px;
   }
   
+  .modal-data-label {
+    margin-right: 6px;
+  }
+  
   .modal-data-object-content {
-    margin-left: 12px;
-    padding-left: 12px;
+    margin-left: 0;
+    padding-left: 0;
   }
 }

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import '../../styles/admin/tabs/Customers.css';
 import CustomerCard from '../elements/CustomerCard';
 import CustomerStatsCard from '../elements/CustomerStatsCard';
-import CustomerModal from '../elements/CustomerModal';
+import GenericModal from '../elements/GenericModal'; // Replace CustomerModal import
 import CustomersTable from '../elements/CustomersTable';
 import CustomersPagination from '../elements/CustomersPagination';
 
@@ -278,6 +278,34 @@ const Customers = () => {
     setSelectedCustomer(null);
   };
 
+  const handleViewProfile = () => {
+    // This will be implemented later to navigate to full profile page
+    console.log('Navigate to full profile for customer:', selectedCustomer.userId);
+    // For now, just close the modal
+    handleCloseModal();
+  };
+
+    const formatCustomerDataForModal = (customer) => {
+    if (!customer) return {};
+    
+    return {
+      userId: customer.userId,
+      type: customer.type,
+      accountType: customer.accountType,
+      registrationDate: customer.registrationDate,
+      email: customer.email,
+      contact: customer.contact,
+      phone: customer.phone,
+      memberSince: customer.memberSince,
+      lastLogin: customer.lastLogin,
+      totalOrders: customer.totalOrders,
+      receivables: customer.receivables,
+      status: customer.status,
+      company: customer.company,
+      sustainability: `${customer.sustainability}%`
+    };
+  };
+
   return (
     <div className="adm-cus-container">
       <div className="adm-cus-header">
@@ -365,11 +393,16 @@ const Customers = () => {
         itemsPerPage={itemsPerPage}
       />
 
-      {/* Modal */}
+      {/* Modal - Updated to use GenericModal */}
       {showModal && selectedCustomer && (
-        <CustomerModal
-          customer={selectedCustomer}
+        <GenericModal
+          isOpen={showModal}
           onClose={handleCloseModal}
+          data={formatCustomerDataForModal(selectedCustomer)}
+          title={selectedCustomer.name}
+          subtitle={`UserId: ${selectedCustomer.userId}`}
+          showViewProfileButton={true}
+          onViewProfile={handleViewProfile}
         />
       )}
     </div>
