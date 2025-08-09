@@ -12,14 +12,14 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.product-image {
+.retailer-product-image {
     position: relative;
     width: 100%;
     height: 200px;
     overflow: hidden;
 }
 
-.product-image img {
+.retailer-product-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -160,13 +160,13 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-.product-image {
+.retailer-product-image {
     width: 100%;
     height: 200px;
     overflow: hidden;
 }
 
-.product-image img {
+.retailer-product-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;

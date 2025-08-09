@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const fetchAllOrders = async ({ userID }) => {
   try {
-    const response = await axios.post("http://localhost:8000/orders/getAllOrders", {
+    const response = await axios.post("https://api.greencart-cos301.co.za/orders/getAllOrders", {
       userID,
     });
     return response.data;

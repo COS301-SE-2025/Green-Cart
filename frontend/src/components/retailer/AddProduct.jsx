@@ -1,29 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import '../styles/retailer/AddProduct.css';
-
-// Image compression utility
-const compressImage = (file, maxWidth = 800, quality = 0.8) => {
-    return new Promise((resolve) => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-        
-        img.onload = () => {
-            // Calculate new dimensions maintaining aspect ratio
-            const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
-            canvas.width = img.width * ratio;
-            canvas.height = img.height * ratio;
-            
-            // Draw and compress
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
-            resolve(compressedDataUrl);
-        };
-        
-        img.src = URL.createObjectURL(file);
-    });
-};
 
 export default function AddProduct({ isOpen, onClose, onProductAdded }) {
     const [formData, setFormData] = useState({
@@ -41,9 +18,22 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             materialSustainability: 68,
         }
     });
-    const [images, setImages] = useState([]);
+    const [imageFiles, setImageFiles] = useState([]); // Store actual File objects
+    const [imagePreviews, setImagePreviews] = useState([]); // Object URLs for preview
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
+
+    // Clean up object URLs when component unmounts or images change
+    useEffect(() => {
+        return () => {
+            // Clean up all object URLs to prevent memory leaks
+            imagePreviews.forEach(url => {
+                if (url.startsWith('blob:')) {
+                    URL.revokeObjectURL(url);
+                }
+            });
+        };
+    }, [imagePreviews]);
 
     const categories = [
         'Electronics',
@@ -84,70 +74,97 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
         }));
     };
 
-    const handleImageUpload = async (e) => {
-        const files = Array.from(e.target.files);
+    const handleImageUpload = (e) => {
+        const newFiles = Array.from(e.target.files);
         
-        // Limit to 5 images
-        if (files.length > 5) {
-            toast.error('You can upload a maximum of 5 images');
+        console.log('Image upload triggered:', {
+            newFilesCount: newFiles.length,
+            existingFilesCount: imageFiles.length,
+            newFileNames: newFiles.map(f => f.name),
+            newFileSizes: newFiles.map(f => f.size)
+        });
+        
+        // Check if adding new files would exceed the limit
+        const totalFiles = imageFiles.length + newFiles.length;
+        if (totalFiles > 5) {
+            console.warn('Too many images total:', totalFiles);
+            toast.error(`You can only upload a maximum of 5 images. You currently have ${imageFiles.length} images.`);
+            e.target.value = ''; // Clear the file input
             return;
         }
 
-        // Validate file types
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        const invalidFiles = files.filter(file => !validTypes.includes(file.type));
+        // Validate file types and sizes
+        const validFiles = [];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         
-        if (invalidFiles.length > 0) {
-            toast.error('Please upload only JPEG or PNG images');
+        for (const file of newFiles) {
+            if (!allowedTypes.includes(file.type)) {
+                toast.error(`${file.name} is not a valid image type`);
+                continue;
+            }
+            if (file.size > maxSize) {
+                toast.error(`${file.name} is too large. Maximum size is 5MB`);
+                continue;
+            }
+            validFiles.push(file);
+        }
+        
+        if (validFiles.length === 0) {
+            console.warn('No valid files after validation');
+            e.target.value = ''; // Clear the file input
             return;
         }
-
-        try {
-            // Convert files to base64
-            const base64Images = await Promise.all(
-                files.map(file => convertFileToBase64(file))
-            );
-            
-            setImages(base64Images);
-        } catch (error) {
-            console.error('Error converting images to base64:', error);
-            toast.error('Failed to process images. Please try again.');
-        }
-    };
-
-    const convertFileToBase64 = async (file) => {
-        // Compress image first to reduce base64 string size
-        const compressedDataUrl = await compressImage(file, 800, 0.8);
         
-        // Validate size (base64 adds ~33% overhead)
-        const sizeInBytes = (compressedDataUrl.length * 3) / 4;
-        const sizeInMB = sizeInBytes / (1024 * 1024);
+        console.log('Valid files:', validFiles.length);
+
+        // Add new files to existing files
+        const updatedFiles = [...imageFiles, ...validFiles];
+        setImageFiles(updatedFiles);
         
-        if (sizeInMB > 2) {
-            throw new Error(`Image too large: ${sizeInMB.toFixed(2)}MB (max: 2MB)`);
+        // Create preview URLs for new files and add to existing previews
+        const newImageUrls = validFiles.map(file => URL.createObjectURL(file));
+        const updatedPreviews = [...imagePreviews, ...newImageUrls];
+        setImagePreviews(updatedPreviews);
+        
+        console.log('Images updated:', {
+            totalFiles: updatedFiles.length,
+            totalPreviews: updatedPreviews.length
+        });
+        
+        // Clear error if it exists
+        if (errors.images) {
+            setErrors(prev => ({ ...prev, images: '' }));
         }
         
-        console.log(`Compressed image: ${sizeInMB.toFixed(2)}MB`);
-        return compressedDataUrl;
-    };
-
-    // Helper function to check if a string is a valid URL
-    const isValidUrl = (string) => {
-        try {
-            new URL(string);
-            return true;
-        } catch (_) {
-            return false;
-        }
-    };
-
-    // Helper function to check if a string is base64 data URL
-    const isBase64DataUrl = (string) => {
-        return typeof string === 'string' && string.startsWith('data:image/');
+        // Clear the file input so the same file can be selected again if needed
+        e.target.value = '';
     };
 
     const removeImage = (index) => {
-        setImages(prev => prev.filter((_, i) => i !== index));
+        console.log('Removing image at index:', index);
+        
+        // Clean up the object URL to prevent memory leaks
+        if (imagePreviews[index]) {
+            URL.revokeObjectURL(imagePreviews[index]);
+        }
+        
+        setImagePreviews(prev => prev.filter((_, i) => i !== index));
+        setImageFiles(prev => prev.filter((_, i) => i !== index));
+        
+        console.log('Image removed. Remaining:', imageFiles.length - 1);
+    };
+
+    const clearAllImages = () => {
+        console.log('Clearing all images');
+        // Clean up all object URLs
+        imagePreviews.forEach(url => {
+            if (url.startsWith('blob:')) {
+                URL.revokeObjectURL(url);
+            }
+        });
+        setImagePreviews([]);
+        setImageFiles([]);
     };
 
     const validateForm = () => {
@@ -159,7 +176,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
         if (!formData.category) newErrors.category = 'Category is required';
         if (!formData.brand.trim()) newErrors.brand = 'Brand is required';
         if (!formData.quantity || parseInt(formData.quantity) < 0) newErrors.quantity = 'Valid quantity is required';
-        if (images.length === 0) newErrors.images = 'At least one product image is required';
+        if (imageFiles.length === 0) newErrors.images = 'At least one product image is required';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -174,6 +191,13 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
         e.preventDefault();
         if (!validateForm()) return;
         setIsSubmitting(true);
+        
+        console.log('Form submission started:', {
+            productName: formData.name,
+            imageFilesCount: imageFiles.length,
+            imageFiles: imageFiles.map(f => ({ name: f.name, size: f.size, type: f.type }))
+        });
+        
         try {
             // Get retailer ID from localStorage
             const retailerData = localStorage.getItem('retailer_user');
@@ -184,65 +208,74 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                 retailerId = retailerUser.retailer_id || retailerUser.id || 3;
             }
 
-            // Convert sustainability ratings to the expected format
-            const sustainabilityMetrics = [
-                { id: 1, value: formData.sustainability.energyEfficiency },
-                { id: 2, value: formData.sustainability.carbonFootprint },
-                { id: 3, value: formData.sustainability.recyclability },
-                { id: 4, value: formData.sustainability.durability },
-                { id: 5, value: formData.sustainability.materialSustainability }
-            ];
-
-            const productData = {
-                name: formData.name,
-                description: formData.description,
-                price: parseFloat(formData.price),
-                quantity: parseInt(formData.quantity),
-                brand: formData.brand,
-                category_id: categories.indexOf(formData.category) + 1,
-                retailer_id: retailerId,
-                sustainability_metrics: sustainabilityMetrics,
-                images: images // Add base64 images to the payload
-            };
+            // Create FormData for multipart form submission with S3 upload
+            const formDataSubmit = new FormData();
             
-            console.log('Creating product with data:', {
-                ...productData,
-                images: productData.images.map((img, idx) => 
-                    `Image ${idx + 1}: ${img.startsWith('data:') ? 'Base64' : 'URL'} (${img.length} chars)`
-                )
+            // Add product data
+            formDataSubmit.append('name', formData.name);
+            formDataSubmit.append('description', formData.description);
+            formDataSubmit.append('price', formData.price);
+            formDataSubmit.append('category_id', categories.indexOf(formData.category) + 1);
+            formDataSubmit.append('retailer_id', retailerId);
+            formDataSubmit.append('stock_quantity', formData.quantity);
+            
+            // Add sustainability ratings with the field names expected by backend
+            formDataSubmit.append('energy_efficiency', formData.sustainability.energyEfficiency);
+            formDataSubmit.append('carbon_footprint', formData.sustainability.carbonFootprint);
+            formDataSubmit.append('recyclability', formData.sustainability.recyclability);
+            formDataSubmit.append('durability', formData.sustainability.durability);
+            formDataSubmit.append('material_sustainability', formData.sustainability.materialSustainability);
+            
+            // Add image files directly for S3 upload
+            console.log('Adding images to FormData for S3 upload:', imageFiles.length);
+            imageFiles.forEach((file, index) => {
+                console.log(`   Adding image ${index + 1}: ${file.name}`);
+                formDataSubmit.append('images', file);
             });
             
-            const response = await fetch('http://localhost:8000/retailer/products', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(productData)
-            });
-            if (!response.ok) {
-                const error = await response.json();
-                console.error('Product creation failed:', error);
-                
-                // Handle different types of errors
-                if (response.status === 422) {
-                    // Validation errors
-                    const validationErrors = error.detail || error.message || 'Validation failed';
-                    if (Array.isArray(validationErrors)) {
-                        const errorMessages = validationErrors.map(err => 
-                            `${err.loc ? err.loc.join('.') + ': ' : ''}${err.msg}`
-                        ).join(', ');
-                        throw new Error(`Validation Error: ${errorMessages}`);
-                    } else {
-                        throw new Error(`Validation Error: ${validationErrors}`);
-                    }
+            // Log FormData contents for debugging
+            console.log('FormData contents:');
+            for (let [key, value] of formDataSubmit.entries()) {
+                if (value instanceof File) {
+                    console.log(`   ${key}: [File] ${value.name} (${value.size} bytes)`);
                 } else {
-                    throw new Error(error.detail || error.message || 'Failed to create product');
+                    console.log(`   ${key}: ${value}`);
                 }
             }
+            
+            // Use the S3-enabled product creation endpoint
+            console.log('Sending request to S3 backend...');
+            const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                ? 'http://localhost:8000' 
+                : 'https://api.greencart-cos301.co.za';
+            const endpoint = `${API_BASE_URL}/product-images/products/`;
+            console.log('Using S3 endpoint:', endpoint);
+            
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                body: formDataSubmit // No Content-Type header for FormData - browser sets it automatically
+            });
+            
+            console.log('Response received:', {
+                status: response.status,
+                statusText: response.statusText,
+                ok: response.ok
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                console.error('S3 upload error:', error);
+                throw new Error(error.detail || 'Failed to create product with S3 images');
+            }
+
             const newProduct = await response.json();
+            console.log('Product created successfully with S3 images:', newProduct);
+            
             if (onProductAdded) {
                 onProductAdded(newProduct);
             }
+
+            // Reset form
             setFormData({
                 name: '',
                 description: '',
@@ -258,13 +291,13 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                     materialSustainability: 68,
                 }
             });
-            setImages([]);
+            clearAllImages();
             
-            toast.success('Product added successfully!');
+            toast.success('Product added successfully with S3 images!');
             onClose();
         } catch (error) {
             console.error('Error adding product:', error);
-            toast.error('Failed to add product. Please try again.');
+            toast.error(error.message || 'Failed to add product. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -280,7 +313,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                 <div className="modal-header">
                     <h2>Add New Product</h2>
                     <button className="close-btn" onClick={onClose} aria-label="Close modal">
-                        ✕
+                        ×
                     </button>
                 </div>
 
@@ -387,42 +420,70 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                             </div>
                         </div>
 
-                        {/* Images */}
+                        {/* Images - S3 Upload Only */}
                         <div className="form-section">
-                            <h3>Product Images</h3>
+                            <h3>Product Images (S3 Upload)</h3>
                             
                             <div className="form-group">
-                                <label htmlFor="images" className='label'>Upload Images * (Max 5)</label>
+                                <label htmlFor="images" className='label'>
+                                    Upload Images * (Max 5) 
+                                    {imageFiles.length > 0 && (
+                                        <span className="image-count-badge">
+                                            {imageFiles.length}/5 selected
+                                        </span>
+                                    )}
+                                </label>
                                 <input
                                     type="file"
                                     id="images"
-                                    accept="image/*"
+                                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                                     multiple
                                     onChange={handleImageUpload}
                                     className={errors.images ? 'error' : 'input'}
                                 />
+                                {imageFiles.length === 0 && (
+                                    <p className="upload-hint">
+                                        You can select multiple images at once or add them one by one. Maximum 5 images per product.
+                                    </p>
+                                )}
+                                {imageFiles.length > 0 && imageFiles.length < 5 && (
+                                    <p className="upload-hint">
+                                        You can add {5 - imageFiles.length} more images by clicking "Choose Files" again.
+                                    </p>
+                                )}
                                 {errors.images && <span className="add-product-error-message">{errors.images}</span>}
                                 <small style={{color: '#666', fontSize: '0.9rem'}}>
-                                    Supported formats: JPEG, PNG. Images will be converted to base64 for storage.
+                                    Supported formats: JPEG, PNG, GIF, WEBP. Images will be uploaded to AWS S3.
                                 </small>
                             </div>
 
-                            {images.length > 0 && (
-                                <div className="image-preview-grid">
-                                    {images.map((image, index) => (
-                                        <div key={index} className="image-preview">
-                                            <img src={image} alt={`Preview ${index + 1}`} />
-                                            <button
-                                                type="button"
-                                                className="remove-image-btn"
-                                                onClick={() => removeImage(index)}
-                                                aria-label={`Remove image ${index + 1}`}
-                                            >
-                                                ✕
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
+                            {imagePreviews.length > 0 && (
+                                <>
+                                    <div className="image-preview-grid">
+                                        {imagePreviews.map((preview, index) => (
+                                            <div key={index} className="image-preview">
+                                                <img src={preview} alt={`Preview ${index + 1}`} />
+                                                <button
+                                                    type="button"
+                                                    className="remove-image-btn"
+                                                    onClick={() => removeImage(index)}
+                                                    aria-label={`Remove image ${index + 1}`}
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="image-actions">
+                                        <button
+                                            type="button"
+                                            className="clear-all-images-btn"
+                                            onClick={clearAllImages}
+                                        >
+                                            Clear All Images
+                                        </button>
+                                    </div>
+                                </>
                             )}
                         </div>
 
@@ -435,143 +496,82 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                 </span>
                             </h3>
                             
-                            {/* <div className="sustainability-grid">
-                                {Object.entries(formData.sustainability).map(([key, value]) => {
-                                const getRatingColor = (rating) => {
-                                    if (rating >= 80) return '#22c55e';
-                                    if (rating >= 60) return '#eab308';
-                                    if (rating >= 40) return '#f97316';
-                                    return '#ef4444';
-                                };
-
-                                const ratingColor = getRatingColor(value);
-                                const percentage = value / 100;
-
-                                return (
-                                    <div 
-                                        key={key} 
-                                        className="sustainability-item"
-                                        style={{
-                                            '--rating-color': ratingColor,
-                                            '--rating-percentage': `${percentage * 100}%`
-                                        }}
-                                    >
-                                        <div className="sustainability-header">
-                                            <label>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
-                                            <div className="rating-indicator">
-                                                <div 
-                                                    className="rating-dot"
-                                                    style={{ backgroundColor: ratingColor }}
-                                                ></div>
-                                                <span className="rating-text">
-                                                    {value >= 80 ? 'Excellent' : 
-                                                    value >= 60 ? 'Good' : 
-                                                    value >= 40 ? 'Fair' : 'Poor'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div className="rating-slider">
-                                            <div className="slider-container">
-                                                <input
-                                                    type="range"
-                                                    min="0"
-                                                    max="100"
-                                                    value={value}
-                                                    onChange={(e) => handleSustainabilityChange(key, parseInt(e.target.value))}
-                                                    className="slider dynamic-slider"
-                                                />
-                                                <div className="slider-progress" style={{ width: `${value}%`, backgroundColor: ratingColor }}></div>
-                                            </div>
-                                            <div className="rating-labels">
-                                                <span>0</span>
-                                                <span 
-                                                    className="current-rating"
-                                                    style={{ backgroundColor: ratingColor }}
-                                                >
-                                                    {value}
-                                                </span>
-                                                <span>100</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })} */}
                             <div className="sustainability-grid">
-    {Object.entries(formData.sustainability).map(([key, value]) => {
-        const getRatingColor = (rating) => {
-            if (rating >= 80) return '#22c55e'; // Green
-            if (rating >= 60) return '#eab308'; // Yellow
-            if (rating >= 40) return '#f97316'; // Orange
-            return '#ef4444'; // Red
-        };
+                                {Object.entries(formData.sustainability).map(([key, value]) => {
+                                    const getRatingColor = (rating) => {
+                                        if (rating >= 80) return '#22c55e'; // Green
+                                        if (rating >= 60) return '#eab308'; // Yellow
+                                        if (rating >= 40) return '#f97316'; // Orange
+                                        return '#ef4444'; // Red
+                                    };
 
-        const getRatingLevel = (rating) => {
-            if (rating >= 80) return 'Excellent';
-            if (rating >= 60) return 'Good';
-            if (rating >= 40) return 'Fair';
-            return 'Poor';  
-        };
+                                    const getRatingLevel = (rating) => {
+                                        if (rating >= 80) return 'Excellent';
+                                        if (rating >= 60) return 'Good';
+                                        if (rating >= 40) return 'Fair';
+                                        return 'Poor';  
+                                    };
 
-        const ratingColor = getRatingColor(value);
-        const ratingLevel = getRatingLevel(value);
+                                    const ratingColor = getRatingColor(value);
+                                    const ratingLevel = getRatingLevel(value);
 
-        return (
-            <div 
-                key={key} 
-                className="sustainability-item"
-                style={{
-                    '--rating-color': ratingColor,
-                }}
-            >
-                <div className="sustainability-header">
-                    <label>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
-                    <div className="rating-indicator">
-                        <div 
-                            className="rating-dot"
-                            style={{ backgroundColor: ratingColor }}
-                        ></div>
-                        <span 
-                            className="rating-text"
-                            style={{ color: ratingColor }}
-                        >
-                            {ratingLevel}
-                        </span>
-                    </div>
-                </div>
-                <div className="rating-slider">
-                    <div className="slider-container">
-                        <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            value={value}
-                            onChange={(e) => handleSustainabilityChange(key, parseInt(e.target.value))}
-                            className="dynamic-slider"
-                        />
-                        <div 
-                            className="slider-progress" 
-                            style={{ 
-                                width: `${value}%`, 
-                                backgroundColor: ratingColor 
-                            }}
-                        ></div>
-                    </div>
-                    <div className="rating-labels">
-                        <span>Poor (0)</span>
-                        <span 
-                            className="current-rating"
-                            style={{ 
-                                '--rating-color': ratingColor 
-                            }}
-                        >
-                            {value}
-                        </span>
-                        <span>Excellent (100)</span>
-                    </div>
-                </div>
-            </div>
-        );
-    })}
+                                    return (
+                                        <div 
+                                            key={key} 
+                                            className="sustainability-item"
+                                            style={{
+                                                '--rating-color': ratingColor,
+                                            }}
+                                        >
+                                            <div className="sustainability-header">
+                                                <label>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
+                                                <div className="rating-indicator">
+                                                    <div 
+                                                        className="rating-dot"
+                                                        style={{ backgroundColor: ratingColor }}
+                                                    ></div>
+                                                    <span 
+                                                        className="rating-text"
+                                                        style={{ color: ratingColor }}
+                                                    >
+                                                        {ratingLevel}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="rating-slider">
+                                                <div className="slider-container">
+                                                    <input
+                                                        type="range"
+                                                        min="0"
+                                                        max="100"
+                                                        value={value}
+                                                        onChange={(e) => handleSustainabilityChange(key, parseInt(e.target.value))}
+                                                        className="dynamic-slider"
+                                                    />
+                                                    <div 
+                                                        className="slider-progress" 
+                                                        style={{ 
+                                                            width: `${value}%`, 
+                                                            backgroundColor: ratingColor 
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                                <div className="rating-labels">
+                                                    <span>Poor (0)</span>
+                                                    <span 
+                                                        className="current-rating"
+                                                        style={{ 
+                                                            '--rating-color': ratingColor 
+                                                        }}
+                                                    >
+                                                        {value}
+                                                    </span>
+                                                    <span>Excellent (100)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
@@ -593,7 +593,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                             {isSubmitting ? (
                                 <>
                                     <div className="loading-spinner small"></div>
-                                    Adding Product...
+                                    Uploading to S3...
                                 </>
                             ) : (
                                 'Add Product'

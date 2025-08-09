@@ -65,7 +65,7 @@ export default function ProductCarousel({ products, onEditProduct }) {
                 <div className="carousel-track">
                     {visibleProducts.map((product) => (
                         <div key={product.id} className="product-card">
-                            <div className="product-image">
+                            <div className="retailer-carousel-product-image">
                                 <img
                                     src={product.image_url}
                                     alt={product.name}
@@ -130,7 +130,7 @@ export default function ProductCarousel({ products, onEditProduct }) {
                 product={selectedProduct}
                 onProductUpdated={async (updatedProduct) => {
                     try {
-                        const response = await fetch(`http://localhost:8000/retailer/products/${updatedProduct.id}`, {
+                        const response = await fetch(`https://api.greencart-cos301.co.za/retailer/products/${updatedProduct.id}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(updatedProduct)

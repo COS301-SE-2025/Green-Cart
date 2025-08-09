@@ -69,30 +69,36 @@ def fetchSustainabilityRatings(request, db: Session):
 
 def calculateDynamicSustainabilityScore(statistics, db: Session):
     """
-    Calculate dynamic sustainability score using actual database type names
+    Calculate sustainability score using only the 5 main frontend metrics
+    No penalties for missing types - only calculate average of available ratings
     """
-    # Get all sustainability types from database for dynamic weighting
-    all_types = db.query(SustainabilityType).filter(SustainabilityType.is_active == True).all()
-    
-    # Create mapping of type names to importance levels
-    importance_levels = {}
-    main_sustainability_types = []
-    
-    for stype in all_types:
-        importance_levels[stype.type_name] = stype.importance_level
-        main_sustainability_types.append(stype.type_name)
-    
-    logging.info(f"Active sustainability types from database: {main_sustainability_types}")
+    # Frontend sustainability types (matching what frontend sends)
+    frontend_types = [
+        'energy_efficiency',
+        'carbon_footprint', 
+        'recyclability',
+        'durability',
+        'material_sustainability'
+    ]
     
     # Group statistics by type name and calculate averages
     type_averages = {}
     for stat in statistics:
-        type_name = stat.type_info.type_name
+        # Get type name, handle different naming conventions
+        if stat.type_info:
+            type_name = stat.type_info.type_name.lower().replace(' ', '_')
+        else:
+            # Fallback
+            type_record = db.query(SustainabilityType).filter(
+                SustainabilityType.id == stat.type
+            ).first()
+            type_name = type_record.type_name.lower().replace(' ', '_') if type_record else str(stat.type)
+        
         if type_name not in type_averages:
             type_averages[type_name] = []
         type_averages[type_name].append(float(stat.value))
     
-    # Calculate average for each type
+    # Calculate average for each available type
     available_averages = {}
     for type_name, values in type_averages.items():
         available_averages[type_name] = sum(values) / len(values)
@@ -100,8 +106,7 @@ def calculateDynamicSustainabilityScore(statistics, db: Session):
     if not available_averages:
         return 0.0
     
-    logging.info(f"Available averages: {available_averages}")
-    
+    logging.info(f"Available sustainability ratings: {available_averages}")
     # Calculate dynamic weights using only available types
     weights = calculateDynamicWeights(available_averages, importance_levels, main_sustainability_types)
     

@@ -11,7 +11,7 @@ class SustainabilityRating(Base):
     type = Column(Integer, ForeignKey("sustainability_types.id"), nullable=False)  # Foreign key to sustainability_types
     value = Column(Numeric(5, 2), nullable=False)  # Changed to support decimal values
     created_at = Column(DateTime, server_default=func.now())
-    verification = Column(Boolean, default=False, nullable=False)  # Boolean verification field
+    verification = Column(Boolean, default=False)  # Changed to Boolean to match database schema
     
     # Relationship to get the type name
     type_info = relationship("SustainabilityType", back_populates="ratings")

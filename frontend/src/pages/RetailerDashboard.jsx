@@ -91,7 +91,9 @@ export default function RetailerDashboard() {
                     setLoading(false);
                     return;
                 }
-
+              
+                const metricsRes = await fetch(`https://api.greencart-cos301.co.za/retailer/metrics/${retailerId}`);
+                const productsRes = await fetch(`https://api.greencart-cos301.co.za/retailer/products/${retailerId}`);
                 console.log("Final retailer ID:", retailerId);
 
                 // Step 4: Fetch dashboard data

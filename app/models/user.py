@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Text, Date
+from sqlalchemy import Column, String, Text, Date, DateTime
+from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.db.database import Base
 
@@ -8,6 +9,7 @@ class User(Base):
     name = Column(Text, nullable=True)
     email = Column(Text, unique=True, index=True, nullable=True)
     password = Column(Text, nullable=True)  # store hashed
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
     date_of_birth = Column(Date, nullable=True)
     country_code = Column(String(4), nullable=True)
     telephone = Column(String(9), nullable=True)

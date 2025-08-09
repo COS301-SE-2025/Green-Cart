@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import { getAdminMetrics } from '../../../admin-services/adminMetricsService';
+import { getProductStats } from '../../../admin-services/adminProductService';
+import toast from 'react-hot-toast';
 import '../../styles/admin/tabs/Dashboard.css';
 
 // Import real icons
@@ -15,8 +18,53 @@ const Dashboard = () => {
   const [exportDropdown, setExportDropdown] = useState(false);
   const [periodDropdown, setPeriodDropdown] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
+  const [adminMetrics, setAdminMetrics] = useState({
+    total_users: 0,
+    total_retailers: 0,
+    total_products: 0,
+    verified_products: 0,
+    unverified_products: 0,
+    recent_orders: 0,
+    active_retailers: 0,
+    top_categories: [],
+    monthly_orders: []
+  });
+  const [productStats, setProductStats] = useState({
+    totalProducts: 0,
+    verifiedCount: 0,
+    unverifiedCount: 0,
+    totalValue: '0.00'
+  });
+  const [loading, setLoading] = useState(true);
   const exportRef = useRef(null);
   const periodRef = useRef(null);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      const [metricsResponse, statsResponse] = await Promise.all([
+        getAdminMetrics(),
+        getProductStats()
+      ]);
+
+      if (metricsResponse) {
+        setAdminMetrics(metricsResponse);
+      }
+
+      if (statsResponse.status === 200) {
+        setProductStats(statsResponse.data);
+      }
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      toast.error('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const statsCards = [
     {
@@ -97,11 +145,8 @@ const Dashboard = () => {
     }
   ];
 
-  const categories = [
-    { name: 'Electronics', color: '#1f2937', value: 45 },
-    { name: 'Laptops', color: '#6b7280', value: 30 },
-    { name: 'Phones', color: '#d1d5db', value: 25 }
-  ];
+  // Use real categories data from backend
+  const categories = adminMetrics.top_categories || [];
 
   // Responsive line chart configuration
   const lineChartOptions = {
@@ -120,7 +165,7 @@ const Dashboard = () => {
       enabled: false
     },
     xAxis: {
-      categories: ['03 Wed', '04 Thu', '05 Fri', '06 Sat', '07 Sun', '08 Mon', '09 Tue', '10 Wed', '11 Thu', '12 Fri', '13 Sat', '14 Sun', '15 Mon', '16 Tue'],
+      categories: adminMetrics.monthly_orders.map(item => item.month),
       gridLineWidth: 0,
       lineWidth: 0,
       tickWidth: 0,
@@ -128,7 +173,8 @@ const Dashboard = () => {
         style: {
           color: '#9ca3af',
           fontSize: '12px'
-        }
+        },
+        rotation: -45
       }
     },
     yAxis: {
@@ -144,33 +190,24 @@ const Dashboard = () => {
           fontSize: '12px'
         }
       },
-      min: 0,
-      max: 70
+      min: 0
     },
     plotOptions: {
       line: {
         marker: {
           enabled: true,
-          radius: 3
+          radius: 4
         },
-        lineWidth: 2
+        lineWidth: 3
       }
     },
     series: [
       {
-        name: 'Earnings',
-        data: [30, 40, 46, 37, 42, 62, 55, 13, 35, 38, 20, 10, 32, 48],
+        name: 'Total Orders',
+        data: adminMetrics.monthly_orders.map(item => item.orders),
         color: '#1f2937',
         marker: {
           fillColor: '#1f2937'
-        }
-      },
-      {
-        name: 'Costs',
-        data: [25, 20, 35, 22, 38, 42, 25, 15, 40, 30, 18, 20, 28, 30],
-        color: '#d1d5db',
-        marker: {
-          fillColor: '#d1d5db'
         }
       }
     ],
@@ -219,7 +256,7 @@ const Dashboard = () => {
       margin: [10, 10, 10, 10]
     },
     title: {
-      text: '$6.2k',
+      text: categories.length > 0 ? `${categories.reduce((sum, cat) => sum + cat.count, 0)}` : '0',
       align: 'center',
       verticalAlign: 'middle',
       style: {
@@ -235,7 +272,18 @@ const Dashboard = () => {
       enabled: false
     },
     tooltip: {
-      enabled: false
+      enabled: true,
+      formatter: function() {
+        return `<b>${this.point.name}</b><br/>
+                Orders: ${this.point.options.custom_count}<br/>
+                Percentage: ${this.y}%`;
+      },
+      backgroundColor: '#1f2937',
+      borderWidth: 0,
+      style: {
+        color: '#ffffff',
+        fontSize: '12px'
+      }
     },
     plotOptions: {
       pie: {
@@ -249,11 +297,12 @@ const Dashboard = () => {
       }
     },
     series: [{
-      data: [
-        { name: 'Electronics', y: 45, color: '#1f2937' },
-        { name: 'Laptops', y: 30, color: '#6b7280' },
-        { name: 'Phones', y: 25, color: '#d1d5db' }
-      ]
+      data: categories.map(category => ({
+        name: category.name,
+        y: category.percentage,
+        color: category.color,
+        custom_count: category.count
+      }))
     }]
   };
 
@@ -292,6 +341,10 @@ const Dashboard = () => {
     setSelectedCard(null);
   };
 
+  if (loading) {
+    return <div className="dashboard-loading">Loading dashboard...</div>;
+  }
+
   return (
     <div className="dashboard">
       {/* Welcome Header */}
@@ -318,7 +371,6 @@ const Dashboard = () => {
                 <h3 className="stat-title">{card.title}</h3>
                 <p className="stat-subtitle">{card.subtitle}</p>
               </div>
-              {/* <div className="stat-arrow">›</div> */}
             </div>
             
             <div className="stat-value">{card.value}</div>
@@ -328,7 +380,6 @@ const Dashboard = () => {
                 <img src={card.percentage.charAt(0) === '-' ? statsLossIcon : statsProfitIcon} alt='stats-icon' className='stats-icon'/> 
                 <span className="stat-percentage-text">{card.percentage}</span>
               </span>
-              <span className="stat-change">{card.change}</span>
             </div>
           </div>
         ))}
@@ -336,10 +387,10 @@ const Dashboard = () => {
 
       {/* Charts Section */}
       <div className="charts-section">
-        {/* Sales Performance Chart */}
+        {/* Monthly Orders Chart */}
         <div className="chart-container sales-chart">
           <div className="chart-header">
-            <h3 className="chart-title">Sales Performance</h3>
+            <h3 className="chart-title">Monthly Orders</h3>
             <div className="chart-controls">
               <div className="dropdown-container" ref={exportRef}>
                 <button 
@@ -373,18 +424,18 @@ const Dashboard = () => {
                     setExportDropdown(false);
                   }}
                 >
-                  Last 14 Days <span className="dropdown-arrow">⌄</span>
+                  Last 12 Months <span className="dropdown-arrow">⌄</span>
                 </button>
                 {periodDropdown && (
                   <div className="dropdown-menu">
-                    <div className="dropdown-item" onClick={() => handlePeriodClick('7 Days')}>
-                      Last 7 Days
+                    <div className="dropdown-item" onClick={() => handlePeriodClick('6 Months')}>
+                      Last 6 Months
                     </div>
-                    <div className="dropdown-item" onClick={() => handlePeriodClick('14 Days')}>
-                      Last 14 Days
+                    <div className="dropdown-item" onClick={() => handlePeriodClick('12 Months')}>
+                      Last 12 Months
                     </div>
-                    <div className="dropdown-item" onClick={() => handlePeriodClick('30 Days')}>
-                      Last 30 Days
+                    <div className="dropdown-item" onClick={() => handlePeriodClick('24 Months')}>
+                      Last 24 Months
                     </div>
                   </div>
                 )}
@@ -395,11 +446,7 @@ const Dashboard = () => {
           <div className="chart-legend">
             <div className="legend-item">
               <span className="legend-dot earnings"></span>
-              <span>Earnings</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-dot costs"></span>
-              <span>Costs</span>
+              <span>Total Orders</span>
             </div>
           </div>
           
@@ -412,10 +459,10 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Top Categories */}
+        {/* Top 3 Categories by Orders */}
         <div className="chart-container categories-chart">
           <div className="chart-header">
-            <h3 className="chart-title">Top Categories</h3>
+            <h3 className="chart-title">Top 3 Categories by Orders</h3>
           </div>
           
           <div className="donut-chart-wrapper">
