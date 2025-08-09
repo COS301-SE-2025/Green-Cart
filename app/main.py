@@ -8,6 +8,8 @@ from app.routes import orders
 from app.routes import donation
 from app.routes import retailer_user
 from app.routes import retailer_metrics
+from app.routes import admin_stock
+from app.routes import carbon_goals
 import app.models
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import retailer_products
@@ -31,4 +33,6 @@ app.include_router(users.router)
 app.include_router(donation.router)
 app.include_router(retailer_metrics.router) 
 app.include_router(retailer_user.router)
+app.include_router(admin_stock.router)
+app.include_router(carbon_goals.router, prefix="/api", tags=["Carbon Goals"])
 app.include_router(retailer_products.router)

@@ -1,5 +1,29 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import '../styles/retailer/AddProduct.css';
+
+// Image compression utility
+const compressImage = (file, maxWidth = 800, quality = 0.8) => {
+    return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        img.onload = () => {
+            // Calculate new dimensions maintaining aspect ratio
+            const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+            canvas.width = img.width * ratio;
+            canvas.height = img.height * ratio;
+            
+            // Draw and compress
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve(compressedDataUrl);
+        };
+        
+        img.src = URL.createObjectURL(file);
+    });
+};
 
 export default function AddProduct({ isOpen, onClose, onProductAdded }) {
     const [formData, setFormData] = useState({
@@ -60,7 +84,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
         }));
     };
 
-    const handleImageUpload = (e) => {
+    const handleImageUpload = async (e) => {
         const files = Array.from(e.target.files);
         
         // Limit to 5 images
@@ -69,9 +93,57 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             return;
         }
 
-        // Create preview URLs
-        const imageUrls = files.map(file => URL.createObjectURL(file));
-        setImages(imageUrls);
+        // Validate file types
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        const invalidFiles = files.filter(file => !validTypes.includes(file.type));
+        
+        if (invalidFiles.length > 0) {
+            toast.error('Please upload only JPEG or PNG images');
+            return;
+        }
+
+        try {
+            // Convert files to base64
+            const base64Images = await Promise.all(
+                files.map(file => convertFileToBase64(file))
+            );
+            
+            setImages(base64Images);
+        } catch (error) {
+            console.error('Error converting images to base64:', error);
+            toast.error('Failed to process images. Please try again.');
+        }
+    };
+
+    const convertFileToBase64 = async (file) => {
+        // Compress image first to reduce base64 string size
+        const compressedDataUrl = await compressImage(file, 800, 0.8);
+        
+        // Validate size (base64 adds ~33% overhead)
+        const sizeInBytes = (compressedDataUrl.length * 3) / 4;
+        const sizeInMB = sizeInBytes / (1024 * 1024);
+        
+        if (sizeInMB > 2) {
+            throw new Error(`Image too large: ${sizeInMB.toFixed(2)}MB (max: 2MB)`);
+        }
+        
+        console.log(`Compressed image: ${sizeInMB.toFixed(2)}MB`);
+        return compressedDataUrl;
+    };
+
+    // Helper function to check if a string is a valid URL
+    const isValidUrl = (string) => {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    };
+
+    // Helper function to check if a string is base64 data URL
+    const isBase64DataUrl = (string) => {
+        return typeof string === 'string' && string.startsWith('data:image/');
     };
 
     const removeImage = (index) => {
@@ -103,6 +175,24 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
         if (!validateForm()) return;
         setIsSubmitting(true);
         try {
+            // Get retailer ID from localStorage
+            const retailerData = localStorage.getItem('retailer_user');
+            let retailerId = 3; // Default fallback
+            
+            if (retailerData) {
+                const retailerUser = JSON.parse(retailerData);
+                retailerId = retailerUser.retailer_id || retailerUser.id || 3;
+            }
+
+            // Convert sustainability ratings to the expected format
+            const sustainabilityMetrics = [
+                { id: 1, value: formData.sustainability.energyEfficiency },
+                { id: 2, value: formData.sustainability.carbonFootprint },
+                { id: 3, value: formData.sustainability.recyclability },
+                { id: 4, value: formData.sustainability.durability },
+                { id: 5, value: formData.sustainability.materialSustainability }
+            ];
+
             const productData = {
                 name: formData.name,
                 description: formData.description,
@@ -110,9 +200,18 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                 quantity: parseInt(formData.quantity),
                 brand: formData.brand,
                 category_id: categories.indexOf(formData.category) + 1,
-                retailer_id: 3, // Hardcoded for now
-                sustainability_metrics: formData.sustainability
+                retailer_id: retailerId,
+                sustainability_metrics: sustainabilityMetrics,
+                images: images // Add base64 images to the payload
             };
+            
+            console.log('Creating product with data:', {
+                ...productData,
+                images: productData.images.map((img, idx) => 
+                    `Image ${idx + 1}: ${img.startsWith('data:') ? 'Base64' : 'URL'} (${img.length} chars)`
+                )
+            });
+            
             const response = await fetch('http://localhost:8000/retailer/products', {
                 method: 'POST',
                 headers: {
@@ -122,7 +221,23 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             });
             if (!response.ok) {
                 const error = await response.json();
-                throw new Error(error.detail || 'Failed to create product');
+                console.error('Product creation failed:', error);
+                
+                // Handle different types of errors
+                if (response.status === 422) {
+                    // Validation errors
+                    const validationErrors = error.detail || error.message || 'Validation failed';
+                    if (Array.isArray(validationErrors)) {
+                        const errorMessages = validationErrors.map(err => 
+                            `${err.loc ? err.loc.join('.') + ': ' : ''}${err.msg}`
+                        ).join(', ');
+                        throw new Error(`Validation Error: ${errorMessages}`);
+                    } else {
+                        throw new Error(`Validation Error: ${validationErrors}`);
+                    }
+                } else {
+                    throw new Error(error.detail || error.message || 'Failed to create product');
+                }
             }
             const newProduct = await response.json();
             if (onProductAdded) {
@@ -287,6 +402,9 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                                     className={errors.images ? 'error' : 'input'}
                                 />
                                 {errors.images && <span className="add-product-error-message">{errors.images}</span>}
+                                <small style={{color: '#666', fontSize: '0.9rem'}}>
+                                    Supported formats: JPEG, PNG. Images will be converted to base64 for storage.
+                                </small>
                             </div>
 
                             {images.length > 0 && (

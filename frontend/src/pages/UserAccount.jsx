@@ -5,8 +5,11 @@ import { useConfirmation } from "../hooks/useConfirmation";
 import toast from 'react-hot-toast';
 import { fetchUserInformation } from '../user-services/fetchUserInformation'
 import { setUserInformation } from '../user-services/setUserInformation';
+import { signupRetailer, signinRetailer } from '../user-services/retailerAuthService';
 import './styles/UserAccount.css';
 import RetailerAuthOverlay from "../components/retailer/Auth/RetailerAuthOverlay";
+import InteractiveCarbonChart from '../components/charts/InteractiveCarbonChart';
+import carbonGoalsService from '../services/carbonGoalsService';
 
 const status = Object.freeze({
 	Prepare: "Preparing Order",
@@ -72,10 +75,11 @@ export default function UserAccount() {
 	const [isEditing, setIsEditing] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 	const [activeTab, setActiveTab] = useState('profile');
-	const [carbonData, setCarbonData] = useState(mockCarbonData);
+	const [carbonData, setCarbonData] = useState(null);
+	const [isLoadingCarbonData, setIsLoadingCarbonData] = useState(false);
 	const [selectedTimeframe, setSelectedTimeframe] = useState('monthly');
 	const { confirmationState, showConfirmation } = useConfirmation();
-  const [isRetailerOverlayOpen, setIsRetailerOverlayOpen] = useState(false);
+	const [isRetailerOverlayOpen, setIsRetailerOverlayOpen] = useState(false);
 	const [formData, setFormData] = useState({
 		name: '',
 		email: '',
@@ -113,7 +117,7 @@ export default function UserAccount() {
 	});
 
 	useEffect(() => {
-		const userData = localStorage.getItem('user');
+		const userData = localStorage.getItem('userData');
 		if (userData) {
 			const parsedUser = JSON.parse(userData);
 			setUser(parsedUser);
@@ -150,23 +154,44 @@ export default function UserAccount() {
 				}
 			};
 
+			// Load carbon data when user loads
+			loadCarbonData(parsedUser.id);
 			loadUserInfo();
 		} else {
-			navigate('/Login');
+			navigate('/login');
 			setIsLoading(false);
 		}
 	}, [navigate]);
 
-	// Calculate progress towards yearly goal
-	const yearlyProgress = (carbonData.totalFootprint / carbonData.yearlyGoal) * 100;
-	const monthlyChange = ((carbonData.monthlyFootprint - carbonData.lastMonthFootprint) / carbonData.lastMonthFootprint) * 100;
+	// Function to load carbon data from backend
+	const loadCarbonData = async (userId) => {
+		setIsLoadingCarbonData(true);
+		try {
+			console.log('Loading carbon data for user:', userId);
+			const data = await carbonGoalsService.getUserCarbonData(userId);
+			console.log('Received carbon data:', data);
+			setCarbonData(data);
+		} catch (error) {
+			console.error('Error loading carbon data:', error);
+			// Fall back to mock data if API fails
+			console.log('Falling back to mock data due to API error');
+			setCarbonData(mockCarbonData);
+			toast.error('Failed to load carbon data. Using sample data.');
+		} finally {
+			setIsLoadingCarbonData(false);
+		}
+	};
 
-	// Get carbon footprint color based on amount
-	const getCarbonColor = (footprint, threshold = 25) => {
-		if (footprint <= threshold * 0.5) return '#22c55e'; // Green - excellent
-		if (footprint <= threshold * 0.75) return '#eab308'; // Yellow - good  
-		if (footprint <= threshold) return '#f97316'; // Orange - moderate
-		return '#ef4444'; // Red - high
+	// Calculate progress towards yearly goal (only if carbonData exists)
+	const yearlyProgress = carbonData ? (carbonData.totalFootprint / carbonData.yearlyGoal) * 100 : 0;
+	const monthlyChange = carbonData ? ((carbonData.monthlyFootprint - carbonData.lastMonthFootprint) / carbonData.lastMonthFootprint) * 100 : 0;
+
+	// Get sustainability score color based on amount (0-100 scale)
+	const getCarbonColor = (score, threshold = 75) => {
+		if (score >= 85) return '#22c55e'; // Green - excellent sustainability
+		if (score >= 70) return '#eab308'; // Yellow - good sustainability  
+		if (score >= 50) return '#f97316'; // Orange - moderate sustainability
+		return '#ef4444'; // Red - poor sustainability
 	};
 
 	const handleInputChange = (e) => {
@@ -263,22 +288,71 @@ export default function UserAccount() {
 		}
 	};
 
-  const logasRetailer = async () => {
-    setIsRetailerOverlayOpen(true);
-  };
+	const logasRetailer = async () => {
+		setIsRetailerOverlayOpen(true);
+	};
 
-  const handleRetailerAuthSubmit = (formData, mode) => {
-    console.log(`Retailer ${mode} submitted:`, formData);
-    // Handle the retailer authentication logic here
-    // You can make API calls, validate credentials, etc.
-    
-    // For now, just close the overlay and show a success message
-    setIsRetailerOverlayOpen(false);
-    toast.success(`Retailer ${mode} successful!`);
-    
-    // You might want to redirect to a retailer dashboard or update user state
-    // navigate('/retailer-dashboard');
-  };
+	const handleRetailerAuthSubmit = async (formData, mode) => {
+		try {
+			let result;
+
+			if (mode === 'signup') {
+				result = await signupRetailer(formData);
+				toast.success('Retailer account created successfully!');
+			} else {
+				result = await signinRetailer(formData);
+				toast.success('Retailer signin successful!');
+			}
+
+			// Store retailer information in localStorage
+			localStorage.setItem('retailer_user', JSON.stringify(result));
+
+			// Close the overlay
+			setIsRetailerOverlayOpen(false);
+
+			// Redirect to retailer dashboard
+			navigate('/retailer-dashboard');
+
+		} catch (error) {
+			toast.error(error.message || `Retailer ${mode} failed. Please try again.`);
+		}
+	};
+
+	// Update goals when user drags points on the chart
+	const handleGoalChange = async (monthIndex, newGoal) => {
+		if (!user || !carbonData) return;
+
+		try {
+			// Get the actual month number (1-12) from the monthIndex
+			const monthData = carbonData.monthlyData[monthIndex];
+			const monthNumber = getMonthNumberFromName(monthData.month);
+
+			// Update the backend
+			await carbonGoalsService.updateCarbonGoal(user.id, monthNumber, newGoal);
+
+			// Update local state
+			setCarbonData(prev => ({
+				...prev,
+				monthlyData: prev.monthlyData.map((m, i) =>
+					i === monthIndex ? { ...m, goal: newGoal } : m
+				)
+			}));
+
+			toast.success('Carbon goal updated successfully!');
+		} catch (error) {
+			console.error('Error updating carbon goal:', error);
+			toast.error('Failed to update carbon goal. Please try again.');
+		}
+	};
+
+	// Helper function to convert month name to number
+	const getMonthNumberFromName = (monthName) => {
+		const months = {
+			'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+			'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+		};
+		return months[monthName] || 1;
+	};
 
 	if (isLoading) {
 		return (
@@ -297,7 +371,7 @@ export default function UserAccount() {
 				<div className="account-error">
 					<h2>Account Not Found</h2>
 					<p>Please log in to view your account.</p>
-					<button onClick={() => navigate('/Login')} className="login-button">
+					<button onClick={() => navigate('/login')} className="login-button">
 						Go to Login
 					</button>
 				</div>
@@ -305,22 +379,22 @@ export default function UserAccount() {
 		);
 	}
 
-  return (
-    <div className="account-container">
-      <div className="account-header">
-        <div className="account-title">
-          <h1>My Account</h1>
-          <p>Manage your profile and track your environmental impact</p>
-        </div>
-        <div className="account-actions">
-          <button onClick={handleLogout} className="logout-button">
-            Logout
-          </button>
-          <button onClick={logasRetailer} className="retailer-button">
-            Sign as Retailer
-          </button>
-        </div>
-      </div>
+	return (
+		<div className="account-container">
+			<div className="account-header">
+				<div className="account-title">
+					<h1>My Account</h1>
+					<p>Manage your profile and track your environmental impact</p>
+				</div>
+				<div className="account-actions">
+					<button onClick={handleLogout} className="logout-button">
+						Logout
+					</button>
+					<button onClick={logasRetailer} className="retailer-button">
+						Sign as Retailer
+					</button>
+				</div>
+			</div>
 
 			<div className="account-content">
 				{/* Tab Navigation */}
@@ -506,194 +580,101 @@ export default function UserAccount() {
 					{/* NEW: Carbon Footprint Tab */}
 					{activeTab === 'carbon-footprint' && (
 						<div className="carbon-section">
-							<div className="section-header">
-								<h2>Your Carbon Footprint</h2>
-								<div className="timeframe-selector">
-									<button
-										className={`timeframe-btn ${selectedTimeframe === 'monthly' ? 'active' : ''}`}
-										onClick={() => setSelectedTimeframe('monthly')}
-									>
-										Monthly
-									</button>
-									<button
-										className={`timeframe-btn ${selectedTimeframe === 'yearly' ? 'active' : ''}`}
-										onClick={() => setSelectedTimeframe('yearly')}
-									>
-										Yearly
-									</button>
+						<div className="section-header">
+							<h2>Your Sustainability Tracker</h2>
+						</div>							{/* Explanation Section */}
+							<div className="carbon-explanation">
+								<h3>🌱 How Your Sustainability Score Works</h3>
+								<div className="explanation-content">
+									<p><strong>Your score is calculated from 0-100 based on the sustainability ratings of products you purchase:</strong></p>
+									<ul>
+										<li><span className="score-indicator excellent">85-100</span> Excellent - You're choosing highly sustainable products! 🌟</li>
+										<li><span className="score-indicator good">70-84</span> Good - Great choices with room for improvement 👍</li>
+										<li><span className="score-indicator moderate">50-69</span> Moderate - Consider more eco-friendly alternatives 🔄</li>
+										<li><span className="score-indicator poor">0-49</span> Needs Improvement - Focus on sustainable products 📈</li>
+									</ul>
+									<p><em>Your monthly score is the average sustainability rating of all products in your orders for that month. Higher scores mean better environmental impact!</em></p>
 								</div>
 							</div>
 
-							{/* Carbon Stats Overview */}
-							<div className="carbon-overview">
-								<div className="carbon-stat-card">
-									<div className="stat-icon">🌍</div>
-									<div className="stat-content">
-										<h3>Total Footprint</h3>
-										<div className="stat-value" style={{ color: getCarbonColor(carbonData.totalFootprint, 300) }}>
-											{carbonData.totalFootprint}
-										</div>
-										<p className="stat-description">This year</p>
-									</div>
+							{isLoadingCarbonData ? (
+								<div className="carbon-loading">
+									<div className="loading-spinner"></div>
+									<span>Loading your sustainability data...</span>
 								</div>
-
-								<div className="carbon-stat-card">
-									<div className="stat-icon">📅</div>
-									<div className="stat-content">
-										<h3>This Month</h3>
-										<div className="stat-value" style={{ color: getCarbonColor(carbonData.monthlyFootprint) }}>
-											{carbonData.monthlyFootprint}
+							) : carbonData ? (
+								<>
+									{/* Sustainability Stats Overview */}
+									<div className="carbon-overview">
+										<div className="carbon-stat-card">
+											<div className="stat-icon">�</div>
+											<div className="stat-content">
+												<h3>Average Score</h3>
+												<div className="stat-value" style={{ color: getCarbonColor(carbonData.totalFootprint, 100) }}>
+													{carbonData.totalFootprint}/100
+												</div>
+												<p className="stat-description">This year</p>
+											</div>
 										</div>
-										<p className="stat-description">
-											{monthlyChange > 0 ? '📈' : '📉'} {Math.abs(monthlyChange).toFixed(1)}% vs last month
-										</p>
-									</div>
-								</div>
 
-								<div className="carbon-stat-card">
-									<div className="stat-icon">🎯</div>
-									<div className="stat-content">
-										<h3>Yearly Goal</h3>
-										<div className="stat-value">
-											{carbonData.yearlyGoal}
+										<div className="carbon-stat-card">
+											<div className="stat-icon">📅</div>
+											<div className="stat-content">
+												<h3>This Month</h3>
+												<div className="stat-value" style={{ color: getCarbonColor(carbonData.monthlyFootprint) }}>
+													{carbonData.monthlyFootprint}/100
+												</div>
+												<p className="stat-description">
+													{monthlyChange > 0 ? '📈' : '📉'} {Math.abs(monthlyChange).toFixed(1)}% vs last month
+												</p>
+											</div>
 										</div>
-										<div className="progress-bar">
-											<div
-												className="progress-fill"
-												style={{
-													width: `${Math.min(yearlyProgress, 100)}%`,
-													backgroundColor: yearlyProgress > 100 ? '#ef4444' : '#22c55e'
-												}}
-											></div>
-										</div>
-										<p className="stat-description">{yearlyProgress.toFixed(1)}% of goal used</p>
-									</div>
-								</div>
-							</div>
 
-							{/* Monthly Trend Chart */}
-							<div className="carbon-chart-section">
-								<h3>Monthly Carbon Footprint Trend</h3>
-								<div className="chart-container">
-									<div className="chart-bars">
-										{carbonData.monthlyData.map((month, index) => (
-											<div key={month.month} className="chart-bar-group">
-												<div className="chart-bars-container">
+										<div className="carbon-stat-card">
+											<div className="stat-icon">🎯</div>
+											<div className="stat-content">
+												<h3>Target Score</h3>
+												<div className="stat-value">
+													{carbonData.yearlyGoal}/100
+												</div>
+												<div className="progress-bar">
 													<div
-														className="chart-bar actual"
+														className="progress-fill"
 														style={{
-															height: `${(month.footprint / 35) * 100}%`,
-															backgroundColor: getCarbonColor(month.footprint)
+															width: `${Math.min(yearlyProgress, 100)}%`,
+															backgroundColor: yearlyProgress > 100 ? '#22c55e' : '#ef4444'
 														}}
-														title={`${month.footprint}`}
-													></div>
-													<div
-														className="chart-bar goal"
-														style={{ height: `${(month.goal / 35) * 100}%` }}
-														title={`Goal: ${month.goal} `}
 													></div>
 												</div>
-												<span className="chart-label">{month.month}</span>
+												<p className="stat-description">{yearlyProgress.toFixed(1)}% of target achieved</p>
 											</div>
-										))}
-									</div>
-									<div className="chart-legend">
-										<div className="legend-item">
-											<div className="legend-color actual"></div>
-											<span>Actual</span>
-										</div>
-										<div className="legend-item">
-											<div className="legend-color goal"></div>
-											<span>Goal</span>
 										</div>
 									</div>
-								</div>
-							</div>
 
-							{/* Category Breakdown */}
-							<div className="carbon-breakdown-section">
-								<h3>Footprint by Category</h3>
-								<div className="category-breakdown">
-									{carbonData.categoryBreakdown.map((category) => (
-										<div key={category.category} className="category-item">
-											<div className="category-header">
-												<span className="category-name">{category.category}</span>
-												<span className="category-amount">{category.footprint}</span>
-											</div>
-											<div className="category-bar">
-												<div
-													className="category-fill"
-													style={{
-														width: `${category.percentage}%`,
-														backgroundColor: category.color
-													}}
-												></div>
-											</div>
-											<span className="category-percentage">{category.percentage}%</span>
+									{/* Monthly Trend Chart */}
+									<div className="carbon-chart-section">
+										<h3>📊 Monthly Sustainability Performance & Goals</h3>
+										<div className="chart-description">
+											<p>Track your sustainability progress and set monthly goals. Drag the goal markers on the chart to adjust your targets!</p>
 										</div>
-									))}
-								</div>
-							</div>
+										<InteractiveCarbonChart
+											monthlyData={carbonData.monthlyData}
+											getCarbonColor={getCarbonColor}
+											selectedTimeframe={selectedTimeframe}
+											onGoalChange={handleGoalChange}
+										/>
+									</div>
 
-							{/* Recent Orders */}
-							<div className="carbon-orders-section">
-								<h3>Recent Order Impact</h3>
-								<div className="carbon-orders">
-									{carbonData.orders.map((order) => (
-										<div key={order.id} className="carbon-order-item">
-											<div className="order-info">
-												<span className="order-id">Order #{order.id}</span>
-												<span className="order-date">{order.date}</span>
-												<span
-													className="order-category"
-													style={{ color: getCarbonColor(order.footprint, 15) }}>
-													{order.footprint}
-												</span>
-											</div>
-											<div className="order-impact">
-												<span
-													className="order-footprint"
-													// style={{ color: getCarbonColor(order.footprint, 15) }}
-													style={{ color: order.state === status.Cancelled ? '#b51818' : '#3a4039' }}
-												>
-													{order.state}
-												</span>
-												<span className="order-items">{order.items} items</span>
-											</div>
-										</div>
-									))}
-								</div>
-							</div>
 
-							{/* Achievements */}
-							<div className="carbon-achievements-section">
-								<h3>Sustainability Achievements</h3>
-								<div className="achievements-grid">
-									{carbonData.achievements.map((achievement, index) => (
-										<div key={index} className="achievement-card">
-											<div className="achievement-icon">{achievement.icon}</div>
-											<div className="achievement-content">
-												<h4>{achievement.title}</h4>
-												<p>{achievement.description}</p>
-												<span className="achievement-date">{achievement.date}</span>
-											</div>
-										</div>
-									))}
+								</>
+							) : (
+								<div className="carbon-error">
+									<p>Unable to load carbon footprint data. Please try refreshing the page.</p>
+									<button onClick={() => user && loadCarbonData(user.id)} className="retry-button">
+										Retry
+									</button>
 								</div>
-							</div>
-
-							{/* Recommendations */}
-							<div className="carbon-recommendations-section">
-								<h3>💡 Personalized Recommendations</h3>
-								<div className="recommendations-list">
-									{carbonData.recommendations.map((recommendation, index) => (
-										<div key={index} className="recommendation-item">
-											<div className="recommendation-icon">🌱</div>
-											<p>{recommendation}</p>
-										</div>
-									))}
-								</div>
-							</div>
+							)}
 						</div>
 					)}
 
@@ -839,32 +820,32 @@ export default function UserAccount() {
 									</button>
 								</div>
 
-                <div className="danger-zone">
-                  <h3>Danger Zone</h3>
-                  <div className="security-item danger">
-                    <div className="security-info">
-                      <h4>Delete Account</h4>
-                      <p>Permanently delete your account and all associated data</p>
-                    </div>
-                    <button
-                      onClick={handleDeleteAccount}
-                      className="delete-button"
-                    >
-                      Delete Account
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-      <ConfirmationModal {...confirmationState} />
-      <RetailerAuthOverlay
-        isOpen={isRetailerOverlayOpen}
-        onClose={() => setIsRetailerOverlayOpen(false)}
-        onSubmit={handleRetailerAuthSubmit}
-      />
-    </div>
-  );
+								<div className="danger-zone">
+									<h3>Danger Zone</h3>
+									<div className="security-item danger">
+										<div className="security-info">
+											<h4>Delete Account</h4>
+											<p>Permanently delete your account and all associated data</p>
+										</div>
+										<button
+											onClick={handleDeleteAccount}
+											className="delete-button"
+										>
+											Delete Account
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					)}
+				</div>
+			</div>
+			<ConfirmationModal {...confirmationState} />
+			<RetailerAuthOverlay
+				isOpen={isRetailerOverlayOpen}
+				onClose={() => setIsRetailerOverlayOpen(false)}
+				onSubmit={handleRetailerAuthSubmit}
+			/>
+		</div>
+	);
 }

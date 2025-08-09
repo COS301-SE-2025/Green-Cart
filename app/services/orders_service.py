@@ -57,37 +57,72 @@ def fetchOrderById(request, db: Session):
     }
 
 def createOrder(request, db: Session):
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    logger.info(f"Creating order for userID: {request.userID}, cartID: {request.cartID}")
+    
     user = db.query(User).filter(User.id == request.userID).first()
     if not user:
+        logger.error(f"User not found: {request.userID}")
         raise HTTPException(status_code=404, detail="User not found")
+
+    logger.info(f"User found: {user.id}")
 
     existing_order = db.query(Order).filter(Order.cart_id == request.cartID, Order.user_id == user.id).first()
     if existing_order:
+        logger.error(f"Cart {request.cartID} is already in an order: {existing_order.id}")
         raise HTTPException(status_code=409, detail="Cart is already in an order")
 
     cart_items = db.query(CartItem).filter(CartItem.cart_id == request.cartID).all()
     if not cart_items:
+        logger.error(f"Cart {request.cartID} is empty or not found")
         raise HTTPException(status_code=400, detail="Cart is empty or not found")
 
+    logger.info(f"Found {len(cart_items)} items in cart {request.cartID}")
+
     try:
+        from app.utilities.stock_utils import sync_stock_status, is_product_available, update_product_stock
+        
         for item in cart_items:
+            logger.info(f"Processing cart item: product_id={item.product_id}, quantity={item.quantity}")
             product = db.query(Product).filter(Product.id == item.product_id).first()
             if not product:
+                logger.error(f"Product not found: {item.product_id}")
                 raise HTTPException(status_code=404, detail=f"Product with ID {item.product_id} not found")
-            if product.quantity is None or product.quantity < item.quantity:
-                raise HTTPException(status_code=400, detail=f"Not enough stock for product: {product.name}")
+            
+            # Sync stock status to ensure data consistency
+            sync_stock_status(db, product.id)
+            db.refresh(product)
+            
+            logger.info(f"Product found: {product.name}, current stock: {product.quantity}, in_stock: {product.in_stock}")
+            
+            # Use utility function to check availability
+            is_available, reason = is_product_available(product, item.quantity)
+            if not is_available:
+                logger.error(f"Stock check failed for product {product.name}: {reason}")
+                raise HTTPException(status_code=400, detail=reason)
 
-            product.quantity -= item.quantity
-            if product.quantity <= 0:
-                product.quantity = 0
-                product.in_stock = False
+            # Update stock using utility function (negative quantity for selling)
+            update_product_stock(db, product.id, -item.quantity)
+            
+            logger.info(f"Updated product {product.name} stock after sale")
 
+        logger.info(f"Creating order with user_id={user.id}, cart_id={request.cartID}")
         order = Order(user_id=user.id, cart_id=request.cartID, state="Preparing Order")
         db.add(order)
         db.commit()
         db.refresh(order)
+        
+        logger.info(f"Order created successfully with ID: {order.id}")
 
+    except HTTPException:
+        # Re-raise HTTPExceptions as-is (these are intentional errors with proper status codes)
+        db.rollback()
+        raise
     except Exception as e:
+        # Only catch unexpected errors and convert them to 500
+        logger.error(f"Unexpected error creating order: {str(e)}")
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating order: {str(e)}")
 

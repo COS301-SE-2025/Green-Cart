@@ -21,8 +21,10 @@ def fetchRetailerProducts(retailer_id: int, db: Session):
     from sqlalchemy import func
     valid_states = ["Preparing Order", "Ready for Delivery", "In Transit", "Delivered"]
     for product in products:
-        images = fetchRetailerProductImages(db, product.id, limit=1)
-        image_url = images[0].image_url if images else None
+        # Get all images for the product
+        all_images = fetchRetailerProductImages(db, product.id, limit=-1)
+        images = [img.image_url for img in all_images] if all_images else []
+        image_url = images[0] if images else None  # Keep for backwards compatibility
 
         req = {
             "product_id": product.id
@@ -49,7 +51,8 @@ def fetchRetailerProducts(retailer_id: int, db: Session):
             "category_id": product.category_id,
             "retailer_id": product.retailer_id,
             "created_at": product.created_at,
-            "image_url": image_url,
+            "image_url": image_url,  # Keep for backwards compatibility
+            "images": images,  # Add full images array
             "sustainability_rating": rating,
             "units_sold": units_sold,
             "revenue": revenue
@@ -92,15 +95,44 @@ def createRetailerProduct(product_data: dict, db: Session):
         )
         db.add(new_product)
         db.flush()  # Get the ID without committing
+        
+        # Save images if provided (supports both base64 and URLs)
+        if "images" in product_data and product_data["images"]:
+            from app.models.product_images import ProductImage
+            for image_data in product_data["images"]:
+                # Handle both base64 data URLs and regular URLs
+                if image_data and (image_data.startswith('data:image/') or image_data.startswith('http')):
+                    product_image = ProductImage(
+                        product_id=new_product.id,
+                        image_url=image_data  # Store base64 string or URL directly
+                    )
+                    db.add(product_image)
+        
         # Create sustainability ratings if provided
-        if "sustainability_metrics" in product_data:
-            metrics = product_data["sustainability_metrics"]
-            # We'll implement this part later based on your sustainability ratings model
+        if "sustainability_metrics" in product_data and product_data["sustainability_metrics"]:
+            from app.models.sustainability_ratings import SustainabilityRating
+            for metric in product_data["sustainability_metrics"]:
+                if isinstance(metric, dict) and "id" in metric and "value" in metric:
+                    sustainability_rating = SustainabilityRating(
+                        product_id=new_product.id,
+                        type=metric["id"],
+                        value=float(metric["value"]),
+                        verification=False  # Default verification status
+                    )
+                    db.add(sustainability_rating)
+        
         db.commit()
-        # Return product with calculated sustainability rating
+        
+        # Return product with calculated sustainability rating and first image
         req = {"product_id": new_product.id}
         sustainability = fetchSustainabilityRatings(req, db)
         rating = sustainability.get("rating", 0)
+        
+        # Get first image for display
+        first_image = None
+        if "images" in product_data and product_data["images"]:
+            first_image = product_data["images"][0]
+        
         return {
             "id": new_product.id,
             "name": new_product.name,
@@ -112,7 +144,7 @@ def createRetailerProduct(product_data: dict, db: Session):
             "category_id": new_product.category_id,
             "retailer_id": new_product.retailer_id,
             "created_at": new_product.created_at,
-            "image_url": None,
+            "image_url": first_image,
             "sustainability_rating": rating
         }
     except Exception as e:

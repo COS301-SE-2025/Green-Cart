@@ -89,7 +89,8 @@ def createProduct(request, db: Session):
                     rating = SustainabilityRating(
                         product_id=new_product.id,
                         type=sustainability_type.id,
-                        value=Decimal(str(sustainability_data[field_name]))
+                        value=Decimal(str(sustainability_data[field_name])),
+                        verification=False  # Default to False for boolean verification
                     )
                     db.add(rating)
         
@@ -185,7 +186,8 @@ def updateProduct(request, db: Session):
                 sustainability_rating = SustainabilityRating(
                     product_id=product_id,
                     type=sustainability_type.id,
-                    value=Decimal(str(rating_data.get("value")))
+                    value=Decimal(str(rating_data.get("value"))),
+                    verification=False  # Default to False for boolean verification
                 )
                 db.add(sustainability_rating)
         

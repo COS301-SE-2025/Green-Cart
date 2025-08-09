@@ -1,0 +1,245 @@
+.interactive-carbon-chart {
+  background: white;
+  border-radius: 16px;
+  padding: 0.9rem;
+  /* border: 1px solid #e5e7eb; */
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  /* width: 100%; */
+}
+
+.ua-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 2rem;
+}
+
+.ua-chart-info h3 {
+  margin: 0 0 0.5rem 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.ua-chart-info p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.ua-chart-stats {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ua-stat-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  min-width: 80px;
+  text-align: center;
+  border: 1px solid;
+}
+
+.ua-stat-badge.success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.ua-stat-badge.warning {
+  background: #fefbeb;
+  border-color: #fed7aa;
+  color: #92400e;
+}
+
+.ua-stat-badge.info {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e40af;
+}
+
+.ua-stat-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.ua-stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  opacity: 0.8;
+}
+
+.ua-chart-container {
+  margin: 1.5rem 0;
+  width: 100%;
+}
+
+.carbon-chart {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fafbfc;
+}
+
+.chart-instructions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fdf8 0%, #f0f9f0 100%);
+  border-radius: 12px;
+  border: 1px solid #e8f5e8;
+}
+
+.instruction-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.instruction-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.instruction-item p {
+  margin: 0;
+  color: #1e40af;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .interactive-carbon-chart {
+    padding: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  
+  
+  .chart-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .chart-stats {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .stat-badge {
+    flex: 1;
+    min-width: 70px;
+  }
+  
+  .stat-number {
+    font-size: 1.25rem;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem;
+  }
+  
+  .chart-info h3 {
+    font-size: 1.25rem;
+  }
+  
+  .instruction-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .chart-container {
+    margin: 1rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .interactive-carbon-chart {
+    padding: 1rem;
+  }
+  
+  .chart-stats {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .stat-badge {
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: auto;
+    text-align: left;
+  }
+  
+  .chart-instructions {
+    padding: 1rem;
+  }
+
+  .chart-container {
+    margin: 0.5rem 0;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .interactive-carbon-chart {
+    border-width: 2px;
+  }
+  
+  .stat-badge {
+    border-width: 2px;
+  }
+  
+  .chart-instructions {
+    border-width: 2px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .interactive-carbon-chart {
+    /* background: #1f2937; */
+    border-color: #374151;
+  }
+  
+  .chart-info h3 {
+    color: #f9fafb;
+  }
+  
+  .chart-info p {
+    color: #9ca3af;
+  }
+  
+  .chart-instructions {
+    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    border-color: #4b5563;
+  }
+  
+  .instruction-item p {
+    color: #bfdbfe;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .carbon-chart * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import RetailerNavbar from '../components/RetailerNavbar';
+import { isRetailerAuthenticated } from '../user-services/retailerAuthService';
 import './styles/ViewRetailerProduct.css';
 import FootprintTracker from '../components/product/FootprintTracker';
 import EditProduct from '../components/retailer/EditProduct';
@@ -12,9 +14,9 @@ export default function ViewRetailerProduct() {
     const [editModalOpen, setEditModalOpen] = useState(false);
 
     useEffect(() => {
-        const userData = localStorage.getItem('user');
-        if (!userData) {
-            navigate('/Login');
+        // Check for retailer authentication
+        if (!isRetailerAuthenticated()) {
+            navigate('/retailer-auth');
             return;
         }
         fetchProduct();
@@ -23,12 +25,32 @@ export default function ViewRetailerProduct() {
 
     const fetchProduct = async () => {
         try {
-            const userData = JSON.parse(localStorage.getItem('user'));
+            // Get retailer user data instead of regular user data
+            const retailerData = localStorage.getItem('retailer_user');
+            let userData = null;
+            
+            if (retailerData) {
+                userData = JSON.parse(retailerData);
+            } else {
+                // Fallback to regular user data if retailer data not found
+                const fallbackData = localStorage.getItem('userData');
+                if (fallbackData) {
+                    userData = JSON.parse(fallbackData);
+                }
+            }
+            
+            if (!userData) {
+                console.error('No user data found');
+                setProduct(null);
+                setLoading(false);
+                return;
+            }
+
             const response = await fetch(`http://localhost:8000/products/FetchProduct`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${userData.access_token}`
+                    Authorization: `Bearer ${userData.access_token || ''}`
                 },
                 body: JSON.stringify({ product_id: parseInt(id) })
             });
@@ -81,38 +103,46 @@ export default function ViewRetailerProduct() {
 
     if (loading) {
         return (
-            <div className="dashboard-loading-container">
-                <div className="dashboard-loading">
-                    <div className="loading-spinner"></div>
-                    <span>Loading Product Details...</span>
+            <>
+                <RetailerNavbar />
+                <div className="dashboard-loading-container">
+                    <div className="dashboard-loading">
+                        <div className="loading-spinner"></div>
+                        <span>Loading Product Details...</span>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 
     if (!product || typeof product !== 'object' || !product.name) {
         return (
-            <div className="dashboard-container">
-                <div className="dashboard-header">
-                    <button
-                        className="back-button"
-                        onClick={() => navigate('/retailer/products')}
-                    >
-                        ← Back to Products
-                    </button>
+            <>
+                <RetailerNavbar />
+                <div className="dashboard-container">
+                    <div className="dashboard-header">
+                        <button
+                            className="back-button"
+                            onClick={() => navigate('/retailer/products')}
+                        >
+                            ← Back to Products
+                        </button>
+                    </div>
+                    <div className="dashboard-error" style={{ textAlign: 'center', padding: '2rem' }}>
+                        <h2 style={{ color: '#1e293b', marginBottom: '1rem' }}>Product Not Found or Invalid</h2>
+                        <p style={{ color: '#64748b', marginBottom: '2rem' }}>
+                            The product you're looking for could not be found or is invalid.
+                        </p>
+                    </div>
                 </div>
-                <div className="dashboard-error" style={{ textAlign: 'center', padding: '2rem' }}>
-                    <h2 style={{ color: '#1e293b', marginBottom: '1rem' }}>Product Not Found or Invalid</h2>
-                    <p style={{ color: '#64748b', marginBottom: '2rem' }}>
-                        The product you're looking for could not be found or is invalid.
-                    </p>
-                </div>
-            </div>
+            </>
         );
     }
 
     return (
-        <div className="view-retailer-product-container">
+        <>
+            <RetailerNavbar />
+            <div className="view-retailer-product-container">
             <div className="product-header">
                 <div className="header-left">
                     <button
@@ -135,9 +165,21 @@ export default function ViewRetailerProduct() {
             <div className="product-content">
                 <div className="product-image-section">
                     <img
-                        src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0].url || product.images[0] : 'default-product-image.jpg'}
+                        src={Array.isArray(product.images) && product.images.length > 0 
+                            ? (product.images[0].url || product.images[0]) 
+                            : (product.image_url || 'default-product-image.jpg')
+                        }
                         alt={product.name || 'Product'}
-                        onError={e => { e.target.src = 'default-product-image.jpg'; }}
+                        onError={e => { 
+                            e.target.src = 'default-product-image.jpg';
+                            console.warn('Failed to load product image');
+                        }}
+                        style={{
+                            width: '100%',
+                            maxHeight: '400px',
+                            objectFit: 'cover',
+                            backgroundColor: '#f5f5f5'
+                        }}
                     />
                 </div>
                 <div className="product-details-section">
@@ -186,24 +228,14 @@ export default function ViewRetailerProduct() {
                 isOpen={editModalOpen}
                 onClose={() => setEditModalOpen(false)}
                 product={product}
-                onProductUpdated={async (updatedProduct) => {
-                    try {
-                        const response = await fetch(`http://localhost:8000/retailer/products/${updatedProduct.id}`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(updatedProduct)
-                        });
-                        if (response.ok) {
-                            setEditModalOpen(false);
-                            fetchProduct();
-                        } else {
-                            alert('Failed to update product.');
-                        }
-                    } catch (err) {
-                        alert('Error updating product.');
-                    }
+                onProductUpdated={(updatedProduct) => {
+                    // The EditProduct component already handles the update
+                    // We just need to refresh the product data and close the modal
+                    setEditModalOpen(false);
+                    fetchProduct(); // Refresh the product data to show updated values
                 }}
             />
         </div>
+        </>
     );
 }

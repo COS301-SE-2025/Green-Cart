@@ -1,0 +1,409 @@
+/* Retailer Authentication Page Styles */
+.retailer-auth-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #7BB540 0%, #4a7c59 100%);
+}
+
+.retailer-auth-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: -1;
+}
+
+.retailer-auth-card {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.auth-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+}
+
+.auth-header p {
+  color: #6c757d;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #7BB540;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.primary-btn {
+  width: 100%;
+  background: #7BB540;
+  color: white;
+  border: none;
+  padding: 0.875rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.primary-btn:hover {
+  background: #6da037;
+}
+
+.primary-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.auth-toggle {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e1e5e9;
+}
+
+.auth-toggle p {
+  margin: 0;
+  color: #6c757d;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #7BB540;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.link-btn:hover {
+  color: #6da037;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.auth-footer .link-btn {
+  color: #6c757d;
+  font-weight: normal;
+}
+
+.auth-footer .link-btn:hover {
+  color: #7BB540;
+}
+
+.retailer-auth-subtitle {
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.retailer-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  position: relative;
+}
+
+.form-input {
+  width: 100%;
+  padding: 1rem 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: white;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #7BB540;
+  box-shadow: 0 0 0 3px rgba(123, 181, 64, 0.1);
+}
+
+.form-input:focus + .form-label,
+.form-input:not(:placeholder-shown) + .form-label {
+  top: -0.5rem;
+  left: 0.75rem;
+  font-size: 0.875rem;
+  color: #7BB540;
+  background: white;
+  padding: 0 0.25rem;
+}
+
+.form-label {
+  position: absolute;
+  top: 1rem;
+  left: 0.75rem;
+  color: #9ca3af;
+  font-size: 1rem;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  transform-origin: left center;
+}
+
+.submit-button {
+  background: #7BB540;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 1rem;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: #6a9a37;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(123, 181, 64, 0.3);
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.toggle-container {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.toggle-text {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-right: 0.5rem;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: #7BB540;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.toggle-button:hover {
+  color: #6a9a37;
+}
+
+.back-to-regular {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.back-link {
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.back-link:hover {
+  color: #7BB540;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .retailer-auth-page {
+    padding: 1rem;
+  }
+
+  .retailer-auth-content {
+    padding: 2rem;
+    max-width: 100%;
+  }
+
+  .retailer-auth-title {
+    font-size: 1.75rem;
+  }
+
+  .retailer-auth-subtitle {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .retailer-auth-content {
+    padding: 1.5rem;
+  }
+
+  .retailer-auth-title {
+    font-size: 1.5rem;
+  }
+
+  .form-input {
+    padding: 0.875rem 0.75rem;
+  }
+}
+
+/* New styles for shop selection */
+.shops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.shop-card {
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.shop-card:hover {
+  border-color: #4CAF50;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+  transform: translateY(-2px);
+}
+
+.shop-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  margin-bottom: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.shop-image img {
+  max-height: 60px;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.shop-placeholder {
+  font-size: 2rem;
+  color: #6c757d;
+}
+
+.shop-info h3 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.shop-info p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.shop-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e1e5e9;
+}
+
+.secondary-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.secondary-btn:hover {
+  background: #5a6268;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+/* Responsive design for shop selection */
+@media (max-width: 768px) {
+  .shops-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .shop-actions {
+    flex-direction: column;
+  }
+  
+  .shop-actions button {
+    width: 100%;
+  }
+}

@@ -54,7 +54,7 @@ export default function Product({ product, image, product_rating}) {
                     title={`Sustainability Score: ${sustainabilityRating}/100 - ${getRatingLevel(sustainabilityRating)}`}
                 >
                     <span className="rating-icon">{getRatingIcon(sustainabilityRating)}</span>
-                    <span className="rating-score">{sustainabilityRating}</span>
+                    <span className="rating-score">{typeof sustainabilityRating === 'number' ? sustainabilityRating.toFixed(1) : sustainabilityRating}</span>
                 </div>
             </div>
         </div>
