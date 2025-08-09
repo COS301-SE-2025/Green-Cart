@@ -1,7 +1,7 @@
 // Pagination.jsx
 import React from 'react';
 
-const CustomersPagination = ({ currentPage, totalPages, onPageChange, totalItems, itemsPerPage }) => {
+const GenericPagination = ({ currentPage, totalPages, onPageChange, totalItems, itemsPerPage }) => {
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
@@ -48,4 +48,4 @@ const CustomersPagination = ({ currentPage, totalPages, onPageChange, totalItems
   );
 };
 
-export default CustomersPagination;
+export default GenericPagination;

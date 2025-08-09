@@ -35,7 +35,6 @@ const OrdersTable = ({ orders }) => {
                 <span 
                   className="adm-ord-status"
                   style={{ 
-                    backgroundColor: `${getStatusColor(order.status)}20`,
                     color: getStatusColor(order.status)
                   }}
                 >

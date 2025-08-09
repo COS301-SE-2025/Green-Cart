@@ -39,6 +39,11 @@
   transition: all 0.2s;
 }
 
+.adm-cus-export-icon {
+  width: 16px;
+  height: 16px;
+}
+
 .adm-cus-export-btn:hover {
   background: #1f2937;
 }

@@ -5,7 +5,7 @@ import CustomerCard from '../elements/CustomerCard';
 import CustomerStatsCard from '../elements/CustomerStatsCard';
 import GenericModal from '../elements/GenericModal'; // Replace CustomerModal import
 import CustomersTable from '../elements/CustomersTable';
-import CustomersPagination from '../elements/CustomersPagination';
+import GenericPagination from '../elements/GenericPagination';
 
 //icons
 
@@ -14,6 +14,7 @@ import blackListIcon from '../icons/blackListIcon.png';
 import whiteGridIcon from '../icons/whiteGridIcon.png';
 import whiteListIcon from '../icons/whiteListIcon.png';
 import retailerBadgeIcon from '../icons/retailerBadgeIcon.png';
+import exportIcon from '../icons/exportIcon.png';
 
 const Customers = () => {
   const [viewMode, setViewMode] = useState('list');
@@ -232,28 +233,28 @@ const Customers = () => {
   // Stats data
   const statsData = [
   {
-    title: "Total customers",
+    title: "Total users",
     value: "2,420",
     change: "+20%",
     changeType: "positive",
     period: "last month",
-    subtitle: "6 From South Africa"
+    subtitle: "South Africa: 200"
   },
   {
-    title: "Members",
+    title: "Customers",
     value: "1,210",
     change: "+15%",
     changeType: "positive",
     period: "last month",
-    subtitle: "7 Active Retailers"
+    subtitle: "With Pending Orders: 7"
   },
   {
-    title: "Premium Members",
+    title: "Retailers",
     value: "847",
     change: "+8%",
     changeType: "positive",
     period: "last month",
-    subtitle: "Upgraded this month"
+    subtitle: "New This Month: 10"
   }
 ];
 
@@ -312,9 +313,7 @@ const Customers = () => {
         <h1 className="adm-cus-title">Customers</h1>
         <div className="adm-cus-header-actions">
           <button className="adm-cus-export-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <img src={exportIcon} alt="Export" className="adm-cus-export-icon" />
             Export
           </button>
         </div>
@@ -385,7 +384,7 @@ const Customers = () => {
       )}
 
       {/* Pagination */}
-      <CustomersPagination
+      <GenericPagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}

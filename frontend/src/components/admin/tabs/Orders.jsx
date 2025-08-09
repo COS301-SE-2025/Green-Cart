@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import CustomersPagination from '../elements/CustomersPagination';
-import OrderStatsCards from './OrderStatsCards';
-import OrdersTable from './OrdersTable';
-import './Orders.css';
+import GenericPagination from '../elements/GenericPagination';
+import OrderStatsCards from '../elements/OrdersStatsCard';
+import OrdersTable from '../elements/OrdersTable';
+import '../../styles/admin/tabs/Orders.css';
+
+import exportIcon from '../icons/exportIcon.png';
 
 const Orders = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,11 +71,12 @@ const Orders = () => {
         <h1 className="adm-ord-title">Orders</h1>
         <div className="adm-ord-header-actions">
           <button className="adm-ord-export-btn" onClick={handleExport}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            {/* <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2"/>
               <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2"/>
               <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
-            </svg>
+            </svg> */}
+            <img src={exportIcon} alt="Export" className="adm-ord-export-icon" />
             Export
           </button>
         </div>
@@ -126,29 +129,6 @@ const Orders = () => {
               <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2"/>
             </svg>
           </button>
-          <div className="adm-ord-view-toggle">
-            <button
-              className={`adm-ord-view-btn ${selectedView === 'table' ? 'active' : ''}`}
-              onClick={() => setSelectedView('table')}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2"/>
-                <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2"/>
-                <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2"/>
-                <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            </button>
-            <button
-              className={`adm-ord-view-btn ${selectedView === 'card' ? 'active' : ''}`}
-              onClick={() => setSelectedView('card')}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="3" width="18" height="4" stroke="currentColor" strokeWidth="2"/>
-                <rect x="3" y="9" width="18" height="4" stroke="currentColor" strokeWidth="2"/>
-                <rect x="3" y="15" width="18" height="4" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            </button>
-          </div>
         </div>
       </div>
 
@@ -156,7 +136,7 @@ const Orders = () => {
       <OrdersTable orders={orders} />
 
       {/* Pagination */}
-      <CustomersPagination
+      <GenericPagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}

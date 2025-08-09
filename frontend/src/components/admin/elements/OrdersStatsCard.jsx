@@ -148,19 +148,19 @@ const OrderStatsCards = () => {
         <div className="adm-ord-breakdown">
           <div className="adm-ord-breakdown-item">
             <span className="adm-ord-breakdown-label">Active Order</span>
-            <span className="adm-ord-breakdown-value" style={{borderRight: '3px solid #8b5cf6'}}>123</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #8b5cf6', paddingLeft: '6px'}}>123</span>
           </div>
           <div className="adm-ord-breakdown-item">
             <span className="adm-ord-breakdown-label">Pending Order</span>
-            <span className="adm-ord-breakdown-value" style={{borderRight: '3px solid #f97316'}}>157</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #f97316', paddingLeft: '6px'}}>157</span>
           </div>
           <div className="adm-ord-breakdown-item">
             <span className="adm-ord-breakdown-label">On Delivery</span>
-            <span className="adm-ord-breakdown-value" style={{borderRight: '3px solid #10b981'}}>530</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #10b981', paddingLeft: '6px'}}>530</span>
           </div>
           <div className="adm-ord-breakdown-item">
             <span className="adm-ord-breakdown-label">Delivered</span>
-            <span className="adm-ord-breakdown-value" style={{borderRight: '3px solid #06b6d4'}}>1710</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #06b6d4', paddingLeft: '6px'}}>1710</span>
           </div>
         </div>
       </div>
@@ -217,11 +217,11 @@ const OrderStatsCards = () => {
         <div className="adm-ord-breakdown">
           <div className="adm-ord-breakdown-item">
             <span className="adm-ord-breakdown-label">Online</span>
-            <span className="adm-ord-breakdown-value" style={{borderRight: '3px solid #8b5cf6'}}>$74K</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #8b5cf6', paddingLeft: '6px'}}>$74K</span>
           </div>
           <div className="adm-ord-breakdown-item">
             <span className="adm-ord-breakdown-label">Cash</span>
-            <span className="adm-ord-breakdown-value" style={{borderRight: '3px solid #f97316'}}>$42K</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #f97316', paddingLeft: '6px'}}>$42K</span>
           </div>
         </div>
       </div>
