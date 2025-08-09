@@ -3,6 +3,7 @@ import SideBar from '../components/admin/SideBar';
 import Products from '../components/admin/tabs/Products';
 import Dashboard from '../components/admin/tabs/Dashboard';
 import Customers from '../components/admin/tabs/Customers';
+import Orders from '../components/admin/tabs/Orders';
 import './styles/Admin.css';
 
 const Admin = () => {
@@ -42,7 +43,7 @@ const Admin = () => {
       case 'Dashboard':
         return <Dashboard />;
       case 'Orders':
-        return <div className="page-placeholder">Orders Page - Coming Soon</div>;
+        return <Orders />;
       case 'Products':
         return <Products />;
       case 'Payments':

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import CustomersPagination from '../elements/CustomersPagination';
+import OrderStatsCards from './OrderStatsCards';
+import OrdersTable from './OrdersTable';
 import './Orders.css';
 
 const Orders = () => {
@@ -60,17 +62,6 @@ const Orders = () => {
 
   const orderTabs = ['On Delivery', 'Pending', 'Shipping', 'Delivered', 'Canceled', 'Returned'];
 
-  const getStatusColor = (status) => {
-    const colors = {
-      'Pending': '#f59e0b',
-      'Shipping': '#3b82f6',
-      'Delivered': '#10b981',
-      'Returned': '#ef4444',
-      'Canceled': '#6b7280'
-    };
-    return colors[status] || '#6b7280';
-  };
-
   return (
     <div className="adm-ord-container">
       {/* Header */}
@@ -89,79 +80,7 @@ const Orders = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="adm-ord-stats-grid">
-        <div className="adm-ord-stats-card">
-          <div className="adm-ord-stats-header">
-            <div className="adm-ord-stats-title-section">
-              <h3 className="adm-ord-stats-title">Order Overview</h3>
-              <p className="adm-ord-stats-subtitle">Week</p>
-            </div>
-          </div>
-          <div className="adm-ord-stats-content">
-            <div className="adm-ord-stats-value-row">
-              <div className="adm-ord-stats-main">
-                <div className="adm-ord-stats-label">Total Order</div>
-                <div className="adm-ord-stats-value">2,520</div>
-                <div className="adm-ord-stats-change">
-                  <span className="adm-ord-change positive">+10.5%</span>
-                  <span className="adm-ord-comparison">Compared to last week</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Order breakdown */}
-          <div className="adm-ord-breakdown">
-            <div className="adm-ord-breakdown-item">
-              <span className="adm-ord-breakdown-label">Active Order</span>
-              <span className="adm-ord-breakdown-value">123</span>
-            </div>
-            <div className="adm-ord-breakdown-item">
-              <span className="adm-ord-breakdown-label">Pending Order</span>
-              <span className="adm-ord-breakdown-value">157</span>
-            </div>
-            <div className="adm-ord-breakdown-item">
-              <span className="adm-ord-breakdown-label">On Delivery</span>
-              <span className="adm-ord-breakdown-value">530</span>
-            </div>
-            <div className="adm-ord-breakdown-item">
-              <span className="adm-ord-breakdown-label">Delivered</span>
-              <span className="adm-ord-breakdown-value">1710</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="adm-ord-stats-card">
-          <div className="adm-ord-stats-header">
-            <div className="adm-ord-stats-title-section">
-              <h3 className="adm-ord-stats-title">Revenue</h3>
-              <p className="adm-ord-stats-subtitle">Last Month</p>
-            </div>
-          </div>
-          <div className="adm-ord-stats-content">
-            <div className="adm-ord-stats-value-row">
-              <div className="adm-ord-stats-main">
-                <div className="adm-ord-stats-label">Total Revenue</div>
-                <div className="adm-ord-stats-value">$116K</div>
-                <div className="adm-ord-stats-change">
-                  <span className="adm-ord-change negative">-7.2%</span>
-                  <span className="adm-ord-comparison">Compared to last week</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Revenue breakdown */}
-          <div className="adm-ord-breakdown">
-            <div className="adm-ord-breakdown-item">
-              <span className="adm-ord-breakdown-label">Online</span>
-              <span className="adm-ord-breakdown-value">$74K</span>
-            </div>
-            <div className="adm-ord-breakdown-item">
-              <span className="adm-ord-breakdown-label">Cash</span>
-              <span className="adm-ord-breakdown-value">$42K</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <OrderStatsCards />
 
       {/* Order Tabs */}
       <div className="adm-ord-tabs">
@@ -234,40 +153,7 @@ const Orders = () => {
       </div>
 
       {/* Table */}
-      <div className="adm-ord-table-container">
-        <table className="adm-ord-table">
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Customer</th>
-              <th>Date</th>
-              <th>Address</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order, index) => (
-              <tr key={index}>
-                <td className="adm-ord-order-id">{order.orderId}</td>
-                <td className="adm-ord-customer">{order.customer}</td>
-                <td className="adm-ord-date">{order.date}</td>
-                <td className="adm-ord-address">{order.address}</td>
-                <td>
-                  <span 
-                    className="adm-ord-status"
-                    style={{ 
-                      backgroundColor: `${getStatusColor(order.status)}20`,
-                      color: getStatusColor(order.status)
-                    }}
-                  >
-                    {order.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <OrdersTable orders={orders} />
 
       {/* Pagination */}
       <CustomersPagination
