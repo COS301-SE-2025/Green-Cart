@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { getRetailerUser, fetchUserShops } from '../../user-services/retailerAuthService';
+import { API_BASE_URL } from '../../config/api.js';
 import './styles/ShopSwitcher.css';
 
 const ShopSwitcher = () => {
@@ -47,7 +48,7 @@ const ShopSwitcher = () => {
       // or use a different approach. For now, we'll use a different API endpoint.
       
       // Alternative approach: Create a dedicated API endpoint to fetch user shops
-      const response = await fetch(`http://localhost:8000/auth/retailer/shops/by-user/${retailerUser.user_id || retailerUser.id}`, {
+      const response = await fetch(`${API_BASE_URL}/auth/retailer/shops/by-user/${retailerUser.user_id || retailerUser.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

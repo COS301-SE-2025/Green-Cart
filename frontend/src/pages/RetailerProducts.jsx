@@ -3,6 +3,7 @@ import EditProduct from '../components/retailer/EditProduct';
 import RetailerNavbar from '../components/RetailerNavbar';
 import { useNavigate } from 'react-router-dom';
 import { isRetailerAuthenticated } from '../user-services/retailerAuthService';
+import { API_BASE_URL } from '../config/api.js';
 import '../components/styles/retailer/ProductCarousel.css';
 import './styles/RetailerDashboard.css';
 import './styles/RetailerProducts.css';
@@ -14,9 +15,6 @@ export default function RetailerProducts() {
     const [retailerId, setRetailerId] = useState(null);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
-
-    // Use deployed API URL
-    const API_BASE_URL = 'https://api.greencart-cos301.co.za';
 
     useEffect(() => {
         const loadRetailerProducts = async () => {

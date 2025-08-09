@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { API_BASE_URL } from '../../config/api.js';
 import '../styles/retailer/EditProduct.css';
 
 export default function EditProduct({ isOpen, onClose, onProductUpdated, product }) {
@@ -64,10 +65,6 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
             // Fetch detailed sustainability ratings for this product
             const fetchSustainabilityRatings = async () => {
                 try {
-                    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                        ? 'http://localhost:8000' 
-                        : 'https://api.greencart-cos301.co.za';
-                        
                     const response = await fetch(`${API_BASE_URL}/sustainability/ratings`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -282,10 +279,6 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
         });
         
         try {
-            const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                ? 'http://localhost:8000' 
-                : 'https://api.greencart-cos301.co.za';
-
             // If images were modified, use S3 endpoint with FormData
             if (imagesModified && imageFiles.length > 0) {
                 // Use S3-enabled endpoint for image updates

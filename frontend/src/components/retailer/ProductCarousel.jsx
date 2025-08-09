@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../config/api.js';
 import '../styles/retailer/ProductCarousel.css';
 import EditProduct from './EditProduct';
 
@@ -130,7 +131,7 @@ export default function ProductCarousel({ products, onEditProduct }) {
                 product={selectedProduct}
                 onProductUpdated={async (updatedProduct) => {
                     try {
-                        const response = await fetch(`https://api.greencart-cos301.co.za/retailer/products/${updatedProduct.id}`, {
+                        const response = await fetch(`${API_BASE_URL}/retailer/products/${updatedProduct.id}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(updatedProduct)

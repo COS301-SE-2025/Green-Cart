@@ -1,8 +1,9 @@
 import axios from "axios";
+import { API_BASE_URL } from '../config/api.js';
 
 export const fetchOrderById = async ({ userID, orderID }) => {
-  try {
-    const response = await axios.post("https://api.greencart-cos301.co.za/orders/getOrderByID", {
+  try {      
+    const response = await axios.post(`${API_BASE_URL}/orders/getOrderByID`, {
       userID,
       orderID,
     });

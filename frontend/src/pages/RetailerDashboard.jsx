@@ -7,6 +7,7 @@ import SalesChart from '../components/retailer/SalesChart';
 import AddProduct from '../components/retailer/AddProduct';
 import EditProduct from '../components/retailer/EditProduct';
 import { getRetailerUser, isRetailerAuthenticated } from '../user-services/retailerAuthService';
+import { API_BASE_URL } from '../config/api.js';
 
 import './styles/RetailerDashboard.css';
 
@@ -66,7 +67,7 @@ export default function RetailerDashboard() {
                     console.log("Attempting to fetch retailer by user_id:", userId);
                     
                     try {
-                        const response = await fetch(`http://localhost:8000/retailer/by-user/${userId}`);
+                        const response = await fetch(`${API_BASE_URL}/retailer/by-user/${userId}`);
                         if (response.ok) {
                             const data = await response.json();
                             if (data.data && data.data.id) {
@@ -91,15 +92,13 @@ export default function RetailerDashboard() {
                     setLoading(false);
                     return;
                 }
-              
-                const metricsRes = await fetch(`https://api.greencart-cos301.co.za/retailer/metrics/${retailerId}`);
-                const productsRes = await fetch(`https://api.greencart-cos301.co.za/retailer/products/${retailerId}`);
+                
                 console.log("Final retailer ID:", retailerId);
 
                 // Step 4: Fetch dashboard data
                 const [metricsResponse, productsResponse] = await Promise.all([
-                    fetch(`http://localhost:8000/retailer/metrics/${retailerId}`),
-                    fetch(`http://localhost:8000/retailer/products/${retailerId}`)
+                    fetch(`${API_BASE_URL}/retailer/metrics/${retailerId}`),
+                    fetch(`${API_BASE_URL}/retailer/products/${retailerId}`)
                 ]);
 
                 console.log("API Response Status:", {

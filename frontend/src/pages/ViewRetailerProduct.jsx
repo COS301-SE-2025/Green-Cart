@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import RetailerNavbar from '../components/RetailerNavbar';
 import { isRetailerAuthenticated } from '../user-services/retailerAuthService';
+import { API_BASE_URL } from '../config/api.js';
 import './styles/ViewRetailerProduct.css';
 import FootprintTracker from '../components/product/FootprintTracker';
 import EditProduct from '../components/retailer/EditProduct';
@@ -12,9 +13,6 @@ export default function ViewRetailerProduct() {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [editModalOpen, setEditModalOpen] = useState(false);
-
-    // Use deployed API URL
-    const API_BASE_URL = 'https://api.greencart-cos301.co.za';
 
     useEffect(() => {
         // Check for retailer authentication

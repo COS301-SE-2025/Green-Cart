@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { API_BASE_URL } from '../../config/api.js';
 import '../styles/retailer/AddProduct.css';
 
 export default function AddProduct({ isOpen, onClose, onProductAdded }) {
@@ -245,9 +246,6 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             
             // Use the S3-enabled product creation endpoint
             console.log('Sending request to S3 backend...');
-            const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                ? 'http://localhost:8000' 
-                : 'https://api.greencart-cos301.co.za';
             const endpoint = `${API_BASE_URL}/product-images/products/`;
             console.log('Using S3 endpoint:', endpoint);
             

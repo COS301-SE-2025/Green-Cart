@@ -1,4 +1,6 @@
-const API_BASE_URL = "https://api.greencart-cos301.co.za/admin";
+import { API_BASE_URL as BASE_URL } from '../config/api.js';
+
+const API_BASE_URL = BASE_URL + '/admin';
 
 /**
  * Get admin dashboard metrics
