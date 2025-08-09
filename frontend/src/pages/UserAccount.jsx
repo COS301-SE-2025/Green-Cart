@@ -297,10 +297,31 @@ export default function UserAccount() {
 			let result;
 
 			if (mode === 'signup') {
-				result = await signupRetailer(formData);
+				// Get current user's email for retailer signup
+				const userData = localStorage.getItem('userData');
+				const currentUser = userData ? JSON.parse(userData) : null;
+				
+				// Transform formData to match backend requirements
+				const retailerData = {
+					name: formData.name,
+					description: formData.organisation, // Convert organisation to description
+					email: currentUser?.email || formData.email || '', // Use current user's email
+					password: formData.password
+				};
+				
+				result = await signupRetailer(retailerData);
 				toast.success('Retailer account created successfully!');
 			} else {
-				result = await signinRetailer(formData);
+				// For signin, we need email and password
+				const userData = localStorage.getItem('userData');
+				const currentUser = userData ? JSON.parse(userData) : null;
+				
+				const signinData = {
+					email: currentUser?.email || formData.email || '',
+					password: formData.password
+				};
+				
+				result = await signinRetailer(signinData);
 				toast.success('Retailer signin successful!');
 			}
 
@@ -314,7 +335,18 @@ export default function UserAccount() {
 			navigate('/retailer-dashboard');
 
 		} catch (error) {
-			toast.error(error.message || `Retailer ${mode} failed. Please try again.`);
+			// Provide more specific error messages
+			let errorMessage = error.message || `Retailer ${mode} failed. Please try again.`;
+			
+			if (errorMessage.includes("already exists")) {
+				errorMessage = "You already have a retailer account with this email. Try signing in instead.";
+			} else if (errorMessage.includes("invalid") || errorMessage.includes("401")) {
+				errorMessage = "Invalid credentials. Please check your password.";
+			} else if (errorMessage.includes("not found") || errorMessage.includes("404")) {
+				errorMessage = "No retailer account found. Please create one first.";
+			}
+			
+			toast.error(errorMessage);
 		}
 	};
 

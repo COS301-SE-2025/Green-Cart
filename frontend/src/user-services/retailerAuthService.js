@@ -1,45 +1,104 @@
 const API_BASE_URL = "http://127.0.0.1:8000"; // Or your WSL IP
 
 export async function signupRetailer(retailerData) {
-  const response = await fetch(`${API_BASE_URL}/auth/retailer/signup`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name: retailerData.name,
-      description: retailerData.description,
-      email: retailerData.email,
-      password: retailerData.password
-    }),
-  });
+  try {
+    // Step 1: Create a regular user account first
+    const userResponse = await fetch(`${API_BASE_URL}/auth/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: retailerData.name,
+        email: retailerData.email,
+        password: retailerData.password
+      }),
+    });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.detail || "Retailer signup failed");
+    if (!userResponse.ok) {
+      const userError = await userResponse.json();
+      throw new Error(userError.detail || "User account creation failed");
+    }
+
+    const userResult = await userResponse.json();
+    
+    // Step 2: Convert the user to a retailer
+    const retailerResponse = await fetch(`${API_BASE_URL}/auth/retailer/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: retailerData.name,
+        description: retailerData.description,
+        email: retailerData.email,
+        password: retailerData.password
+      }),
+    });
+
+    if (!retailerResponse.ok) {
+      const retailerError = await retailerResponse.json();
+      throw new Error(retailerError.detail || "Retailer signup failed");
+    }
+
+    const retailerResult = await retailerResponse.json();
+    
+    // Return combined result with user and retailer info
+    return {
+      ...userResult,
+      ...retailerResult,
+      message: "Retailer account created successfully"
+    };
+    
+  } catch (error) {
+    throw new Error(error.message || "Retailer signup failed");
   }
-
-  return response.json();
 }
 
 export async function signinRetailer(retailerData) {
-  const response = await fetch(`${API_BASE_URL}/auth/retailer/signin`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email: retailerData.email,
-      password: retailerData.password
-    }),
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/retailer/signin`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: retailerData.email,
+        password: retailerData.password
+      }),
+    });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.detail || "Retailer signin failed");
+    if (!response.ok) {
+      let errorMessage = "Retailer signin failed";
+      
+      try {
+        const errorData = await response.json();
+        if (errorData.detail) {
+          errorMessage = errorData.detail;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } catch (parseError) {
+        // If response isn't JSON, use status-based message
+        if (response.status === 404) {
+          errorMessage = "Retailer account not found. Please check your email or create an account.";
+        } else if (response.status === 401) {
+          errorMessage = "Invalid email or password. Please try again.";
+        } else if (response.status === 422) {
+          errorMessage = "Invalid input data. Please check your email and password.";
+        }
+      }
+      
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error.message) {
+      throw error;
+    }
+    throw new Error("Network error occurred. Please check your connection and try again.");
   }
-
-  return response.json();
 }
 
 export function logoutRetailer() {

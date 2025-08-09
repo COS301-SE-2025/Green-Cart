@@ -80,7 +80,14 @@ const RetailerAuth = () => {
       }
       
     } catch (error) {
-      toast.error(error.message);
+      // Display more specific error messages
+      let errorMessage = error.message;
+      if (errorMessage.includes("422") || errorMessage.includes("validation")) {
+        errorMessage = "Please check your input. Make sure all fields are filled correctly.";
+      } else if (errorMessage.includes("already exists")) {
+        errorMessage = "An account with this email already exists. Try signing in instead.";
+      }
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +120,14 @@ const RetailerAuth = () => {
       }
       
     } catch (error) {
-      toast.error(error.message);
+      // Display more specific error messages
+      let errorMessage = error.message;
+      if (errorMessage.includes("404") || errorMessage.includes("not found")) {
+        errorMessage = "No retailer account found with this email. Please create an account first.";
+      } else if (errorMessage.includes("401") || errorMessage.includes("invalid")) {
+        errorMessage = "Invalid email or password. Please check your credentials.";
+      }
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
