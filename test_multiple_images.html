@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Multiple Image Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+        }
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .image-preview {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .info {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .submit-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .submit-btn:hover {
+            background: #0056b3;
+        }
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background: #e8f5e8;
+            border: 1px solid #28a745;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Multiple Image Upload Test</h1>
+    
+    <div class="info">
+        <strong>Instructions:</strong>
+        <ul>
+            <li>Select multiple images (up to 5)</li>
+            <li>Check that all images appear in preview</li>
+            <li>Click Submit to test backend upload</li>
+            <li>Open browser console to see detailed logs</li>
+        </ul>
+    </div>
+
+    <form id="testForm">
+        <div class="form-group">
+            <label for="name">Product Name</label>
+            <input type="text" id="name" value="Test Multiple Images" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <input type="text" id="description" value="Testing multiple image upload functionality" required>
+        </div>
+
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input type="number" id="price" value="99.99" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label for="images">Select Multiple Images (Max 5)</label>
+            <input type="file" id="images" accept="image/*" multiple>
+            <div id="preview" class="preview-container"></div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Submit Test</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        let selectedFiles = [];
+
+        document.getElementById('images').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            console.log('📁 Files selected:', files.length);
+            console.log('Files:', files.map(f => ({ name: f.name, size: f.size, type: f.type })));
+
+            if (files.length > 5) {
+                alert('Maximum 5 images allowed');
+                e.target.value = '';
+                return;
+            }
+
+            selectedFiles = files;
+            updatePreview();
+        });
+
+        function updatePreview() {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'image-preview';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview ${index + 1}">
+                        <button type="button" class="remove-btn" onclick="removeImage(${index})">×</button>
+                    `;
+                    preview.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            console.log('🖼️ Preview updated with', selectedFiles.length, 'images');
+        }
+
+        function removeImage(index) {
+            selectedFiles.splice(index, 1);
+            updatePreview();
+            console.log('🗑️ Removed image at index', index, '. Remaining:', selectedFiles.length);
+        }
+
+        document.getElementById('testForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const result = document.getElementById('result');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+            result.innerHTML = '';
+
+            try {
+                const formData = new FormData();
+                formData.append('name', document.getElementById('name').value);
+                formData.append('description', document.getElementById('description').value);
+                formData.append('price', document.getElementById('price').value);
+                formData.append('category_id', '1');
+                formData.append('retailer_id', '3');
+                formData.append('stock_quantity', '10');
+                formData.append('energy_efficiency', '80');
+                formData.append('carbon_footprint', '75');
+                formData.append('recyclability', '85');
+                formData.append('durability', '90');
+                formData.append('material_sustainability', '88');
+
+                console.log('📤 Adding', selectedFiles.length, 'images to FormData');
+                selectedFiles.forEach((file, index) => {
+                    console.log(`   Adding image ${index + 1}:`, file.name);
+                    formData.append('images', file);
+                });
+
+                // Log FormData contents
+                console.log('📋 FormData contents:');
+                for (let [key, value] of formData.entries()) {
+                    if (value instanceof File) {
+                        console.log(`   ${key}: [File] ${value.name} (${value.size} bytes)`);
+                    } else {
+                        console.log(`   ${key}: ${value}`);
+                    }
+                }
+
+                const response = await fetch('http://localhost:8000/product-images/products/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                console.log('📥 Response:', response.status, response.statusText);
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Upload failed');
+                }
+
+                const data = await response.json();
+                console.log('✅ Success:', data);
+
+                result.innerHTML = `
+                    <div class="result">
+                        <h3>✅ Upload Successful!</h3>
+                        <p><strong>Product ID:</strong> ${data.product_id}</p>
+                        <p><strong>Images Uploaded:</strong> ${selectedFiles.length}</p>
+                        <p><strong>Response:</strong> ${JSON.stringify(data, null, 2)}</p>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                result.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Upload Failed</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Test';
+            }
+        });
+    </script>
+</body>
+</html>
