@@ -31,9 +31,30 @@ const RegisterForm = () => {
     }
 
     try {
-      await signup({ name, email, password });
+      const result = await signup({ name, email, password });
+      
+      // Clear any existing retailer data to prevent conflicts
+      localStorage.removeItem('retailer_user');
+      localStorage.removeItem('retailer_token');
+      localStorage.removeItem('selected_shop');
+      
+      // Extract token and user data from response
+      if (result.access_token || result.token) {
+        // Store the authentication token
+        localStorage.setItem('token', result.access_token || result.token);
+      }
+      
+      // Store user data (remove token from user object to avoid duplication)
+      const userData = { ...result };
+      delete userData.access_token;
+      delete userData.token;
+      localStorage.setItem('userData', JSON.stringify(userData));
+      
+      // Dispatch event to update navbar
+      window.dispatchEvent(new Event('authStateChanged'));
+      
       toast.success("Account created successfully!");
-      navigate("/home");
+      navigate("/Home");
     } catch (err) {
       toast.error(err.message || "An error occurred while creating the account.");
     }

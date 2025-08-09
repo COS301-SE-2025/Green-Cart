@@ -141,10 +141,25 @@ export default function FootprintTracker({ sustainability }) {
                 />
               </div>
               <div className="fp-breakdown-info">
-                <span className="fp-breakdown-stage">{item.type}</span>
-                <span className="fp-breakdown-value">
-                  {item.value.toFixed(1)}%
-                </span>
+                <div className="fp-breakdown-main">
+                  <span className="fp-breakdown-stage">{item.type}</span>
+                  <span className="fp-breakdown-value">
+                    {item.value.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="fp-verification-status">
+                  {item.verification ? (
+                    <span className="verified-badge">
+                      <span className="verification-icon">✓</span>
+                      <span className="verification-text">Verified</span>
+                    </span>
+                  ) : (
+                    <span className="unverified-badge">
+                      <span className="verification-icon">⚠</span>
+                      <span className="verification-text">Unverified</span>
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           ))}

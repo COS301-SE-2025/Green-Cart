@@ -12,7 +12,7 @@ export default function Checkout() {
         const cart_id = params.get('cart_id');
         console.log('Cart ID:', cart_id);
 
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = JSON.parse(localStorage.getItem('userData'));
         if (!user) {
             toast.error('Please log in to place an order.', {
                 duration: 5000,

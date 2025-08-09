@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSearch } from "../search/SearchProvider";
 import { useCart } from "../cart/CartContext";
+import toast from 'react-hot-toast';
 import CartIcon from "../../assets/icons/cart.png";
 import Logo from "../../assets/images/logo.png";
 import "../styles/navigation/Navigation.css";
@@ -15,6 +16,62 @@ export default function Navigation() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const isMobileView = windowWidth <= 480;
+
+    // Check if user is a retailer and if user is authenticated
+    const [isRetailer, setIsRetailer] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const checkAuthStatus = () => {
+            const retailerData = localStorage.getItem('retailer_user');
+            const userData = localStorage.getItem('userData') || localStorage.getItem('user');
+            
+            console.log('Navigation Auth Check:', {
+                userData: !!userData,
+                retailerData: !!retailerData
+            });
+            
+            // User is a retailer if they have retailer data
+            const isCurrentlyRetailer = !!retailerData;
+            
+            // User is authenticated if they have either user or retailer authentication
+            const isCurrentlyAuthenticated = !!userData || isCurrentlyRetailer;
+            
+            console.log('Auth Status:', {
+                isCurrentlyRetailer,
+                isCurrentlyAuthenticated
+            });
+            
+            setIsRetailer(isCurrentlyRetailer);
+            setIsAuthenticated(isCurrentlyAuthenticated);
+        };
+
+        // Check auth status on component mount
+        checkAuthStatus();
+
+        // Listen for storage changes to update navbar in real-time
+        const handleStorageChange = (e) => {
+            if (['user', 'userData', 'retailer_user', 'token', 'retailer_token'].includes(e.key)) {
+                console.log('Storage change detected:', e.key);
+                checkAuthStatus();
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        
+        // Also listen for custom events when localStorage changes in the same tab
+        const handleCustomStorageChange = () => {
+            console.log('Custom auth-change event triggered');
+            checkAuthStatus();
+        };
+        
+        window.addEventListener('authStateChanged', handleCustomStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('authStateChanged', handleCustomStorageChange);
+        };
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -50,9 +107,28 @@ export default function Navigation() {
         if (e.target.textContent === 'Home') handleLogoClick(e);
     };
 
-    const returnToLogin = (e) => {
+    const handleLogout = (e) => {
         e.preventDefault();
-        localStorage.removeItem("token");
+        
+        // Clear all possible authentication data
+        localStorage.removeItem("userData");
+        localStorage.removeItem("retailerData");
+        localStorage.removeItem("user"); // legacy key
+        localStorage.removeItem("token"); // legacy key
+        localStorage.removeItem("retailer_user");
+        localStorage.removeItem("retailer_token");
+        localStorage.removeItem("selected_shop");
+        
+        // Dispatch event to update navbar
+        window.dispatchEvent(new Event('authStateChanged'));
+        
+        // Close mobile menu if open
+        if (mobileMenuOpen) setMobileMenuOpen(false);
+        
+        // Show success message
+        toast.success('Logged out successfully');
+        
+        // Navigate to home/splash page
         navigate("/", { replace: true });
     };
 
@@ -88,14 +164,32 @@ export default function Navigation() {
                 </div>
 
                 <ul className="nav__links nav__links--right">
-                    {/* <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li> */}
                     <li><Link to="/orders">Orders</Link></li>
                     <li className="nav__separator">|</li>
-                    {/*NOTE: have to check if user is a retailer to display Dashboard link  */}
-                    <li><Link to="/retailer-dashboard">Dashboard</Link></li>
-                    <li className="nav__separator">|</li>
+                    {/* Only show Dashboard link for retailers */}
+                    {isRetailer && (
+                        <>
+                            <li><Link to="/retailer-dashboard">Dashboard</Link></li>
+                            <li className="nav__separator">|</li>
+                        </>
+                    )}
                     <li><Link to="/user-account">My Account</Link></li>
                     <li className="nav__separator">|</li>
+                    {/* Show logout only if user is authenticated */}
+                    {isAuthenticated && (
+                        <>
+                            <li>
+                                <button 
+                                    onClick={handleLogout}
+                                    className="nav__logout-btn"
+                                    title="Logout"
+                                >
+                                    Logout
+                                </button>
+                            </li>
+                            <li className="nav__separator">|</li>
+                        </>
+                    )}
                     <li className="nav__cart">
                         <Link
                             to="/cart"
@@ -122,13 +216,26 @@ export default function Navigation() {
                             <li><Link to="/Home" onClick={handleMobileMenuClick}>Home</Link></li>
                             <li><Link to="/about" onClick={handleMobileMenuClick}>About Us</Link></li>
                             <li><Link to="/help" onClick={handleMobileMenuClick}>Help Center</Link></li>
-                            <li><Link to="/logout" onClick={returnToLogin}>Logout</Link></li>
                             <li><Link to="/orders" onClick={handleMobileMenuClick}>Orders</Link></li>
-                            <li><Link to="/retailer-dashboard" onClick={handleMobileMenuClick}>Dashboard</Link></li>
+                            {/* Only show Dashboard link for retailers in mobile menu */}
+                            {isRetailer && (
+                                <li><Link to="/retailer-dashboard" onClick={handleMobileMenuClick}>Dashboard</Link></li>
+                            )}
                             <li><Link to="/user-account" onClick={handleMobileMenuClick}>My Account</Link></li>
                             <li><Link to="/cart" onClick={handleMobileMenuClick}>
                                 Cart {cartQuantity > 0 && `(${cartQuantity})`}
                             </Link></li>
+                            {/* Show logout only if user is authenticated */}
+                            {isAuthenticated && (
+                                <li>
+                                    <button 
+                                        onClick={handleLogout}
+                                        className="nav__logout-btn nav__logout-btn--mobile"
+                                    >
+                                        Logout
+                                    </button>
+                                </li>
+                            )}
                         </ul>
                     </div>
 

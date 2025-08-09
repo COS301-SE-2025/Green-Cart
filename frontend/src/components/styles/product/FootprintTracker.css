@@ -169,6 +169,12 @@
 
 .fp-breakdown-info {
   display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fp-breakdown-main {
+  display: flex;
   justify-content: space-between;
   align-items: center;
 }
@@ -183,6 +189,44 @@
   font-size: 0.75rem;
   color: #64748b;
   font-weight: 500;
+}
+
+/* Verification Status Styles */
+.fp-verification-status {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.verified-badge,
+.unverified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.verified-badge {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.unverified-badge {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.verified-badge .verification-icon,
+.unverified-badge .verification-icon {
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.verified-badge .verification-text,
+.unverified-badge .verification-text {
+  font-size: 0.7rem;
 }
 
 /* Detail Section */

@@ -1,4 +1,4 @@
-import React, { use, useState, useEffect} from "react";
+import React, { useState, useEffect} from "react";
 import "./styles/Cart.css";
 import { useCart } from "../components/cart/CartContext";
 import { useNavigate } from "react-router-dom";
@@ -7,11 +7,13 @@ export default function Cart() {
   const { cartItems, remove_From_Cart, add_To_Cart, refreshCart, cartID } = useCart();
   const navigate = useNavigate();
   const [shippingOption, setShippingOption] = useState("standard");
-  const [applyGreenPoints, setApplyGreenPoints] = useState(false);
+  const [carbonOffsetDonation, setCarbonOffsetDonation] = useState(0);
+  const [showDonationModal, setShowDonationModal] = useState(false);
+  const [selectedInitiative, setSelectedInitiative] = useState("");
   const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
-    const userId = JSON.parse(localStorage.getItem("user"));
+    const userId = JSON.parse(localStorage.getItem("userData"));
     if (userId) {
       if(!refresh){
         refreshCart(userId.id);
@@ -21,7 +23,7 @@ export default function Cart() {
   }, [refreshCart]);
 
 
-  const userId = JSON.parse(localStorage.getItem("user"));
+  const userId = JSON.parse(localStorage.getItem("userData"));
 
   if(!userId) {
     navigate("/login");
@@ -36,12 +38,101 @@ export default function Cart() {
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + Number(item.data.price) * item.quantity, 0);
   const shippingCost = shippingOption === "standard" ? 73.99 : shippingOption === "express" ? 149.99 : 0;
-  const greenPointsDiscount = applyGreenPoints ? 400.99 : 0;
-  const totalWithoutGreenPoints = subtotal + shippingCost;
-  const finalTotal = totalWithoutGreenPoints - greenPointsDiscount;
+  const totalWithoutDonation = subtotal + shippingCost;
+  const finalTotal = totalWithoutDonation + carbonOffsetDonation;
 
-  // Green points calculation (assuming 1 point per R10 spent)
-  const greenPointsEarned = Math.floor(subtotal / 10);
+  // Calculate EcoMeter - Average sustainability rating of all cart items
+  const calculateEcoMeter = () => {
+    if (cartItems.length === 0) return 0;
+    
+    // Calculate simple average of all product sustainability ratings
+    let totalRating = 0;
+    let itemCount = 0;
+    
+    cartItems.forEach(item => {
+      // Use the item's sustainability rating (from the averaged score calculation) or default to 30 (poor)
+      const rating = item.sustainability?.rating || 30;
+      totalRating += rating;
+      itemCount++;
+    });
+    
+    return itemCount > 0 ? Math.round(totalRating / itemCount) : 30;
+  };
+
+  const baseEcoMeter = calculateEcoMeter();
+  
+  // Improve EcoMeter based on donation amount (donation shows environmental consciousness)
+  const getEcoMeterImprovement = () => {
+    if (carbonOffsetDonation === 0) return 0;
+    
+    // Calculate improvement based on donation amount relative to cart value
+    const donationRatio = carbonOffsetDonation / (subtotal || 1);
+    
+    // Higher donations = better improvement (max 25 points)
+    if (donationRatio >= 0.05) return 25; // R10+ donation on R200 cart
+    if (donationRatio >= 0.03) return 20; // R10+ on R300+ cart  
+    if (donationRatio >= 0.02) return 15; // R10+ on R500+ cart
+    if (donationRatio >= 0.01) return 10; // R10+ on R1000+ cart
+    return 5; // Any donation gets some improvement
+  };
+
+  const ecoMeterImprovement = getEcoMeterImprovement();
+  const finalEcoMeter = Math.min(100, baseEcoMeter + ecoMeterImprovement);
+
+  // Get EcoMeter color and level
+  const getEcoMeterColor = (rating) => {
+    if (rating >= 80) return '#22c55e'; // Green - excellent
+    if (rating >= 60) return '#eab308'; // Yellow - good
+    if (rating >= 40) return '#f97316'; // Orange - moderate
+    return '#ef4444'; // Red - poor
+  };
+
+  const getEcoMeterLevel = (rating) => {
+    if (rating >= 80) return 'Excellent';
+    if (rating >= 60) return 'Good';
+    if (rating >= 40) return 'Fair';
+    return 'Needs Improvement';
+  };
+
+  // Environmental initiatives
+  const environmentalInitiatives = [
+    {
+      id: "reforestation",
+      name: "Reforestation Projects",
+      description: "Plant trees to absorb CO2 and restore natural habitats",
+      impact: "1 tree planted per R10 donated"
+    },
+    {
+      id: "renewable",
+      name: "Renewable Energy",
+      description: "Support solar and wind energy projects in South Africa",
+      impact: "Powers 1 home for 1 day per R20 donated"
+    },
+    {
+      id: "ocean",
+      name: "Ocean Conservation",
+      description: "Marine cleanup and plastic waste reduction initiatives",
+      impact: "1kg of ocean plastic removed per R30 donated"
+    },
+    {
+      id: "wildlife",
+      name: "Wildlife Protection",
+      description: "Protect endangered species and their ecosystems",
+      impact: "Supports 1 animal for 1 week per R15 donated"
+    }
+  ];
+
+  // Function to apply carbon offset donation
+  const applyDonation = (amount, initiativeId) => {
+    setCarbonOffsetDonation(amount);
+    setSelectedInitiative(initiativeId);
+    setShowDonationModal(false);
+  };
+
+  const removeDonation = () => {
+    setCarbonOffsetDonation(0);
+    setSelectedInitiative("");
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -175,23 +266,58 @@ export default function Cart() {
             </div>
           </div>
 
-          <div className="green-points-section">
-            <div className="points-row">
-              <span>Green Points</span>
-              <span>{greenPointsEarned}</span>
+          <div className="ecometer-section">
+            <div className="ecometer-header">
+              <span>🌱 EcoMeter</span>
+              <div className="ecometer-gauge">
+                <div className="ecometer-gauge-bg">
+                  <div 
+                    className="ecometer-gauge-fill" 
+                    style={{ 
+                      width: `${finalEcoMeter}%`,
+                      backgroundColor: getEcoMeterColor(finalEcoMeter)
+                    }}
+                  ></div>
+                </div>
+                <span className="ecometer-value" style={{ color: getEcoMeterColor(finalEcoMeter) }}>
+                  {finalEcoMeter}/100
+                </span>
+              </div>
             </div>
-            <div className="points-discount">
-              -{greenPointsDiscount.toLocaleString("en-ZA", {
-                style: "currency",
-                currency: "ZAR",
-              })}
+            
+            <div className="ecometer-info">
+              <span className="ecometer-level" style={{ color: getEcoMeterColor(finalEcoMeter) }}>
+                {getEcoMeterLevel(finalEcoMeter)}
+              </span>
+              {carbonOffsetDonation > 0 && ecoMeterImprovement > 0 && (
+                <span className="ecometer-improvement">
+                  +{ecoMeterImprovement} points from offset donation! 🌟
+                </span>
+              )}
             </div>
+
+            {carbonOffsetDonation > 0 && (
+              <div className="donation-applied">
+                <div className="donation-row">
+                  <span>Carbon Offset Donation</span>
+                  <span>
+                    {carbonOffsetDonation.toLocaleString("en-ZA", {
+                      style: "currency",
+                      currency: "ZAR",
+                    })}
+                  </span>
+                </div>
+                <div className="initiative-selected">
+                  <small>{environmentalInitiatives.find(init => init.id === selectedInitiative)?.name}</small>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="summary-row total-without-points">
-            <span>Total (without Green-Points)</span>
+          <div className="summary-row total-without-donation">
+            <span>Subtotal + Shipping</span>
             <span>
-              {totalWithoutGreenPoints.toLocaleString("en-ZA", {
+              {totalWithoutDonation.toLocaleString("en-ZA", {
                 style: "currency",
                 currency: "ZAR",
               })}
@@ -199,14 +325,14 @@ export default function Cart() {
           </div>
 
           <button 
-            className={`apply-points-btn ${applyGreenPoints ? 'applied' : ''}`}
-            onClick={() => setApplyGreenPoints(!applyGreenPoints)}
+            className={`offset-carbon-btn ${carbonOffsetDonation > 0 ? 'applied' : ''}`}
+            onClick={() => carbonOffsetDonation > 0 ? removeDonation() : setShowDonationModal(true)}
           >
-            {applyGreenPoints ? 'Remove Green-Points' : 'Apply Green-Points'}
+            {carbonOffsetDonation > 0 ? 'Remove Carbon Offset' : 'Improve EcoMeter Score'}
           </button>
 
           <div className="final-total">
-            <span>Total</span>
+            <span>Total (with Carbon Offset)</span>
             <span>
               {finalTotal.toLocaleString("en-ZA", {
                 style: "currency",
@@ -214,6 +340,13 @@ export default function Cart() {
               })}
             </span>
           </div>
+
+          <p className="environmental-impact">
+            {carbonOffsetDonation > 0 
+              ? `🌟 Your EcoMeter improved by ${ecoMeterImprovement} points! Contributing to a greener future!`
+              : "Improve your EcoMeter by supporting environmental initiatives!"
+            }
+          </p>
 
           <button 
             className="checkout-btn"
@@ -223,6 +356,46 @@ export default function Cart() {
           </button>
         </div>
       </div>
+
+      {/* Carbon Offset Donation Modal */}
+      {showDonationModal && (
+        <div className="modal-overlay" onClick={() => setShowDonationModal(false)}>
+          <div className="donation-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Improve Your EcoMeter Score</h3>
+            <div className="current-ecometer">
+              <span>Current EcoMeter: </span>
+              <span className="current-score" style={{ color: getEcoMeterColor(baseEcoMeter) }}>
+                {baseEcoMeter}/100 - {getEcoMeterLevel(baseEcoMeter)}
+              </span>
+            </div>
+            <p>Support environmental initiatives to boost your EcoMeter and offset your carbon impact!</p>
+            
+            <div className="initiatives-grid">
+              {environmentalInitiatives.map(initiative => (
+                <div key={initiative.id} className="initiative-card">
+                  <h4>{initiative.name}</h4>
+                  <p>{initiative.description}</p>
+                  <div className="donation-amounts">
+                    {[10, 20, 30].map(amount => (
+                      <button 
+                        key={amount}
+                        className="donation-amount-btn"
+                        onClick={() => applyDonation(amount, initiative.id)}
+                      >
+                        R{amount}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <button className="close-modal-btn" onClick={() => setShowDonationModal(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,680 @@
+/* RetailerAuth Premium Styling - Perfected */
+
+/* CRITICAL: Override global white text immediately */
+html.retailer-auth-active,
+html.retailer-auth-active *,
+body.retailer-auth-active,
+body.retailer-auth-active *,
+.retailer-auth-page,
+.retailer-auth-page *,
+.retailer-auth-page h1,
+.retailer-auth-page h2,
+.retailer-auth-page h3,
+.retailer-auth-page h4,
+.retailer-auth-page p,
+.retailer-auth-page span,
+.retailer-auth-page label,
+.retailer-auth-page input,
+.retailer-auth-page textarea,
+.retailer-auth-page button,
+.retailer-auth-page div,
+.retailer-auth-page form {
+  color: #1f2937 !important;
+}
+
+/* Full screen layout with enhanced backdrop */
+.retailer-auth-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 9999;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Enhanced background with subtle gradient overlay */
+.retailer-auth-background {
+  position: absolute;
+  inset: 0;
+  background-image: url('../../assets/images/splash.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: brightness(0.9) contrast(1.1);
+}
+
+.retailer-auth-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0.3) 50%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  backdrop-filter: blur(2px);
+}
+
+/* Main container */
+.retailer-auth-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 480px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Enhanced glass card with perfect shadows */
+.retailer-auth-card {
+  width: 100%;
+  padding: 3.5rem 3rem;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 28px;
+  box-shadow: 
+    0 40px 80px rgba(0, 0, 0, 0.15),
+    0 16px 40px rgba(0, 0, 0, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  max-height: 92vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transform: translateY(0) scale(1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: perfectSlideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.retailer-auth-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.3) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Shop selection gets enhanced layout */
+.shop-selection-card {
+  max-width: 720px;
+  width: min(92vw, 720px);
+  padding: 4rem 3.5rem;
+}
+
+@keyframes perfectSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    filter: blur(4px);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translateY(10px) scale(0.98);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Enhanced header with perfect typography */
+.auth-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.auth-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #7BB540, #6ba031);
+  border-radius: 2px;
+  opacity: 0.8;
+}
+
+.retailer-auth-title {
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: #1f2937 !important;
+  margin-bottom: 1.25rem;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.retailer-auth-subtitle {
+  color: #6b7280 !important;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 400;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0.9;
+}
+
+/* Enhanced form with perfect spacing */
+.retailer-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Perfect floating label form groups */
+.form-group {
+  position: relative;
+  margin-bottom: 0;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 1.4rem 1.25rem 0.9rem 1.25rem;
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: #1f2937 !important;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2.5px solid rgba(209, 213, 219, 0.6);
+  border-radius: 16px;
+  outline: none;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+  padding-top: 1.8rem;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+.form-input:hover,
+.form-textarea:hover {
+  border-color: rgba(123, 181, 64, 0.4);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 12px rgba(123, 181, 64, 0.08);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: #7BB540 !important;
+  box-shadow: 
+    0 0 0 4px rgba(123, 181, 64, 0.12),
+    0 8px 25px rgba(123, 181, 64, 0.15);
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+}
+
+.form-input:not(:placeholder-shown),
+.form-textarea:not(:placeholder-shown) {
+  border-color: rgba(123, 181, 64, 0.7);
+  background: rgba(255, 255, 255, 0.98);
+}
+
+/* Perfect floating labels with enhanced animation */
+.form-label {
+  position: absolute;
+  left: 1.25rem;
+  top: 1.4rem;
+  color: #6b7280 !important;
+  font-size: 1.05rem;
+  font-weight: 500;
+  pointer-events: none;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: left center;
+  z-index: 1;
+  background: linear-gradient(to bottom, transparent 0%, transparent 40%, rgba(255, 255, 255, 0.95) 40%, rgba(255, 255, 255, 0.95) 100%);
+  padding: 0 0.5rem 0 0;
+  margin-left: -0.25rem;
+}
+
+.form-input:focus + .form-label,
+.form-input:not(:placeholder-shown) + .form-label,
+.form-textarea:focus + .form-label,
+.form-textarea:not(:placeholder-shown) + .form-label {
+  top: 0rem;
+  font-size: 0.8rem;
+  color: #7BB540 !important;
+  font-weight: 600;
+  transform: translateY(0) scale(1);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+}
+
+/* Perfect submit button with enhanced effects */
+.submit-button {
+  width: 100%;
+  padding: 1.2rem 2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: white !important;
+  background: linear-gradient(135deg, #7BB540 0%, #6ba031 50%, #5a8829 100%);
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 1.5rem;
+  box-shadow: 
+    0 8px 24px rgba(123, 181, 64, 0.35),
+    0 4px 12px rgba(123, 181, 64, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.025em;
+  position: relative;
+  overflow: hidden;
+  text-transform: none;
+}
+
+.submit-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.05) 100%);
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #6ba031 0%, #5a8829 50%, #4a7220 100%);
+  transform: translateY(-3px);
+  box-shadow: 
+    0 12px 32px rgba(123, 181, 64, 0.45),
+    0 8px 16px rgba(123, 181, 64, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.submit-button:hover:not(:disabled)::before {
+  opacity: 1;
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(-1px);
+  transition: transform 0.1s ease;
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 4px 12px rgba(123, 181, 64, 0.2);
+}
+
+.submit-button.secondary {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+  color: #475569 !important;
+  box-shadow: 
+    0 8px 24px rgba(71, 85, 105, 0.15),
+    0 4px 12px rgba(71, 85, 105, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.submit-button.secondary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%);
+  color: #334155 !important;
+  box-shadow: 
+    0 12px 32px rgba(71, 85, 105, 0.2),
+    0 8px 16px rgba(71, 85, 105, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Enhanced toggle section with perfect styling */
+.toggle-container {
+  text-align: center;
+  padding: 2rem 0 1.5rem;
+  border-top: 1px solid rgba(229, 231, 235, 0.4);
+  margin-top: 1.5rem;
+  position: relative;
+}
+
+.toggle-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #7BB540, transparent);
+}
+
+.toggle-text {
+  color: #6b7280 !important;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  font-weight: 400;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: #7BB540 !important;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.toggle-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(123, 181, 64, 0.05), rgba(123, 181, 64, 0.1));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.toggle-button:hover {
+  color: #6ba031 !important;
+  transform: translateY(-1px);
+}
+
+.toggle-button:hover::before {
+  opacity: 1;
+}
+
+/* Enhanced footer */
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.back-link {
+  color: #6b7280 !important;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(107, 114, 128, 0.05);
+  border: 1px solid rgba(107, 114, 128, 0.1);
+}
+
+.back-link:hover {
+  color: #7BB540 !important;
+  background: rgba(123, 181, 64, 0.08);
+  border-color: rgba(123, 181, 64, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(123, 181, 64, 0.15);
+}
+
+/* Shop Selection Styles */
+.shops-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.shop-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(229, 231, 235, 0.8);
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.shop-card:hover {
+  border-color: #7BB540;
+  box-shadow: 0 8px 25px rgba(123, 181, 64, 0.2);
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.shop-image {
+  margin-bottom: 1rem;
+}
+
+.shop-image img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.shop-placeholder {
+  font-size: 3rem;
+  color: #9ca3af;
+  margin-bottom: 0.5rem;
+}
+
+.shop-info h3 {
+  margin: 0 0 0.5rem 0;
+  color: #1f2937 !important;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.shop-info p {
+  margin: 0;
+  color: #6b7280 !important;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.shop-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(229, 231, 235, 0.6);
+}
+
+/* Enhanced responsive design */
+@media (max-width: 640px) {
+  .retailer-auth-container {
+    padding: 1rem;
+  }
+  
+  .retailer-auth-card {
+    padding: 3rem 2.25rem;
+    border-radius: 24px;
+    max-height: 100vh;
+  }
+  
+  .retailer-auth-title {
+    font-size: 2.25rem;
+  }
+  
+  .retailer-auth-subtitle {
+    font-size: 1rem;
+  }
+  
+  .auth-header {
+    margin-bottom: 2.5rem;
+  }
+  
+  .form-input,
+  .form-textarea {
+    padding: 1.25rem 1.1rem 0.8rem 1.1rem;
+    font-size: 1rem;
+  }
+  
+  .form-label {
+    font-size: 1rem;
+    left: 1.1rem;
+  }
+  
+  .retailer-auth-form {
+    gap: 2rem;
+  }
+  
+  .shops-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  
+  .shop-actions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .submit-button.secondary {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .retailer-auth-card {
+    padding: 2.5rem 1.75rem;
+    margin: 0.75rem;
+    border-radius: 20px;
+  }
+  
+  .retailer-auth-title {
+    font-size: 2rem;
+    letter-spacing: -0.025em;
+  }
+  
+  .retailer-auth-subtitle {
+    font-size: 0.95rem;
+  }
+  
+  .auth-header {
+    margin-bottom: 2.25rem;
+  }
+  
+  .form-input,
+  .form-textarea {
+    padding: 1.2rem 1rem 0.75rem 1rem;
+    font-size: 0.95rem;
+    border-radius: 14px;
+  }
+  
+  .submit-button {
+    padding: 1.1rem 1.75rem;
+    font-size: 1.05rem;
+    border-radius: 14px;
+  }
+}
+
+/* Smooth scrollbar for card overflow */
+.retailer-auth-card::-webkit-scrollbar {
+  width: 6px;
+}
+
+.retailer-auth-card::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.retailer-auth-card::-webkit-scrollbar-thumb {
+  background: rgba(123, 181, 64, 0.3);
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.retailer-auth-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(123, 181, 64, 0.5);
+}
+
+/* Override any global styles */
+.retailer-auth-page * {
+  box-sizing: border-box;
+}
+
+/* Strong color overrides to fix white text from global CSS */
+.retailer-auth-page,
+.retailer-auth-page *,
+.retailer-auth-page h1,
+.retailer-auth-page h2,
+.retailer-auth-page h3,
+.retailer-auth-page p,
+.retailer-auth-page span,
+.retailer-auth-page label,
+.retailer-auth-page button,
+.retailer-auth-page input,
+.retailer-auth-page textarea {
+  color: inherit !important;
+}
+
+/* Specific text color fixes */
+.retailer-auth-title {
+  color: #1f2937 !important;
+}
+
+.retailer-auth-subtitle {
+  color: #6b7280 !important;
+}
+
+.form-label {
+  color: #6b7280 !important;
+}
+
+.form-input,
+.form-textarea {
+  color: #1f2937 !important;
+}
+
+.form-input:focus + .form-label,
+.form-input:not(:placeholder-shown) + .form-label,
+.form-textarea:focus + .form-label,
+.form-textarea:not(:placeholder-shown) + .form-label {
+  color: #7BB540 !important;
+}
+
+.toggle-text {
+  color: #6b7280 !important;
+}
+
+.toggle-button {
+  color: #7BB540 !important;
+}
+
+.back-link {
+  color: #6b7280 !important;
+}
+
+.shop-info h3 {
+  color: #1f2937 !important;
+}
+
+.shop-info p {
+  color: #6b7280 !important;
+}

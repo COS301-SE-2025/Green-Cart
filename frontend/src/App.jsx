@@ -17,8 +17,12 @@ import Checkout from './pages/Checkout'; // ✅ ADDED
 import UserAccount from './pages/UserAccount'; // Placeholder for user account page
 import RetailerDashboard from './pages/RetailerDashboard'; // ✅ ADDED
 import RetailerProducts from './pages/RetailerProducts'; // Importing RetailerProducts page
+import RetailerOrders from './pages/RetailerOrders'; // ✅ ADDED
+import RetailerAccount from './pages/RetailerAccount'; // ✅ ADDED
 import Admin from './pages/Admin';
 import ViewRetailerProduct from './pages/ViewRetailerProduct'; // Importing ViewRetailerProduct page
+import RetailerAuth from './pages/RetailerAuth'; // ✅ ADDED
+import ProtectedRetailerRoute from './components/ProtectedRetailerRoute'; // ✅ ADDED
 import { SearchProvider } from './components/search/SearchProvider';
 import { CartProvider } from "./components/cart/CartContext";
 
@@ -39,6 +43,7 @@ function App() {
             } />
             <Route path="/Login" element={<Login />} />
             <Route path="/Register" element={<Register />} />
+            <Route path="/retailer-auth" element={<RetailerAuth />} />
             <Route path="/search" element={
               <React.Fragment key="search">
                 <Navigation />
@@ -82,24 +87,32 @@ function App() {
                 <UserAccount />
               </React.Fragment>
             } />
-            {/* Retailer routes - more specific first */}
+            {/* Retailer routes - protected and without main Navigation */}
+            <Route path="/retailer-dashboard" element={
+              <ProtectedRetailerRoute>
+                <RetailerDashboard />
+              </ProtectedRetailerRoute>
+            } />
+            <Route path="/retailer-orders" element={
+              <ProtectedRetailerRoute>
+                <RetailerOrders />
+              </ProtectedRetailerRoute>
+            } />
+            <Route path="/retailer-account" element={
+              <ProtectedRetailerRoute>
+                <RetailerAccount />
+              </ProtectedRetailerRoute>
+            } />
+            {/* Retailer product routes - protected and without main Navigation */}
             <Route path="/retailer/product/:id" element={
-              <React.Fragment key="view-retailer-product">
-                <Navigation />
+              <ProtectedRetailerRoute>
                 <ViewRetailerProduct />
-              </React.Fragment>
+              </ProtectedRetailerRoute>
             } />
             <Route path="/retailer/products" element={
-              <React.Fragment key="retailer-products">
-                <Navigation />
+              <ProtectedRetailerRoute>
                 <RetailerProducts />
-              </React.Fragment>
-            } />
-            <Route path="/retailer-dashboard" element={
-              <React.Fragment key="retailer-dashboard"> 
-                <Navigation />
-                <RetailerDashboard />
-              </React.Fragment>
+              </ProtectedRetailerRoute>
             } />
             <Route path="/admin" element={
               <React.Fragment key="admin-products"> 

@@ -21,8 +21,10 @@ def fetchRetailerProducts(retailer_id: int, db: Session):
     from sqlalchemy import func
     valid_states = ["Preparing Order", "Ready for Delivery", "In Transit", "Delivered"]
     for product in products:
-        images = fetchRetailerProductImages(db, product.id, limit=1)
-        image_url = images[0].image_url if images else None
+        # Get all images for the product (only S3 URLs)
+        all_images = fetchRetailerProductImages(db, product.id, limit=-1)
+        images = [img.image_url for img in all_images] if all_images else []
+        image_url = images[0] if images else None  # Keep for backwards compatibility
 
         req = {
             "product_id": product.id
@@ -49,7 +51,8 @@ def fetchRetailerProducts(retailer_id: int, db: Session):
             "category_id": product.category_id,
             "retailer_id": product.retailer_id,
             "created_at": product.created_at,
-            "image_url": image_url,
+            "image_url": image_url,  # Keep for backwards compatibility
+            "images": images,  # Full S3 images array
             "sustainability_rating": rating,
             "units_sold": units_sold,
             "revenue": revenue
@@ -78,6 +81,10 @@ def deleteRetailerProduct(product_id: int, retailer_id: int, db: Session):
     return {"message": "Product marked as out of stock (discontinued)."}
 
 def createRetailerProduct(product_data: dict, db: Session):
+    """
+    Create retailer product - ONLY accepts S3 URLs for images (no base64).
+    Images should already be uploaded to S3 via the /product-images/products/ endpoint.
+    """
     try:
         print(f"=== SERVICE: Processing product creation ===")
         print(f"Product data keys: {list(product_data.keys())}")
@@ -98,6 +105,29 @@ def createRetailerProduct(product_data: dict, db: Session):
         
         print(f"Product created with ID: {new_product.id}")
         
+        # Save S3 image URLs if provided (NO base64 support)
+        saved_image_urls = []
+        if "images" in product_data and product_data["images"]:
+            from app.models.product_images import ProductImage
+            for image_url in product_data["images"]:
+                # Only accept S3 URLs (https://bucket.s3.amazonaws.com/... or custom domain)
+                if image_url and isinstance(image_url, str) and image_url.startswith('https://'):
+                    # Validate it's an S3 URL
+                    if ('s3.amazonaws.com' in image_url or 
+                        'greencart-images' in image_url or 
+                        image_url.startswith('https://greencart-images')):
+                        product_image = ProductImage(
+                            product_id=new_product.id,
+                            image_url=image_url
+                        )
+                        db.add(product_image)
+                        saved_image_urls.append(image_url)
+                        print(f"Added S3 image: {image_url}")
+                    else:
+                        print(f"Rejected non-S3 URL: {image_url}")
+                else:
+                    print(f"Rejected invalid image data: {type(image_url)} - {str(image_url)[:100]}")
+        
         # Create sustainability ratings if provided
         sustainability_ratings_added = 0
         if "sustainability_metrics" in product_data:
@@ -115,73 +145,97 @@ def createRetailerProduct(product_data: dict, db: Session):
                 sustainability_types = db.query(SustainabilityType).all()
                 print(f"Available sustainability types: {[st.type_name for st in sustainability_types]}")
                 
-                # Create multiple mapping strategies for robust matching
-                type_map = {}
-                for st in sustainability_types:
-                    # Normalize the type name to lowercase with underscores
-                    normalized_name = st.type_name.lower().replace(' ', '_')
-                    type_map[normalized_name] = st.id
-                    # Also map the exact original name
-                    type_map[st.type_name] = st.id
-                
-                print(f"Type mapping created: {type_map}")
-                
-                # Process each metric
-                for metric_name, value in metrics.items():
-                    print(f"Processing metric: {metric_name} = {value} (type: {type(value)})")
+                # Handle both dict format (key-value pairs) and list format (id-value pairs)
+                if isinstance(metrics, dict):
+                    # Create multiple mapping strategies for robust matching
+                    type_map = {}
+                    for st in sustainability_types:
+                        # Normalize the type name to lowercase with underscores
+                        normalized_name = st.type_name.lower().replace(' ', '_')
+                        type_map[normalized_name] = st.id
+                        # Also map the exact original name
+                        type_map[st.type_name] = st.id
                     
-                    if value is not None and value != 0:  # Skip None and 0 values
-                        type_id = None
+                    print(f"Type mapping created: {type_map}")
+                    
+                    # Process each metric
+                    for metric_name, value in metrics.items():
+                        print(f"Processing metric: {metric_name} = {value} (type: {type(value)})")
                         
-                        # Strategy 1: Direct match with metric name
-                        if metric_name in type_map:
-                            type_id = type_map[metric_name]
-                            print(f"Direct match: {metric_name} -> type_id {type_id}")
-                        
-                        # Strategy 2: Convert underscores to spaces and match
-                        elif metric_name.replace('_', ' ') in type_map:
-                            type_id = type_map[metric_name.replace('_', ' ')]
-                            print(f"Space match: {metric_name} -> type_id {type_id}")
-                        
-                        # Strategy 3: Title case match
-                        elif metric_name.replace('_', ' ').title() in type_map:
-                            type_id = type_map[metric_name.replace('_', ' ').title()]
-                            print(f"Title case match: {metric_name} -> type_id {type_id}")
-                        
-                        # Strategy 4: Fuzzy matching based on keywords
+                        if value is not None and value != 0:  # Skip None and 0 values
+                            type_id = None
+                            
+                            # Strategy 1: Direct match with metric name
+                            if metric_name in type_map:
+                                type_id = type_map[metric_name]
+                                print(f"Direct match: {metric_name} -> type_id {type_id}")
+                            
+                            # Strategy 2: Convert underscores to spaces and match
+                            elif metric_name.replace('_', ' ') in type_map:
+                                type_id = type_map[metric_name.replace('_', ' ')]
+                                print(f"Space match: {metric_name} -> type_id {type_id}")
+                            
+                            # Strategy 3: Title case match
+                            elif metric_name.replace('_', ' ').title() in type_map:
+                                type_id = type_map[metric_name.replace('_', ' ').title()]
+                                print(f"Title case match: {metric_name} -> type_id {type_id}")
+                            
+                            # Strategy 4: Fuzzy matching based on keywords
+                            else:
+                                for st in sustainability_types:
+                                    if metric_name.lower() in st.type_name.lower() or st.type_name.lower() in metric_name.lower():
+                                        type_id = st.id
+                                        print(f"Fuzzy match: {metric_name} -> {st.type_name} (type_id {type_id})")
+                                        break
+                            
+                            if type_id:
+                                new_rating = SustainabilityRating(
+                                    product_id=new_product.id,
+                                    type=type_id,
+                                    value=float(value),
+                                    verification=False
+                                )
+                                db.add(new_rating)
+                                sustainability_ratings_added += 1
+                                print(f"Added sustainability rating: {metric_name} = {value}")
+                            else:
+                                print(f"No matching type found for metric: {metric_name}")
                         else:
-                            for st in sustainability_types:
-                                if metric_name.lower() in st.type_name.lower() or st.type_name.lower() in metric_name.lower():
-                                    type_id = st.id
-                                    print(f"Fuzzy match: {metric_name} -> {st.type_name} (type_id {type_id})")
-                                    break
-                        
-                        if type_id:
-                            new_rating = SustainabilityRating(
+                            print(f"Skipping metric {metric_name} (value: {value})")
+                
+                elif isinstance(metrics, list):
+                    # Handle list format: [{"id": 1, "value": 85}, ...]
+                    from app.models.sustainability_ratings import SustainabilityRating
+                    for metric in metrics:
+                        if isinstance(metric, dict) and "id" in metric and "value" in metric and metric["value"] is not None:
+                            sustainability_rating = SustainabilityRating(
                                 product_id=new_product.id,
-                                type=type_id,
-                                value=float(value),
+                                type=metric["id"],
+                                value=float(metric["value"]),
                                 verification=False
                             )
-                            db.add(new_rating)
+                            db.add(sustainability_rating)
                             sustainability_ratings_added += 1
-                            print(f"✅ Added sustainability rating: {metric_name} = {value}")
-                        else:
-                            print(f"❌ No matching type found for metric: {metric_name}")
-                    else:
-                        print(f"⏭️ Skipping metric {metric_name} (value: {value})")
+                            print(f"Added sustainability rating from list: type_id={metric['id']} value={metric['value']}")
             else:
-                print("⚠️ Sustainability metrics is empty or None")
+                print("Sustainability metrics is empty or None")
         else:
-            print("⚠️ No sustainability_metrics key in product_data")
+            print("No sustainability_metrics key in product_data")
         
         print(f"Total sustainability ratings added: {sustainability_ratings_added}")
-        print(f"=== END SUSTAINABILITY PROCESSING ===")
+        print(f"Total S3 images saved: {len(saved_image_urls)}")
+        print(f"=== END PRODUCT CREATION ===")
+        
         db.commit()
-        # Return product with calculated sustainability rating
+        
+        # Return product with calculated sustainability rating and first S3 image
         req = {"product_id": new_product.id}
         sustainability = fetchSustainabilityRatings(req, db)
         rating = sustainability.get("rating", 0)
+        
+        # Get first S3 image for display
+        first_image = saved_image_urls[0] if saved_image_urls else None
+        
         return {
             "id": new_product.id,
             "name": new_product.name,
@@ -193,7 +247,7 @@ def createRetailerProduct(product_data: dict, db: Session):
             "category_id": new_product.category_id,
             "retailer_id": new_product.retailer_id,
             "created_at": new_product.created_at,
-            "image_url": None,
+            "image_url": first_image,  # First S3 URL only
             "sustainability_rating": rating
         }
     except Exception as e:
