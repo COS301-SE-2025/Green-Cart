@@ -681,3 +681,70 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                                     </span>
                                                 </div>
                                             </div>
+                                            <div className="rating-slider">
+                                                <div className="slider-container">
+                                                    <input
+                                                        type="range"
+                                                        min="0"
+                                                        max="100"
+                                                        value={value}
+                                                        onChange={(e) => handleSustainabilityChange(key, parseInt(e.target.value))}
+                                                        className="dynamic-slider"
+                                                    />
+                                                    <div 
+                                                        className="slider-progress" 
+                                                        style={{ 
+                                                            width: `${value}%`, 
+                                                            backgroundColor: ratingColor 
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                                <div className="rating-labels">
+                                                    <span>Poor (0)</span>
+                                                    <span 
+                                                        className="current-rating"
+                                                        style={{ 
+                                                            '--rating-color': ratingColor 
+                                                        }}
+                                                    >
+                                                        {value}
+                                                    </span>
+                                                    <span>Excellent (100)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="form-actions">
+                        <button
+                            type="button"
+                            className="btn btn-cancel"
+                            onClick={onClose}
+                            disabled={isSubmitting}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="btn btn-submit"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <div className="loading-spinner small"></div>
+                                    Updating...
+                                </>
+                            ) : (
+                                'Update Product'
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+}
