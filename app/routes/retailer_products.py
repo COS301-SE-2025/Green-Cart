@@ -150,33 +150,6 @@ async def clear_debug_logs():
         return {"message": "Debug logs cleared"}
     except Exception as e:
         return {"error": str(e)}
-=======
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.schemas.retailer_products import CreateProductRequest, ProductResponse
-from app.services.retailer_products_services import fetchRetailerProducts, deleteRetailerProduct, createRetailerProduct
-
-router = APIRouter(prefix="/retailer", tags=["Retailer"])
-
-@router.put("/products/{product_id}")
-def update_product(product_id: int, product: CreateProductRequest, db: Session = Depends(get_db)):
-    from app.models.product import Product
-    from app.models.sustainability_ratings import SustainabilityRating
-    from app.models.product_images import ProductImage
-    
-    db_product = db.query(Product).filter(Product.id == product_id).first()
-    if not db_product:
-        raise HTTPException(status_code=404, detail="Product not found")
-    
-    # Update basic fields
-    db_product.name = product.name
-    db_product.description = product.description
-    db_product.price = product.price
-    db_product.quantity = product.quantity
-    db_product.in_stock = product.quantity > 0
-    db_product.brand = product.brand
-    db_product.category_id = product.category_id
 
     # Simple image preservation: only update if images field exists and has content
     if hasattr(product, 'images') and product.images is not None and len(product.images) > 0:
