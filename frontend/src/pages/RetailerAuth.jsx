@@ -82,11 +82,17 @@ const RetailerAuth = () => {
     } catch (error) {
       // Display more specific error messages
       let errorMessage = error.message;
-      if (errorMessage.includes("422") || errorMessage.includes("validation")) {
+      
+      if (errorMessage.includes("password") && errorMessage.includes("doesn't match")) {
+        errorMessage = "The password you entered doesn't match your existing account. Please use your current password.";
+      } else if (errorMessage.includes("422") || errorMessage.includes("validation")) {
         errorMessage = "Please check your input. Make sure all fields are filled correctly.";
-      } else if (errorMessage.includes("already exists")) {
-        errorMessage = "An account with this email already exists. Try signing in instead.";
+      } else if (errorMessage.includes("already exists") || errorMessage.includes("already registered")) {
+        errorMessage = "An account with this email already exists. Please sign in or try a different email.";
+      } else if (errorMessage.includes("network") || errorMessage.includes("fetch")) {
+        errorMessage = "Network error. Please check your connection and try again.";
       }
+      
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);

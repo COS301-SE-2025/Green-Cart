@@ -1,8 +1,16 @@
-const API_BASE_URL = "http://127.0.0.1:8000"; // Or your WSL IP
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+  ? "http://127.0.0.1:8000" 
+  : "https://api.greencart-cos301.co.za";
 
 export async function signupRetailer(retailerData) {
+  console.log('🔄 Starting retailer signup for:', retailerData.email);
+  console.log('🌐 Using API URL:', API_BASE_URL);
+  
   try {
-    // Step 1: Create a regular user account first
+    // Step 1: Try to create a regular user account first (if it doesn't exist)
+    let userExists = false;
+    
+    console.log('📝 Step 1: Attempting user signup...');
     const userResponse = await fetch(`${API_BASE_URL}/auth/signup`, {
       method: "POST",
       headers: {
@@ -15,14 +23,28 @@ export async function signupRetailer(retailerData) {
       }),
     });
 
-    if (!userResponse.ok) {
+    console.log('📥 User signup response status:', userResponse.status);
+
+    if (userResponse.status === 400) {
+      // Check if the error is "Email already registered"
       const userError = await userResponse.json();
+      if (userError.detail && userError.detail.includes("already registered")) {
+        userExists = true;
+        console.log("✅ User already exists, proceeding to retailer conversion...");
+      } else {
+        console.log('❌ User signup failed:', userError.detail);
+        throw new Error(userError.detail || "User account creation failed");
+      }
+    } else if (!userResponse.ok) {
+      const userError = await userResponse.json();
+      console.log('❌ User signup failed:', userError.detail);
       throw new Error(userError.detail || "User account creation failed");
+    } else {
+      console.log('✅ User created successfully');
     }
 
-    const userResult = await userResponse.json();
-    
-    // Step 2: Convert the user to a retailer
+    // Step 2: Convert the user to a retailer (whether they existed or were just created)
+    console.log('🏪 Step 2: Attempting retailer conversion...');
     const retailerResponse = await fetch(`${API_BASE_URL}/auth/retailer/signup`, {
       method: "POST",
       headers: {
@@ -36,21 +58,39 @@ export async function signupRetailer(retailerData) {
       }),
     });
 
+    console.log('📥 Retailer signup response status:', retailerResponse.status);
+
     if (!retailerResponse.ok) {
       const retailerError = await retailerResponse.json();
-      throw new Error(retailerError.detail || "Retailer signup failed");
+      console.log('❌ Retailer signup failed:', retailerError);
+      
+      // Provide specific error messages based on the response
+      if (retailerResponse.status === 401) {
+        if (userExists) {
+          throw new Error("The password you entered doesn't match your existing account. Please use your current account password.");
+        } else {
+          throw new Error("Authentication failed. Please check your credentials.");
+        }
+      } else if (retailerResponse.status === 400) {
+        throw new Error("Invalid data provided. Please check all fields are filled correctly.");
+      } else if (retailerResponse.status === 409) {
+        throw new Error("You already have a retailer account with this email. Please sign in instead.");
+      }
+      
+      throw new Error(retailerError.detail || "Retailer signup failed. Please try again.");
     }
 
     const retailerResult = await retailerResponse.json();
+    console.log('🎉 Retailer signup successful:', retailerResult);
     
-    // Return combined result with user and retailer info
+    // Return result
     return {
-      ...userResult,
       ...retailerResult,
-      message: "Retailer account created successfully"
+      message: userExists ? "Existing account converted to retailer successfully" : "Retailer account created successfully"
     };
     
   } catch (error) {
+    console.log('💥 Retailer signup error:', error.message);
     throw new Error(error.message || "Retailer signup failed");
   }
 }
