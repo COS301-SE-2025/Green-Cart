@@ -81,6 +81,17 @@ def calculateDynamicSustainabilityScore(statistics, db: Session):
         'material_sustainability'
     ]
     
+    # Define importance levels for weighting
+    importance_levels = {
+        'energy_efficiency': 1.2,
+        'carbon_footprint': 1.3,
+        'recyclability': 1.1,
+        'durability': 1.0,
+        'material_sustainability': 1.15
+    }
+    
+    main_sustainability_types = frontend_types
+    
     # Group statistics by type name and calculate averages
     type_averages = {}
     for stat in statistics:
