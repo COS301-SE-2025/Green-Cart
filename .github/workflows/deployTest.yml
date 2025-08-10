@@ -23,6 +23,65 @@ jobs:
       - name: Build frontend
         run: cd frontend && npm run build
 
+      - name: Clean up test files and create SPA routing files
+        run: |
+          # Remove test files from root directory (but keep integration-tests and unit-tests)
+          rm -f test_*.py test_*.html || true
+          
+          # Create 404.html for SPA routing
+          cat > frontend/dist/404.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Green-Cart</title>
+              <script>
+                  // SPA routing fix: redirect to index.html to let React Router handle the routing
+                  (function(l) {
+                      if (l.search[1] === '/' ) {
+                          var decoded = sessionStorage.redirect || l.search.slice(1);
+                          if (decoded) {
+                              sessionStorage.redirect = decoded;
+                          }
+                      }
+                  }(window.location))
+                  // Replace the current URL with index.html
+                  window.history.replaceState(null, null, '/');
+                  // Redirect to index.html
+                  window.location.replace('/');
+              </script>
+          </head>
+          <body>
+              <div>Loading...</div>
+          </body>
+          </html>
+          EOF
+          
+          # Create routing rules for S3
+          cat > frontend/dist/routing-rules.json << 'EOF'
+          {
+            "Rules": [
+              {
+                "Condition": {
+                  "HttpErrorCodeReturnedEquals": "404"
+                },
+                "Redirect": {
+                  "ReplaceKeyWith": "index.html"
+                }
+              },
+              {
+                "Condition": {
+                  "HttpErrorCodeReturnedEquals": "403"
+                },
+                "Redirect": {
+                  "ReplaceKeyWith": "index.html"
+                }
+              }
+            ]
+          }
+          EOF
+
       - name: Sync to S3
         uses: jakejarvis/s3-sync-action@v0.5.1
         with:
@@ -33,6 +92,89 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           SOURCE_DIR: 'frontend/dist'
+
+      - name: Configure S3 for SPA routing
+        run: |
+          # Install AWS CLI
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install --update
+          
+          # Configure S3 bucket for static website hosting with error document
+          aws s3 website s3://${{ secrets.AWS_S3_BUCKET }} \
+            --index-document index.html \
+            --error-document 404.html
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      - name: Configure CloudFront for SPA routing
+        run: |
+          # Install jq for JSON processing
+          sudo apt-get update
+          sudo apt-get install -y jq
+          
+          # Get current CloudFront distribution configuration
+          DISTRIBUTION_CONFIG=$(aws cloudfront get-distribution-config --id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --output json)
+          ETAG=$(echo $DISTRIBUTION_CONFIG | jq -r '.ETag')
+          
+          # Create custom error page configuration for SPA routing
+          cat > cloudfront-config.json << 'EOF'
+          {
+            "CustomErrorResponses": {
+              "Quantity": 2,
+              "Items": [
+                {
+                  "ErrorCode": 404,
+                  "ResponsePagePath": "/index.html",
+                  "ResponseCode": "200",
+                  "ErrorCachingMinTTL": 300
+                },
+                {
+                  "ErrorCode": 403,
+                  "ResponsePagePath": "/index.html", 
+                  "ResponseCode": "200",
+                  "ErrorCachingMinTTL": 300
+                }
+              ]
+            }
+          }
+          EOF
+          
+          # Update the distribution config with custom error pages
+          UPDATED_CONFIG=$(echo $DISTRIBUTION_CONFIG | jq '.DistributionConfig.CustomErrorResponses = {
+            "Quantity": 2,
+            "Items": [
+              {
+                "ErrorCode": 404,
+                "ResponsePagePath": "/index.html",
+                "ResponseCode": "200",
+                "ErrorCachingMinTTL": 300
+              },
+              {
+                "ErrorCode": 403,
+                "ResponsePagePath": "/index.html", 
+                "ResponseCode": "200",
+                "ErrorCachingMinTTL": 300
+              }
+            ]
+          }')
+          
+          # Save the updated config
+          echo $UPDATED_CONFIG | jq '.DistributionConfig' > updated-distribution-config.json
+          
+          # Update CloudFront distribution
+          aws cloudfront update-distribution \
+            --id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --distribution-config file://updated-distribution-config.json \
+            --if-match $ETAG
+          
+          echo "CloudFront distribution updated with SPA routing support"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
 
       - name: Invalidate CloudFront
         uses: chetan/invalidate-cloudfront-action@v2
@@ -82,6 +224,11 @@ jobs:
             cd Green-Cart
             git checkout 138-final-deployment
             git pull origin 138-final-deployment
+            
+            echo "=== Cleaning up test files ==="
+            # Remove test files from root directory but keep integration-tests and unit-tests folders
+            rm -f test_*.py test_*.html || true
+            echo "Test files cleaned up"
             
             echo "=== Verifying Files ==="
             echo "Files in directory:"
