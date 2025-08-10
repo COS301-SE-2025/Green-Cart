@@ -46,7 +46,8 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
         'Food & Beverages',
         'Automotive',
         'Health & Wellness',
-        'Baby & Kids'
+        'Baby & Kids',
+        'Toys & Kids'
     ];
 
     const handleInputChange = (e) => {

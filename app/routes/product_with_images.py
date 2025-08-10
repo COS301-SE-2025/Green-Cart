@@ -217,6 +217,161 @@ Material sustainability: {material_sustainability}
             detail=f"Failed to create product: {str(e)}"
         )
 
+@router.put("/products/{product_id}", status_code=status.HTTP_200_OK)
+async def update_product_with_images(
+    product_id: int,
+    name: str = Form(...),
+    description: str = Form(...),
+    price: float = Form(...),
+    category_id: int = Form(...),
+    retailer_id: Optional[int] = Form(None),
+    stock_quantity: int = Form(0),
+    images: Optional[List[UploadFile]] = File(None),
+    existing_images: Optional[List[str]] = Form(None),
+    # Optional sustainability ratings (matching frontend field names)
+    energy_efficiency: Optional[float] = Form(None),
+    carbon_footprint: Optional[float] = Form(None),
+    recyclability: Optional[float] = Form(None),
+    durability: Optional[float] = Form(None),
+    material_sustainability: Optional[float] = Form(None),
+    db: Session = Depends(get_db)
+):
+    """
+    Update an existing product with new images uploaded to S3
+    """
+    try:
+        # Log the received FormData for debugging
+        import datetime
+        timestamp = datetime.datetime.now().isoformat()
+        
+        print(f"=== UPDATE FORMDATA ENDPOINT HIT ===")
+        print(f"Timestamp: {timestamp}")
+        print(f"Product ID: {product_id}")
+        print(f"Product name: {name}")
+        print(f"Existing images count: {len(existing_images) if existing_images else 0}")
+        print(f"New images count: {len(images) if images else 0}")
+        
+        # Check if product exists
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        # Verify retailer ownership (if retailer_id provided)
+        if retailer_id and product.retailer_id != retailer_id:
+            raise HTTPException(status_code=403, detail="Not authorized to update this product")
+        
+        # Update product basic information
+        product.name = name
+        product.description = description
+        product.price = Decimal(str(price))
+        product.category_id = category_id
+        product.stock_quantity = stock_quantity
+        
+        # Handle sustainability ratings if provided
+        ratings_updated = 0
+        if any([energy_efficiency, carbon_footprint, recyclability, durability, material_sustainability]):
+            # Get or create sustainability rating for this product
+            sustainability_rating = db.query(SustainabilityRating).filter(
+                SustainabilityRating.product_id == product_id
+            ).first()
+            
+            if not sustainability_rating:
+                sustainability_rating = SustainabilityRating(product_id=product_id)
+                db.add(sustainability_rating)
+            
+            # Update individual ratings if provided
+            if energy_efficiency is not None:
+                sustainability_rating.energy_efficiency = energy_efficiency
+                ratings_updated += 1
+            if carbon_footprint is not None:
+                sustainability_rating.carbon_footprint = carbon_footprint
+                ratings_updated += 1
+            if recyclability is not None:
+                sustainability_rating.recyclability = recyclability
+                ratings_updated += 1
+            if durability is not None:
+                sustainability_rating.durability = durability
+                ratings_updated += 1
+            if material_sustainability is not None:
+                sustainability_rating.material_sustainability = material_sustainability
+                ratings_updated += 1
+        
+        # Handle image updates
+        image_urls = []
+        
+        # First, remove all existing product images from database
+        existing_product_images = db.query(ProductImage).filter(ProductImage.product_id == product_id).all()
+        for img in existing_product_images:
+            db.delete(img)
+        
+        # Add back the existing images that should be preserved
+        if existing_images:
+            for img_url in existing_images:
+                if img_url and img_url.strip():  # Skip empty strings
+                    product_image = ProductImage(
+                        product_id=product_id,
+                        image_url=img_url.strip()
+                    )
+                    db.add(product_image)
+                    image_urls.append(img_url.strip())
+        
+        # Upload new images to S3 and add to database
+        if images:
+            for image in images:
+                try:
+                    # Validate image
+                    if not image.filename:
+                        continue
+                    
+                    file_extension = os.path.splitext(image.filename)[1].lower()
+                    if file_extension not in ['.jpg', '.jpeg', '.png', '.gif', '.webp']:
+                        raise HTTPException(
+                            status_code=400,
+                            detail=f"Invalid file type: {file_extension}. Allowed: .jpg, .jpeg, .png, .gif, .webp"
+                        )
+                    
+                    # Generate unique filename
+                    unique_filename = f"{uuid.uuid4()}{file_extension}"
+                    
+                    # Upload to S3
+                    image_url = await s3_service.upload_file(image, unique_filename)
+                    image_urls.append(image_url)
+                    
+                    # Save image URL to database
+                    product_image = ProductImage(
+                        product_id=product_id,
+                        image_url=image_url
+                    )
+                    db.add(product_image)
+                    
+                except Exception as e:
+                    # If image upload fails, we should clean up
+                    db.rollback()
+                    raise HTTPException(
+                        status_code=500,
+                        detail=f"Failed to upload image {image.filename}: {str(e)}"
+                    )
+        
+        db.commit()
+        
+        return {
+            "message": "Product updated successfully with images",
+            "product_id": product_id,
+            "product_name": name,
+            "image_urls": image_urls,
+            "total_images": len(image_urls),
+            "sustainability_ratings_updated": ratings_updated
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to update product: {str(e)}"
+        )
+
 @router.get("/health")
 async def health_check():
     """Health check endpoint for the product images service"""

@@ -20,7 +20,11 @@ export default function FilterSort({
     'Health & Beauty',
     'Sports & Outdoors',
     'Books & Media',
-    'Automotive'
+    'Automotive',
+    'Beauty & Personal Care',
+    'Health & Wellness',
+    'Baby & Kids',
+    'Toys & Kids'
   ]);
 
   useEffect(() => {

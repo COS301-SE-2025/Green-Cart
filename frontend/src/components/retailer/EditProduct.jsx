@@ -37,7 +37,8 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
         'Food & Beverages',
         'Automotive',
         'Health & Wellness',
-        'Baby & Kids'
+        'Baby & Kids',
+        'Toys & Kids'
     ];
 
     // Clean up object URLs when component unmounts
