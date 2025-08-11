@@ -1,4 +1,8 @@
-const API_BASE_URL = `${import.meta.env.VITE_API_URL}/admin`;
+// const API_BASE_URL = `${import.meta.env.VITE_API_URL}/admin`;
+
+import { API_BASE_URL as BASE_URL } from '../config/api.js';
+
+const API_BASE_URL = BASE_URL + '/admin';
 
 /**
  * Consolidated Admin Service
