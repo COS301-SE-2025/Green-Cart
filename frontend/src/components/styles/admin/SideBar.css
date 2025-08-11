@@ -478,6 +478,13 @@
     width: 200px;
   }
   
+  .sidebar-closed .sidebar-toggle {
+    left: -5px;
+  }
+
+  .sidebar-toggle {
+    left: 180px;
+  }
   .sidebar-closed {
     width: 10px;
   }
@@ -506,7 +513,7 @@
   
   .sidebar-user {
     padding: 16px;
-    visibility: hidden;
+    /* visibility: hidden; */
   }
   
   .profile-menu-overlay {

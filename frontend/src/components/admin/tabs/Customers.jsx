@@ -1,16 +1,30 @@
+// Customers.jsx
 import React, { useState } from 'react';
 import '../../styles/admin/tabs/Customers.css';
 import CustomerCard from '../elements/CustomerCard';
 import CustomerStatsCard from '../elements/CustomerStatsCard';
-import CustomerModal from '../elements/CustomerModal';
+import GenericModal from '../elements/GenericModal'; // Replace CustomerModal import
+import CustomersTable from '../elements/CustomersTable';
+import GenericPagination from '../elements/GenericPagination';
+
+//icons
+
+import blackGridIcon from '../icons/blackGridIcon.png';
+import blackListIcon from '../icons/blackListIcon.png';
+import whiteGridIcon from '../icons/whiteGridIcon.png';
+import whiteListIcon from '../icons/whiteListIcon.png';
+import retailerBadgeIcon from '../icons/retailerBadgeIcon.png';
+import exportIcon from '../icons/exportIcon.png';
 
 const Customers = () => {
   const [viewMode, setViewMode] = useState('list');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
-  // Updated customer data with premium status
+  // Enhanced customer data with more entries for pagination
   const customers = [
     {
       id: 1,
@@ -18,17 +32,19 @@ const Customers = () => {
       userId: "4568",
       company: "Ulstore.org",
       email: "Khan036@gmail.com",
-      phone: "066-083-2696",
+      phone: "+1 (555) 123-4567",
       contact: "066-083-2696",
       receivables: "USD 43,648.00",
       status: "Accepted",
       avatar: "/api/placeholder/40/40",
-      isPremium: true,
+      isRetailer: true,
+      type: "Retailer",
       registrationDate: "02 March 2025",
       accountType: "Google",
       lastLogin: "2 hours ago",
       totalOrders: 45,
-      memberSince: "March 2025"
+      memberSince: "March 2025",
+      sustainability: 85
     },
     {
       id: 2,
@@ -36,17 +52,19 @@ const Customers = () => {
       userId: "3421",
       company: "Ulstore.org",
       email: "anuwarhossen380@gmail.com",
-      phone: "01788521380",
+      phone: "+1 (555) 987-6543",
       contact: "01788521380",
       receivables: "USD 35,234.00",
       status: "Accepted",
       avatar: "/api/placeholder/40/40",
-      isPremium: false,
+      isRetailer: false,
+      type: "Customer",
       registrationDate: "15 February 2025",
       accountType: "Email",
       lastLogin: "1 day ago",
       totalOrders: 32,
-      memberSince: "February 2025"
+      memberSince: "February 2025",
+      sustainability: 60
     },
     {
       id: 3,
@@ -54,17 +72,19 @@ const Customers = () => {
       userId: "2847",
       company: "Ulstore.org",
       email: "hasankhan@gmail.com",
-      phone: "01893531209",
+      phone: "+1 (555) 246-8135",
       contact: "01893531209",
       receivables: "USD 12,643.00",
       status: "Pending",
       avatar: "/api/placeholder/40/40",
-      isPremium: true,
+      isRetailer: true,
+      type: "Retailer",
       registrationDate: "20 January 2025",
       accountType: "Google",
       lastLogin: "3 days ago",
       totalOrders: 18,
-      memberSince: "January 2025"
+      memberSince: "January 2025",
+      sustainability: 75
     },
     {
       id: 4,
@@ -72,17 +92,19 @@ const Customers = () => {
       userId: "1953",
       company: "Ulstore.org",
       email: "jamankhan@gmail.com",
-      phone: "01893531209",
+      phone: "+1 (555) 369-2580",
       contact: "01893531209",
       receivables: "USD 23,123.00",
       status: "Cancel",
       avatar: "/api/placeholder/40/40",
-      isPremium: false,
+      isRetailer: false,
+      type: "Customer",
       registrationDate: "05 December 2024",
       accountType: "Email",
       lastLogin: "1 week ago",
       totalOrders: 12,
-      memberSince: "December 2024"
+      memberSince: "December 2024",
+      sustainability: 45
     },
     {
       id: 5,
@@ -90,17 +112,19 @@ const Customers = () => {
       userId: "2746",
       company: "Ulstore.org",
       email: "herrykane@gmail.com",
-      phone: "01893531209",
+      phone: "+1 (555) 147-2589",
       contact: "01893531209",
       receivables: "USD 17,890.00",
       status: "Accepted",
       avatar: "/api/placeholder/40/40",
-      isPremium: true,
+      isRetailer: true,
+      type: "Retailer",
       registrationDate: "10 January 2025",
       accountType: "Google",
       lastLogin: "5 hours ago",
       totalOrders: 28,
-      memberSince: "January 2025"
+      memberSince: "January 2025",
+      sustainability: 90
     },
     {
       id: 6,
@@ -108,51 +132,131 @@ const Customers = () => {
       userId: "3682",
       company: "Ulstore.org",
       email: "matthenry@gmail.com",
-      phone: "01893531209",
+      phone: "+1 (555) 753-9514",
       contact: "01893531209",
       receivables: "USD 14,159.00",
       status: "Accepted",
       avatar: "/api/placeholder/40/40",
-      isPremium: false,
+      isRetailer: false,
+      type: "Customer",
       registrationDate: "25 February 2025",
       accountType: "Email",
       lastLogin: "2 days ago",
       totalOrders: 21,
-      memberSince: "February 2025"
+      memberSince: "February 2025",
+      sustainability: 55
+    },
+    // Additional mock data for pagination
+    {
+      id: 7,
+      name: "Sarah Wilson",
+      userId: "5829",
+      company: "Ulstore.org",
+      email: "sarah.wilson@gmail.com",
+      phone: "+1 (555) 852-7410",
+      contact: "01893531209",
+      receivables: "USD 19,500.00",
+      status: "Accepted",
+      avatar: "/api/placeholder/40/40",
+      isRetailer: true,
+      type: "Retailer",
+      registrationDate: "12 March 2025",
+      accountType: "Google",
+      lastLogin: "30 minutes ago",
+      totalOrders: 35,
+      memberSince: "March 2025",
+      sustainability: 95
+    },
+    {
+      id: 8,
+      name: "David Chen",
+      userId: "4162",
+      company: "Ulstore.org",
+      email: "david.chen@gmail.com",
+      phone: "+1 (555) 963-7418",
+      contact: "01893531209",
+      receivables: "USD 28,750.00",
+      status: "Pending",
+      avatar: "/api/placeholder/40/40",
+      isRetailer: false,
+      type: "Customer",
+      registrationDate: "08 February 2025",
+      accountType: "Email",
+      lastLogin: "4 hours ago",
+      totalOrders: 23,
+      memberSince: "February 2025",
+      sustainability: 70
+    },
+    // Add more entries for pagination demo
+    {
+      id: 9,
+      name: "Emily Johnson",
+      userId: "7394",
+      company: "Ulstore.org",
+      email: "emily.j@gmail.com",
+      phone: "+1 (555) 159-7532",
+      contact: "01893531209",
+      receivables: "USD 31,200.00",
+      status: "Accepted",
+      avatar: "/api/placeholder/40/40",
+      isRetailer: true,
+      type: "Retailer",
+      registrationDate: "18 January 2025",
+      accountType: "Google",
+      lastLogin: "1 hour ago",
+      totalOrders: 42,
+      memberSince: "January 2025",
+      sustainability: 88
+    },
+    {
+      id: 10,
+      name: "Michael Brown",
+      userId: "8261",
+      company: "Ulstore.org",
+      email: "m.brown@gmail.com",
+      phone: "+1 (555) 741-9630",
+      contact: "01893531209",
+      receivables: "USD 16,890.00",
+      status: "Cancel",
+      avatar: "/api/placeholder/40/40",
+      isRetailer: false,
+      type: "Customer",
+      registrationDate: "30 December 2024",
+      accountType: "Email",
+      lastLogin: "2 weeks ago",
+      totalOrders: 8,
+      memberSince: "December 2024",
+      sustainability: 30
     }
   ];
 
   // Stats data
   const statsData = [
-    {
-      title: "Total Customers",
-      value: "2,425",
-      change: "+16%",
-      changeType: "positive",
-      period: "last month"
-    },
-    {
-      title: "Active Customers",
-      value: "456",
-      change: "-5%",
-      changeType: "negative",
-      period: "last month"
-    },
-    {
-      title: "New Customers",
-      value: "1,132",
-      change: "+18%",
-      changeType: "positive",
-      period: "last month"
-    },
-    {
-      title: "Today Join",
-      value: "324",
-      change: "-22%",
-      changeType: "negative",
-      period: "last month"
-    }
-  ];
+  {
+    title: "Total users",
+    value: "2,420",
+    change: "+20%",
+    changeType: "positive",
+    period: "last month",
+    subtitle: "South Africa: 200"
+  },
+  {
+    title: "Customers",
+    value: "1,210",
+    change: "+15%",
+    changeType: "positive",
+    period: "last month",
+    subtitle: "With Pending Orders: 7"
+  },
+  {
+    title: "Retailers",
+    value: "847",
+    change: "+8%",
+    changeType: "positive",
+    period: "last month",
+    subtitle: "New This Month: 10"
+  }
+];
 
   const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -160,18 +264,10 @@ const Customers = () => {
     customer.company.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getStatusClass = (status) => {
-    switch (status.toLowerCase()) {
-      case 'accepted':
-        return 'adm-cus-status-accepted';
-      case 'pending':
-        return 'adm-cus-status-pending';
-      case 'cancel':
-        return 'adm-cus-status-cancel';
-      default:
-        return 'adm-cus-status-default';
-    }
-  };
+  // Pagination logic
+  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedCustomers = filteredCustomers.slice(startIndex, startIndex + itemsPerPage);
 
   const handleCustomerClick = (customer) => {
     setSelectedCustomer(customer);
@@ -183,10 +279,44 @@ const Customers = () => {
     setSelectedCustomer(null);
   };
 
+  const handleViewProfile = () => {
+    // This will be implemented later to navigate to full profile page
+    console.log('Navigate to full profile for customer:', selectedCustomer.userId);
+    // For now, just close the modal
+    handleCloseModal();
+  };
+
+    const formatCustomerDataForModal = (customer) => {
+    if (!customer) return {};
+    
+    return {
+      userId: customer.userId,
+      type: customer.type,
+      accountType: customer.accountType,
+      registrationDate: customer.registrationDate,
+      email: customer.email,
+      contact: customer.contact,
+      phone: customer.phone,
+      memberSince: customer.memberSince,
+      lastLogin: customer.lastLogin,
+      totalOrders: customer.totalOrders,
+      receivables: customer.receivables,
+      status: customer.status,
+      company: customer.company,
+      sustainability: `${customer.sustainability}%`
+    };
+  };
+
   return (
     <div className="adm-cus-container">
       <div className="adm-cus-header">
         <h1 className="adm-cus-title">Customers</h1>
+        <div className="adm-cus-header-actions">
+          <button className="adm-cus-export-btn">
+            <img src={exportIcon} alt="Export" className="adm-cus-export-icon" />
+            Export
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -196,16 +326,22 @@ const Customers = () => {
         ))}
       </div>
 
-      {/* Controls */}
-      <div className="adm-cus-controls">
+      {/* Search and Controls */}
+      <div className="adm-cus-search-and-controls">
         <div className="adm-cus-search-container">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="adm-cus-search-input"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <div className="adm-cus-search-wrapper">
+            <svg className="adm-cus-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
+              <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
+            </svg>
+            <input
+              type="text"
+              placeholder="Search"
+              className="adm-cus-search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
         
         <div className="adm-cus-control-buttons">
@@ -216,13 +352,13 @@ const Customers = () => {
               className={`adm-cus-view-btn ${viewMode === 'list' ? 'active' : ''}`}
               onClick={() => setViewMode('list')}
             >
-              <span className="adm-cus-list-icon">☰</span>
+              <img src={viewMode === 'list' ? whiteListIcon : blackListIcon} alt="List view" />
             </button>
             <button
               className={`adm-cus-view-btn ${viewMode === 'cards' ? 'active' : ''}`}
               onClick={() => setViewMode('cards')}
             >
-              <span className="adm-cus-grid-icon">⊞</span>
+              <img src={viewMode === 'cards' ? whiteGridIcon : blackGridIcon} alt="Card view" />
             </button>
           </div>
         </div>
@@ -230,84 +366,42 @@ const Customers = () => {
 
       {/* Content */}
       {viewMode === 'list' ? (
-        <div className="adm-cus-table-container">
-          <table className="adm-cus-table">
-            <thead>
-              <tr>
-                <th>Customer Name</th>
-                <th>User ID</th>
-                <th>Email Address</th>
-                <th>Phone Number</th>
-                <th>Receivables</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCustomers.map((customer) => (
-                <tr key={customer.id} onClick={() => handleCustomerClick(customer)} className="adm-cus-clickable-row">
-                  <td>
-                    <div className="adm-cus-customer-info">
-                      <div className="adm-cus-avatar-container">
-                        <img
-                          src={customer.avatar}
-                          alt={customer.name}
-                          className="adm-cus-avatar"
-                        />
-                        {customer.isPremium && <div className="adm-cus-premium-badge">G</div>}
-                      </div>
-                      <span className="adm-cus-name">{customer.name}</span>
-                    </div>
-                  </td>
-                  <td>{customer.userId}</td>
-                  <td>
-                    <div className="adm-cus-email-container">
-                      <span className="adm-cus-email-icon">✉️</span>
-                      {customer.email}
-                    </div>
-                  </td>
-                  <td>
-                    <div className="adm-cus-phone-container">
-                      <span className="adm-cus-phone-icon">📞</span>
-                      {customer.phone}
-                    </div>
-                  </td>
-                  <td className="adm-cus-receivables">{customer.receivables}</td>
-                  <td>
-                    <span className={`adm-cus-status ${getStatusClass(customer.status)}`}>
-                      {customer.status}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="adm-cus-actions" onClick={(e) => e.stopPropagation()}>
-                      <button className="adm-cus-action-btn">🗑️</button>
-                      <button className="adm-cus-action-btn">✏️</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <CustomersTable 
+          customers={paginatedCustomers}
+          onCustomerClick={handleCustomerClick}
+        />
       ) : (
         <div className="adm-cus-cards-grid">
-          {filteredCustomers.map((customer) => (
+          {paginatedCustomers.map((customer) => (
             <CustomerCard
               key={customer.id}
               customer={customer}
-              getStatusClass={getStatusClass}
               onClick={() => handleCustomerClick(customer)}
+              retailerIcon={retailerBadgeIcon} // Pass the premium icon
             />
           ))}
         </div>
       )}
 
-      {/* Modal */}
+      {/* Pagination */}
+      <GenericPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        totalItems={filteredCustomers.length}
+        itemsPerPage={itemsPerPage}
+      />
+
+      {/* Modal - Updated to use GenericModal */}
       {showModal && selectedCustomer && (
-        <CustomerModal
-          customer={selectedCustomer}
+        <GenericModal
+          isOpen={showModal}
           onClose={handleCloseModal}
-          getStatusClass={getStatusClass}
+          data={formatCustomerDataForModal(selectedCustomer)}
+          title={selectedCustomer.name}
+          subtitle={`UserId: ${selectedCustomer.userId}`}
+          showViewProfileButton={true}
+          onViewProfile={handleViewProfile}
         />
       )}
     </div>
