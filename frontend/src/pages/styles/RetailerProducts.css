@@ -46,7 +46,7 @@
 .product-name {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #1e293b;
+    color: #1e293b !important; /* Ensure product name is also dark */
     margin: 0 0 0.5rem 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -57,7 +57,7 @@
 .product-price {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #7BB540;
+    color: #7BB540 !important; /* Ensure price is green */
     margin-bottom: 1rem;
 }
 
@@ -85,7 +85,20 @@
 .stat-value {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #1e293b;
+    color: #1e293b !important; /* Force dark color with !important */
+}
+
+/* More specific selector to override any global styles */
+.product-card .stat-value {
+    color: #1e293b !important;
+    font-weight: 600;
+}
+
+/* Even more specific for the products grid */
+.products-grid .product-card .product-stats .stat-value {
+    color: #1e293b !important;
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .product-actions {

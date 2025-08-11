@@ -238,7 +238,7 @@ export default function Home() {
           ) : products.length > 0 ? (
              <div className="product-list">
               {products.map((product, i) => (
-              <Product key={product.id} product={product} image={images[i]} product_rating={parseInt(ratings[i])} />
+              <Product key={product.id} product={product} image={images[i]} product_rating={parseFloat(ratings[i]) || 0} />
             ))}
         </div>
           ) : (

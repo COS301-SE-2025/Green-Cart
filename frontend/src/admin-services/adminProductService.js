@@ -1,4 +1,6 @@
-const API_BASE_URL = "http://localhost:8000/admin";
+import { API_BASE_URL as BASE_URL } from '../config/api.js';
+
+const API_BASE_URL = BASE_URL + '/admin';
 
 /**
  * Get all unverified products

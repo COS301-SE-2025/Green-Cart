@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/users";
+const API_URL = "https://api.greencart-cos301.co.za/users";
 
 export async function fetchUserInformation(userId){
     try{

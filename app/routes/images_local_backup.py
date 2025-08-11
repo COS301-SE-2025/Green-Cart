@@ -36,8 +36,9 @@ async def upload_images(files: List[UploadFile] = File(...)):
             with open(file_path, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
             
-            # Return the URL to access the image
-            image_url = f"http://localhost:8000/images/{unique_filename}"
+            # Use environment variable for base URL, fallback to production URL
+            base_url = os.getenv("BASE_URL", "https://api.greencart-cos301.co.za")
+            image_url = f"{base_url}/images/{unique_filename}"
             uploaded_urls.append(image_url)
             
         except Exception as e:

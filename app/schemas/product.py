@@ -15,6 +15,7 @@ class ProductResponse(BaseModel):
     category_id: Optional[int] = None
     retailer_id: Optional[int] = None
     created_at: Optional[datetime] = None
+    image_url: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -43,6 +44,8 @@ class FetchProductResponse(BaseModel):
     sustainability: agregateSustainabilityRatings = None
     units_sold: Optional[int] = 0
     revenue: Optional[float] = 0.0
+    category_name: Optional[str] = None
+    retailer_name: Optional[str] = None
 
 class SearchProductsRequest(BaseModel):
     search: str

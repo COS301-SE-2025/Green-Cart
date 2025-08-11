@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/users/setUserInformation"; // Adjust if hosted elsewhere
+const API_URL = "https://api.greencart-cos301.co.za/users/setUserInformation";
 
 export const setUserInformation = async (userData, user_id) => {
   try {

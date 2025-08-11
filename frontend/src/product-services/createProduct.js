@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'https://api.greencart-cos301.co.za';
 
 export const createProduct = async (productData) => {
   try {

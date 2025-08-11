@@ -279,3 +279,35 @@
   font-size: 12px;
   font-weight: bold;
 }
+
+/* Logout Button Styles */
+.nav__logout-btn {
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-family: inherit;
+}
+
+.nav__logout-btn:hover {
+  color: #7BB540;
+}
+
+/* Mobile logout button */
+.nav__logout-btn--mobile {
+  text-align: left;
+  width: 100%;
+  padding: 0.75rem 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.nav__logout-btn--mobile:hover {
+  color: #7BB540;
+  background: rgba(123, 181, 64, 0.05);
+}

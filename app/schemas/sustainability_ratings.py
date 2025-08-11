@@ -9,7 +9,6 @@ class SustainabilityRating(BaseModel):
     value: float = Field(..., ge=0, le=100, description="Sustainability rating as percentage (0-100)")
     created_at: datetime
     verification: Optional[bool] = False  # Changed to boolean to match database schema
-
 class fetchSustainabilityRatingsRequest(BaseModel):
     product_id: int
     type: Optional[List[str]] = None  # Accept type names instead of IDs

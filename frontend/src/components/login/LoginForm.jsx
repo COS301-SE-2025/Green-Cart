@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import '../styles/login/LoginForm.css';
 import { loginUser } from '../../user-services/loginService'; // External function
+import GoogleIcon from '../../assets/icons/googleColored.png'; // Import Google icon
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -15,7 +16,20 @@ const LoginForm = () => {
     try {
       const result = await loginUser(email, password);
       console.log('Login success:', result);
-      localStorage.setItem('user', JSON.stringify(result));
+      
+      // Clear any existing retailer data to prevent conflicts
+      localStorage.removeItem('retailer_user');
+      localStorage.removeItem('retailer_token');
+      localStorage.removeItem('selected_shop');
+      
+      // Store user data with correct key
+      localStorage.setItem('userData', JSON.stringify(result));
+      console.log('User data stored:', result);
+      
+      // Dispatch event to update navbar
+      window.dispatchEvent(new Event('authStateChanged'));
+      
+      toast.success('Login successful!');
       navigate('/Home');
     } catch (err) {
       console.error('Login failed:', err.message);
@@ -98,12 +112,19 @@ const LoginForm = () => {
             onClick={handleGoogleSignIn}
           >
             <img
-              src="/src/assets/icons/googleColored.png"
+              src={GoogleIcon}
               alt="Google"
               className="google-icon"
             />
             Sign in with Google
           </button>
+
+          <div className="retailer-auth-link">
+            Are you a retailer?{' '}
+            <Link to="/retailer-auth" className="retailer-link-text">
+              Sign in as Retailer
+            </Link>
+          </div>
         </form>
       </div>
     </div>

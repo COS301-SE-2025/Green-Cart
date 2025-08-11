@@ -8,6 +8,29 @@ import os
 
 router = APIRouter(prefix="/retailer", tags=["Retailer"])
 
+@router.get("/by-user/{user_id}")
+def get_retailer_by_user_id(user_id: str, db: Session = Depends(get_db)):
+    """Get retailer information by user_id"""
+    from app.models.retailer_information import RetailerInformation
+    
+    retailer = db.query(RetailerInformation).filter(RetailerInformation.user_id == user_id).first()
+    
+    if not retailer:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Retailer not found for this user")
+    
+    return {
+        "status": 200,
+        "message": "Retailer found",
+        "data": {
+            "id": retailer.id,
+            "name": retailer.name,
+            "description": retailer.description,
+            "user_id": retailer.user_id,
+            "banner_image": retailer.banner_image
+        }
+    }
+
 @router.post("/register", response_model=RegisterAsRetailerResponse)
 async def register_retailer(
     user_id: str = Form(...),
