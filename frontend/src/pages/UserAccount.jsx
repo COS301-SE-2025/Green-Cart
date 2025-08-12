@@ -422,9 +422,9 @@ export default function UserAccount() {
 					<button onClick={handleLogout} className="logout-button">
 						Logout
 					</button>
-					<button onClick={logasRetailer} className="retailer-button">
+					{/* <button onClick={logasRetailer} className="retailer-button">
 						Sign as Retailer
-					</button>
+					</button> */}
 				</div>
 			</div>
 
