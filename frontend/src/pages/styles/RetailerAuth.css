@@ -193,12 +193,12 @@ body.retailer-auth-active *,
 }
 
 /* Perfect floating label form groups */
-.form-group {
+.ret-auth-form-group {
   position: relative;
   margin-bottom: 0;
 }
 
-.form-input,
+.ret-auth-form-input,
 .form-textarea {
   width: 100%;
   padding: 1.4rem 1.25rem 0.9rem 1.25rem;
@@ -223,14 +223,14 @@ body.retailer-auth-active *,
   line-height: 1.6;
 }
 
-.form-input:hover,
+.ret-auth-form-input:hover,
 .form-textarea:hover {
   border-color: rgba(123, 181, 64, 0.4);
   background: rgba(255, 255, 255, 0.98);
   box-shadow: 0 4px 12px rgba(123, 181, 64, 0.08);
 }
 
-.form-input:focus,
+.ret-auth-form-input:focus,
 .form-textarea:focus {
   border-color: #7BB540 !important;
   box-shadow: 
@@ -240,14 +240,14 @@ body.retailer-auth-active *,
   transform: translateY(-1px);
 }
 
-.form-input:not(:placeholder-shown),
+.ret-auth-form-input:not(:placeholder-shown),
 .form-textarea:not(:placeholder-shown) {
   border-color: rgba(123, 181, 64, 0.7);
   background: rgba(255, 255, 255, 0.98);
 }
 
 /* Perfect floating labels with enhanced animation */
-.form-label {
+.ret-auth-form-label {
   position: absolute;
   left: 1.25rem;
   top: 1.4rem;
@@ -263,10 +263,10 @@ body.retailer-auth-active *,
   margin-left: -0.25rem;
 }
 
-.form-input:focus + .form-label,
-.form-input:not(:placeholder-shown) + .form-label,
-.form-textarea:focus + .form-label,
-.form-textarea:not(:placeholder-shown) + .form-label {
+.ret-auth-form-input:focus + .ret-auth-form-label,
+.ret-auth-form-input:not(:placeholder-shown) + .ret-auth-form-label,
+.form-textarea:focus + .ret-auth-form-label,
+.form-textarea:not(:placeholder-shown) + .ret-auth-form-label {
   top: 0rem;
   font-size: 0.8rem;
   color: #7BB540 !important;
@@ -530,13 +530,13 @@ body.retailer-auth-active *,
     margin-bottom: 2.5rem;
   }
   
-  .form-input,
+  .ret-auth-form-input,
   .form-textarea {
     padding: 1.25rem 1.1rem 0.8rem 1.1rem;
     font-size: 1rem;
   }
   
-  .form-label {
+  .ret-auth-form-label {
     font-size: 1rem;
     left: 1.1rem;
   }
@@ -580,7 +580,7 @@ body.retailer-auth-active *,
     margin-bottom: 2.25rem;
   }
   
-  .form-input,
+  .ret-auth-form-input,
   .form-textarea {
     padding: 1.2rem 1rem 0.75rem 1rem;
     font-size: 0.95rem;
@@ -643,19 +643,19 @@ body.retailer-auth-active *,
   color: #6b7280 !important;
 }
 
-.form-label {
+.ret-auth-form-label {
   color: #6b7280 !important;
 }
 
-.form-input,
+.ret-auth-form-input,
 .form-textarea {
   color: #1f2937 !important;
 }
 
-.form-input:focus + .form-label,
-.form-input:not(:placeholder-shown) + .form-label,
-.form-textarea:focus + .form-label,
-.form-textarea:not(:placeholder-shown) + .form-label {
+.ret-auth-form-input:focus + .ret-auth-form-label,
+.ret-auth-form-input:not(:placeholder-shown) + .ret-auth-form-label,
+.form-textarea:focus + .ret-auth-form-label,
+.form-textarea:not(:placeholder-shown) + .ret-auth-form-label {
   color: #7BB540 !important;
 }
 

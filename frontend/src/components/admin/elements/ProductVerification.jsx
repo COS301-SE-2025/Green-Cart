@@ -313,7 +313,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                             <div className="product-info">
                                 {isEditing ? (
                                     <div className="edit-form">
-                                        <div className="form-group">
+                                        <div className="adm-prod-verif-form-group">
                                             <label>Product Name:</label>
                                             <input
                                                 type="text"
@@ -324,7 +324,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                             />
                                         </div>
                                         
-                                        <div className="form-group">
+                                        <div className="adm-prod-verif-form-group">
                                             <label>Description:</label>
                                             <textarea
                                                 value={editFormData.description || ''}
@@ -336,7 +336,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                         </div>
                                         
                                         <div className="form-row">
-                                            <div className="form-group">
+                                            <div className="adm-prod-verif-form-group">
                                                 <label>Brand:</label>
                                                 <input
                                                     type="text"
@@ -347,7 +347,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                                 />
                                             </div>
                                             
-                                            <div className="form-group">
+                                            <div className="adm-prod-verif-form-group">
                                                 <label>Price (R):</label>
                                                 <input
                                                     type="number"
@@ -359,7 +359,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                                 />
                                             </div>
                                             
-                                            <div className="form-group">
+                                            <div className="adm-prod-verif-form-group">
                                                 <label>Quantity:</label>
                                                 <input
                                                     type="number"
