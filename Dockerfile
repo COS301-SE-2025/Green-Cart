@@ -1,10 +1,15 @@
-# Use Python 3.11 slim image
-FROM python:3.11-slim
+# Stage 1: Build React frontend
+FROM node:18-alpine as frontend-builder
+WORKDIR /frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
 
-# Set working directory
+# Stage 2: Python backend + serve frontend
+FROM python:3.11-slim
 WORKDIR /app
 
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
@@ -23,11 +28,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application code
 COPY app/ ./app/
 
-# Create uploads directory for local file storage if needed
+# Copy built frontend from previous stage
+COPY --from=frontend-builder /frontend/dist ./frontend/dist
+
+# Create uploads directory
 RUN mkdir -p uploads/images
 
-# Expose port 8000
 EXPOSE 8000
-
-# Command to run the application
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
