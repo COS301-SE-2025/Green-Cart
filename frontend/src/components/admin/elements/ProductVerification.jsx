@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { getUnverifiedProducts, verifyProduct, updateProduct, getProductSustainability } from '../../admin-services/adminProductService';
+import { getUnverifiedProducts, verifyProduct, updateProduct, getProductSustainability } from '../../../admin-services/adminService';
 import toast from 'react-hot-toast';
-import './ProductVerification.css';
+import '../../styles/admin/ProductVerification.css';
 
 const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
     const [currentProduct, setCurrentProduct] = useState(null);

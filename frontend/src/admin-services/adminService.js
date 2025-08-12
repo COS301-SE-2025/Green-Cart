@@ -1,4 +1,8 @@
-const API_BASE_URL = `${import.meta.env.VITE_API_URL}/admin`;
+// const API_BASE_URL = `${import.meta.env.VITE_API_URL}/admin`;
+
+import { API_BASE_URL as BASE_URL } from '../config/api.js';
+
+const API_BASE_URL = BASE_URL + '/admin';
 
 /**
  * Consolidated Admin Service
@@ -254,6 +258,40 @@ export const getAllUsers = async () => {
         return data;
     } catch (error) {
         console.error("Error fetching users:", error);
+        throw error;
+    }
+};
+
+/**
+ * Get product statistics for admin dashboard
+ */
+export const getProductStats = async () => {
+    try {
+        const [allProducts, unverifiedProducts] = await Promise.all([
+            getAllProducts(),
+            getUnverifiedProducts()
+        ]);
+
+        const totalProducts = allProducts.data?.length || 0;
+        const unverifiedCount = unverifiedProducts.data?.length || 0;
+        const verifiedCount = totalProducts - unverifiedCount;
+
+        // Calculate total value (this would ideally come from a dedicated endpoint)
+        const totalValue = allProducts.data?.reduce((sum, product) => {
+            return sum + (parseFloat(product.price) || 0);
+        }, 0) || 0;
+
+        return {
+            status: 200,
+            data: {
+                totalProducts,
+                verifiedCount,
+                unverifiedCount,
+                totalValue: totalValue.toFixed(2)
+            }
+        };
+    } catch (error) {
+        console.error("Error calculating product stats:", error);
         throw error;
     }
 };
