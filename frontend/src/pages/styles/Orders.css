@@ -3,10 +3,9 @@
   margin: 0 auto;
   margin-top: 1rem;
   padding: 2rem;
-  background: #f8fafc;
-  /* min-height: 100vh; */
   font-family: 'Inter', sans-serif;
   border-radius: 16px;
+  min-height: 100vh;
 }
 
 .orders-header-section {
@@ -42,6 +41,17 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); */
 }
 
+.orders-loading-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  margin-top: 1rem;
+  padding: 2rem;
+  min-height: 100vh;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  border-radius: 12px;
+}
+
 .orders-loading {
   display: flex;
   align-items: center;
@@ -64,9 +74,9 @@
   animation: spin 1s linear infinite;
 }
 
-.orders-loading span {
-  color: #64748b;
-  font-size: 1rem;
+.loading-text {
+   color: #666;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 

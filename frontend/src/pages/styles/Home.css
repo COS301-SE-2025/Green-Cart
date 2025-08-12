@@ -1,6 +1,6 @@
 .home {
   width: 100%;
-  margin: 0;
+  margin: 0 ;
   padding: 0;
   animation: fadeIn 0.5s ease-out;
 }
@@ -8,7 +8,8 @@
 /* Hero Section */
 .hero-section {
   width: 100%;
-  height: 400px;
+  /* height: 400px; */
+  height: 350px;
   position: relative;
   overflow: hidden;
   margin-bottom: 0;
@@ -25,7 +26,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 0 2rem;
+  padding: 0 1.5rem;
 }
 
 .hero-overlay {
@@ -46,7 +47,7 @@
 }
 
 .hero-title {
-  font-size: 3rem;
+  font-size: 2.1rem;
   font-weight: 300;
   margin: 0 0 1rem 0;
   line-height: 1.2;
@@ -67,7 +68,7 @@
   position: sticky;
   top: 90px;
   background: #2e7d32;
-  padding: 1rem 2rem;
+  padding: 0.5rem 1.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -121,12 +122,14 @@
 /* Layout Container */
 .home-layout {
   display: flex;
-  gap: 2rem;
-  position: relative;
+  gap: 1.5rem;
+  /* position: relative; */
   /* max-width: 1400px; */
   width: 95%;
   margin: 0 auto;
   padding: 20px;
+  /* scrolling */
+  /* overflow-y: auto; */
 }
 
 /* Sidebar */
@@ -136,10 +139,12 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  height: fit-content;
-  position: sticky;
-  top: 20px;
-  overflow: hidden;
+  height: 100%; /* MODIFIED: Changed from 'fit-content' to '100%' */
+  position: static; /* MODIFIED: Changed from 'sticky' to 'static' */
+  overflow-y: auto; /* ADDED: Enable vertical scrolling for sidebar */
+  overflow-x: hidden; /* ADDED: Prevent horizontal scrolling */
+  /* scroll */
+  
 }
 
 .sidebar-header {
@@ -171,13 +176,17 @@
 .home-main {
   flex: 1;
   min-width: 0; 
+  height: 100%; /* ADDED: Set full height */
+  overflow-y: auto; /* ADDED: Enable vertical scrolling for main content */
+  overflow-x: hidden; /* ADDED: Prevent horizontal scrolling */
+  padding-right: 0.5rem; /* ADDED: Add slight padding for scrollbar */
 }
 
 .home-header {
   display: flex;
   justify-content: flex-end;
   align-items: baseline;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .products-count {
@@ -212,7 +221,7 @@
   width: 20px;
   height: 20px;
   border: 2px solid #e0e0e0;
-  border-top: 2px solid #7BB540;
+  border-top: 2px solid #7BB540 !important;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
