@@ -97,34 +97,3 @@ if carbon_goals:
 
 # Static mount for any locally stored uploads (kept for compatibility)
 app.mount("/static", StaticFiles(directory="uploads"), name="static")
-
-# Serve frontend static files and handle SPA routing
-import os
-from fastapi import Request
-from fastapi.responses import FileResponse
-
-# Check if frontend dist directory exists
-frontend_dist_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "dist")
-if os.path.exists(frontend_dist_path):
-    # Mount static assets first (these should be served directly)
-    app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dist_path, "assets")), name="frontend-assets")
-    
-    # Catch-all route for SPA (must be last)
-    @app.get("/{full_path:path}")
-    async def serve_spa(request: Request, full_path: str):
-        """
-        Serve the React SPA for all unmatched routes.
-        This enables client-side routing to work properly.
-        """
-        # Don't interfere with API routes
-        if full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("openapi.json"):
-            return {"error": "Not found"}
-        
-        # Serve index.html for all frontend routes
-        index_file = os.path.join(frontend_dist_path, "index.html")
-        if os.path.exists(index_file):
-            return FileResponse(index_file)
-        else:
-            return {"error": "Frontend not built"}
-else:
-    logger.warning("Frontend dist directory not found at: %s", frontend_dist_path)
