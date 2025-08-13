@@ -649,6 +649,14 @@ background-color: #1f2937;
 .adm-cus-email {
  font-size: 12px;
  color: #6b7280;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 180px; /* Limit width for emails */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .adm-cus-plan {
@@ -846,6 +854,20 @@ background-color: #1f2937;
  display: flex;
  align-items: center;
  gap: 6px;
+}
+
+.adm-cus-detail-value-email {
+  font-size: 13px;
+  color: #1a202c;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 180px; /* Limit width for emails */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* overflow-clip-margin: content-box; */
+  white-space: nowrap;
 }
 
 .adm-cus-card-actions {

@@ -1,5 +1,5 @@
 // Customers.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import '../../styles/admin/tabs/Customers.css';
 import CustomerCard from '../elements/CustomerCard';
@@ -7,6 +7,7 @@ import CustomerStatsCard from '../elements/CustomerStatsCard';
 import GenericModal from '../elements/GenericModal';
 import CustomersTable from '../elements/CustomersTable';
 import GenericPagination from '../elements/GenericPagination';
+import { getCustomersPageData } from '../../../admin-services/adminService';
 
 //icons
 import blackGridIcon from '../icons/blackGridIcon.png';
@@ -22,9 +23,16 @@ const Customers = () => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Data state
+  const [customers, setCustomers] = useState([]);
+  const [statsData, setStatsData] = useState([]);
+  
   const itemsPerPage = 8;
 
-  // Sort and Filter states
+  // Sort and Filter states (keep existing)
   const [sortBy, setSortBy] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
   const [filters, setFilters] = useState({
@@ -35,257 +43,43 @@ const Customers = () => {
       max: ''
     }
   });
-  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false)
 
-  // Enhanced customer data with more entries for pagination
-  const customers = [
-    {
-      id: 1,
-      name: "Tahsan Khan",
-      userId: "TK4568",
-      company: "Ulstore.org",
-      email: "Khan036@gmail.com",
-      phone: "+27 (555) 123-4567",
-      contact: "066-083-2696",
-      receivables: "USD 43,648.00",
-      status: "Accepted",
-      avatar: "/api/placeholder/40/40",
-      isRetailer: true,
-      type: "Retailer",
-      registrationDate: "02 March 2025",
-      accountType: "Google",
-      lastLogin: "2 hours ago",
-      totalOrders: 45,
-      memberSince: "March 2025",
-      sustainability: 85,
-      country: "South Africa"
-    },
-    {
-      id: 2,
-      name: "Anuwar Hussen",
-      userId: "AH3421",
-      company: "Ulstore.org",
-      email: "anuwarhossen380@gmail.com",
-      phone: "+1 (555) 987-6543",
-      contact: "01788521380",
-      receivables: "USD 35,234.00",
-      status: "Accepted",
-      avatar: "/api/placeholder/40/40",
-      isRetailer: false,
-      type: "Customer",
-      registrationDate: "15 February 2025",
-      accountType: "Email",
-      lastLogin: "1 day ago",
-      totalOrders: 32,
-      memberSince: "February 2025",
-      sustainability: 60,
-      country: "USA"
-    },
-    {
-      id: 3,
-      name: "Hasan Khan",
-      userId: "HK2847",
-      company: "Ulstore.org",
-      email: "hasankhan@gmail.com",
-      phone: "+55 (555) 246-8135",
-      contact: "01893531209",
-      receivables: "USD 12,643.00",
-      status: "Pending",
-      avatar: "/api/placeholder/40/40",
-      isRetailer: true,
-      type: "Retailer",
-      registrationDate: "20 January 2025",
-      accountType: "Google",
-      lastLogin: "3 days ago",
-      totalOrders: 18,
-      memberSince: "January 2025",
-      sustainability: 75,
-      country: "Brazil"
-    },
-    {
-      id: 4,
-      name: "Jaman Khan",
-      userId: "JK1953",
-      company: "Ulstore.org",
-      email: "jamankhan@gmail.com",
-      phone: "+44 (555) 369-2580",
-      contact: "01893531209",
-      receivables: "USD 23,123.00",
-      status: "Cancel",
-      avatar: "/api/placeholder/40/40",
-      isRetailer: false,
-      type: "Customer",
-      registrationDate: "05 December 2024",
-      accountType: "Email",
-      lastLogin: "1 week ago",
-      totalOrders: 12,
-      memberSince: "December 2024",
-      sustainability: 45,
-      country: "UK"
-    },
-    {
-      id: 5,
-      name: "Herry Kane",
-      userId: "HK2746",
-      company: "Ulstore.org",
-      email: "herrykane@gmail.com",
-      phone: "+61 (555) 147-2589",
-      contact: "01893531209",
-      receivables: "USD 17,890.00",
-      status: "Accepted",
-      avatar: "/api/placeholder/40/40",
-      isRetailer: true,
-      type: "Retailer",
-      registrationDate: "10 January 2025",
-      accountType: "Google",
-      lastLogin: "5 hours ago",
-      totalOrders: 28,
-      memberSince: "January 2025",
-      sustainability: 90,
-      country: "Australia"
-    },
-    {
-      id: 6,
-      name: "Matt Henry",
-      userId: "MH3682",
-      company: "Ulstore.org",
-      email: "matthenry@gmail.com",
-      phone: "+64 (555) 753-9514",
-      contact: "01893531209",
-      receivables: "USD 14,159.00",
-      status: "Accepted",
-      avatar: "/api/placeholder/40/40",
-      isRetailer: false,
-      type: "Customer",
-      registrationDate: "25 February 2025",
-      accountType: "Email",
-      lastLogin: "2 days ago",
-      totalOrders: 21,
-      memberSince: "February 2025",
-      sustainability: 55,
-      country: "New Zealand"
-    },
-    // Additional mock data for pagination
-    {
-      id: 7,
-      name: "Sarah Wilson",
-      userId: "SW5829",
-      company: "Ulstore.org",
-      email: "sarah.wilson@gmail.com",
-      phone: "+27 (555) 852-7410",
-      contact: "01893531209",
-      receivables: "USD 19,500.00",
-      status: "Accepted",
-      avatar: "/api/placeholder/40/40",
-      isRetailer: true,
-      type: "Retailer",
-      registrationDate: "12 March 2025",
-      accountType: "Google",
-      lastLogin: "30 minutes ago",
-      totalOrders: 35,
-      memberSince: "March 2025",
-      sustainability: 95,
-      country: "South Africa"
-    },
-    {
-      id: 8,
-      name: "David Chen",
-      userId: "DC4162",
-      company: "Ulstore.org",
-      email: "david.chen@gmail.com",
-      phone: "+1 (555) 963-7418",
-      contact: "01893531209",
-      receivables: "USD 28,750.00",
-      status: "Pending",
-      avatar: "/api/placeholder/40/40",
-      isRetailer: false,
-      type: "Customer",
-      registrationDate: "08 February 2025",
-      accountType: "Email",
-      lastLogin: "4 hours ago",
-      totalOrders: 23,
-      memberSince: "February 2025",
-      sustainability: 70,
-      country: "USA"
-    },
-    {
-      id: 9,
-      name: "Emily Johnson",
-      userId: "EJ7394",
-      company: "Ulstore.org",
-      email: "emily.j@gmail.com",
-      phone: "+55 (555) 159-7532",
-      contact: "01893531209",
-      receivables: "USD 31,200.00",
-      status: "Accepted",
-      avatar: "/api/placeholder/40/40",
-      isRetailer: true,
-      type: "Retailer",
-      registrationDate: "18 January 2025",
-      accountType: "Google",
-      lastLogin: "1 hour ago",
-      totalOrders: 42,
-      memberSince: "January 2025",
-      sustainability: 88,
-      country: "Brazil"
-    },
-    {
-      id: 10,
-      name: "Michael Brown",
-      userId: "MB8261",
-      company: "Ulstore.org",
-      email: "m.brown@gmail.com",
-      phone: "+44 (555) 741-9630",
-      contact: "01893531209",
-      receivables: "USD 16,890.00",
-      status: "Cancel",
-      avatar: "/api/placeholder/40/40",
-      isRetailer: false,
-      type: "Customer",
-      registrationDate: "30 December 2024",
-      accountType: "Email",
-      lastLogin: "2 weeks ago",
-      totalOrders: 8,
-      memberSince: "December 2024",
-      sustainability: 30,
-      country: "UK"
+  // Load data on component mount
+  useEffect(() => {
+    loadCustomersData();
+  }, []);
+
+  const loadCustomersData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await getCustomersPageData();
+      
+      if (response.status === 200) {
+        setCustomers(response.data.customers);
+        setStatsData(response.data.stats);
+      } else {
+        throw new Error(response.message || 'Failed to load customers data');
+      }
+      
+    } catch (err) {
+      setError('Failed to load customers data');
+      console.error('Error loading customers:', err);
+    } finally {
+      setLoading(false);
     }
-  ];
-
+  };
+  
   // Stats data
-  const statsData = [
-    {
-      title: "Total users",
-      value: "2,420",
-      change: "+20%",
-      changeType: "positive",
-      period: "last month",
-      subtitle: "South Africa: 200"
-    },
-    {
-      title: "Customers",
-      value: "1,210",
-      change: "+15%",
-      changeType: "positive",
-      period: "last month",
-      subtitle: "With Pending Orders: 7"
-    },
-    {
-      title: "Retailers",
-      value: "847",
-      change: "+8%",
-      changeType: "positive",
-      period: "last month",
-      subtitle: "New This Month: 10"
-    }
-  ];
 
-  // Filter customers based on search and filters
+  // Keep all your existing filter and sort functions...
   const getFilteredCustomers = () => {
     let filtered = customers.filter(customer =>
       customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.company.toLowerCase().includes(searchTerm.toLowerCase())
+      (customer.retailerName && customer.retailerName.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     // Apply filters
@@ -297,7 +91,9 @@ const Customers = () => {
 
     if (filters.countries.length > 0) {
       filtered = filtered.filter(customer =>
-        filters.countries.includes(customer.country)
+        filters.countries.some(country => 
+          customer.countryCode && customer.countryCode.includes(country.replace('+', ''))
+        )
       );
     }
 
@@ -382,19 +178,19 @@ const Customers = () => {
     
     return {
       userId: customer.userId,
+      fullUserId: customer.fullUserId,
       type: customer.type,
-      accountType: customer.accountType,
+      accountType: customer.accountType, // Mock data
       registrationDate: customer.registrationDate,
       email: customer.email,
       contact: customer.contact,
       phone: customer.phone,
-      memberSince: customer.memberSince,
-      lastLogin: customer.lastLogin,
-      totalOrders: customer.totalOrders,
-      receivables: customer.receivables,
       status: customer.status,
-      company: customer.company,
-      sustainability: `${customer.sustainability}%`
+      sustainability: `${customer.sustainability}%`, // Mock data
+      retailerName: customer.retailerName,
+      retailerDescription: customer.retailerDescription,
+      countryCode: customer.countryCode,
+      createdAt: customer.createdAt
     };
   };
 
@@ -469,6 +265,53 @@ const Customers = () => {
 
   const countries = ['South Africa', 'Brazil', 'UK', 'USA', 'Australia', 'New Zealand'];
   const types = ['Retailer', 'Customer'];
+
+  if (loading) {
+    return (
+      <div className="adm-cus-container">
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '200px',
+          fontSize: '16px',
+          color: '#6b7280'
+        }}>
+          Loading customers...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="adm-cus-container">
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '200px',
+          gap: '16px'
+        }}>
+          <div style={{ fontSize: '16px', color: '#dc2626' }}>{error}</div>
+          <button 
+            onClick={loadCustomersData}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#1f2937',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="adm-cus-container">
