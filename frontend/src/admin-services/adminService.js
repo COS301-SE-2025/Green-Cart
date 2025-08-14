@@ -425,6 +425,7 @@ const calculateRealPercentageChange = (data, getUserDate = (item) => item.create
     console.log(`Previous Month Count: ${previousMonthCount}`);
     // Calculate percentage change
     if (previousMonthCount === 0) {
+        
         return currentMonthCount > 0 ? 100 : 0;
     }
     

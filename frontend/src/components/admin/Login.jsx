@@ -16,6 +16,8 @@ const Login = () => {
       console.log('Admin login attempt:', { email, password });
       
       // Placeholder for admin authentication
+
+      sessionStorage.setItem('admin', JSON.stringify({ email, password }));
       // const result = await loginAdmin(email, password);
       
       toast.success('Admin login successful!');
