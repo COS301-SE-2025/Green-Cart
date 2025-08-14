@@ -107,7 +107,7 @@ export default function ViewRetailerProduct() {
 
                 setProduct({
                     ...productData.data,
-                    images: processedImages,
+                    images: productData.images,//processedImages,
                     primary_image: processedImages.length > 0 ? processedImages[0] : '/fallback-image.jpg',
                     sustainability_rating: result.sustainability?.rating || productData.sustainability_rating || 0,
                     sustainability_statistics: result.sustainability?.statistics || productData.sustainability_statistics || [],
