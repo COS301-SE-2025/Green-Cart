@@ -1,0 +1,77 @@
+name: Deploy Frontend and Backend
+
+on:
+  push:
+    branches:
+        - 127-backend-endpoints-for-admin
+
+jobs:
+  frontend-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get current branch name
+        id: branch
+        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: cd frontend && npm install
+
+      - name: Build frontend
+        run: cd frontend && npm run build
+
+      - name: Sync to S3
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: 'frontend/dist'
+
+      - name: Invalidate CloudFront
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          PATHS: '/*'
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  backend-deploy:
+    runs-on: ubuntu-latest
+    needs: frontend-deploy
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get current branch name
+        id: branch
+        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."
+          target: "/home/ubuntu/Green-Cart"
+
+      - name: SSH and restart backend
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/Green-Cart
+            git pull origin ${{ steps.branch.outputs.branch }}
+            sudo docker stop green-cart-backend || true
+            sudo docker rm green-cart-backend || true
+            sudo docker build -t green-cart-backend .
+            sudo docker run -d --name green-cart-backend -p 8000:8000 green-cart-backend
