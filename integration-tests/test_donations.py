@@ -44,3 +44,20 @@ def test_donations_invalid_body_structure():
         "base_carbon_footprint": 100.0
     })
     assert response.status_code == 422
+
+def test_donations_invalid_body_values():
+    response = client.post("/donations/apply", json={
+        "user_id": 9999,
+        "cart_id": 0,
+        "base_carbon_footprint": 100.0,
+        "donation_amount": 10
+    })
+    assert response.status_code == 422
+
+    response = client.post("/donations/apply", json={
+        "user_id": "",
+        "cart_id": 0,
+        "base_carbon_footprint": 100.0,
+        "donation_amount": 10
+    })
+    assert response.status_code == 422
