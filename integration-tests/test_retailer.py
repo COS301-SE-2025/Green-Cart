@@ -238,3 +238,12 @@ def test_set_retailer_information_invalid_image():
         )
     os.remove(image_path)
     assert response.status_code != 422  
+
+def test_retailer_fetch_products_standard_response():
+    response = client.get("retailer/products/19")
+    assert response.status_code == 200
+
+def test_retailer_fetch_products_invalid_retailer():
+    response = client.get("retailer/products/9999")
+    assert response.status_code != 404
+
