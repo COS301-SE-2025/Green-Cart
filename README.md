@@ -43,7 +43,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | [Project Board](https://github.com/orgs/COS301-SE-2025/projects/198/views/2) | Task management and team progress |
 | [Coding Standards Document](https://docs.google.com/document/d/1-fC7M57fGlySNG3gG15oKwxMuICl8U_LiuiHUZikwbQ/edit?tab=t.0) | Coding Standards Document |
 | [User Manual Document](https://docs.google.com/document/d/1o7zYY2DDQTocsNIVZ1lve_QuyMkLdeUQcEWbrtl0mmk/edit?usp=sharing) | User Manual Document |
-| [Deployment Diagram]() | Deployment Diagram |
+| [Deployment Diagram](https://drive.google.com/file/d/1CNvKqYZ9H9Z7wfcYKc2Xs7-tVdnOtU1p/view?usp=sharing) | Deployment Diagram |
 ---
 
 <h1 align="center"> Demo Resources</h1>
