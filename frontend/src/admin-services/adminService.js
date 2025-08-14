@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
 // adminService.js (Updated with customers functionality)
 
->>>>>>> Admin_Frontend_Integration
 // const API_BASE_URL = `${import.meta.env.VITE_API_URL}/admin`;
 
 import { API_BASE_URL as BASE_URL } from '../config/api.js';
