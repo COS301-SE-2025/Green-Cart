@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retailer Signup Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>🧪 Retailer Signup Test</h1>
+        <p>This page tests the retailer signup functionality with the same code used in the main application.</p>
+        
+        <form id="retailerForm">
+            <div class="form-group">
+                <label for="name">Shop Name:</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your shop name">
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Shop Description:</label>
+                <textarea id="description" name="description" rows="3" required placeholder="Describe your shop"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
+            
+            <button type="submit" id="submitBtn">Create Retailer Account</button>
+        </form>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Use the same API configuration as the main app
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? "http://127.0.0.1:8000" 
+            : "https://api.greencart-cos301.co.za";
+
+        console.log('Using API_BASE_URL:', API_BASE_URL);
+
+        async function signupRetailer(retailerData) {
+            try {
+                // Step 1: Try to create a regular user account first (if it doesn't exist)
+                let userExists = false;
+                
+                const userResponse = await fetch(`${API_BASE_URL}/auth/signup`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        name: retailerData.name,
+                        email: retailerData.email,
+                        password: retailerData.password
+                    }),
+                });
+
+                if (userResponse.status === 400) {
+                    // Check if the error is "Email already registered"
+                    const userError = await userResponse.json();
+                    if (userError.detail && userError.detail.includes("already registered")) {
+                        userExists = true;
+                        console.log("User already exists, proceeding to retailer conversion...");
+                    } else {
+                        throw new Error(userError.detail || "User account creation failed");
+                    }
+                } else if (!userResponse.ok) {
+                    const userError = await userResponse.json();
+                    throw new Error(userError.detail || "User account creation failed");
+                }
+
+                // Step 2: Convert the user to a retailer (whether they existed or were just created)
+                const retailerResponse = await fetch(`${API_BASE_URL}/auth/retailer/signup`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        name: retailerData.name,
+                        description: retailerData.description,
+                        email: retailerData.email,
+                        password: retailerData.password
+                    }),
+                });
+
+                if (!retailerResponse.ok) {
+                    const retailerError = await retailerResponse.json();
+                    
+                    // Provide specific error messages based on the response
+                    if (retailerResponse.status === 401) {
+                        if (userExists) {
+                            throw new Error("The password you entered doesn't match your existing account. Please use your current account password.");
+                        } else {
+                            throw new Error("Authentication failed. Please check your credentials.");
+                        }
+                    } else if (retailerResponse.status === 400) {
+                        throw new Error("Invalid data provided. Please check all fields are filled correctly.");
+                    } else if (retailerResponse.status === 409) {
+                        throw new Error("You already have a retailer account with this email. Please sign in instead.");
+                    }
+                    
+                    throw new Error(retailerError.detail || "Retailer signup failed. Please try again.");
+                }
+
+                const retailerResult = await retailerResponse.json();
+                
+                // Return result
+                return {
+                    ...retailerResult,
+                    message: userExists ? "Existing account converted to retailer successfully" : "Retailer account created successfully"
+                };
+                
+            } catch (error) {
+                throw new Error(error.message || "Retailer signup failed");
+            }
+        }
+
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = message;
+            resultDiv.className = `result ${type}`;
+            resultDiv.style.display = 'block';
+        }
+
+        document.getElementById('retailerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Account...';
+            
+            // Hide previous results
+            document.getElementById('result').style.display = 'none';
+            
+            try {
+                // Get form data
+                const formData = new FormData(e.target);
+                const retailerData = {
+                    name: formData.get('name'),
+                    description: formData.get('description'),
+                    email: formData.get('email'),
+                    password: formData.get('password')
+                };
+                
+                showResult(`Attempting to create retailer account for: ${retailerData.email}\nUsing API: ${API_BASE_URL}`, 'info');
+                
+                // Call the signup function
+                const result = await signupRetailer(retailerData);
+                
+                showResult(`✅ SUCCESS!\n\n${result.message}\n\nRetailer ID: ${result.id}\nName: ${result.name}\nUser ID: ${result.user_id}`, 'success');
+                
+                // Clear form
+                e.target.reset();
+                
+            } catch (error) {
+                showResult(`❌ ERROR!\n\n${error.message}`, 'error');
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        // Test API connectivity on page load
+        window.addEventListener('load', async function() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                if (response.ok) {
+                    console.log('✅ API is accessible');
+                } else {
+                    console.log('❌ API returned error:', response.status);
+                }
+            } catch (error) {
+                console.log('❌ Cannot reach API:', error);
+            }
+        });
+    </script>
+</body>
+</html>
