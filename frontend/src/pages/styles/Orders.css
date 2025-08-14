@@ -6,11 +6,13 @@
   font-family: 'Inter', sans-serif;
   border-radius: 16px;
   min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
 .orders-header-section {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 2rem; /* ADDED: Extra spacing */
 
 }
 
@@ -42,40 +44,46 @@
 }
 
 .orders-loading-container {
-  max-width: 1000px;
+  max-width: 1200px; /* MODIFIED: Match orders container width */
   margin: 0 auto;
   margin-top: 1rem;
   padding: 2rem;
   min-height: 100vh;
-  min-height: 100vh;
   font-family: 'Inter', sans-serif;
   border-radius: 12px;
+   /* background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); */
 }
 
-.orders-loading {
+.orders-page-loading {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  padding: 1rem;
+  padding: 1rem; /* MODIFIED: Match UserAccount padding */
   background: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin: 1rem auto 2rem auto;
-  max-width: 400px;
+  max-width: 400px; /* MODIFIED: Match UserAccount max-width */
+}
+
+.orders-loading > span {
+  color: #666; /* ADDED: Match UserAccount text color */
+  font-size: 0.9rem; /* ADDED: Match UserAccount font size */
+  font-weight: 500; /* ADDED: Match UserAccount font weight */
 }
 
 .loading-spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #e0e0e0;
-  border-top: 2px solid #7BB540;
+  width: 20px; /* MODIFIED: Match UserAccount size */
+  height: 20px; /* MODIFIED: Match UserAccount size */
+  border: 2px solid #e0e0e0; /* MODIFIED: Match UserAccount border */
+  border-top: 2px solid #7BB540; /* MODIFIED: Match UserAccount border */
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 .loading-text {
-   color: #666;
+  color: #666;
   font-size: 0.9rem;
   font-weight: 500;
 }
