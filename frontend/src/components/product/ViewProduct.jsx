@@ -161,7 +161,7 @@ export default function ViewProduct() {
                 ← Back
             </button>
             <div className="view-product">
-                <div className="product-image-container">
+                <div className="vp-product-image-container">
                     {image && image.length > 0 ? (
                         <div className="image-gallery">
                             <div className="main-image-container">
@@ -225,30 +225,30 @@ export default function ViewProduct() {
                     )}
                 </div>
 
-                <div className="product-info">
-                    <div className="product-header">
+                <div className="vp-product-info">
+                    <div className="vp-product-header">
                         <h1>{product.name}</h1>
-                        <div className="product-brand">by {product.brand}</div>
+                        {/* <div className="vp-product-brand">by {product.brand}</div> */}
                         {/* Verification Badge */}
                         {sustainability?.statistics && sustainability.statistics.length > 0 && (
-                            <div className="verification-status">
+                            <div className="vp-verification-status">
                                 {sustainability.statistics.some(stat => stat.verification) ? (
-                                    <div className="verification-badge verified">
-                                        <span className="verification-icon">✓</span>
-                                        <span className="verification-text">Verified Sustainability Data</span>
+                                    <div className="vp-verification-badge verified">
+                                        <span className="vp-verification-icon">✓</span>
+                                        <span className="vp-verification-text">Verified Sustainability Data</span>
                                     </div>
                                 ) : (
-                                    <div className="verification-badge unverified">
-                                        <span className="verification-icon">⚠</span>
-                                        <span className="verification-text">Unverified Data</span>
+                                    <div className="vp-verification-badge unverified">
+                                        <span className="vp-verification-icon">⚠</span>
+                                        <span className="vp-verification-text">Unverified Data</span>
                                     </div>
                                 )}
                             </div>
                         )}
                     </div>
 
-                    <div className="product-price">
-                        <span className="current-price">
+                    <div className="vp-product-price">
+                        <span className="vp-current-price">
                             {Number(product.price).toLocaleString("en-ZA", {
                                 style: "currency",
                                 currency: "ZAR"
@@ -256,42 +256,42 @@ export default function ViewProduct() {
                         </span>
                     </div>
 
-                    <div className="product-description">
+                    <div className="vp-product-description">
                         <h3>Description</h3>
                         <p>{product.description}</p>
                     </div>
 
-                    <div className="product-meta">
-                        <div className="meta-item">
-                            <span className="meta-label">Category:</span>
-                            <span className="meta-value">{categoryName}</span>
-                        </div>
-                        <div className="meta-item">
-                            <span className="meta-label">Brand:</span>
-                            <span className="meta-value">{product.brand || 'No brand specified'}</span>
-                        </div>
-                        <div className="meta-item">
-                            <span className="meta-label">Retailer:</span>
-                            <span className="meta-value">{retailerName}</span>
-                        </div>
-                        <div className="meta-item">
-                            <span className="meta-label">Availability:</span>
-                            <span className={`meta-value ${product.in_stock ? 'in-stock' : 'out-of-stock'}`}>
-                                {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                    <div className="vp-product-meta">
+                    <div className="vp-meta-item" data-type="category">
+                        <span className="vp-meta-label">Category:</span>
+                        <span className="vp-meta-value">{categoryName}</span>
+                    </div>
+                    <div className="vp-meta-item" data-type="brand">
+                        <span className="vp-meta-label">Brand:</span>
+                        <span className="vp-meta-value">{product.brand || 'No brand specified'}</span>
+                    </div>
+                    <div className="vp-meta-item" data-type="retailer">
+                        <span className="vp-meta-label">Retailer:</span>
+                        <span className="vp-meta-value">{retailerName}</span>
+                    </div>
+                    <div className="vp-meta-item" data-type="availability">
+                        <span className="vp-meta-label">Availability:</span>
+                        <span className={`vp-meta-value ${product.in_stock ? 'in-stock' : 'out-of-stock'}`}>
+                            {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                        </span>
+                    </div>
+                    {sustainability?.statistics && sustainability.statistics.length > 0 && (
+                        <div className="vp-meta-item" data-type="sustainability">
+                            <span className="vp-meta-label">Sustainability Data:</span>
+                            <span className="vp-meta-value verification-details">
+                                {sustainability.statistics.some(stat => stat.verification) 
+                                    ? `${sustainability.statistics.filter(stat => stat.verification).length}/${sustainability.statistics.length} metrics verified`
+                                    : 'No verified metrics'
+                                }
                             </span>
                         </div>
-                        {sustainability?.statistics && sustainability.statistics.length > 0 && (
-                            <div className="meta-item">
-                                <span className="meta-label">Sustainability Data:</span>
-                                <span className="meta-value verification-details">
-                                    {sustainability.statistics.some(stat => stat.verification) 
-                                        ? `${sustainability.statistics.filter(stat => stat.verification).length}/${sustainability.statistics.length} metrics verified`
-                                        : 'No verified metrics'
-                                    }
-                                </span>
-                            </div>
-                        )}
-                    </div>
+                    )}
+                </div>
 
                     <button 
                         className={`add-to-cart-button ${!product.in_stock ? 'disabled' : ''}`}

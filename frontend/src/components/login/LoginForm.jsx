@@ -50,30 +50,30 @@ const LoginForm = () => {
         <h1 className="login-form-title">Sign in</h1>
 
         <form className="login-form" onSubmit={handleSubmit}>
-          <div className="form-group">
+          <div className="login-form-group">
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="form-input"
+              className="login-form-input"
               placeholder=" "
               required
             />
-            <label htmlFor="email" className="form-label">Email address</label>
+            <label htmlFor="email" className="login-form-label">Email address</label>
           </div>
 
-          <div className="form-group">
+          <div className="login-form-group">
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="form-input"
+              className="login-form-input"
               placeholder=" "
               required
             />
-            <label htmlFor="password" className="form-label">Password</label>
+            <label htmlFor="password" className="login-form-label">Password</label>
           </div>
 
           <div className="form-options">
