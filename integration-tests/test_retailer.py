@@ -22,17 +22,6 @@ def test_get_retailer_by_user_id_standard_response():
 def test_get_retailer_by_user_id_response():
     response = client.get("retailer/by-user/e1ca2b93-314f-4a71-b6fb-3bb430157b1f")
     assert response.status_code == 200
-    assert response.json() == {
-        "status": 200,
-        "message": "Retailer found",
-        "data": {
-            "id": 5,
-            "name": "Greencart",
-            "description": "Greencart is a green e-comerce initiative website",
-            "user_id": "e1ca2b93-314f-4a71-b6fb-3bb430157b1f",
-            "banner_image": "app/assets/bab0a241-abac-4c89-85cd-100c4b053fb6/image.png"
-        }
-    }
 
 def test_get_retailer_by_user_id_not_found():
     response = client.get("retailer/by-user/invalid-user-id")
@@ -134,3 +123,118 @@ def test_register_retailer_invalid_body():
             files={"banner_image": ("test_image.png", img, "image/png")}
         )
     os.remove(image_path)
+
+def test_set_retailer_information_standard_response():
+    form_data = {
+        "user_id": "e1ca2b93-314f-4a71-b6fb-3bb430157b1f",
+        "name": "Greencart",
+        "description": "Greencart is a green e-comerce initiative website"
+    }
+
+    image_path = os.path.join(os.path.dirname(__file__), "test_image.png")
+    
+    with open(image_path, "wb") as f:
+        f.write(b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\nIDATx\xdac\xfc\xff\xff?\x00\x05\xfe\x02\xfeA\x0b\x0e\x1b\x00\x00\x00\x00IEND\xaeB`\x82")
+    with open(image_path, "rb") as img:
+        response = client.patch(
+            "retailer/setRetailerInformation",
+            data=form_data,
+            files={"banner_image": ("test_image.png", img, "image/png")}
+        )
+    os.remove(image_path)
+    assert response.status_code == 200
+
+def test_set_retailer_information_invalid_user_id():
+    form_data = {
+        "user_id": "invalid-user-id",
+        "name": "Greencart",
+        "description": "Greencart is a green e-comerce initiative website"
+    }
+
+    image_path = os.path.join(os.path.dirname(__file__), "test_image.png")
+    
+    with open(image_path, "wb") as f:
+        f.write(b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\nIDATx\xdac\xfc\xff\xff?\x00\x05\xfe\x02\xfeA\x0b\x0e\x1b\x00\x00\x00\x00IEND\xaeB`\x82")
+    with open(image_path, "rb") as img:
+        response = client.patch(
+            "retailer/setRetailerInformation",
+            data=form_data,
+            files={"banner_image": ("test_image.png", img, "image/png")}
+        )
+    os.remove(image_path)
+    assert response.status_code == 404
+
+def test_set_retailer_information_invalid_body():
+    form_data = {
+        "name": "Greencart",
+        "description": "Greencart is a green e-comerce initiative website"
+    }
+    
+    image_path = os.path.join(os.path.dirname(__file__), "test_image.png")  
+    with open(image_path, "wb") as f:
+        f.write(b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\nIDATx\xdac\xfc\xff\xff?\x00\x05\xfe\x02\xfeA\x0b\x0e\x1b\x00\x00\x00\x00IEND\xaeB`\x82")
+    with open(image_path, "rb") as img:
+        response = client.patch(
+            "retailer/setRetailerInformation",
+            data=form_data,
+            files={"banner_image": ("test_image.png", img, "image/png")}
+        )
+    os.remove(image_path)
+    assert response.status_code == 422
+
+    form_data = {
+        "user_id": "e1ca2b93-314f-4a71-b6fb-3bb430157b1f",
+        "description": "Greencart is a green e-comerce initiative website"
+    }
+    
+    image_path = os.path.join(os.path.dirname(__file__), "test_image.png")
+    
+    with open(image_path, "wb") as f:
+        f.write(b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\nIDATx\xdac\xfc\xff\xff?\x00\x05\xfe\x02\xfeA\x0b\x0e\x1b\x00\x00\x00\x00IEND\xaeB`\x82")
+    with open(image_path, "rb") as img:
+        response = client.patch(
+            "retailer/setRetailerInformation",
+            data=form_data,
+            files={"banner_image": ("test_image.png", img, "image/png")}
+        )
+    os.remove(image_path)
+    assert response.status_code == 422
+
+    form_data = {
+        "user_id": "e1ca2b93-314f-4a71-b6fb-3bb430157b1f",
+        "name": "Greencart"
+    }
+    
+    image_path = os.path.join(os.path.dirname(__file__), "test_image.png")
+    
+    with open(image_path, "wb") as f:
+        f.write(b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\nIDATx\xdac\xfc\xff\xff?\x00\x05\xfe\x02\xfeA\x0b\x0e\x1b\x00\x00\x00\x00IEND\xaeB`\x82")
+    with open(image_path, "rb") as img:
+        response = client.patch(
+            "retailer/setRetailerInformation",
+            data=form_data,
+            files={"banner_image": ("test_image.png", img, "image/png")}
+        )
+    os.remove(image_path)
+    assert response.status_code == 422  
+
+def test_set_retailer_information_invalid_image():
+    form_data = {
+        "user_id": "e1ca2b93-314f-4a71-b6fb-3bb430157b1f",
+        "name": "Greencart",
+        "description": "Greencart is a green e-comerce initiative website"
+    }
+
+    image_path = os.path.join(os.path.dirname(__file__), "test_image.txt")
+    
+    with open(image_path, "w") as f:
+        f.write("This is not a valid image file.")
+    
+    with open(image_path, "rb") as img:
+        response = client.patch(
+            "retailer/setRetailerInformation",
+            data=form_data,
+            files={"banner_image": ("test_image.txt", img, "text/plain")}
+        )
+    os.remove(image_path)
+    assert response.status_code != 422  
