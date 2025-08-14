@@ -4,10 +4,6 @@
   margin-top: 1rem;
   padding: 2rem;
   min-height: 100vh;
-  /* font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; */
-  /* font-family: 'Inter', sans-serif; */
-/* background: white; */
-  min-height: 100vh;
   font-family: 'Inter', sans-serif;
   /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
   border-radius: 12px;
@@ -91,7 +87,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   padding-bottom: 1.5rem;
   border-bottom: 2px solid #e5e7eb;
 }
@@ -867,7 +863,7 @@
   gap: 1rem;
 }
 
-.stat-icon {
+.carbon-stat-icon {
   font-size: 2rem;
   display: flex;
   align-items: center;
@@ -878,20 +874,21 @@
   border-radius: 50%;
 }
 
-.stat-content h3 {
+.carbon-stat-content h3 {
   margin: 0 0 0.5rem 0;
   font-size: 0.9rem;
   color: #6b7280;
   font-weight: 500;
 }
 
-.stat-value {
+.carbon-stat-value {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
+  color: rgb(249, 115, 22);
 }
 
-.stat-description {
+.carbon-stat-description {
   font-size: 0.8rem;
   color: #6b7280;
   margin: 0;
@@ -1327,8 +1324,8 @@
   .carbon-stat-card {
     padding: 1rem;
   }
-  
-  .stat-value {
+
+  .carbon-stat-value {
     font-size: 1.25rem;
   }
   

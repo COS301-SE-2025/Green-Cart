@@ -639,34 +639,34 @@ export default function UserAccount() {
 									{/* Sustainability Stats Overview */}
 									<div className="carbon-overview">
 										<div className="carbon-stat-card">
-											<div className="stat-icon">�</div>
-											<div className="stat-content">
+											<div className="carbon-stat-icon">�</div>
+											<div className="carbon-stat-content">
 												<h3>Average Score</h3>
-												<div className="stat-value" style={{ color: getCarbonColor(carbonData.totalFootprint, 100) }}>
+												<div className="carbon-stat-value" style={{ color: getCarbonColor(carbonData.totalFootprint, 100) }}>
 													{carbonData.totalFootprint}/100
 												</div>
-												<p className="stat-description">This year</p>
+												<p className="carbon-stat-description">This year</p>
 											</div>
 										</div>
 
 										<div className="carbon-stat-card">
-											<div className="stat-icon">📅</div>
-											<div className="stat-content">
+											<div className="carbon-stat-icon">📅</div>
+											<div className="carbon-stat-content">
 												<h3>This Month</h3>
-												<div className="stat-value" style={{ color: getCarbonColor(carbonData.monthlyFootprint) }}>
+												<div className="carbon-stat-value" style={{ color: getCarbonColor(carbonData.monthlyFootprint) }}>
 													{carbonData.monthlyFootprint}/100
 												</div>
-												<p className="stat-description">
+												<p className="carbon-stat-description">
 													{monthlyChange > 0 ? '📈' : '📉'} {Math.abs(monthlyChange).toFixed(1)}% vs last month
 												</p>
 											</div>
 										</div>
 
 										<div className="carbon-stat-card">
-											<div className="stat-icon">🎯</div>
-											<div className="stat-content">
+											<div className="carbon-stat-icon">🎯</div>
+											<div className="carbon-stat-content">
 												<h3>Target Score</h3>
-												<div className="stat-value">
+												<div className="carbon-stat-value">
 													{carbonData.yearlyGoal}/100
 												</div>
 												<div className="progress-bar">
@@ -678,7 +678,7 @@ export default function UserAccount() {
 														}}
 													></div>
 												</div>
-												<p className="stat-description">{yearlyProgress.toFixed(1)}% of target achieved</p>
+												<p className="carbon-stat-description">{yearlyProgress.toFixed(1)}% of target achieved</p>
 											</div>
 										</div>
 									</div>
