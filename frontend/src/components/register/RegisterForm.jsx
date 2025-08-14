@@ -95,56 +95,56 @@ const RegisterForm = () => {
           </div>
         ) : (
           <form className="register-form" onSubmit={handleSubmit}>
-            <div className="form-group">
+            <div className="register-form-group">
               <input 
                 id="email" 
                 type="email" 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
-                className="form-input"
+                className="register-form-input"
                 placeholder=" "
                 required 
               />
-              <label htmlFor="email" className="form-label">Email address</label>
+              <label htmlFor="email" className="register-form-label">Email address</label>
             </div>
 
-            <div className="form-group">
+            <div className="register-form-group">
               <input 
                 id="name" 
                 type="text" 
                 value={name} 
                 onChange={(e) => setName(e.target.value)} 
-                className="form-input"
+                className="register-form-input"
                 placeholder=" "
                 required 
               />
-              <label htmlFor="name" className="form-label">Name</label>
+              <label htmlFor="name" className="register-form-label">Name</label>
             </div>
 
-            <div className="form-group">
+            <div className="register-form-group">
               <input 
                 id="password" 
                 type="password" 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
-                className="form-input"
+                className="register-form-input"
                 placeholder=" "
                 required 
               />
-              <label htmlFor="password" className="form-label">Password</label>
+              <label htmlFor="password" className="register-form-label">Password</label>
             </div>
 
-            <div className="form-group">
+            <div className="register-form-group">
               <input 
                 id="confirmPassword" 
                 type="password" 
                 value={confirmPassword} 
                 onChange={(e) => setConfirmPassword(e.target.value)} 
-                className="form-input"
+                className="register-form-input"
                 placeholder=" "
                 required 
               />
-              <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+              <label htmlFor="confirmPassword" className="register-form-label">Confirm Password</label>
             </div>
 
             <button type="submit" className="sign-up-button">Sign up</button>

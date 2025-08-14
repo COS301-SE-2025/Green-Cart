@@ -106,9 +106,9 @@ export default function Orders() {
   if (loading) {
     return (
       <div className="orders-loading-container">
-        <div className="orders-loading">
+        <div className="orders-page-loading">
           <div className="loading-spinner"></div>
-          <span>Loading your Orders...</span>
+          <span className="loading-text">Loading your Orders...</span>
         </div>
       </div>
     );
@@ -127,7 +127,7 @@ export default function Orders() {
       </div>
     );
   }
-
+  console.log("Retrieved Orders:", retrievedOrders);
   return (
     <div className="orders-container">
       <div className="orders-header-section">

@@ -167,12 +167,12 @@ export default function Navigation() {
                     <li><Link to="/orders">Orders</Link></li>
                     <li className="nav__separator">|</li>
                     {/* Only show Dashboard link for retailers */}
-                    {isRetailer && (
+                    {/* {isRetailer && (
                         <>
                             <li><Link to="/retailer-dashboard">Dashboard</Link></li>
                             <li className="nav__separator">|</li>
                         </>
-                    )}
+                    )} */}
                     <li><Link to="/user-account">My Account</Link></li>
                     <li className="nav__separator">|</li>
                     {/* Show logout only if user is authenticated */}

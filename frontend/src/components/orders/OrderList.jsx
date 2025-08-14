@@ -5,6 +5,7 @@ import '../styles/orders/OrderList.css';
 
 export default function OrderList({ orders, onViewDetails, onCancelOrder, userID }) {
   const [detailedOrders, setDetailedOrders] = useState([]);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false); // ADDED: Loading state
 
   useEffect(() => {
     console.log("🔍 useEffect triggered");
@@ -12,6 +13,7 @@ export default function OrderList({ orders, onViewDetails, onCancelOrder, userID
     console.log("userID received:", userID);
 
     async function loadDetails() {
+      setIsLoadingDetails(true); // ADDED: Set loading to true
       try {
         const enriched = await Promise.all(
           orders.map(async (order) => {
@@ -33,6 +35,9 @@ export default function OrderList({ orders, onViewDetails, onCancelOrder, userID
         setDetailedOrders(enriched);
       } catch (outerError) {
         console.error("❌ Error enriching orders:", outerError);
+        setDetailedOrders(orders); // ADDED: Fallback to original orders
+      } finally {
+        setIsLoadingDetails(false); // ADDED: Set loading to false
       }
     }
 
@@ -41,6 +46,8 @@ export default function OrderList({ orders, onViewDetails, onCancelOrder, userID
       loadDetails();
     } else {
       console.warn("⛔ Skipped loading order details (missing orders or userID)");
+      setDetailedOrders(orders); // ADDED: Set orders even if details can't be loaded
+      setIsLoadingDetails(false); // ADDED: Ensure loading is false
     }
   }, [orders, userID]);
 
@@ -60,12 +67,50 @@ export default function OrderList({ orders, onViewDetails, onCancelOrder, userID
     );
   }
 
+  // ADDED: Show loading skeleton while loading details
+  if (isLoadingDetails && detailedOrders.length === 0) {
+    return (
+      <div className="orders-list">
+        <div className="orders-header">
+          <h2>Your Orders ({orders.length})</h2>
+          <div className="orders-summary">
+            <span>Loading order details...</span>
+          </div>
+        </div>
+        
+        <div className="orders-loading-skeleton">
+          {[...Array(Math.min(orders.length, 3))].map((_, index) => (
+            <div key={index} className="order-card-skeleton">
+              <div className="skeleton-header">
+                <div className="skeleton-line skeleton-short"></div>
+                <div className="skeleton-badge"></div>
+              </div>
+              <div className="skeleton-body">
+                <div className="skeleton-line skeleton-medium"></div>
+                <div className="skeleton-line skeleton-long"></div>
+              </div>
+              <div className="skeleton-actions">
+                <div className="skeleton-button"></div>
+                <div className="skeleton-button"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="orders-list">
       <div className="orders-header">
         <h2>Your Orders ({orders.length})</h2>
         <div className="orders-summary">
-          <span>Showing all orders</span>
+          <span>
+            {isLoadingDetails ? 
+              "Loading order details..." : 
+              "Showing all orders"
+            }
+          </span>
         </div>
       </div>
       
