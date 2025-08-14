@@ -46,6 +46,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("greencart")
 
 app = FastAPI(title="Green Cart API", version="1.2.2")
+app.add_middleware(
+    CORSMiddleware,
+    # Update allowed origins to include your development server
+    allow_origins=["http://localhost:5173", "https://greencart-cos301.co.za"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Health check
 @app.get("/health")

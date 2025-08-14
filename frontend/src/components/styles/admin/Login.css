@@ -1,0 +1,166 @@
+.admin-login-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #101925;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-login-modal {
+  width: 100%;
+  max-width: 400px;
+  padding: 2.5rem;
+  margin: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-header {
+  position: absolute;
+  top: 13rem;
+  width: 100%;
+  text-align: center;
+  z-index: 10;
+}
+
+.admin-main-title {
+  color: white;
+  font-size: 4.5rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 480px) {
+  .admin-login-modal {
+    max-width: 100%;
+    margin: 1rem;
+    padding: 2rem;
+  }
+
+   .admin-main-title {
+    font-size: 1.75rem;
+  }
+}
+
+.admin-logo-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.admin-logo {
+  width: 80%;
+  height: auto;
+  margin-bottom: 0;
+  opacity: 0.9;
+}
+
+/* .admin-title {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+} */
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-form-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-form-input {
+  width: 100%;
+  padding: 0.75rem 0;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-bottom-color 0.2s ease;
+}
+
+.admin-form-input::placeholder {
+  color: transparent;
+}
+
+.admin-form-input:focus {
+  outline: none;
+  border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-form-input:focus + .admin-form-label,
+.admin-form-input:not(:placeholder-shown) + .admin-form-label {
+  transform: translateY(-1.5rem) scale(0.85);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.admin-form-label {
+  position: absolute;
+  top: 0.75rem;
+  left: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  transform-origin: left top;
+}
+
+.admin-signin-button {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.875rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.2s ease;
+  letter-spacing: 0.5px;
+}
+
+.admin-signin-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.admin-signin-button:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Remove all focus outlines and glows */
+.admin-form-input:focus,
+.admin-signin-button:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-title {
+    font-size: 1.25rem;
+  }
+
+  .admin-main-title {
+    font-size: 2rem;
+  }
+  
+  .admin-logo {
+    width: 50px;
+    height: 50px;
+  }
+}

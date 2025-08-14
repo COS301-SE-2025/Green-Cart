@@ -82,7 +82,7 @@
     color: #64748b;
 }
 
-.stat-value {
+.ret-prod-stat-value {
     font-size: 0.9rem;
     font-weight: 600;
     color: #1e293b !important; /* Force dark color with !important */

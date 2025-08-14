@@ -12,6 +12,10 @@ const Admin = () => {
 
   // Set sidebar closed by default on smaller screens
   useEffect(() => {
+
+    // Function to handle login authentication
+
+    
     const handleResize = () => {
       if (window.innerWidth <= 768) {
         setSidebarOpen(false);

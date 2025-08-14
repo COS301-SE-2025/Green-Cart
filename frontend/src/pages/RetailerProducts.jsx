@@ -304,24 +304,24 @@ export default function RetailerProducts() {
                                         <div className="product-stats">
                                             <div className="stat-item">
                                                 <span className="stat-label">Stock:</span>
-                                                <span className="stat-value">
+                                                <span className="ret-prod-stat-value">
                                                     {product.stock_quantity ?? product.quantity ?? 'N/A'}
                                                 </span>
                                             </div>
                                             <div className="stat-item">
                                                 <span className="stat-label">Sold:</span>
-                                                <span className="stat-value">{product.units_sold ?? 0}</span>
+                                                <span className="ret-prod-stat-value">{product.units_sold ?? 0}</span>
                                             </div>
                                             <div className="stat-item" style={{textAlign: 'center', width: '100%'}}>
                                                 <span className="stat-label">Revenue:</span>
-                                                <span className="stat-value">
+                                                <span className="ret-prod-stat-value">
                                                     R{Number(product.revenue ?? 0).toFixed(2)}
                                                 </span>
                                             </div>
                                             {product.images && product.images.length > 1 && (
                                                 <div className="stat-item" style={{textAlign: 'center', width: '100%'}}>
                                                     <span className="stat-label">Images:</span>
-                                                    <span className="stat-value">{product.images.length} S3 images</span>
+                                                    <span className="ret-prod-stat-value">{product.images.length} S3 images</span>
                                                 </div>
                                             )}
                                         </div>

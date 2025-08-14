@@ -252,7 +252,7 @@ const RetailerAuth = () => {
           <form className="retailer-auth-form" onSubmit={mode === 'signup' ? handleSignUp : handleSignIn}>
             {mode === 'signup' && (
               <>
-                <div className="form-group">
+                <div className="ret-auth-form-group">
                   <input
                     type="text"
                     id="name"
@@ -260,12 +260,12 @@ const RetailerAuth = () => {
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     required
                     placeholder=" "
-                    className="form-input"
+                    className="ret-auth-form-input"
                   />
-                  <label htmlFor="name" className="form-label">Shop Name</label>
+                  <label htmlFor="name" className="ret-auth-form-label">Shop Name</label>
                 </div>
 
-                <div className="form-group">
+                <div className="ret-auth-form-group">
                   <textarea
                     id="description"
                     value={formData.description}
@@ -275,12 +275,12 @@ const RetailerAuth = () => {
                     className="form-textarea"
                     rows="3"
                   />
-                  <label htmlFor="description" className="form-label">Shop Description</label>
+                  <label htmlFor="description" className="ret-auth-form-label">Shop Description</label>
                 </div>
               </>
             )}
 
-            <div className="form-group">
+            <div className="ret-auth-form-group">
               <input
                 type="email"
                 id="email"
@@ -288,12 +288,12 @@ const RetailerAuth = () => {
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 required
                 placeholder=" "
-                className="form-input"
+                className="ret-auth-form-input"
               />
-              <label htmlFor="email" className="form-label">Email</label>
+              <label htmlFor="email" className="ret-auth-form-label">Email</label>
             </div>
 
-            <div className="form-group">
+            <div className="ret-auth-form-group">
               <input
                 type="password"
                 id="password"
@@ -301,13 +301,13 @@ const RetailerAuth = () => {
                 onChange={(e) => handleInputChange('password', e.target.value)}
                 required
                 placeholder=" "
-                className="form-input"
+                className="ret-auth-form-input"
               />
-              <label htmlFor="password" className="form-label">Password</label>
+              <label htmlFor="password" className="ret-auth-form-label">Password</label>
             </div>
 
             {mode === 'signup' && (
-              <div className="form-group">
+              <div className="ret-auth-form-group">
                 <input
                   type="password"
                   id="confirmPassword"
@@ -315,9 +315,9 @@ const RetailerAuth = () => {
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                   required
                   placeholder=" "
-                  className="form-input"
+                  className="ret-auth-form-input"
                 />
-                <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                <label htmlFor="confirmPassword" className="ret-auth-form-label">Confirm Password</label>
               </div>
             )}
 

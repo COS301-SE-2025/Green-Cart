@@ -388,35 +388,35 @@ export default function ViewRetailerProduct() {
                         
                         <div className="metrics-grid">
                             <div className="metric-item">
-                                <label>Price</label>
+                                <label className='view-ret-prod-label'>Price</label>
                                 <p>R{Number(product.price).toFixed(2)}</p>
                             </div>
                             <div className="metric-item">
-                                <label>Available Stock</label>
+                                <label className='view-ret-prod-label'>Available Stock</label>
                                 <p>{product.quantity}</p>
                             </div>
                             <div className="metric-item">
-                                <label>Total Units Sold</label>
+                                <label className='view-ret-prod-label'>Total Units Sold</label>
                                 <p>{typeof product.units_sold === 'number' ? product.units_sold : 0}</p>
                             </div>
                             <div className="metric-item">
-                                <label>Total Revenue</label>
+                                <label className='view-ret-prod-label'>Total Revenue</label>
                                 <p>R{Number(product.revenue).toFixed(2)}</p>
                             </div>
                             {totalImages > 0 && (
                                 <div className="metric-item">
-                                    <label>S3 Images</label>
+                                    <label className='view-ret-prod-label'>S3 Images</label>
                                     <p>{totalImages} stored</p>
                                 </div>
                             )}
                             <div className="metric-item">
-                                <label>Category</label>
+                                <label className='view-ret-prod-label'>Category</label>
                                 <p>{product.category || 'N/A'}</p>
                             </div>
                         </div>
                         
                         <div className="description-section">
-                            <label>Description</label>
+                            <label className='view-ret-prod-label'>Description</label>
                             <p>{product.description || 'No description available'}</p>
                         </div>
                         

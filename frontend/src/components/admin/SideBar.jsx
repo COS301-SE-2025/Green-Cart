@@ -7,7 +7,7 @@ import ordersIcon from './icons/ordersIcon.png';
 import productsIcon from './icons/productsIcon.png';
 import paymentsIcon from './icons/paymentsIcon.png';
 import customersIcon from './icons/customersIcon.png';
-import leafIcon from './icons/leafIcon.png';
+// import leafIcon from './icons/leafIcon.png';
 import backIcon from './icons/backIcon.png';
 import logo from './icons/Green-cart-admin.png'
 
