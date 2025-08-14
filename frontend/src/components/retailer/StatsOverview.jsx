@@ -97,19 +97,19 @@ export default function StatsOverview({ stats }) {
 
     return (
         <div className="stats-overview">
-            <h2 className="stats-title">Overview</h2>
-            <div className="stats-grid">
+            <h2 className="stats-overview-title">Overview</h2>
+            <div className="stats-overview-stats-grid">
                 {statItems.map((item) => (
-                    <div key={item.key} className="stat-card">
+                    <div key={item.key} className="stats-overview-stat-card">
                         <div
-                            className="stat-icon"
+                            className="stats-overview-stat-icon"
                             style={{ backgroundColor: item.color }}
                         >
                             {item.icon}
                         </div>
-                        <div className="stat-content">
+                        <div className="stats-overview-stat-content">
                             <h3>{item.title}</h3>
-                            <div className="stat-value">
+                            <div className="stats-overview-stat-value">
                                 <AnimatedStatValue
                                     value={item.value}
                                     isRevenue={item.isRevenue}
