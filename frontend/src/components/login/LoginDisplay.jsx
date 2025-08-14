@@ -1,12 +1,13 @@
 import React from 'react';
 import '../styles/login/LoginDisplay.css';
+import Logo from '../../assets/images/logo.png';
 
 const LoginDisplay = () => {
   return (
     <div className="login-display-container">
       <div className="login-display-content">
         <div className="brand-logo">
-          <img src="/src/assets/images/logo.png" alt="Green Cart" className="brand-logo-img" />
+          <img src={Logo} alt="Green Cart" className="brand-logo-img" />
         </div>
         
         <div className="welcome-section">

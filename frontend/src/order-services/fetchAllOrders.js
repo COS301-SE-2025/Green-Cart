@@ -1,27 +1,13 @@
-const API_URL = "http://localhost:8000/orders/getAllOrders";
+import axios from "axios";
 
-export const fetchAllOrders = async ({userID, fromItem, count}) => {
-    try{
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                userID,
-                fromItem,
-                count
-            })
-        })
-
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to fetch orders');
-        }
-        return data;
-
-    }catch (error) {
-        throw error;
-    }
-    
-}
+export const fetchAllOrders = async ({ userID }) => {
+  try {
+    const response = await axios.post("https://api.greencart-cos301.co.za/orders/getAllOrders", {
+      userID,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all orders:", error);
+    throw error;
+  }
+};

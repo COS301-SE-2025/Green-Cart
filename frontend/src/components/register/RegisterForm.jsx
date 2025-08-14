@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { signup } from '../../user-services/signupService';
 import '../styles/register/RegisterForm.css';
+import GoogleIcon from '../../assets/icons/googleColored.png'; // Import Google icon
 
 const RegisterForm = () => {
   const [showInitialForm, setShowInitialForm] = useState(true);
@@ -24,16 +26,37 @@ const RegisterForm = () => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
     try {
-      await signup({ name, email, password });
-      alert("Account created successfully!");
-      navigate("/home");
+      const result = await signup({ name, email, password });
+      
+      // Clear any existing retailer data to prevent conflicts
+      localStorage.removeItem('retailer_user');
+      localStorage.removeItem('retailer_token');
+      localStorage.removeItem('selected_shop');
+      
+      // Extract token and user data from response
+      if (result.access_token || result.token) {
+        // Store the authentication token
+        localStorage.setItem('token', result.access_token || result.token);
+      }
+      
+      // Store user data (remove token from user object to avoid duplication)
+      const userData = { ...result };
+      delete userData.access_token;
+      delete userData.token;
+      localStorage.setItem('userData', JSON.stringify(userData));
+      
+      // Dispatch event to update navbar
+      window.dispatchEvent(new Event('authStateChanged'));
+      
+      toast.success("Account created successfully!");
+      navigate("/Home");
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message || "An error occurred while creating the account.");
     }
   };
 
@@ -48,11 +71,11 @@ const RegisterForm = () => {
         {showInitialForm ? (
           <div className="register-form">
             <button type="button" className="google-signup-button" onClick={() => console.log('Google sign up clicked')}>
-              <img src="./src/assets/icons/googleColored.png" alt="Google" className="google-icon" />
+              <img src={GoogleIcon} alt="Google" className="google-icon" />
               Sign up with Google
             </button>
 
-            <div className="divider"><span>or</span></div>
+            <div className="divider"><span>or</span> </div>
 
             <button type="button" className="create-account-button" onClick={handleCreateAccount}>
               Create an Account
@@ -73,51 +96,55 @@ const RegisterForm = () => {
         ) : (
           <form className="register-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="email" className="form-label">Email address</label>
               <input 
                 id="email" 
                 type="email" 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
-                className="form-input" 
+                className="form-input"
+                placeholder=" "
                 required 
               />
+              <label htmlFor="email" className="form-label">Email address</label>
             </div>
 
             <div className="form-group">
-              <label htmlFor="name" className="form-label">Name</label>
               <input 
                 id="name" 
                 type="text" 
                 value={name} 
                 onChange={(e) => setName(e.target.value)} 
-                className="form-input" 
+                className="form-input"
+                placeholder=" "
                 required 
               />
+              <label htmlFor="name" className="form-label">Name</label>
             </div>
 
             <div className="form-group">
-              <label htmlFor="password" className="form-label">Password</label>
               <input 
                 id="password" 
                 type="password" 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
-                className="form-input" 
+                className="form-input"
+                placeholder=" "
                 required 
               />
+              <label htmlFor="password" className="form-label">Password</label>
             </div>
 
             <div className="form-group">
-              <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
               <input 
                 id="confirmPassword" 
                 type="password" 
                 value={confirmPassword} 
                 onChange={(e) => setConfirmPassword(e.target.value)} 
-                className="form-input" 
+                className="form-input"
+                placeholder=" "
                 required 
               />
+              <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
             </div>
 
             <button type="submit" className="sign-up-button">Sign up</button>

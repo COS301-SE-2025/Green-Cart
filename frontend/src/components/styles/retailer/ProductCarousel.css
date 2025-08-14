@@ -1,0 +1,273 @@
+.product-carousel-section {
+  margin-bottom: 3rem;
+}
+
+.carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.carousel-header h2 {
+  font-size: 1.75rem;
+  color: #1e293b;
+  margin: 0;
+  font-weight: 600;
+}
+
+.carousel-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.carousel-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: white;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-btn:hover:not(.disabled) {
+  background: #7BB540;
+  color: white;
+  transform: scale(1.05);
+}
+
+.carousel-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* .carousel-container {
+  overflow: hidden;
+
+  scroll-behavior: smooth;
+  
+  border-radius: 16px;
+} */
+
+.carousel-container {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  scroll-behavior: smooth;
+  border-radius: 16px;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
+  /* Remove scrollbar hiding */
+  scrollbar-width: thin; /* Firefox: thinner scrollbar */
+  scrollbar-color: #7BB540 transparent; /* Firefox: thumb color and track */
+}
+
+.carousel-container::-webkit-scrollbar {
+  height: 8px; /* Height of the horizontal scrollbar */
+}
+
+.carousel-container::-webkit-scrollbar-track {
+  background: #f1f5f9; /* Track color */
+  border-radius: 8px;
+}
+
+.carousel-container::-webkit-scrollbar-thumb {
+  background: #7BB540; /* Thumb color */
+  border-radius: 8px;
+}
+
+.carousel-container::-webkit-scrollbar-thumb:hover {
+  background: #5a9b30; /* Darker thumb on hover */
+}
+
+.carousel-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  transition: none;
+  user-select: none; /* Prevent text selection during drag */
+  cursor: grab;
+}
+
+.carousel-track.dragging {
+  cursor: grabbing;
+}
+
+/* .carousel-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  transition: none; 
+
+} */
+
+
+
+.product-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.retailer-carousel-product-image {
+  position: relative;
+  height: 200px;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.retailer-carousel-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .retailer-carousel-product-image img {
+  transform: scale(1.05);
+}
+
+.product-overlay {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.sustainability-badge {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.product-info {
+  padding: 1.25rem;
+}
+
+.product-name {
+  font-size: 1.1rem;
+  color: #1e293b;
+  margin: 0 0 0.75rem 0;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.product-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #7BB540;
+  margin-bottom: 0.75rem;
+}
+
+.product-stats {
+  margin-bottom: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.stat-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.stat-value {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.product-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #7BB540;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #6aa235;
+}
+
+.btn-secondary {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+.carousel-indicators {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.indicator-text {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .carousel-track {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .carousel-track {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .product-info {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-track {
+    grid-template-columns: 1fr;
+  }
+}

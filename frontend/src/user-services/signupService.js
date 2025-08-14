@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/auth/signup"; // Adjust if hosted elsewhere
+const API_URL = "https://api.greencart-cos301.co.za/auth/signup";
 
 export const signup = async ({ name, email, password }) => {
   try {
