@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/cart/add";
+const API_URL = "https://api.greencart-cos301.co.za/cart/add";
 
 export const addToCart = async ({user_id, product_id, quantity}) => {
     try {
@@ -12,8 +12,14 @@ export const addToCart = async ({user_id, product_id, quantity}) => {
                 quantity
             })
         });
-    }catch (error) {
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
         throw error;
     }
-
 };

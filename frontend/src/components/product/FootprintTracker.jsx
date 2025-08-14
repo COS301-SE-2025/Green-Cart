@@ -117,7 +117,7 @@ export default function FootprintTracker({ sustainability }) {
         <span className="fp-scale-max">100</span>
       </div>
 
-      {/* Interactive Breakdown */}
+      {/* Interactive Breakdown - FIXED */}
       <div className="fp-breakdown">
         <h3 className="fp-breakdown-title">Sustainability Breakdown</h3>
         
@@ -128,23 +128,38 @@ export default function FootprintTracker({ sustainability }) {
               className={`fp-breakdown-item ${selected === item.type ? 'active' : ''}`}
               onClick={() => setSelected(item.type)}
               style={{
-                '--accent-color': getRatingColor((item.value/5) * 100),
+                '--accent-color': getRatingColor(item.value),
               }}
             >
               <div className="fp-breakdown-bar">
                 <div 
                   className="fp-breakdown-fill"
                   style={{ 
-                    width: `${((item.value/5)) * 100}%`,
-                    backgroundColor: getRatingColor((item.value/5) * 100)
+                    width: `${item.value}%`,
+                    backgroundColor: getRatingColor(item.value)
                   }}
                 />
               </div>
               <div className="fp-breakdown-info">
-                <span className="fp-breakdown-stage">{item.type}</span>
-                <span className="fp-breakdown-value">
-                  {((item.value/5)*100).toFixed(1)}/100 ({(item.value/5)*100}%)
-                </span>
+                <div className="fp-breakdown-main">
+                  <span className="fp-breakdown-stage">{item.type}</span>
+                  <span className="fp-breakdown-value">
+                    {item.value.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="fp-verification-status">
+                  {item.verification ? (
+                    <span className="verified-badge">
+                      <span className="verification-icon">✓</span>
+                      <span className="verification-text">Verified</span>
+                    </span>
+                  ) : (
+                    <span className="unverified-badge">
+                      <span className="verification-icon">⚠</span>
+                      <span className="verification-text">Unverified</span>
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           ))}

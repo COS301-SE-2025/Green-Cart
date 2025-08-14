@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/products/FetchProduct";
+const API_URL = "https://api.greencart-cos301.co.za/products/FetchProduct";
 
 export const fetchProduct = async ({ product_id }) => {
     try {

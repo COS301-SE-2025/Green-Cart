@@ -15,6 +15,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [ratings, setRatings] = useState([]);
+  const [isSticky, setIsSticky] = useState(true);
   
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
@@ -129,11 +130,43 @@ export default function Home() {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-  
-  return (
 
+  useEffect(() => {
+    const heroSection = document.querySelector('.hero-section');
+
+    if (!heroSection) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsSticky(entry.isIntersecting); // true when hero is in view
+      },
+      { threshold: 0.1 } // trigger when at least 10% is visible
+    );
+
+    observer.observe(heroSection);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
     <div className="home">
-      <SearchBar className="home-search-bar" />
+      {/* Search Section */}
+      <section className={`search-section ${isSticky ? 'sticky' : ''}`}>
+        <SearchBar className="home-search-bar" />
+      </section>
+
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-background">
+          <div className="hero-overlay"></div>
+          <div className="hero-content">
+            <h1 className="hero-title">New in Homeware</h1>
+            <p className="hero-description">
+              Upgrade your home with planet-friendly essentials that blend style, function, and sustainability.
+            </p>
+          </div>
+        </div>
+      </section>
       
       {/* Mobile Filter Toggle */}
       <button className="mobile-filter-toggle" onClick={toggleSidebar}>
@@ -168,7 +201,6 @@ export default function Home() {
         {/* Main Content */}
         <main className="home-main">
           <div className="home-header">
-            <h1>Just In</h1>
             {!isLoading && !error && (
               <p className="products-count">
                 {products.length} eco-friendly products available
@@ -206,7 +238,7 @@ export default function Home() {
           ) : products.length > 0 ? (
              <div className="product-list">
               {products.map((product, i) => (
-              <Product key={product.id} product={product} image={images[i]} product_rating={parseInt(ratings[i])} />
+              <Product key={product.id} product={product} image={images[i]} product_rating={parseFloat(ratings[i]) || 0} />
             ))}
         </div>
           ) : (

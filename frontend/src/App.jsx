@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import './App.css';
 
 import ViewProduct from './components/product/ViewProduct';
@@ -14,6 +15,14 @@ import Orders from './pages/Orders';
 import Help from './pages/Help';
 import Checkout from './pages/Checkout'; // ✅ ADDED
 import UserAccount from './pages/UserAccount'; // Placeholder for user account page
+import RetailerDashboard from './pages/RetailerDashboard'; // ✅ ADDED
+import RetailerProducts from './pages/RetailerProducts'; // Importing RetailerProducts page
+import RetailerOrders from './pages/RetailerOrders'; // ✅ ADDED
+import RetailerAccount from './pages/RetailerAccount'; // ✅ ADDED
+import Admin from './pages/Admin';
+import ViewRetailerProduct from './pages/ViewRetailerProduct'; // Importing ViewRetailerProduct page
+import RetailerAuth from './pages/RetailerAuth'; // ✅ ADDED
+import ProtectedRetailerRoute from './components/ProtectedRetailerRoute'; // ✅ ADDED
 import { SearchProvider } from './components/search/SearchProvider';
 import { CartProvider } from "./components/cart/CartContext";
 
@@ -34,6 +43,7 @@ function App() {
             } />
             <Route path="/Login" element={<Login />} />
             <Route path="/Register" element={<Register />} />
+            <Route path="/retailer-auth" element={<RetailerAuth />} />
             <Route path="/search" element={
               <React.Fragment key="search">
                 <Navigation />
@@ -77,9 +87,91 @@ function App() {
                 <UserAccount />
               </React.Fragment>
             } />
+            {/* Retailer routes - protected and without main Navigation */}
+            <Route path="/retailer-dashboard" element={
+              <ProtectedRetailerRoute>
+                <RetailerDashboard />
+              </ProtectedRetailerRoute>
+            } />
+            <Route path="/retailer-orders" element={
+              <ProtectedRetailerRoute>
+                <RetailerOrders />
+              </ProtectedRetailerRoute>
+            } />
+            <Route path="/retailer-account" element={
+              <ProtectedRetailerRoute>
+                <RetailerAccount />
+              </ProtectedRetailerRoute>
+            } />
+            {/* Retailer product routes - protected and without main Navigation */}
+            <Route path="/retailer/product/:id" element={
+              <ProtectedRetailerRoute>
+                <ViewRetailerProduct />
+              </ProtectedRetailerRoute>
+            } />
+            <Route path="/retailer/products" element={
+              <ProtectedRetailerRoute>
+                <RetailerProducts />
+              </ProtectedRetailerRoute>
+            } />
+            <Route path="/admin" element={
+              <React.Fragment key="admin-products"> 
+                {/* <Navigation /> */}
+                <Admin />
+              </React.Fragment>
+            } />
             {/* catch-all */}
             <Route path="*" element={<Navigate to="/Home" replace />} />
           </Routes>
+
+          {/* Toast notifications */}
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#ffffff',
+                color: '#1e293b',
+                border: '1px solid #e2e8f0',
+                borderRadius: '12px',
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
+                fontSize: '20px',
+                fontWeight: '500',
+                padding: '16px 20px',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+              },
+              success: {
+                style: {
+                  border: '1px solid #22c55e',
+                  backgroundColor: '#f0fdf4',
+                },
+                iconTheme: {
+                  primary: '#22c55e',
+                  secondary: '#ffffff',
+                },
+              },
+              error: {
+                style: {
+                  border: '1px solid #ef4444',
+                  backgroundColor: '#fef2f2',
+                },
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#ffffff',
+                },
+              },
+              loading: {
+                style: {
+                  border: '1px solid #7BB540',
+                  backgroundColor: '#f8fafc',
+                },
+                iconTheme: {
+                  primary: '#7BB540',
+                  secondary: '#ffffff',
+                },
+              },
+            }}
+          />
         </div>
       </CartProvider>
     </SearchProvider>
