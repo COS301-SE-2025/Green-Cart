@@ -35,14 +35,14 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   overflow: hidden;
   min-height: 600px;
-  align-items: start;
+  /* align-items: start; */
 }
 
 .vp-product-image-container {
   position: relative;
   /* height: 70%; */
-  min-height: 500px; /* MODIFIED: Set minimum height */
-  max-height: 700px; /* ADDED: Set maximum height */
+  min-height: 500px; 
+  max-height: 700px; 
   background: #f5f5f5;
   display: flex;
   align-items: center;
@@ -51,6 +51,7 @@
     border-radius: 8px;
     margin: 2rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: fit-content;
 }
 
 /* Image Gallery Styles */
