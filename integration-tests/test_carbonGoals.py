@@ -76,3 +76,18 @@ def test_get_carbon_goals_invalid_month():
         "month": 13
     })
     assert response.status_code != 422
+
+def test_get_carbon_data_standard_response():
+    response = client.post("api/carbon-data",  json={
+        "user_id": "e1ca2b93-314f-4a71-b6fb-3bb430157b1f"
+    })
+    assert response.status_code == 200
+
+def test_get_carbon_data_invalid_user_id():
+    response = client.post("api/carbon-data", json={
+        "user_id": "invalid-user-id"
+    })
+    assert response.status_code != 422
+
+    response = client.post("api/carbon-data")
+    assert response.status_code == 422
