@@ -13,9 +13,10 @@ export default function ViewRetailerProduct() {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [editModalOpen, setEditModalOpen] = useState(false);
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [imageErrors, setImageErrors] = useState(new Set());
 
     useEffect(() => {
-        // Check for retailer authentication
         if (!isRetailerAuthenticated()) {
             navigate('/retailer-auth');
             return;
@@ -23,9 +24,32 @@ export default function ViewRetailerProduct() {
         fetchProduct();
     }, [id, navigate]);
 
+    // Enhanced image URL cleaner function
+    const cleanImageUrl = (url) => {
+        if (!url || typeof url !== 'string') return '/fallback-image.jpg';
+        
+        // Check for duplicate paths in S3 URLs
+        const s3Pattern = /(.+\.amazonaws\.com\/[^\/]+\/\d+\/)(.+)\/(.+)/;
+        const match = url.match(s3Pattern);
+        
+        if (match) {
+            // If we find a pattern like: base/path/file.jpg/another-file.jpg
+            // We want to keep only: base/path/file.jpg
+            const [, basePath, firstFile, secondFile] = match;
+            
+            // Check if firstFile has an extension (is a complete filename)
+            if (firstFile.includes('.')) {
+                console.log('Cleaning duplicate S3 path:', url);
+                console.log('Using cleaned URL:', basePath + firstFile);
+                return basePath + firstFile;
+            }
+        }
+        
+        return url;
+    };
+
     const fetchProduct = async () => {
         try {
-            // Get retailer user data with fallback
             const retailerData = localStorage.getItem('retailer_user');
             let userData = null;
             
@@ -33,7 +57,6 @@ export default function ViewRetailerProduct() {
                 userData = JSON.parse(retailerData);
                 console.log('Using retailer user data for product fetch');
             } else {
-                // Fallback to regular user data if retailer data not found
                 const fallbackData = localStorage.getItem('userData');
                 if (fallbackData) {
                     userData = JSON.parse(fallbackData);
@@ -62,42 +85,42 @@ export default function ViewRetailerProduct() {
             console.log('Product fetch response from deployed API:', result);
 
             if (response.ok && result.status === 200 && result.data) {
-                // Process S3 images properly
-                const productData = result.data;
+                const productData = result;
                 let processedImages = [];
 
-                // Handle S3 images from different possible sources
+                // Enhanced image processing with URL cleaning
                 if (productData.images && Array.isArray(productData.images)) {
-                    processedImages = productData.images.map(img => 
-                        typeof img === 'string' ? img : (img.url || img.image_url || img)
-                    ).filter(Boolean);
+                    processedImages = productData.images
+                        .map(img => {
+                            const rawUrl = typeof img === 'string' ? img : (img.url || img.image_url || img);
+                            return cleanImageUrl(rawUrl);
+                        })
+                        .filter(url => url && url !== '/fallback-image.jpg');
                 } else if (productData.image_url) {
-                    processedImages = [productData.image_url];
+                    const cleanedUrl = cleanImageUrl(productData.image_url);
+                    if (cleanedUrl !== '/fallback-image.jpg') {
+                        processedImages = [cleanedUrl];
+                    }
                 }
 
-                // Log S3 image information
-                console.log('Processed S3 images for product:', processedImages);
-                const s3Images = processedImages.filter(img => img.includes('s3.amazonaws.com'));
-                console.log('S3 bucket images found:', s3Images.length);
+                console.log('Processed and cleaned S3 images:', processedImages);
 
                 setProduct({
-                    ...productData,
-                    // Prioritize S3 images
-                    images: processedImages,
-                    primary_image: processedImages.length > 0 ? processedImages[0] : null,
-                    // Sustainability data
+                    ...productData.data,
+                    images: productData.images,//processedImages,
+                    primary_image: processedImages.length > 0 ? processedImages[0] : '/fallback-image.jpg',
                     sustainability_rating: result.sustainability?.rating || productData.sustainability_rating || 0,
                     sustainability_statistics: result.sustainability?.statistics || productData.sustainability_statistics || [],
                     sustainability_grade: result.sustainability?.grade || productData.sustainability_grade || '',
                     sustainability_insights: result.sustainability?.insights || productData.sustainability_insights || [],
-                    // Sales data
                     units_sold: typeof result.units_sold === 'number' ? result.units_sold : 
                                typeof productData.units_sold === 'number' ? productData.units_sold : 0,
                     revenue: typeof result.revenue === 'number' ? result.revenue : 
                             typeof productData.revenue === 'number' ? productData.revenue : 0,
-                    // Stock data
                     quantity: productData.stock_quantity || productData.quantity || 0
                 });
+                
+                setImageErrors(new Set());
             } else {
                 console.error('Failed to fetch product from deployed API:', result.message);
                 setProduct(null);
@@ -143,40 +166,57 @@ export default function ViewRetailerProduct() {
 
     const handleProductUpdate = async (updatedProduct) => {
         console.log('Product update completed, refreshing product data');
-        // Close modal and refresh product data to show S3 changes
         setEditModalOpen(false);
         await fetchProduct();
     };
 
-    // Helper function to get the best S3 image
-    const getProductImage = (product) => {
+    const getProductImage = (product, index = 0) => {
         if (!product) return '/fallback-image.jpg';
         
-        // Prioritize S3 images
-        if (product.images && Array.isArray(product.images) && product.images.length > 0) {
-            const firstImage = product.images[0];
-            return typeof firstImage === 'string' ? firstImage : (firstImage.url || firstImage.image_url || firstImage);
+        if (product.images && Array.isArray(product.images) && product.images.length > index) {
+            return product.images[index];
         }
         
-        if (product.primary_image) {
-            return product.primary_image;
-        }
-        
-        if (product.image_url) {
-            return product.image_url;
+        if (index === 0) {
+            if (product.primary_image && product.primary_image !== '/fallback-image.jpg') {
+                return product.primary_image;
+            }
+            
+            if (product.image_url) {
+                return cleanImageUrl(product.image_url);
+            }
         }
         
         return '/fallback-image.jpg';
+    };
+
+    const handleImageError = (e, imageUrl, isMainImage = false) => {
+        const currentSrc = e.target.src;
+        
+        if (imageErrors.has(imageUrl) || currentSrc.includes('fallback-image.jpg')) {
+            console.warn('Image already failed or is fallback, hiding element:', imageUrl);
+            e.target.style.opacity = '0.3';
+            e.target.style.background = '#f3f4f6';
+            return;
+        }
+        
+        setImageErrors(prev => new Set([...prev, imageUrl]));
+        e.target.onerror = null;
+        e.target.src = '/fallback-image.jpg';
+        
+        console.warn('Failed to load image, using fallback:', imageUrl);
     };
 
     if (loading) {
         return (
             <>
                 <RetailerNavbar />
-                <div className="dashboard-loading-container">
-                    <div className="dashboard-loading">
-                        <div className="loading-spinner"></div>
-                        <span>Loading Product Details...</span>
+                <div className="view-retailer-product-main">
+                    <div className="view-retailer-product-loading-container">
+                        <div className="view-retailer-product-loading">
+                            <div className="view-retailer-product-loading-spinner"></div>
+                            <span>Loading Product Details...</span>
+                        </div>
                     </div>
                 </div>
             </>
@@ -187,264 +227,189 @@ export default function ViewRetailerProduct() {
         return (
             <>
                 <RetailerNavbar />
-                <div className="dashboard-container">
-                    <div className="dashboard-header">
-                        <button
-                            className="back-button"
-                            onClick={() => navigate('/retailer/products')}
-                        >
-                            ← Back to Products
-                        </button>
-                    </div>
-                    <div className="dashboard-error" style={{ textAlign: 'center', padding: '2rem' }}>
-                        <h2 style={{ color: '#1e293b', marginBottom: '1rem' }}>Product Not Found</h2>
-                        <p style={{ color: '#64748b', marginBottom: '2rem' }}>
-                            The product you're looking for could not be found or failed to load from the server.
-                        </p>
-                        <button 
-                            onClick={() => navigate('/retailer/products')}
-                            style={{ 
-                                padding: '0.5rem 1rem', 
-                                backgroundColor: '#4CAF50', 
-                                color: 'white', 
-                                border: 'none', 
-                                borderRadius: '4px', 
-                                cursor: 'pointer' 
-                            }}
-                        >
-                            Back to Products
-                        </button>
+                <div className="view-retailer-product-main">
+                    <div className="view-retailer-product-container">
+                        <div className="view-retailer-product-header">
+                            <div className="view-retailer-product-header-left">
+                                <button
+                                    className="view-retailer-product-back-button"
+                                    onClick={() => navigate('/retailer/products')}
+                                >
+                                    ← Back to Products
+                                </button>
+                            </div>
+                        </div>
+                        <div className="view-retailer-product-error">
+                            <h2>Product Not Found</h2>
+                            <p>The product you're looking for could not be found or failed to load from the server.</p>
+                            <button onClick={() => navigate('/retailer/products')}>
+                                Back to Products
+                            </button>
+                        </div>
                     </div>
                 </div>
             </>
         );
     }
 
-    const productImage = getProductImage(product);
-    const isS3Image = productImage && productImage.includes('s3.amazonaws.com');
+    const currentProductImage = getProductImage(product, selectedImageIndex);
+    const isS3Image = currentProductImage && currentProductImage.includes('s3.amazonaws.com');
     const totalImages = product.images ? product.images.length : 0;
 
     return (
         <>
             <RetailerNavbar />
-            <div className="view-retailer-product-container">
-                <div className="product-header">
-                    <div className="header-left">
-                        <button
-                            className="back-button"
-                            onClick={() => navigate('/retailer/products')}
-                        >
-                            ← Back to Products
-                        </button>
-                    </div>
-                    <div className="header-right">
-                        <button
-                            className="edit-product-button"
-                            style={{ 
-                                background: '#7BB540', 
-                                color: '#fff', 
-                                border: 'none', 
-                                borderRadius: '4px', 
-                                padding: '0.5rem 1.5rem', 
-                                fontWeight: 600, 
-                                fontSize: '1rem', 
-                                cursor: 'pointer', 
-                                marginRight: '1rem' 
-                            }}
-                            onClick={handleEditProduct}
-                        >
-                            Edit Product
-                        </button>
-                        <button
-                            className="delete-product-button"
-                            style={{ 
-                                background: '#ef4444', 
-                                color: '#fff', 
-                                border: 'none', 
-                                borderRadius: '4px', 
-                                padding: '0.5rem 1.5rem', 
-                                fontWeight: 600, 
-                                fontSize: '1rem', 
-                                cursor: 'pointer' 
-                            }}
-                            onClick={handleDeleteProduct}
-                        >
-                            Delete Product
-                        </button>
-                    </div>
-                </div>
-                
-                <div className="product-content">
-                    <div className="product-image-section">
-                        <div style={{ position: 'relative' }}>
-                            <img
-                                src={productImage}
-                                alt={product.name || 'Product'}
-                                onError={e => { 
-                                    e.target.src = '/fallback-image.jpg';
-                                    console.warn('Failed to load S3 product image:', productImage);
-                                }}
-                                style={{
-                                    width: '100%',
-                                    maxHeight: '400px',
-                                    objectFit: 'cover',
-                                    backgroundColor: '#f5f5f5',
-                                    borderRadius: '8px'
-                                }}
-                            />
-                            {/* S3 and image count indicators */}
-                            <div style={{
-                                position: 'absolute',
-                                top: '12px',
-                                right: '12px',
-                                display: 'flex',
-                                gap: '8px'
-                            }}>
-                                {isS3Image && (
-                                    <span style={{
-                                        background: 'rgba(34, 197, 94, 0.9)',
-                                        color: 'white',
-                                        padding: '4px 8px',
-                                        borderRadius: '4px',
-                                        fontSize: '0.8rem',
-                                        fontWeight: 'bold'
-                                    }}>
-                                        S3 Stored
-                                    </span>
-                                )}
-                                {totalImages > 1 && (
-                                    <span style={{
-                                        background: 'rgba(59, 130, 246, 0.9)',
-                                        color: 'white',
-                                        padding: '4px 8px',
-                                        borderRadius: '4px',
-                                        fontSize: '0.8rem',
-                                        fontWeight: 'bold'
-                                    }}>
-                                        {totalImages} images
-                                    </span>
-                                )}
-                            </div>
+            <div className="view-retailer-product-main">
+                <div className="view-retailer-product-container">
+                    <div className="view-retailer-product-header">
+                        <div className="view-retailer-product-header-left">
+                            <button
+                                className="view-retailer-product-back-button"
+                                onClick={() => navigate('/retailer/products')}
+                            >
+                                ← Back to Products
+                            </button>
                         </div>
-
-                        {/* Additional S3 images preview */}
-                        {product.images && product.images.length > 1 && (
-                            <div style={{ marginTop: '16px' }}>
-                                <h4 style={{ color: '#374151', marginBottom: '8px' }}>
-                                    All Images ({product.images.length})
-                                </h4>
-                                <div style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
-                                    gap: '8px',
-                                    maxHeight: '200px',
-                                    overflowY: 'auto'
-                                }}>
-                                    {product.images.map((image, index) => {
-                                        const imageUrl = typeof image === 'string' ? image : (image.url || image.image_url || image);
-                                        const isThisS3 = imageUrl && imageUrl.includes('s3.amazonaws.com');
-                                        
-                                        return (
-                                            <div key={index} style={{ position: 'relative' }}>
-                                                <img
-                                                    src={imageUrl}
-                                                    alt={`${product.name} ${index + 1}`}
-                                                    style={{
-                                                        width: '100%',
-                                                        height: '80px',
-                                                        objectFit: 'cover',
-                                                        borderRadius: '4px',
-                                                        border: index === 0 ? '2px solid #7BB540' : '1px solid #e5e7eb'
-                                                    }}
-                                                    onError={e => { 
-                                                        e.target.src = '/fallback-image.jpg';
-                                                    }}
-                                                />
-                                                {isThisS3 && (
-                                                    <span style={{
-                                                        position: 'absolute',
-                                                        top: '2px',
-                                                        right: '2px',
-                                                        background: 'rgba(34, 197, 94, 0.9)',
-                                                        color: 'white',
-                                                        padding: '1px 3px',
-                                                        borderRadius: '2px',
-                                                        fontSize: '0.6rem',
-                                                        fontWeight: 'bold'
-                                                    }}>
-                                                        S3
-                                                    </span>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
+                        <div className="view-retailer-product-header-right">
+                            <button
+                                className="view-retailer-product-edit-button"
+                                onClick={handleEditProduct}
+                            >
+                                Edit Product
+                            </button>
+                            {/* <button
+                                className="view-retailer-product-delete-button"
+                                onClick={handleDeleteProduct}
+                            >
+                                Delete Product
+                            </button> */}
+                        </div>
                     </div>
                     
-                    <div className="product-details-section">
-                        <h1>{product.name}</h1>
-                        
-                        <div className="metrics-grid">
-                            <div className="metric-item">
-                                <label>Price</label>
-                                <p>R{Number(product.price).toFixed(2)}</p>
+                    {/* UPDATED LAYOUT: Two-column layout with image on left, details on right */}
+                    <div className="view-retailer-product-content">
+                        {/* Image Section - Left Column */}
+                        <div className="view-retailer-product-image-section">
+                            <div className="view-retailer-product-main-image">
+                                <img
+                                    src={currentProductImage}
+                                    alt={product.name || 'Product'}
+                                    onError={(e) => handleImageError(e, currentProductImage, true)}
+                                />
+                                <div className="view-retailer-product-image-overlay">
+                                    {isS3Image && (
+                                        <span className="view-retailer-product-s3-badge">
+                                            S3 Stored
+                                        </span>
+                                    )}
+                                    {totalImages > 1 && (
+                                        <span className="view-retailer-product-image-count-badge">
+                                            {selectedImageIndex + 1} of {totalImages}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
-                            <div className="metric-item">
-                                <label>Available Stock</label>
-                                <p>{product.quantity}</p>
-                            </div>
-                            <div className="metric-item">
-                                <label>Total Units Sold</label>
-                                <p>{typeof product.units_sold === 'number' ? product.units_sold : 0}</p>
-                            </div>
-                            <div className="metric-item">
-                                <label>Total Revenue</label>
-                                <p>R{Number(product.revenue).toFixed(2)}</p>
-                            </div>
-                            {totalImages > 0 && (
-                                <div className="metric-item">
-                                    <label>S3 Images</label>
-                                    <p>{totalImages} stored</p>
+
+                            {/* Image gallery for multiple images */}
+                            {product.images && product.images.length > 1 && (
+                                <div className="view-retailer-product-image-gallery">
+                                    <h4 className="view-retailer-product-gallery-title">
+                                        All Images ({product.images.length})
+                                    </h4>
+                                    <div className="view-retailer-product-gallery-grid">
+                                        {product.images.map((image, index) => {
+                                            const imageUrl = typeof image === 'string' ? image : (image.url || image.image_url || image);
+                                            const isThisS3 = imageUrl && imageUrl.includes('s3.amazonaws.com');
+                                            
+                                            return (
+                                                <div 
+                                                    key={index} 
+                                                    className={`view-retailer-product-gallery-item ${index === selectedImageIndex ? 'active' : ''}`}
+                                                    onClick={() => setSelectedImageIndex(index)}
+                                                >
+                                                    <img
+                                                        src={imageUrl}
+                                                        alt={`${product.name} ${index + 1}`}
+                                                        onError={(e) => handleImageError(e, imageUrl, false)}
+                                                    />
+                                                    {isThisS3 && (
+                                                        <span className="view-retailer-product-gallery-s3-indicator">
+                                                            S3
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             )}
-                            <div className="metric-item">
-                                <label>Category</label>
-                                <p>{product.category || 'N/A'}</p>
+                        </div>
+                        
+                        {/* Details Section - Right Column */}
+                        <div className="view-retailer-product-details-section">
+                            <h1 className="view-retailer-product-title">{product.name}</h1>
+                            
+                            <div className="view-retailer-product-metrics-grid">
+                                <div className="view-retailer-product-metric-item">
+                                    <span className="view-retailer-product-metric-label">Price</span>
+                                    <p className="view-retailer-product-metric-value price">R{Number(product.price).toFixed(2)}</p>
+                                </div>
+                                <div className="view-retailer-product-metric-item">
+                                    <span className="view-retailer-product-metric-label">Available Stock</span>
+                                    <p className="view-retailer-product-metric-value stock">{product.quantity}</p>
+                                </div>
+                                <div className="view-retailer-product-metric-item">
+                                    <span className="view-retailer-product-metric-label">Total Units Sold</span>
+                                    <p className="view-retailer-product-metric-value sold">{typeof product.units_sold === 'number' ? product.units_sold : 0}</p>
+                                </div>
+                                <div className="view-retailer-product-metric-item">
+                                    <span className="view-retailer-product-metric-label">Total Revenue</span>
+                                    <p className="view-retailer-product-metric-value revenue">R{Number(product.revenue || 0).toFixed(2)}</p>
+                                </div>
+                                {totalImages > 0 && (
+                                    <div className="view-retailer-product-metric-item">
+                                        <span className="view-retailer-product-metric-label">S3 Images</span>
+                                        <p className="view-retailer-product-metric-value">{totalImages} stored</p>
+                                    </div>
+                                )}
+                                <div className="view-retailer-product-metric-item">
+                                    <span className="view-retailer-product-metric-label">Category</span>
+                                    <p className="view-retailer-product-metric-value">{product.category || 'N/A'}</p>
+                                </div>
+                            </div>
+                            
+                            <div className="view-retailer-product-description-section">
+                                <span className="view-retailer-product-description-label">Description</span>
+                                <p className="view-retailer-product-description-text">{product.description || 'No description available'}</p>
                             </div>
                         </div>
-                        
-                        <div className="description-section">
-                            <label>Description</label>
-                            <p>{product.description || 'No description available'}</p>
-                        </div>
-                        
-                        <div className="sustainability-section">
-                            <FootprintTracker
-                                sustainability={{
-                                    rating: typeof product.sustainability_rating === 'number' ? product.sustainability_rating : 0,
-                                    statistics: Array.isArray(product.sustainability_statistics)
-                                        ? product.sustainability_statistics.map(stat => ({
-                                            id: stat.id,
-                                            type: stat.type,
-                                            value: stat.value
-                                        }))
-                                        : [],
-                                    grade: product.sustainability_grade,
-                                    insights: product.sustainability_insights
-                                }}
-                            />
-                        </div>
                     </div>
+                    
+                    {/* Sustainability Section - Full Width Below */}
+                    <div className="view-retailer-product-sustainability-section">
+                        <FootprintTracker
+                            sustainability={{
+                                rating: typeof product.sustainability_rating === 'number' ? product.sustainability_rating : 0,
+                                statistics: Array.isArray(product.sustainability_statistics)
+                                    ? product.sustainability_statistics.map(stat => ({
+                                        id: stat.id,
+                                        type: stat.type,
+                                        value: stat.value
+                                    }))
+                                    : [],
+                                grade: product.sustainability_grade,
+                                insights: product.sustainability_insights
+                            }}
+                        />
+                    </div>
+                    
+                    <EditProduct
+                        isOpen={editModalOpen}
+                        onClose={() => setEditModalOpen(false)}
+                        product={product}
+                        onProductUpdated={handleProductUpdate}
+                    />
                 </div>
-                
-                <EditProduct
-                    isOpen={editModalOpen}
-                    onClose={() => setEditModalOpen(false)}
-                    product={product}
-                    onProductUpdated={handleProductUpdate}
-                />
             </div>
         </>
     );

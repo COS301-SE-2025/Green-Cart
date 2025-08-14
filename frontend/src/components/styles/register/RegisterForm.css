@@ -5,15 +5,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  padding: 2rem;
+  overflow-y: auto; /* Allow scrolling */
+  padding: 1rem; /* Add padding */
 }
 
 @media (min-width: 1024px) {
   .register-form-container {
     width: 60%;
     max-height: 100vh;
-    padding: 3rem;
+    padding: 2rem;
   }
 }
 
@@ -36,29 +36,31 @@
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 420px;
-  padding: 3rem 2.5rem;
+  max-width: 400px; /* Slightly smaller */
+  padding: 2.5rem 2rem; /* Reduced padding */
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(15px);
-  border-radius: 24px;
+  border-radius: 20px; /* Smaller radius */
   box-shadow: 
-    0 32px 64px rgba(0, 0, 0, 0.12),
+    0 20px 40px rgba(0, 0, 0, 0.12),
     0 8px 32px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  max-height: 90vh;
+  max-height: 95vh; /* Better fit */
   display: flex;
   flex-direction: column;
   justify-content: center;
   transform: translateY(0);
   transition: all 0.3s ease;
   animation: modalSlideIn 0.6s ease-out;
+  margin: auto;
+  overflow-y: auto; /* Allow internal scrolling */
 }
 
 @keyframes modalSlideIn {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px); /* Reduced animation */
   }
   to {
     opacity: 1;
@@ -67,7 +69,7 @@
 }
 
 .register-form-content.slide-out {
-  transform: translateX(-50px);
+  transform: translateX(-30px); /* Reduced slide distance */
   opacity: 0;
 }
 
@@ -76,20 +78,29 @@
   opacity: 1;
 }
 
+@media (max-width: 768px) {
+  .register-form-content {
+    max-width: 95%;
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+    max-height: 98vh;
+  }
+}
+
 @media (max-width: 480px) {
   .register-form-content {
-    max-width: 90%;
-    padding: 2.5rem 2rem;
-    border-radius: 20px;
-    max-height: 100vh;
+    max-width: 98%;
+    padding: 1.5rem 1.25rem;
+    border-radius: 12px;
+    max-height: 99vh;
   }
 }
 
 .register-form-title {
-  font-size: 2.5rem;
+  font-size: 2rem; /* Reduced from 2.5rem */
   font-weight: 700;
   color: #1f2937 !important;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem; /* Reduced */
   line-height: 1.1;
   text-align: center;
   letter-spacing: -0.025em;
@@ -97,41 +108,55 @@
 
 @media (max-width: 768px) {
   .register-form-title {
-    font-size: 2.2rem;
-    margin-bottom: 1.8rem;
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-form-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
   }
 }
 
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.75rem; /* Increased gap for better label spacing */
+}
+
+@media (max-width: 480px) {
+  .register-form {
+    gap: 1.5rem;
+  }
 }
 
 /* Floating Label Form Groups */
-.form-group {
+.register-form-group {
   display: flex;
   flex-direction: column;
   position: relative;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem; /* Increased for label space */
 }
 
-.form-label {
+.register-form-label {
   position: absolute;
   left: 1.25rem;
-  top: 1rem;
+  top: 1rem; /* Centered in input */
   color: #6b7280 !important;
-  font-size: 0.9rem;
+  font-size: 0.9rem; /* Slightly larger */
   font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
   background: transparent;
-  z-index: 1;
+  z-index: 2;
+  transform-origin: left center;
 }
 
-.form-input {
+.register-form-input {
   width: 100%;
-  padding: 1rem 1.25rem;
+  padding: 1rem 1.25rem; /* Consistent padding */
   background-color: #f8fafc;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
@@ -142,15 +167,28 @@
   position: relative;
 }
 
-.form-input::placeholder {
+@media (max-width: 480px) {
+  .register-form-input {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .register-form-label {
+    left: 1rem;
+    top: 0.875rem;
+    font-size: 0.85rem;
+  }
+}
+
+.register-form-input::placeholder {
   color: transparent;
 }
 
-.form-input:focus::placeholder {
+.register-form-input:focus::placeholder {
   color: transparent;
 }
 
-.form-input:focus {
+.register-form-input:focus {
   outline: none;
   border-color: #7BB540;
   background-color: #ffffff;
@@ -160,25 +198,35 @@
   transform: translateY(-1px);
 }
 
-/* Float label when input is focused or has content */
-.form-input:focus + .form-label,
-.form-input:not(:placeholder-shown) + .form-label {
-  transform: translateY(-2.5rem) translateX(-0.25rem) scale(0.85);
+/* FIXED: Better floating label animation */
+.register-form-input:focus + .register-form-label,
+.register-form-input:not(:placeholder-shown) + .register-form-label {
+  transform: translateY(-2.75rem) translateX(-0.25rem) scale(0.8); /* More space above */
   color: #7BB540 !important;
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.95); 
+  padding: 0.3rem 0.6rem; /* More padding */
   border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+@media (max-width: 480px) {
+  .register-form-input:focus + .register-form-label,
+  .register-form-input:not(:placeholder-shown) + .register-form-label {
+    transform: translateY(-2.5rem) translateX(-0.2rem) scale(0.75);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+  }
 }
 
 .sign-up-button, .create-account-button {
   width: 100%;
   background: linear-gradient(135deg, #7BB540 0%, #6ba031 100%);
   color: white;
-  padding: 1.125rem 1.5rem;
+  padding: 1rem 1.5rem; /* Slightly reduced */
   border: none;
   border-radius: 12px;
-  font-size: 1.05rem;
+  font-size: 1rem; /* Slightly reduced */
   font-weight: 600;
   cursor: pointer;
   margin-top: 1rem;
@@ -189,6 +237,13 @@
   position: relative;
   overflow: hidden;
   letter-spacing: 0.025em;
+}
+
+@media (max-width: 480px) {
+  .sign-up-button, .create-account-button {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9rem;
+  }
 }
 
 .sign-up-button::before, .create-account-button::before {
@@ -224,10 +279,18 @@
 .signin-link {
   text-align: center;
   color: #6b7280 !important;
-  font-size: 0.95rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  font-size: 0.9rem; /* Slightly reduced */
+  margin-top: 1.5rem; /* Reduced */
+  padding-top: 1rem; /* Reduced */
   border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 480px) {
+  .signin-link {
+    font-size: 0.8rem;
+    margin-top: 1.25rem;
+    padding-top: 0.75rem;
+  }
 }
 
 .signin-link-text {
@@ -250,7 +313,13 @@
   display: flex;
   align-items: center;
   text-align: center;
-  margin: 1.5rem 0;
+  margin: 1.25rem 0; /* Reduced */
+}
+
+@media (max-width: 480px) {
+  .divider {
+    margin: 1rem 0;
+  }
 }
 
 .divider::before,
@@ -273,10 +342,10 @@
   width: 100%;
   background-color: #ffffff;
   color: #374151 !important;
-  padding: 1rem 1.5rem;
+  padding: 0.875rem 1.5rem; /* Slightly reduced */
   border: 2px solid #e5e7eb;
   border-radius: 12px;
-  font-size: 0.95rem;
+  font-size: 0.9rem; /* Slightly reduced */
   font-weight: 500;
   cursor: pointer;
   display: flex;
@@ -287,6 +356,14 @@
   margin-top: 0.5rem;
 }
 
+@media (max-width: 480px) {
+  .google-signup-button {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.8rem;
+    gap: 0.5rem;
+  }
+}
+
 .google-signup-button:hover {
   background-color: #f9fafb;
   border-color: #d1d5db;
@@ -295,16 +372,30 @@
 }
 
 .google-icon {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.2rem; /* Slightly smaller */
+  height: 1.2rem;
+}
+
+@media (max-width: 480px) {
+  .google-icon {
+    width: 1rem;
+    height: 1rem;
+  }
 }
 
 .terms-text {
   color: #6b7280 !important;
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* Reduced */
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 1.25rem; /* Reduced */
   line-height: 1.4;
+}
+
+@media (max-width: 480px) {
+  .terms-text {
+    font-size: 0.7rem;
+    margin-top: 1rem;
+  }
 }
 
 .terms-link {
@@ -320,10 +411,18 @@
 .retailer-signup-link {
   text-align: center;
   color: #6b7280 !important;
-  font-size: 0.9rem;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
+  font-size: 0.85rem; /* Reduced */
+  margin-top: 1.25rem; /* Reduced */
+  padding-top: 1rem; /* Reduced */
   border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 480px) {
+  .retailer-signup-link {
+    font-size: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+  }
 }
 
 .retailer-signup-text {
@@ -340,4 +439,92 @@
   text-decoration: underline;
   text-underline-offset: 3px;
   background-color: rgba(123, 181, 64, 0.05);
+}
+
+/* Additional responsive improvements */
+@media (max-height: 700px) {
+  .register-form-content {
+    padding: 1.5rem 1.75rem;
+  }
+  
+  .register-form-title {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .register-form {
+    gap: 1.25rem;
+  }
+  
+  .signin-link {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+  }
+  
+  .retailer-signup-link {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+  }
+}
+
+/* Very small mobile devices */
+@media (max-width: 320px) {
+  .register-form-content {
+    padding: 1.25rem 1rem;
+    max-width: 99%;
+  }
+  
+  .register-form-input {
+    padding: 0.75rem 0.875rem;
+    font-size: 0.85rem;
+  }
+
+  .register-form-label {
+    font-size: 0.8rem;
+  }
+  
+  .sign-up-button, .create-account-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .google-signup-button {
+    padding: 0.625rem 1rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Landscape mobile orientation */
+@media (max-height: 500px) and (orientation: landscape) {
+  .register-form-container {
+    padding: 0.5rem;
+    align-items: flex-start;
+    padding-top: 1rem;
+  }
+  
+  .register-form-content {
+    max-height: 95vh;
+    padding: 1.25rem 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .register-form-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .register-form {
+    gap: 1rem;
+  }
+  
+  .signin-link {
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+  }
+  
+  .retailer-signup-link {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+  }
 }
