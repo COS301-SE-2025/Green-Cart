@@ -265,7 +265,7 @@ async def update_product_with_images(
         product.description = description
         product.price = Decimal(str(price))
         product.category_id = category_id
-        product.stock_quantity = stock_quantity
+        product.quantity = stock_quantity
         
         # Handle sustainability ratings if provided
         ratings_updated = 0

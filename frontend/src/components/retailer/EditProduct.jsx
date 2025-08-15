@@ -5,6 +5,7 @@ import { API_BASE_URL } from '../../config/api.js';
 import '../styles/retailer/EditProduct.css';
 
 export default function EditProduct({ isOpen, onClose, onProductUpdated, product, retailerId }) {
+    console.log("On edit modal OPEN:",product);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -118,7 +119,8 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                 name: product.name || '',
                 description: product.description || '',
                 price: product.price?.toString() || '',
-                category: product.category || '',
+                category: product.category || null,
+                category_id: product.category_id,
                 brand: product.brand || '',
                 quantity: product.stock?.toString() || product.quantity?.toString() || '',
                 sustainability: {
@@ -482,7 +484,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                     <select
                                         id="edit-category"
                                         name="category"
-                                        value={formData.category}
+                                        value={formData.category || categories[formData.category_id-1]}
                                         onChange={handleInputChange}
                                         className={errors.category ? 'error' : 'select'}
                                     >
