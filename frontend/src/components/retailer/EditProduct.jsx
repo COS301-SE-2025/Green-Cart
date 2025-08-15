@@ -162,6 +162,9 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                 [name]: ''
             }));
         }
+
+        validateForm();
+    
     };
 
     const handleSustainabilityChange = (field, value) => {
@@ -269,7 +272,12 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!validateForm()) return;
+        if (!validateForm()) {
+            Object.keys(errors).forEach(key => {
+                toast.error(errors[key] === '' ? `Please fix the ${key} field` : errors[key]);
+            });
+            return;
+        }
         setIsSubmitting(true);
         
         console.log('Edit form submission started:', {
