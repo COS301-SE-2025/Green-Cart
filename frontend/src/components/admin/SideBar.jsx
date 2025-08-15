@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Dropdown from 'react-bootstrap/Dropdown';
+import { useNavigate } from 'react-router-dom';
 import '../styles/admin/SideBar.css';
 
 // Import icons
@@ -7,19 +9,20 @@ import ordersIcon from './icons/ordersIcon.png';
 import productsIcon from './icons/productsIcon.png';
 import paymentsIcon from './icons/paymentsIcon.png';
 import customersIcon from './icons/customersIcon.png';
-// import leafIcon from './icons/leafIcon.png';
 import backIcon from './icons/backIcon.png';
-import logo from './icons/Green-cart-admin.png'
+import logo from './icons/Green-cart-admin.png';
+// Profile menu icons - you'll need to add these to your icons folder
+import profileIcon from './icons/profileIcon.png';
+import logoutIcon from './icons/logoutIcon.png';
 
 const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [adminData, setAdminData] = useState({
     name: 'Admin User',
     email: 'admin@example.com'
   });
-  const profileMenuRef = useRef(null);
-  const profileButtonRef = useRef(null);
+  
+  const navigate = useNavigate();
 
   const navigationItems = [
     { name: 'Dashboard', icon: dashboardIcon },
@@ -70,37 +73,30 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
     onNavigate(itemName);
   };
 
-  const handleProfileMenuToggle = (e) => {
-    e.stopPropagation();
-    setShowProfileMenu(!showProfileMenu);
-  };
-
   const handleProfileAction = (action) => {
-    setShowProfileMenu(false);
     if (action === 'logout') {
-      console.log('Logging out...');
+      handleLogout();
     } else if (action === 'profile') {
       console.log('Viewing profile...');
+      // You can navigate to a profile page or open a profile modal here
     }
   };
 
-  // Close profile menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        profileMenuRef.current && 
-        !profileMenuRef.current.contains(event.target) &&
-        !profileButtonRef.current.contains(event.target)
-      ) {
-        setShowProfileMenu(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const handleLogout = () => {
+    try {
+      // Clear session storage
+      sessionStorage.removeItem('adminSession');
+      // Clear any other stored data if needed
+      sessionStorage.clear();
+      
+      // Navigate to login page
+      navigate('/admin/login');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Still navigate to login even if there's an error clearing storage
+      navigate('/admin/login');
+    }
+  };
 
   // Handle sidebar animation state
   useEffect(() => {
@@ -113,7 +109,6 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
       
       return () => clearTimeout(timer);
     } else {
-      setShowProfileMenu(false);
       setIsAnimating(false);
     }
   }, [isOpen]);
@@ -151,7 +146,6 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
               </svg>
               <input type="text" placeholder="Search" />
             </div>
-
           </div>
 
           <nav className="sidebar-nav">
@@ -206,32 +200,38 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
               <span className="user-name">{adminData.name}</span>
               <span className="user-email">{adminData.email}</span>
             </div>
-            <button 
-              ref={profileButtonRef}
-              className="user-menu"
-              onClick={handleProfileMenuToggle}
-            >
-              ⋯
-            </button>
-          </>
-        )}
+            
+            {/* Bootstrap Dropdown */}
+            <Dropdown drop="up" align="end">
+              <Dropdown.Toggle 
+                variant="none"
+                id="profile-dropdown"
+                className="sidebar-profile-dropdown-toggle"
+              >
+                ⋯
+              </Dropdown.Toggle>
 
-        {/* Profile Menu Overlay */}
-        {showProfileMenu && isOpen && (
-          <div 
-            ref={profileMenuRef}
-            className="profile-menu-overlay"
-          >
-            <div className="profile-menu-item" onClick={() => handleProfileAction('profile')}>
-              <span className="profile-menu-icon">👤</span>
-              <span>View Profile</span>
-            </div>
-            <div className="profile-menu-divider"></div>
-            <div className="profile-menu-item logout" onClick={() => handleProfileAction('logout')}>
-              <span className="profile-menu-icon">🚪</span>
-              <span>Logout</span>
-            </div>
-          </div>
+              <Dropdown.Menu className="sidebar-profile-dropdown-menu">
+                <Dropdown.Item 
+                  onClick={() => handleProfileAction('profile')}
+                  className="sidebar-profile-dropdown-item"
+                >
+                  <img src={profileIcon} alt="Profile" className="sidebar-profile-dropdown-icon" />
+                  View Profile
+                </Dropdown.Item>
+                
+                <Dropdown.Divider className="sidebar-profile-dropdown-divider" />
+                
+                <Dropdown.Item 
+                  onClick={() => handleProfileAction('logout')}
+                  className="sidebar-profile-dropdown-item logout"
+                >
+                  <img src={logoutIcon} alt="Logout" className="sidebar-profile-dropdown-icon" />
+                  Logout
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </>
         )}
       </div>
     </div>
