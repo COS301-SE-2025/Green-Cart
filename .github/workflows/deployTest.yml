@@ -3,7 +3,7 @@ name: Deploy Frontend and Backend Test
 on:
   push:
     branches:
-      - 138-final-deployment
+      - main
   workflow_dispatch:
 
 jobs:
@@ -192,8 +192,8 @@ jobs:
             # Clone the latest code
             git clone https://github.com/COS301-SE-2025/Green-Cart.git
             cd Green-Cart
-            git checkout 138-final-deployment
-            git pull origin 138-final-deployment
+            git checkout main
+            git pull origin main
             
             echo "=== Cleaning up test files ==="
             # Remove test files from root directory but keep integration-tests and unit-tests folders

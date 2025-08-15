@@ -269,32 +269,39 @@ async def update_product_with_images(
         
         # Handle sustainability ratings if provided
         ratings_updated = 0
-        if any([energy_efficiency, carbon_footprint, recyclability, durability, material_sustainability]):
-            # Get or create sustainability rating for this product
-            sustainability_rating = db.query(SustainabilityRating).filter(
-                SustainabilityRating.product_id == product_id
-            ).first()
-            
-            if not sustainability_rating:
-                sustainability_rating = SustainabilityRating(product_id=product_id)
-                db.add(sustainability_rating)
-            
-            # Update individual ratings if provided
-            if energy_efficiency is not None:
-                sustainability_rating.energy_efficiency = energy_efficiency
-                ratings_updated += 1
-            if carbon_footprint is not None:
-                sustainability_rating.carbon_footprint = carbon_footprint
-                ratings_updated += 1
-            if recyclability is not None:
-                sustainability_rating.recyclability = recyclability
-                ratings_updated += 1
-            if durability is not None:
-                sustainability_rating.durability = durability
-                ratings_updated += 1
-            if material_sustainability is not None:
-                sustainability_rating.material_sustainability = material_sustainability
-                ratings_updated += 1
+        sustainability_metrics = [
+            ("energy_efficiency", energy_efficiency),
+            ("carbon_footprint", carbon_footprint),
+            ("recyclability", recyclability),
+            ("durability", durability),
+            ("material_sustainability", material_sustainability)
+        ]
+        
+        for metric_name, value in sustainability_metrics:
+            if value is not None:
+                # Find the sustainability type
+                sust_type = db.query(SustainabilityType).filter(
+                    SustainabilityType.type_name.ilike(f"%{metric_name.replace('_', ' ')}%")
+                ).first()
+                
+                if sust_type:
+                    # Update or create sustainability rating
+                    rating = db.query(SustainabilityRating).filter(
+                        SustainabilityRating.product_id == product_id,
+                        SustainabilityRating.type == sust_type.id
+                    ).first()
+                    
+                    if rating:
+                        rating.value = value
+                    else:
+                        rating = SustainabilityRating(
+                            product_id=product_id,
+                            type=sust_type.id,
+                            value=value,
+                            verification=False
+                        )
+                        db.add(rating)
+                    ratings_updated += 1
         
         # Handle image updates
         image_urls = []

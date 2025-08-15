@@ -1,11 +1,13 @@
 .filter-sort-sidebar {
-  padding: 1.5rem;
+  padding: 1rem;
   background: white;
+  /* scroll bar*/
+  
 }
 
 .filter-section {
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid #f3f4f6;
 }
 
@@ -15,7 +17,7 @@
 }
 
 .filter-section h4 {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #1f2937;
   margin: 0 0 1rem 0;
@@ -27,7 +29,7 @@
   padding: 0.75rem;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   background: white;
   color: #1f2937; /* Dark text for better contrast */
   cursor: pointer;
@@ -38,6 +40,8 @@
   background-repeat: no-repeat;
   background-size: 1.25rem;
   padding-right: 2.5rem;
+  
+
 }
 
 .filter-select:focus {
@@ -80,7 +84,7 @@
 }
 
 .radio-label {
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   color: #374151;
   font-weight: 500;
   line-height: 1.4;
@@ -110,7 +114,7 @@
   border: none;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
