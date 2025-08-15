@@ -415,7 +415,7 @@
   border-top: 1px solid #e2e8f0;
 }
 
-.btn {
+.edit-prod-btn {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
@@ -430,7 +430,7 @@
   justify-content: center;
 }
 
-.btn:disabled {
+.edit-prod-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -494,7 +494,7 @@
     flex-direction: column;
   }
   
-  .btn {
+  .edit-prod-btn {
     width: 100%;
   }
   
@@ -520,7 +520,7 @@
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
   .modal-overlay,
-  .btn,
+  .edit-prod-btn,
   .close-btn,
   .form-group .input,
   .form-group .textarea,

@@ -57,13 +57,13 @@ export default function ConfirmationModal({
 
         <div className="confirmation-modal-actions">
           <button 
-            className="btn btn-cancel"
+            className="confirmation-modal-btn btn-cancel"
             onClick={onCancel}
           >
             {cancelText}
           </button>
           <button 
-            className={`btn ${confirmButtonClass}`}
+            className={`confirmation-modal-btn ${confirmButtonClass}`}
             onClick={onConfirm}
           >
             {confirmText}
