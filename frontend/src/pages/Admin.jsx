@@ -16,7 +16,7 @@ const Admin = () => {
   useEffect(() => {
 
     // Function to handle login authentication
-    if (!sessionStorage.getItem('admin')) {
+    if (!sessionStorage.getItem('adminSession')) {
       navigate('/admin/login'); // Redirect to admin login if not authenticated
     }
     
