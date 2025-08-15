@@ -370,10 +370,19 @@
   bottom: 0;
   background-color: #1f2937;
   z-index: 5;
+  min-height: 72px; /* Adjust height to accommodate two lines */
 }
 
 .sidebar-user-closed {
   visibility: hidden;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0; /* Allows text to truncate */
 }
 
 .user-avatar {
@@ -390,11 +399,23 @@
 }
 
 .user-name {
-  flex: 1;
   font-size: 14px;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: white;
+  line-height: 1.2;
+}
+
+.user-email {
+  font-size: 12px;
+  font-weight: 400;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
 .user-menu {
@@ -482,6 +503,14 @@
     left: -5px;
   }
 
+  .user-name {
+    font-size: 13px;
+  }
+  
+  .user-email {
+    font-size: 11px;
+  }
+
   .sidebar-toggle {
     left: 180px;
   }
@@ -512,8 +541,8 @@
   }
   
   .sidebar-user {
+    min-height: 68px;
     padding: 16px;
-    /* visibility: hidden; */
   }
   
   .profile-menu-overlay {
@@ -548,6 +577,19 @@
   }
 
   .sidebar-closed .sidebar-toggle{
-  left: -3px;
-}
+    left: -3px;
+  }
+
+ .user-name {
+    font-size: 12px;
+  }
+  
+  .user-email {
+    font-size: 10px;
+  }
+
+  .sidebar-user {
+    min-height: 64px;
+    padding: 14px;
+  }
 }

@@ -14,6 +14,10 @@ import logo from './icons/Green-cart-admin.png'
 const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [adminData, setAdminData] = useState({
+    name: 'Admin User',
+    email: 'admin@example.com'
+  });
   const profileMenuRef = useRef(null);
   const profileButtonRef = useRef(null);
 
@@ -30,6 +34,37 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
     { name: 'Help & Support', icon: dashboardIcon },
     { name: 'Settings', icon: dashboardIcon }
   ];
+
+  // Load admin data from session storage
+  useEffect(() => {
+    const loadAdminData = () => {
+      try {
+        const adminInfo = sessionStorage.getItem('adminSession');
+        if (adminInfo) {
+          const parsedAdminData = JSON.parse(adminInfo);
+          setAdminData({
+            name: parsedAdminData.name || 'Admin User',
+            email: parsedAdminData.email || 'admin@example.com'
+          });
+        }
+      } catch (error) {
+        console.error('Error loading admin data from session storage:', error);
+        // Keep default values if error occurs
+      }
+    };
+
+    loadAdminData();
+  }, []);
+
+  // Helper function to get initials from name
+  const getInitials = (name) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
+  };
 
   const handleNavClick = (itemName) => {
     onNavigate(itemName);
@@ -164,10 +199,13 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
 
       {/* User Profile - Always visible */}
       <div className={isOpen ? "sidebar-user" : "sidebar-user sidebar-user-closed"}>
-        <div className="user-avatar">OW</div>
+        <div className="user-avatar">{getInitials(adminData.name)}</div>
         {isOpen && (
           <>
-            <span className="user-name">Olivia Williams</span>
+            <div className="user-info">
+              <span className="user-name">{adminData.name}</span>
+              <span className="user-email">{adminData.email}</span>
+            </div>
             <button 
               ref={profileButtonRef}
               className="user-menu"
