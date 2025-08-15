@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 import { API_BASE_URL } from '../../config/api.js';
 import '../styles/retailer/EditProduct.css';
 
@@ -317,14 +317,12 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
             if (!response.ok) {
                 const error = await response.json();
                 console.error('S3 update error:', error);
+                toast.error('Failed to update product data');
                 throw new Error(error.detail || 'Failed to update product with S3 images');
             }
             
             const result = await response.json();
             console.log('Product updated successfully with S3 images:', result);
-                
-            
-
             toast.success('Product updated successfully!');
             
             if (onProductUpdated) {
@@ -338,7 +336,6 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                     if (updatedProductRes.ok) {
                         const updatedProduct = await updatedProductRes.json();
                         onProductUpdated(updatedProduct.data);
-                        alert('Product updated successfully!');
                         console.log('Updated product data:', updatedProduct.data);
                     }
                 } catch (error) {

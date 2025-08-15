@@ -329,6 +329,7 @@ return (
           onClose={() => setEditModalOpen(false)}
           product={selectedProduct}
           onProductUpdated={handleProductUpdate}
+          retailerId={retailerId}
         />
       </div>
     </div>
