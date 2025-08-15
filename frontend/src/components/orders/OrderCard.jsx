@@ -19,11 +19,11 @@ export default function OrderCard({ order, onViewDetails, onCancelOrder }) {
         }
     };
 
-    const getSustainabilityColor = (rating) => {
-        if (rating >= 70) return '#22c55e';
-        if (rating >= 50) return '#eab308';
-        return '#f97316';
-    };
+    // const getSustainabilityColor = (rating) => {
+    //     if (rating >= 70) return '#22c55e';
+    //     if (rating >= 50) return '#eab308';
+    //     return '#f97316';
+    // };
 
     const canCancel = !['cancelled', 'delivered', 'in transit'].includes(order.state.toLowerCase());
     const formattedDate = new Date(order.created_at).toLocaleDateString('en-ZA', {
@@ -35,7 +35,7 @@ export default function OrderCard({ order, onViewDetails, onCancelOrder }) {
     // Use actual data if present, fallback if missing
     const price = order.total !== undefined ? parseFloat(order.total) : 0;
     const sustainability = order.average_sustainability !== undefined ? parseFloat(order.average_sustainability) : null;
-
+    console.log("ORDER", order);
     return (
         <div className="order-card">
             <div className="order-card-header">
@@ -72,10 +72,12 @@ export default function OrderCard({ order, onViewDetails, onCancelOrder }) {
 
                 <div className="order-sustainability">
                     {sustainability !== null && (
-                        <div 
-                            className="sustainability-order-badge"
-                            style={{ backgroundColor: getSustainabilityColor(sustainability) }}
-                        >
+                        // <div 
+                        //     className="sustainability-order-badge"
+                        //     style={{ backgroundColor: getSustainabilityColor(sustainability) }}
+                        // >
+                        <div className="sustainability-order-badge">
+                            
                             <span className="sustainability-icon">🌱</span>
                             <span className="sustainability-score">{sustainability.toFixed(1)}</span>
                         </div>

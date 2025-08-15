@@ -181,8 +181,10 @@ const RetailerAuth = () => {
         <div className="retailer-auth-background"></div>
         <div className="retailer-auth-overlay"></div>
         
-        <div className="retailer-auth-container">
-          <div className="retailer-auth-card shop-selection-card">
+        {/* <div className="retailer-auth-container">
+          
+        </div> */}
+        <div className="retailer-auth-card shop-selection-card">
             <div className="auth-header">
               <h1 className="retailer-auth-title">Select Your Shop</h1>
               <p className="retailer-auth-subtitle">
@@ -198,6 +200,8 @@ const RetailerAuth = () => {
                       <img src={shop.banner_image} alt={shop.name} />
                     ) : (
                       <div className="shop-placeholder">🏪</div>
+                      // shop icon
+
                     )}
                   </div>
                   <div className="shop-info">
@@ -225,7 +229,6 @@ const RetailerAuth = () => {
               </button>
             </div>
           </div>
-        </div>
       </div>
     );
   }
@@ -235,8 +238,10 @@ const RetailerAuth = () => {
       <div className="retailer-auth-background"></div>
       <div className="retailer-auth-overlay"></div>
       
-      <div className="retailer-auth-container">
-        <div className="retailer-auth-card">
+      {/* <div className="retailer-auth-container">
+        
+      </div> */}
+      <div className="retailer-auth-card">
           <div className="auth-header">
             <h1 className="retailer-auth-title">
               {mode === 'signup' ? 'Create Your Shop' : 'Retailer Sign In'}
@@ -252,7 +257,7 @@ const RetailerAuth = () => {
           <form className="retailer-auth-form" onSubmit={mode === 'signup' ? handleSignUp : handleSignIn}>
             {mode === 'signup' && (
               <>
-                <div className="ret-auth-form-group">
+                <div className="retailer-auth-form-group">
                   <input
                     type="text"
                     id="name"
@@ -260,27 +265,27 @@ const RetailerAuth = () => {
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     required
                     placeholder=" "
-                    className="ret-auth-form-input"
+                    className="retailer-auth-form-input"
                   />
-                  <label htmlFor="name" className="ret-auth-form-label">Shop Name</label>
+                  <label htmlFor="name" className="retailer-auth-form-label">Shop Name</label>
                 </div>
 
-                <div className="ret-auth-form-group">
+                <div className="retailer-auth-form-group">
                   <textarea
                     id="description"
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
                     required
                     placeholder=" "
-                    className="form-textarea"
+                    className="retailer-auth-form-textarea"
                     rows="3"
                   />
-                  <label htmlFor="description" className="ret-auth-form-label">Shop Description</label>
+                  <label htmlFor="description" className="retailer-auth-form-label">Shop Description</label>
                 </div>
               </>
             )}
 
-            <div className="ret-auth-form-group">
+            <div className="retailer-auth-form-group">
               <input
                 type="email"
                 id="email"
@@ -288,12 +293,12 @@ const RetailerAuth = () => {
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 required
                 placeholder=" "
-                className="ret-auth-form-input"
+                className="retailer-auth-form-input"
               />
-              <label htmlFor="email" className="ret-auth-form-label">Email</label>
+              <label htmlFor="email" className="retailer-auth-form-label">Email</label>
             </div>
 
-            <div className="ret-auth-form-group">
+            <div className="retailer-auth-form-group">
               <input
                 type="password"
                 id="password"
@@ -301,13 +306,13 @@ const RetailerAuth = () => {
                 onChange={(e) => handleInputChange('password', e.target.value)}
                 required
                 placeholder=" "
-                className="ret-auth-form-input"
+                className="retailer-auth-form-input"
               />
-              <label htmlFor="password" className="ret-auth-form-label">Password</label>
+              <label htmlFor="password" className="retailer-auth-form-label">Password</label>
             </div>
 
             {mode === 'signup' && (
-              <div className="ret-auth-form-group">
+              <div className="retailer-auth-form-group">
                 <input
                   type="password"
                   id="confirmPassword"
@@ -315,9 +320,9 @@ const RetailerAuth = () => {
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                   required
                   placeholder=" "
-                  className="ret-auth-form-input"
+                  className="retailer-auth-form-input"
                 />
-                <label htmlFor="confirmPassword" className="ret-auth-form-label">Confirm Password</label>
+                <label htmlFor="confirmPassword" className="retailer-auth-form-label">Confirm Password</label>
               </div>
             )}
 
@@ -350,7 +355,6 @@ const RetailerAuth = () => {
             <Link to="/" className="back-link">← Back to Home</Link>
           </div>
         </div>
-      </div>
     </div>
   );
 };

@@ -140,222 +140,198 @@ export default function RetailerProducts() {
         await fetchProducts(retailerId);
     };
 
-    if (loading) {
-        return (
-            <>
-                <RetailerNavbar />
-                <div className="dashboard-loading-container">
-                    <div className="dashboard-loading">
-                        <div className="loading-spinner"></div>
-                        <span>Loading Products...</span>
-                    </div>
-                </div>
-            </>
-        );
-    }
+    // Update the loading state
+if (loading) {
+  return (
+    <>
+      <RetailerNavbar />
+      <div className="retailer-products-loading-container">
+        <div className="retailer-products-loading">
+          <div className="retailer-products-loading-spinner"></div>
+          <span>Loading Products...</span>
+        </div>
+      </div>
+    </>
+  );
+}
 
-    if (!retailerId) {
-        return (
-            <>
-                <RetailerNavbar />
-                <div className="dashboard-container">
-                    <div className="dashboard-error">
-                        <h2>Unable to Load Products</h2>
-                        <p>Could not determine the retailer account for this user.</p>
-                        <p>Please ensure you are logged in with a valid retailer account.</p>
-                        <div style={{ marginTop: '1rem' }}>
-                            <button 
-                                onClick={() => navigate('/retailer-auth')} 
-                                style={{ 
-                                    marginRight: '1rem', 
-                                    padding: '0.5rem 1rem', 
-                                    backgroundColor: '#4CAF50', 
-                                    color: 'white', 
-                                    border: 'none', 
-                                    borderRadius: '4px', 
-                                    cursor: 'pointer' 
-                                }}
-                            >
-                                Go to Login
-                            </button>
-                            <button 
-                                onClick={() => window.location.reload()} 
-                                style={{ 
-                                    padding: '0.5rem 1rem', 
-                                    backgroundColor: '#2196F3', 
-                                    color: 'white', 
-                                    border: 'none', 
-                                    borderRadius: '4px', 
-                                    cursor: 'pointer' 
-                                }}
-                            >
-                                Retry
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </>
-        );
-    }
+// Update the error state
+if (!retailerId) {
+  return (
+    <>
+      <RetailerNavbar />
+      <div className="retailer-products-container">
+        <div className="retailer-products-error">
+          <h2>Unable to Load Products</h2>
+          <p>Could not determine the retailer account for this user.</p>
+          <p>Please ensure you are logged in with a valid retailer account.</p>
+          <div style={{ marginTop: '1rem' }}>
+            <button 
+              onClick={() => navigate('/retailer-auth')} 
+              style={{ 
+                marginRight: '1rem', 
+                padding: '0.5rem 1rem', 
+                backgroundColor: '#4CAF50', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '4px', 
+                cursor: 'pointer' 
+              }}
+            >
+              Go to Login
+            </button>
+            <button 
+              onClick={() => window.location.reload()} 
+              style={{ 
+                padding: '0.5rem 1rem', 
+                backgroundColor: '#2196F3', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '4px', 
+                cursor: 'pointer' 
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
 
-    return (
-        <>
-            <RetailerNavbar />
-            <div className="dashboard-container">
-                <div className="dashboard-header">
-                    <h1>Your Products</h1>
-                    <button 
-                        className="add-product-button" 
-                        style={{marginLeft: 'auto'}} 
-                        onClick={() => navigate('/retailer-dashboard')}
-                    >
-                        Back to Dashboard
-                    </button>
-                </div>
-                <div className="products-grid" style={{
-                    display: 'grid', 
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-                    gap: '2rem', 
-                    padding: '1rem 0'
-                }}>
-                    {products.length === 0 ? (
-                        <div className="dashboard-error">
-                            <h3>No products found</h3>
-                            <p>Start by adding your first product to the catalog.</p>
-                            <button 
-                                onClick={() => navigate('/retailer-dashboard')}
-                                style={{ 
-                                    padding: '0.5rem 1rem', 
-                                    backgroundColor: '#4CAF50', 
-                                    color: 'white', 
-                                    border: 'none', 
-                                    borderRadius: '4px', 
-                                    cursor: 'pointer',
-                                    marginTop: '1rem'
-                                }}
-                            >
-                                Add First Product
-                            </button>
-                        </div>
-                    ) : (
-                        products.map(product => {
-                            // Handle S3 image URL with fallback
-                            const getImageUrl = (product) => {
-                                // Priority: S3 images array > image_url > fallback
-                                if (product.images && product.images.length > 0) {
-                                    return product.images[0];
-                                }
-                                if (product.image_url) {
-                                    return product.image_url;
-                                }
-                                return '/fallback-image.jpg';
-                            };
-
-                            const imageUrl = getImageUrl(product);
-                            const isS3Image = imageUrl && imageUrl.includes('s3.amazonaws.com');
-
-                            return (
-                                <div key={product.id} className="product-card">
-                                    <div className="retailer-product-image">
-                                        <img
-                                            src={imageUrl}
-                                            alt={product.name}
-                                            onError={e => { 
-                                                e.target.onerror = null; 
-                                                e.target.src = '/fallback-image.jpg'; 
-                                                console.warn('Failed to load S3 image:', imageUrl);
-                                            }}
-                                            style={{ 
-                                                width: '100%', 
-                                                height: '200px', 
-                                                objectFit: 'cover',
-                                                backgroundColor: '#f5f5f5'
-                                            }}
-                                        />
-                                        <div className="product-overlay">
-                                            <span className="sustainability-badge">
-                                                {product.sustainability_rating !== null && product.sustainability_rating !== undefined 
-                                                    ? `🌱 ${product.sustainability_rating}` 
-                                                    : '🌱 N/A'
-                                                }
-                                            </span>
-                                            {isS3Image && (
-                                                <span className="s3-badge" style={{
-                                                    position: 'absolute',
-                                                    top: '8px',
-                                                    right: '8px',
-                                                    background: 'rgba(34, 197, 94, 0.9)',
-                                                    color: 'white',
-                                                    padding: '2px 6px',
-                                                    borderRadius: '4px',
-                                                    fontSize: '0.7rem',
-                                                    fontWeight: 'bold'
-                                                }}>
-                                                    S3
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="product-info">
-                                        <h3 className="product-name">{product.name}</h3>
-                                        <div className="product-price">
-                                            R{Number(product.price).toFixed(2)}
-                                        </div>
-                                        <div className="product-stats">
-                                            <div className="stat-item">
-                                                <span className="stat-label">Stock:</span>
-                                                <span className="ret-prod-stat-value">
-                                                    {product.stock_quantity ?? product.quantity ?? 'N/A'}
-                                                </span>
-                                            </div>
-                                            <div className="stat-item">
-                                                <span className="stat-label">Sold:</span>
-                                                <span className="ret-prod-stat-value">{product.units_sold ?? 0}</span>
-                                            </div>
-                                            <div className="stat-item" style={{textAlign: 'center', width: '100%'}}>
-                                                <span className="stat-label">Revenue:</span>
-                                                <span className="ret-prod-stat-value">
-                                                    R{Number(product.revenue ?? 0).toFixed(2)}
-                                                </span>
-                                            </div>
-                                            {product.images && product.images.length > 1 && (
-                                                <div className="stat-item" style={{textAlign: 'center', width: '100%'}}>
-                                                    <span className="stat-label">Images:</span>
-                                                    <span className="ret-prod-stat-value">{product.images.length} S3 images</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="product-actions">
-                                            <button 
-                                                className="view-details-button" 
-                                                onClick={() => navigate(`/retailer/product/${product.id}`)}
-                                            >
-                                                View Details
-                                            </button>
-                                            <button
-                                                className="edit-product-button"
-                                                onClick={() => { 
-                                                    setSelectedProduct(product); 
-                                                    setEditModalOpen(true); 
-                                                }}
-                                            >
-                                                Edit
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })
-                    )}
-                </div>
-                
-                <EditProduct
-                    isOpen={editModalOpen}
-                    onClose={() => setEditModalOpen(false)}
-                    product={selectedProduct}
-                    onProductUpdated={handleProductUpdate}
-                />
+// Update the main return JSX
+return (
+  <>
+    <RetailerNavbar />
+    <div className="retailer-products-main">
+      <div className="retailer-products-container">
+        <div className="retailer-products-header">
+          <h1>Your Products</h1>
+          <button 
+            className="retailer-products-back-button" 
+            onClick={() => navigate('/retailer-dashboard')}
+          >
+            ← Back to Dashboard
+          </button>
+        </div>
+        
+        <div className="retailer-products-grid">
+          {products.length === 0 ? (
+            <div className="retailer-products-no-products">
+              <h3>No products found</h3>
+              <p>Start building your product catalog by adding your first product.</p>
+              <button 
+                onClick={() => navigate('/retailer-dashboard')}
+              >
+                Add First Product
+              </button>
             </div>
-        </>
-    );
+          ) : (
+            products.map(product => {
+              // Handle S3 image URL with fallback
+              const getImageUrl = (product) => {
+                if (product.images && product.images.length > 0) {
+                  return product.images[0];
+                }
+                if (product.image_url) {
+                  return product.image_url;
+                }
+                return '/fallback-image.jpg';
+              };
+
+              const imageUrl = getImageUrl(product);
+              const isS3Image = imageUrl && imageUrl.includes('s3.amazonaws.com');
+
+              return (
+                <div key={product.id} className="retailer-products-product-card">
+                  <div className="retailer-products-product-image">
+                    <img
+                      src={imageUrl}
+                      alt={product.name}
+                      onError={e => { 
+                        e.target.onerror = null; 
+                        e.target.src = '/fallback-image.jpg'; 
+                        console.warn('Failed to load S3 image:', imageUrl);
+                      }}
+                    />
+                    <div className="retailer-products-product-overlay">
+                      <span className="retailer-products-sustainability-badge">
+                        {product.sustainability_rating !== null && product.sustainability_rating !== undefined 
+                          ? `🌱 ${product.sustainability_rating}` 
+                          : '🌱 N/A'
+                        }
+                      </span>
+                      {isS3Image && (
+                        <span className="retailer-products-s3-badge">S3</span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="retailer-products-product-info">
+                    <h3 className="retailer-products-product-name">{product.name}</h3>
+                    <div className="retailer-products-product-price">
+                      R{Number(product.price).toFixed(2)}
+                    </div>
+                    
+                    <div className="retailer-products-product-stats">
+                    <div className="retailer-products-stat-item">
+                        <span className="retailer-products-stat-label">Stock</span>
+                        <span className="retailer-products-stat-value">
+                        {product.stock_quantity ?? product.quantity ?? 'N/A'}
+                        </span>
+                    </div>
+                    <div className="retailer-products-stat-item">
+                        <span className="retailer-products-stat-label">Sold</span>
+                        <span className="retailer-products-stat-value">{product.units_sold ?? 0}</span>
+                    </div>
+                    <div className="retailer-products-stat-item">
+                        <span className="retailer-products-stat-label">Revenue</span>
+                        <span className="retailer-products-stat-value">
+                        R{Number(product.revenue ?? 0).toFixed(0)} {/* Removed decimals for compact view */}
+                        </span>
+                    </div>
+                    {/* Only show images count if more than 1 image */}
+                    {product.images && product.images.length > 1 && (
+                        <div className="retailer-products-stat-item">
+                        <span className="retailer-products-stat-label">Images</span>
+                        <span className="retailer-products-stat-value">{product.images.length}</span>
+                        </div>
+                    )}
+                    </div>
+                    
+                    <div className="retailer-products-product-actions">
+                      <button 
+                        className="retailer-products-view-details-button" 
+                        onClick={() => navigate(`/retailer/product/${product.id}`)}
+                      >
+                        View Details
+                      </button>
+                      <button
+                        className="retailer-products-edit-product-button"
+                        onClick={() => { 
+                          setSelectedProduct(product); 
+                          setEditModalOpen(true); 
+                        }}
+                      >
+                        Edit Product
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+        
+        <EditProduct
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          product={selectedProduct}
+          onProductUpdated={handleProductUpdate}
+        />
+      </div>
+    </div>
+  </>
+);
 }

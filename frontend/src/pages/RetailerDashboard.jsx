@@ -195,6 +195,8 @@ export default function RetailerDashboard() {
                 product.id === updatedProduct.id ? updatedProduct : product
             )
         }));
+
+        handleCloseEditProduct();
     };
 
     if (loading) {
@@ -264,12 +266,12 @@ export default function RetailerDashboard() {
     }
 
     return (
-        <>
+        <div className='retailer-dashboard-main'>
             <RetailerNavbar />
             <div className="dashboard-container">
-                <div className="dashboard-header">
+                <div className="retailer-dashboard-header">
                     <h1>Dashboard</h1>
-                    <p>Welcome back, {user.name || user.email}!</p>
+                    <p>Welcome back, {user.user_name || user.email}!</p>
 
                     <div className="add-product">
                         <button
@@ -315,6 +317,6 @@ export default function RetailerDashboard() {
                 product={selectedProduct}
             />
         </div>
-        </>
+        </div>
     );
 }

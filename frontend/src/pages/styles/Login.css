@@ -1,6 +1,6 @@
 .login-container {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   overflow: hidden;
 }
@@ -8,5 +8,29 @@
 @media (max-width: 1024px) {
   .login-container {
     flex-direction: column;
+  }
+}
+
+/* Ensure proper mobile handling */
+@media (max-width: 768px) {
+  .login-container {
+    min-height: 100vh;
+    flex-direction: column;
+  }
+}
+
+/* Handle very small screens */
+@media (max-width: 480px) {
+  .login-container {
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+/* Landscape mobile orientation */
+@media (max-height: 500px) and (orientation: landscape) {
+  .login-container {
+    min-height: 100vh;
+    overflow-y: auto;
   }
 }
