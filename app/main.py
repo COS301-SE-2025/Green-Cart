@@ -21,6 +21,7 @@ from app.routes import retailer_products
 # Routers – admin/aws and images
 from app.routes import admin_metrics
 from app.routes import admin_users
+from app.routes import admin_auth
 from app.routes import admin_retailers
 from app.routes import admin_products
 from app.routes import images
@@ -90,6 +91,7 @@ app.include_router(retailer_products.router)
 # Admin/AWS/image related
 app.include_router(admin_metrics.router)
 app.include_router(admin_users.router)
+app.include_router(admin_auth.router)
 app.include_router(admin_retailers.router)
 app.include_router(admin_products.router)
 app.include_router(images.router)

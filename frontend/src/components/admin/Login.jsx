@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import '../styles/admin/Login.css';
 import AdminIcon from './icons/Green-cart-admin.png'; // Changed to .png
+import { adminSignin } from '../../admin-services/authService';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,16 +13,9 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // TODO: Implement admin login service
-      console.log('Admin login attempt:', { email, password });
-      
-      // Placeholder for admin authentication
-
-      sessionStorage.setItem('admin', JSON.stringify({ email, password }));
-      // const result = await loginAdmin(email, password);
-      
+      const result = await adminSignin(email, password);
       toast.success('Admin login successful!');
-      navigate('/admin'); // TODO: Navigate to admin dashboard
+      navigate('../admin');
     } catch (err) {
       console.error('Admin login failed:', err.message);
       toast.error(err.message || 'Login failed. Please try again.');
