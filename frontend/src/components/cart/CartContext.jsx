@@ -3,6 +3,7 @@ import { addToCart } from "../../cart-services/addToCart";
 import { viewCart } from "../../cart-services/viewCart";
 import { fetchProduct } from "../../product-services/fetchProduct";
 import { removeFromCart } from "../../cart-services/removeFromCart";
+import toast from 'react-hot-toast';
 
 const CartContext = createContext();
 
@@ -44,7 +45,8 @@ export function CartProvider({ children }) {
             await addToCart({ user_id, product_id, quantity });
         
         } catch (error) {
-            console.error("Error adding to cart:", error);
+            console.log("Error adding to cart:", error);
+            toast.error("Not enough stock available");
         }
         // Refresh the cart after adding an item
         await refreshCart(user_id);
