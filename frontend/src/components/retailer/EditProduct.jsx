@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { API_BASE_URL } from '../../config/api.js';
+import { fileSize } from '../../config/image_upload.js';
 import '../styles/retailer/EditProduct.css';
 
 export default function EditProduct({ isOpen, onClose, onProductUpdated, product, retailerId }) {
@@ -199,7 +200,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
         // Validate file types and sizes
         const validFiles = [];
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const maxSize = fileSize; // 5MB
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         
         for (const file of newFiles) {
@@ -208,7 +209,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                 continue;
             }
             if (file.size > maxSize) {
-                toast.error(`${file.name} is too large. Maximum size is 5MB`);
+                toast.error(`${file.name} is too large. Maximum size is ${maxSize}B`);
                 continue;
             }
             validFiles.push(file);
