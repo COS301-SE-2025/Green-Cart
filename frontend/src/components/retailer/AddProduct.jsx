@@ -221,6 +221,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             formDataSubmit.append('category_id', categories.indexOf(formData.category) + 1);
             formDataSubmit.append('retailer_id', retailerId);
             formDataSubmit.append('stock_quantity', formData.quantity);
+            formDataSubmit.append('brand', formData.brand);
             
             // Add sustainability ratings with the field names expected by backend
             formDataSubmit.append('energy_efficiency', formData.sustainability.energyEfficiency);
