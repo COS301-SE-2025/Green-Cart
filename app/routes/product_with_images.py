@@ -88,11 +88,11 @@ Material sustainability: {material_sustainability}
                     detail=f"File {image.filename} is not a valid image"
                 )
             
-            # Check file size (5MB limit)
-            if hasattr(image, 'size') and image.size > 5 * 1024 * 1024:
+            # Check file size (10MB limit)
+            if hasattr(image, 'size') and image.size > 10 * 1024 * 1024:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"File {image.filename} is too large. Maximum size is 5MB"
+                    detail=f"File {image.filename} is too large. Maximum size is 10MB"
                 )
 
         # Validate category exists
