@@ -200,7 +200,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
         // Validate file types and sizes
         const validFiles = [];
-        const maxSize = fileSize; // 5MB
+        const maxSize = fileSize; // 10MB
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         
         for (const file of newFiles) {
@@ -209,7 +209,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                 continue;
             }
             if (file.size > maxSize) {
-                toast.error(`${file.name} is too large. Maximum size is ${maxSize}B`);
+                toast.error(`${file.name} is too large. Maximum size is 10MB`);
                 continue;
             }
             validFiles.push(file);
@@ -297,6 +297,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
             formDataSubmit.append('name', formData.name);
             formDataSubmit.append('description', formData.description);
             formDataSubmit.append('price', formData.price);
+            formDataSubmit.append('brand', formData.brand);
             formDataSubmit.append('category_id', getCategoryId(formData.category));
             formDataSubmit.append('retailer_id', product.retailer_id);
             formDataSubmit.append('stock_quantity', formData.quantity);
