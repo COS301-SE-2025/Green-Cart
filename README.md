@@ -43,6 +43,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | [Project Board](https://github.com/orgs/COS301-SE-2025/projects/198/views/2) | Task management and team progress |
 | [Coding Standards Document](https://docs.google.com/document/d/1-fC7M57fGlySNG3gG15oKwxMuICl8U_LiuiHUZikwbQ/edit?tab=t.0) | Coding Standards Document |
 | [User Manual Document](https://docs.google.com/document/d/1o7zYY2DDQTocsNIVZ1lve_QuyMkLdeUQcEWbrtl0mmk/edit?usp=sharing) | User Manual Document |
+| [Deployment diagram](https://drive.google.com/file/d/1CNvKqYZ9H9Z7wfcYKc2Xs7-tVdnOtU1p/view?usp=sharing) | Deployment diagram |
 ---
 
 <h1 align="center"> Demo Resources</h1>
@@ -51,6 +52,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 |---------|-----------|------------|------------------|-----------------------------|
 | Demo 1 | [Watch](https://drive.google.com/file/d/1x923JaubfP_FH0dgEdhZ3O-y96iFVVzO/view) | [Slides](https://www.canva.com/design/DAGoo0NOHOs/MpZHdfQEJuRwyW97PpcBaA/edit?utm_content=DAGoo0NOHOs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) | [System Requirements Document_v1](https://drive.google.com/file/d/1tUEFSQVjV-HfzKvjbx3_98__JOBLFUeK/view?usp=sharing) | [Architectural Requirements Document_v1](https://docs.google.com/document/d/1KUXww-AsuFPJi2uFpKgFf5PEZGdCYqKZ4R21-Tpzqzs/edit?usp=sharing) |
 | Demo 2 |[Watch](https://drive.google.com/file/d/1JLZhZgI4QhDSkQFlCGH3h51MXt633Cyr/view?usp=sharing)  | [Slides](https://www.canva.com/design/DAGreB5l2ZA/c3Kde60qQsHp7J0Z71a6PA/edit?utm_content=DAGreB5l2ZA&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) |[System Requirements Document_v2](https://docs.google.com/document/d/1SvLTt7jRWEveDAkH8mjZ0KU3gi2sbbJkxBVchZX8C90/edit?usp=sharing) | [Architectural Requirements Document_v2](https://docs.google.com/document/d/1OyPN69iiwEYnyEILYg3QLCZD4hVV_RGXj1c0Po-NOc0/edit?usp=sharing)
+| Demo 3 |[Watch]()  | [Slides]() |[System Requirements Document_v3]() | [Architectural Requirements Document_v3]()
 <h1 align="center">Technologies</h1>
 <div align="center">
 
