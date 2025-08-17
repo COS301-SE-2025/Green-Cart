@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 import { API_BASE_URL } from '../../config/api.js';
+import { fileSize } from '../../config/image_upload.js';
 import '../styles/retailer/AddProduct.css';
 
 export default function AddProduct({ isOpen, onClose, onProductAdded }) {
@@ -97,7 +98,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
 
         // Validate file types and sizes
         const validFiles = [];
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const maxSize = fileSize; // 5MB
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         
         for (const file of newFiles) {
@@ -106,7 +107,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                 continue;
             }
             if (file.size > maxSize) {
-                toast.error(`${file.name} is too large. Maximum size is 5MB`);
+                toast.error(`${file.name} is too large. Maximum size is ${fileSize}B`);
                 continue;
             }
             validFiles.push(file);
@@ -220,6 +221,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             formDataSubmit.append('category_id', categories.indexOf(formData.category) + 1);
             formDataSubmit.append('retailer_id', retailerId);
             formDataSubmit.append('stock_quantity', formData.quantity);
+            formDataSubmit.append('brand', formData.brand);
             
             // Add sustainability ratings with the field names expected by backend
             formDataSubmit.append('energy_efficiency', formData.sustainability.energyEfficiency);

@@ -222,6 +222,7 @@ async def update_product_with_images(
     product_id: int,
     name: str = Form(...),
     description: str = Form(...),
+    brand: str = Form(...),
     price: float = Form(...),
     category_id: int = Form(...),
     retailer_id: Optional[int] = Form(None),
@@ -263,9 +264,10 @@ async def update_product_with_images(
         # Update product basic information
         product.name = name
         product.description = description
+        product.brand = brand
         product.price = Decimal(str(price))
         product.category_id = category_id
-        product.stock_quantity = stock_quantity
+        product.quantity = stock_quantity
         
         # Handle sustainability ratings if provided
         ratings_updated = 0
