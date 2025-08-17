@@ -98,7 +98,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
 
         // Validate file types and sizes
         const validFiles = [];
-        const maxSize = fileSize; // 5MB
+        const maxSize = fileSize; // 10MB
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         
         for (const file of newFiles) {
@@ -107,7 +107,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                 continue;
             }
             if (file.size > maxSize) {
-                toast.error(`${file.name} is too large. Maximum size is ${fileSize}B`);
+                toast.error(`${file.name} is too large. Maximum size is 10MB`);
                 continue;
             }
             validFiles.push(file);
