@@ -6,28 +6,17 @@
   height: 100vh;
   background-color: #101925;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.admin-login-modal {
-  width: 100%;
-  max-width: 400px;
-  padding: 2.5rem;
-  margin: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 4rem;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
 }
 
 .admin-header {
-  position: absolute;
-  top: 13rem;
-  width: 100%;
   text-align: center;
-  z-index: 10;
+  flex-shrink: 0;
 }
 
 .admin-main-title {
@@ -38,16 +27,16 @@
   letter-spacing: -0.02em;
 }
 
-@media (max-width: 480px) {
-  .admin-login-modal {
-    max-width: 100%;
-    margin: 1rem;
-    padding: 2rem;
-  }
-
-   .admin-main-title {
-    font-size: 1.75rem;
-  }
+.admin-login-modal {
+  width: 100%;
+  max-width: 400px;
+  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
 
 .admin-logo-container {
@@ -61,13 +50,6 @@
   margin-bottom: 0;
   opacity: 0.9;
 }
-
-/* .admin-title {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0;
-} */
 
 .admin-form {
   display: flex;
@@ -151,16 +133,56 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .admin-title {
-    font-size: 1.25rem;
+  .admin-login-container {
+    gap: 3rem;
+    padding: 1.5rem 1rem;
   }
 
   .admin-main-title {
-    font-size: 2rem;
+    font-size: 2.5rem;
+  }
+  
+  .admin-login-modal {
+    padding: 2rem;
   }
   
   .admin-logo {
-    width: 50px;
-    height: 50px;
+    width: 60%;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-login-container {
+    gap: 2rem;
+    padding: 1rem;
+  }
+
+  .admin-main-title {
+    font-size: 1.75rem;
+  }
+
+  .admin-login-modal {
+    padding: 1.5rem;
+  }
+  
+  .admin-logo {
+    width: 50%;
+  }
+}
+
+/* For very short screens, reduce gap */
+@media (max-height: 600px) {
+  .admin-login-container {
+    gap: 2rem;
+  }
+}
+
+@media (max-height: 500px) {
+  .admin-login-container {
+    gap: 1rem;
+  }
+  
+  .admin-main-title {
+    font-size: 1.5rem;
   }
 }
