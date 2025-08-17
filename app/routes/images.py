@@ -13,9 +13,9 @@ async def upload_images(files: List[UploadFile] = File(...)):
             if not file.content_type or not file.content_type.startswith('image/'):
                 raise HTTPException(status_code=400, detail=f"File {file.filename} is not a valid image")
             
-            # Check file size (e.g., max 5MB)
-            if file.size and file.size > 5 * 1024 * 1024:
-                raise HTTPException(status_code=400, detail=f"File {file.filename} is too large (max 5MB)")
+            # Check file size (e.g., max 10MB)
+            if file.size and file.size > 10 * 1024 * 1024:
+                raise HTTPException(status_code=400, detail=f"File {file.filename} is too large (max 10MB)")
         
         # Upload files to S3
         urls = await s3_service.upload_multiple_files(files, folder="products")
