@@ -5,21 +5,13 @@ import Dashboard from '../components/admin/tabs/Dashboard';
 import Customers from '../components/admin/tabs/Customers';
 import Orders from '../components/admin/tabs/Orders';
 import './styles/Admin.css';
-import { useNavigate } from 'react-router-dom';
 
 const Admin = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState('Dashboard');
-  const navigate = useNavigate();
 
   // Set sidebar closed by default on smaller screens
   useEffect(() => {
-
-    // Function to handle login authentication
-    if (!sessionStorage.getItem('adminSession')) {
-      navigate('/admin/login'); // Redirect to admin login if not authenticated
-    }
-    
     const handleResize = () => {
       if (window.innerWidth <= 768) {
         setSidebarOpen(false);

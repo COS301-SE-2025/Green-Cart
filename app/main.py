@@ -21,7 +21,6 @@ from app.routes import retailer_products
 # Routers – admin/aws and images
 from app.routes import admin_metrics
 from app.routes import admin_users
-from app.routes import admin_auth
 from app.routes import admin_retailers
 from app.routes import admin_products
 from app.routes import images
@@ -47,14 +46,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("greencart")
 
 app = FastAPI(title="Green Cart API", version="1.2.2")
-app.add_middleware(
-    CORSMiddleware,
-    # Update allowed origins to include your development server
-    allow_origins=["http://localhost:5173", "https://greencart-cos301.co.za"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # Health check
 @app.get("/health")
@@ -91,7 +82,6 @@ app.include_router(retailer_products.router)
 # Admin/AWS/image related
 app.include_router(admin_metrics.router)
 app.include_router(admin_users.router)
-app.include_router(admin_auth.router)
 app.include_router(admin_retailers.router)
 app.include_router(admin_products.router)
 app.include_router(images.router)

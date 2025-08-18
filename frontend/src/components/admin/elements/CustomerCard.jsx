@@ -75,7 +75,7 @@ const CustomerCard = ({ customer, onClick, retailerIcon }) => {
         </div>
         <div className="adm-cus-card-detail">
           <span className="adm-cus-detail-label">Email:</span>
-          <span className="adm-cus-detail-value-email" title={customer.email}>
+          <span className="adm-cus-detail-value">
             {customer.email}
           </span>
         </div>

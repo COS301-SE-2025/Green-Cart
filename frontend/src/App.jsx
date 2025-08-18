@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 import ViewProduct from './components/product/ViewProduct';
@@ -26,7 +25,7 @@ import RetailerAuth from './pages/RetailerAuth'; // ✅ ADDED
 import ProtectedRetailerRoute from './components/ProtectedRetailerRoute'; // ✅ ADDED
 import { SearchProvider } from './components/search/SearchProvider';
 import { CartProvider } from "./components/cart/CartContext";
-import AdminLogin from './components/admin/Login'; // Importing admin login component
+
 // APP Will also be used to define the routes for the application
 function App() {
   return (
@@ -116,20 +115,9 @@ function App() {
               </ProtectedRetailerRoute>
             } />
             <Route path="/admin" element={
-              <React.Fragment key="admin-products">
-                {(() => {
-                  const session = typeof window !== 'undefined' ? sessionStorage.getItem('adminSession') : null;
-                  if (!session) {
-                    return <Navigate to="/admin/login" replace />;
-                  }
-                  return <Admin />;
-                })()}
-              </React.Fragment>
-            } />
-            <Route path="/admin/login" element={
               <React.Fragment key="admin-products"> 
                 {/* <Navigation /> */}
-                <AdminLogin />
+                <Admin />
               </React.Fragment>
             } />
             {/* catch-all */}

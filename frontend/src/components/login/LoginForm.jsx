@@ -118,6 +118,13 @@ const LoginForm = () => {
             />
             Sign in with Google
           </button>
+
+          <div className="retailer-auth-link">
+            Are you a retailer?{' '}
+            <Link to="/retailer-auth" className="retailer-link-text">
+              Sign in as Retailer
+            </Link>
+          </div>
         </form>
       </div>
     </div>

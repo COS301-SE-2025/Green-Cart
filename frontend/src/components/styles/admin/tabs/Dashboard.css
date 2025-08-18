@@ -523,11 +523,11 @@
   }
   
   .stat-subtitle {
-    /* display: none; Hide subtitle on smaller screens */
+    display: none; /* Hide subtitle on smaller screens */
   }
   
   .stat-change {
-    /* display: none; Hide change text on smaller screens */
+    display: none; /* Hide change text on smaller screens */
   }
   
   .chart-header {
@@ -560,7 +560,7 @@
   }
   
   .stat-percentage-text {
-    /* display: none; Hide percentage text on very small screens */
+    display: none; /* Hide percentage text on very small screens */
   }
   
   .chart-container {

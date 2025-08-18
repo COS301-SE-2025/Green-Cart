@@ -20,150 +20,149 @@ export default function RetailerDashboard() {
     const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
-    const loadDashboard = async () => {
-        setLoading(true);
-        
-        try {
-            // Step 1: Get authenticated user data
-            const retailerData = localStorage.getItem('retailer_user');
-            let currentUser = null;
+    useEffect(() => {
+        const loadDashboard = async () => {
+            setLoading(true);
             
-            if (retailerData) {
-                currentUser = JSON.parse(retailerData);
-                console.log("Found retailer user in localStorage:", currentUser);
-            } else {
-                // Fallback to regular user authentication
-                const userData = localStorage.getItem('userData');
-                if (!userData) {
-                    console.log("No user data found, redirecting to login");
-                    navigate('/Login');
+            try {
+                // Step 1: Get authenticated user data
+                const retailerData = localStorage.getItem('retailer_user');
+                let currentUser = null;
+                
+                if (retailerData) {
+                    currentUser = JSON.parse(retailerData);
+                    console.log("Found retailer user in localStorage:", currentUser);
+                } else {
+                    // Fallback to regular user authentication
+                    const userData = localStorage.getItem('userData');
+                    if (!userData) {
+                        console.log("No user data found, redirecting to login");
+                        navigate('/Login');
+                        return;
+                    }
+                    currentUser = JSON.parse(userData);
+                    console.log("Using regular user data:", currentUser);
+                }
+
+                setUser(currentUser);
+
+                // Step 2: Determine retailer ID
+                let retailerId = null;
+                
+                // Try to get retailer_id from the user data first
+                if (currentUser.retailer_id) {
+                    retailerId = currentUser.retailer_id;
+                    console.log("Found retailer_id in user data:", retailerId);
+                } else if (currentUser.id && typeof currentUser.id === 'number') {
+                    // If the user data contains a numeric ID, it might be the retailer ID
+                    retailerId = currentUser.id;
+                    console.log("Using numeric user ID as retailer_id:", retailerId);
+                } else if (currentUser.shops && currentUser.shops.length > 0) {
+                    // If there are shops, use the first shop's ID
+                    retailerId = currentUser.shops[0].id;
+                    console.log("Using first shop ID as retailer_id:", retailerId);
+                } else if (currentUser.user_id || currentUser.id) {
+                    // Try to fetch retailer ID using user_id
+                    const userId = currentUser.user_id || currentUser.id;
+                    console.log("Attempting to fetch retailer by user_id:", userId);
+                    
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/retailer/by-user/${userId}`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.data && data.data.id) {
+                                retailerId = data.data.id;
+                                console.log("Fetched retailer_id from API:", retailerId);
+                                
+                                // Update localStorage with the retailer_id
+                                const updatedUser = { ...currentUser, retailer_id: retailerId };
+                                localStorage.setItem('retailer_user', JSON.stringify(updatedUser));
+                                setUser(updatedUser);
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Error fetching retailer by user_id:", error);
+                    }
+                }
+
+                // Step 3: If we still don't have retailer_id, show error
+                if (!retailerId) {
+                    console.error("Could not determine retailer ID");
+                    setDashboardData(null);
+                    setLoading(false);
                     return;
                 }
-                currentUser = JSON.parse(userData);
-                console.log("Using regular user data:", currentUser);
-            }
-
-            setUser(currentUser);
-
-            // Step 2: Determine retailer ID
-            let retailerId = null;
-            
-            // Try to get retailer_id from the user data first
-            if (currentUser.retailer_id) {
-                retailerId = currentUser.retailer_id;
-                console.log("Found retailer_id in user data:", retailerId);
-            } else if (currentUser.id && typeof currentUser.id === 'number') {
-                // If the user data contains a numeric ID, it might be the retailer ID
-                retailerId = currentUser.id;
-                console.log("Using numeric user ID as retailer_id:", retailerId);
-            } else if (currentUser.shops && currentUser.shops.length > 0) {
-                // If there are shops, use the first shop's ID
-                retailerId = currentUser.shops[0].id;
-                console.log("Using first shop ID as retailer_id:", retailerId);
-            } else if (currentUser.user_id || currentUser.id) {
-                // Try to fetch retailer ID using user_id
-                const userId = currentUser.user_id || currentUser.id;
-                console.log("Attempting to fetch retailer by user_id:", userId);
                 
-                try {
-                    const response = await fetch(`${API_BASE_URL}/retailer/by-user/${userId}`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.data && data.data.id) {
-                            retailerId = data.data.id;
-                            console.log("Fetched retailer_id from API:", retailerId);
-                            
-                            // Update localStorage with the retailer_id
-                            const updatedUser = { ...currentUser, retailer_id: retailerId };
-                            localStorage.setItem('retailer_user', JSON.stringify(updatedUser));
-                            setUser(updatedUser);
-                        }
-                    }
-                } catch (error) {
-                    console.error("Error fetching retailer by user_id:", error);
-                }
-            }
+                console.log("Final retailer ID:", retailerId);
 
-            // Step 3: If we still don't have retailer_id, show error
-            if (!retailerId) {
-                console.error("Could not determine retailer ID");
-                setDashboardData(null);
+                // Step 4: Fetch dashboard data
+                const [metricsResponse, productsResponse] = await Promise.all([
+                    fetch(`${API_BASE_URL}/retailer/metrics/${retailerId}`),
+                    fetch(`${API_BASE_URL}/retailer/products/${retailerId}`)
+                ]);
+
+                console.log("API Response Status:", {
+                    metrics: metricsResponse.status,
+                    products: productsResponse.status
+                });
+
+                const [metricsData, productsData] = await Promise.all([
+                    metricsResponse.json(),
+                    productsResponse.json()
+                ]);
+
+                console.log("API Response Data:", { metricsData, productsData });
+
+                // Step 5: Transform and set dashboard data
+                const metrics = metricsData.data || {};
+                const products = productsData.data || [];
+
+                const dashboardData = {
+                    stats: {
+                        totalRevenue: metrics.total_revenue || 0,
+                        totalProductsSold: metrics.total_units_sold || 0,
+                        activeProducts: metrics.total_products || 0,
+                        totalOrders: 0,
+                        avgSustainability: metrics.avg_sustainability_rating || 0,
+                        availability: metrics.availability || 0
+                    },
+                    products: products,
+                    salesData: (metrics.monthly_revenue || []).map(m => ({
+                        month: m.month,
+                        sales: m.revenue
+                    }))
+                };
+
+                console.log("Final dashboard data:", dashboardData);
+                setDashboardData(dashboardData);
+
+            } catch (error) {
+                console.error("Dashboard loading error:", error);
+                // Set empty data instead of null to prevent error screen
+                setDashboardData({
+                    stats: {
+                        totalRevenue: 0,
+                        totalProductsSold: 0,
+                        activeProducts: 0,
+                        totalOrders: 0,
+                        avgSustainability: 0,
+                        availability: 0
+                    },
+                    products: [],
+                    salesData: []
+                });
+            } finally {
                 setLoading(false);
-                return;
             }
-            
-            console.log("Final retailer ID:", retailerId);
+        };
 
-            // Step 4: Fetch dashboard data
-            const [metricsResponse, productsResponse] = await Promise.all([
-                fetch(`${API_BASE_URL}/retailer/metrics/${retailerId}`),
-                fetch(`${API_BASE_URL}/retailer/products/${retailerId}`)
-            ]);
-
-            console.log("API Response Status:", {
-                metrics: metricsResponse.status,
-                products: productsResponse.status
-            });
-
-            const [metricsData, productsData] = await Promise.all([
-                metricsResponse.json(),
-                productsResponse.json()
-            ]);
-
-            console.log("API Response Data:", { metricsData, productsData });
-
-            // Step 5: Transform and set dashboard data
-            const metrics = metricsData.data || {};
-            const products = productsData.data || [];
-
-            const dashboardData = {
-                stats: {
-                    totalRevenue: metrics.total_revenue || 0,
-                    totalProductsSold: metrics.total_units_sold || 0,
-                    activeProducts: metrics.total_products || 0,
-                    totalOrders: 0,
-                    avgSustainability: metrics.avg_sustainability_rating || 0,
-                    availability: metrics.availability || 0
-                },
-                products: products,
-                salesData: (metrics.monthly_revenue || []).map(m => ({
-                    month: m.month,
-                    sales: m.revenue
-                }))
-            };
-
-            console.log("Final dashboard data:", dashboardData);
-            setDashboardData(dashboardData);
-
-        } catch (error) {
-            console.error("Dashboard loading error:", error);
-            // Set empty data instead of null to prevent error screen
-            setDashboardData({
-                stats: {
-                    totalRevenue: 0,
-                    totalProductsSold: 0,
-                    activeProducts: 0,
-                    totalOrders: 0,
-                    avgSustainability: 0,
-                    availability: 0
-                },
-                products: [],
-                salesData: []
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
         loadDashboard();
     }, [navigate]);
 
     const handleOpenAddProduct = () => setIsAddProductModalOpen(true);
     const handleCloseAddProduct = () => setIsAddProductModalOpen(false);
 
-    const handleProductAdded = async (newProduct) => {
-        // Update local state immediately for better UX
+    const handleProductAdded = (newProduct) => {
         setDashboardData(prev => ({
             ...prev,
             products: [newProduct, ...prev.products],
@@ -172,10 +171,6 @@ export default function RetailerDashboard() {
                 activeProducts: prev.stats.activeProducts + 1
             }
         }));
-        
-        // Trigger a reload of dashboard data to ensure everything is fresh
-        console.log("Product added successfully, reloading dashboard data...");
-        await loadDashboard();
     };
 
     const handleEditProduct = (product) => {
