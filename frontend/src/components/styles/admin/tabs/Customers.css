@@ -356,23 +356,170 @@
   justify-content: flex-end; /* Don't allow to grow */
 }
 
+.adm-cus-control-buttons .dropdown {
+  display: inline-block;
+}
+
+.adm-cus-control-buttons .dropdown-toggle {
+  border: 1px solid #d1d5db;
+  border-radius: 0;
+  background: #dbdcdd;
+  font-size: 14px;
+  color: #374151;
+  transition: all 0.2s;
+}
+
 .adm-cus-filter-btn,
 .adm-cus-sort-btn {
+ background: #dbdcdd !important;
+ border: 1px solid #d1d5db !important;
+ color: #374151 !important;
  padding: 10px 16px;
- border: 1px solid #d1d5db;
- border-radius: 0;
- background: #dbdcdd;
+ border-radius: 0 !important;
  font-size: 14px;
- color: #374151;
- cursor: pointer;
- transition: all 0.2s;
+ font-weight: 500;
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ outline: none !important;
+ box-shadow: none !important;
 }
 
 .adm-cus-filter-btn:hover,
-.adm-cus-sort-btn:hover {
- border-color: #1f2937;
- background-color: #1f2937;
- color: white;
+.adm-cus-sort-btn:hover,
+.adm-cus-filter-btn:focus,
+.adm-cus-sort-btn:focus {
+ background: #1f2937 !important;
+ border-color: #1f2937 !important;
+ color: white !important;
+ box-shadow: none !important;
+}
+
+.adm-cus-filter-menu,
+.adm-cus-sort-menu {
+  background: #1f2937 !important;
+  border: 1px solid #1f2937 !important;
+  border-radius: 0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  padding: 12px !important;
+  min-width: 280px;
+}
+
+.adm-cus-sort-menu .dropdown-item {
+  padding: 8px 12px;
+  border-radius: 0;
+  font-size: 14px;
+  color: white !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent !important;
+}
+
+.adm-cus-sort-menu .dropdown-item:hover,
+.adm-cus-sort-menu .dropdown-item:focus {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
+.filter-section {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.filter-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 16px;
+}
+
+.filter-section h6 {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.filter-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #dbdcdd;
+}
+
+.filter-checkbox label {
+  font-size: 14px;
+  color: white;
+  margin: 0;
+  cursor: pointer;
+}
+
+.filter-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-range input {
+  width: 80px;
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.filter-range input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.filter-range span {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.filter-actions {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.clear-filters-btn {
+  background: #f04438;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.clear-filters-btn:hover {
+  background: #d92d20;
+}
+
+.dropdown-toggle::after {
+  margin-left: 8px;
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-left: 0.3em solid transparent;
+}
+
+.dropdown-menu {
+  z-index: 1050;
+}
+
+.dropdown-menu.show {
+  display: block;
 }
 
 .adm-cus-view-toggle {
@@ -502,6 +649,14 @@ background-color: #1f2937;
 .adm-cus-email {
  font-size: 12px;
  color: #6b7280;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 180px; /* Limit width for emails */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .adm-cus-plan {
@@ -699,6 +854,20 @@ background-color: #1f2937;
  display: flex;
  align-items: center;
  gap: 6px;
+}
+
+.adm-cus-detail-value-email {
+  font-size: 13px;
+  color: #1a202c;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 180px; /* Limit width for emails */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* overflow-clip-margin: content-box; */
+  white-space: nowrap;
 }
 
 .adm-cus-card-actions {
