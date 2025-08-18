@@ -39,7 +39,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | [Proposal Document](https://www.canva.com/design/DAGlkKZ2Tck/nRnry4uoAMHH9-PVaqgAvA/edit?utm_content=DAGlkKZ2Tck&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) | Project overview and business rationale |
 | [System Requirements Document](https://docs.google.com/document/d/1SvLTt7jRWEveDAkH8mjZ0KU3gi2sbbJkxBVchZX8C90/edit?usp=sharing) | System requirements overview |
 | [Architectural Requirements Document](https://docs.google.com/document/d/1bDoQ41GI7rCZ477knKvVjaK55zg-DltwBMp97950plk/edit?usp=sharing) | Architectural overview |
-| [Architectural diagram](https://drive.google.com/file/d/17Z6dzJ0TekRirfPie00yODltcmBXA47d/view?usp=sharing) | Architectural diagram |
+| [Architectural diagram](https://drive.google.com/file/d/1TyYMQbvEHMpCSUaEMZioQpOLjMLPKSYZ/view?usp=sharing) | Architectural diagram |
 | [Database Schema](https://github.com/COS301-SE-2025/Green-Cart/blob/documentation/documents/ERD%20diagram.png?raw=true) | Entity relationship model and schema reference |
 | [Project Board](https://github.com/orgs/COS301-SE-2025/projects/198/views/2) | Task management and team progress |
 | [Coding Standards Document](https://docs.google.com/document/d/1-fC7M57fGlySNG3gG15oKwxMuICl8U_LiuiHUZikwbQ/edit?tab=t.0) | Coding Standards Document |
