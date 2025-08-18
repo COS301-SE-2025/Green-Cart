@@ -405,11 +405,11 @@
     border: 1px solid #e2e8f0;
 }
 
-.form-group {
+.adm-prod-verif-form-group {
     margin-bottom: 20px;
 }
 
-.form-group label {
+.adm-prod-verif-form-group label {
     display: block;
     font-weight: 600;
     color: #374151;
