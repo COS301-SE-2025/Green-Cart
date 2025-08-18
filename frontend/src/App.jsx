@@ -25,7 +25,7 @@ import RetailerAuth from './pages/RetailerAuth'; // ✅ ADDED
 import ProtectedRetailerRoute from './components/ProtectedRetailerRoute'; // ✅ ADDED
 import { SearchProvider } from './components/search/SearchProvider';
 import { CartProvider } from "./components/cart/CartContext";
-
+import  AdminSignin from './components/admin/Login'; 
 // APP Will also be used to define the routes for the application
 function App() {
   return (
@@ -118,6 +118,12 @@ function App() {
               <React.Fragment key="admin-products"> 
                 {/* <Navigation /> */}
                 <Admin />
+              </React.Fragment>
+            } />
+            <Route path="/admin/login" element={
+              <React.Fragment key="admin-login">
+                {/* <Navigation /> */}
+                <AdminSignin />
               </React.Fragment>
             } />
             {/* catch-all */}
