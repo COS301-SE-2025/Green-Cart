@@ -105,7 +105,7 @@ const RetailerAccount = () => {
             </div>
 
             <div className="card-content">
-              <div className="form-group">
+              <div className="ret-acc-form-group">
                 <label>Shop Name</label>
                 {isEditing ? (
                   <input
@@ -119,7 +119,7 @@ const RetailerAccount = () => {
                 )}
               </div>
 
-              <div className="form-group">
+              <div className="ret-acc-form-group">
                 <label>Shop Description</label>
                 {isEditing ? (
                   <textarea
@@ -133,7 +133,7 @@ const RetailerAccount = () => {
                 )}
               </div>
 
-              <div className="form-group">
+              <div className="ret-acc-form-group">
                 <label>Banner Image URL</label>
                 {isEditing ? (
                   <input
@@ -158,24 +158,24 @@ const RetailerAccount = () => {
             </div>
 
             <div className="card-content">
-              <div className="form-group">
+              <div className="ret-acc-form-group">
                 <label>Owner Name</label>
                 <div className="display-value">{formData.user_name}</div>
               </div>
 
-              <div className="form-group">
+              <div className="ret-acc-form-group">
                 <label>Email Address</label>
                 <div className="display-value">{formData.email}</div>
               </div>
 
-              <div className="form-group">
+              <div className="ret-acc-form-group">
                 <label>Account Type</label>
                 <div className="display-value">
                   <span className="account-badge">Retailer Account</span>
                 </div>
               </div>
 
-              <div className="form-group">
+              <div className="ret-acc-form-group">
                 <label>Shop ID</label>
                 <div className="display-value">{retailerUser?.id}</div>
               </div>

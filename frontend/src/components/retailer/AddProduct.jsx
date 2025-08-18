@@ -580,7 +580,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                     <div className="form-actions">
                         <button
                             type="button"
-                            className="btn btn-cancel"
+                            className="add-prod-btn btn-cancel"
                             onClick={onClose}
                             disabled={isSubmitting}
                         >
@@ -588,7 +588,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                         </button>
                         <button
                             type="submit"
-                            className="btn btn-submit"
+                            className="add-prod-btn btn-submit"
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? (

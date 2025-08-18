@@ -112,7 +112,6 @@
   margin-bottom: 1.5rem;
   line-height: 1.1;
   text-align: center;
-  letter-spacing: -0.025em;
 }
 
 @media (max-width: 768px) {
@@ -250,13 +249,6 @@
   color: #4b5563 !important;
   font-size: 0.85rem;
   cursor: pointer;
-  transition: color 0.3s ease;
-  user-select: none;
-  font-weight: 500;
-}
-
-.checkbox-label:hover {
-  color: #374151 !important;
 }
 
 .checkbox-input {
@@ -277,7 +269,6 @@
 }
 
 .forgot-password-link:hover {
-  color: #6ba031 !important;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -390,7 +381,7 @@
   content: '';
   flex: 1;
   height: 1px;
-  background-color: #e5e7eb;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .divider span {
@@ -398,7 +389,6 @@
   padding: 0 0.75rem;
   font-size: 0.8rem;
   background-color: transparent;
-  font-weight: 500;
 }
 
 .google-signin-button {
@@ -428,8 +418,7 @@
 }
 
 .google-signin-button:hover {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
+  background-color: white;
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }

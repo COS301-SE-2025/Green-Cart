@@ -87,13 +87,13 @@ export default function OrderCard({ order, onViewDetails, onCancelOrder }) {
 
             <div className="order-card-actions">
                 <button 
-                    className="btn btn-view"
+                    className="order-card-btn btn-view"
                     onClick={() => onViewDetails(order)}
                 >
                     View Details
                 </button>
                 <button 
-                    className={`btn btn-cancel ${!canCancel ? 'disabled' : ''}`}
+                    className={`order-card-btn btn-cancel ${!canCancel ? 'disabled' : ''}`}
                     disabled={!canCancel}
                     onClick={() => onCancelOrder(order)}
                 >
