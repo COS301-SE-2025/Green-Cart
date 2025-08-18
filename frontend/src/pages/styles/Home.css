@@ -43,7 +43,17 @@
   position: relative;
   z-index: 2;
   max-width: 600px;
-  color: white;
+  /* color: white; */
+  /* background: rgba(178, 178, 178, 0.8);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: auto;
 }
 
 .hero-title {
@@ -52,6 +62,8 @@
   margin: 0 0 1rem 0;
   line-height: 1.2;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-weight: 600;
 }
 
 .hero-description {
@@ -61,6 +73,8 @@
   opacity: 0.95;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
   max-width: 500px;
+  color: #fff;
+  font-weight: 500;
 }
 
 /* Search Section */
