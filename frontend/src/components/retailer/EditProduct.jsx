@@ -209,7 +209,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                 continue;
             }
             if (file.size > maxSize) {
-                toast.error(`${file.name} is too large. Maximum size is 10MB`);
+                toast.error(`${file.name} is too large. Maximum size is ${maxSize / (1024 * 1024)}MB`);
                 continue;
             }
             validFiles.push(file);
