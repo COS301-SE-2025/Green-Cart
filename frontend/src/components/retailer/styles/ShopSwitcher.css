@@ -213,22 +213,108 @@
   background: #6da236;
 }
 
-/* Responsive adjustments */
+/* Enhanced responsive adjustments */
 @media (max-width: 768px) {
   .shop-switcher-trigger {
-    min-width: 160px;
-    padding: 6px 10px;
+    min-width: 140px; /* MODIFIED: Smaller on tablets */
+    padding: 6px 8px; /* MODIFIED: Reduced padding */
+    font-size: 13px; /* ADDED: Smaller font */
   }
   
   .shop-switcher-dropdown {
-    min-width: 280px;
+    min-width: 260px; /* MODIFIED: Smaller dropdown */
+    left: -60px; /* ADDED: Offset to prevent overflow */
   }
   
   .shop-name {
-    font-size: 13px;
+    font-size: 12px; /* MODIFIED: Smaller text */
   }
   
   .shop-label {
-    font-size: 10px;
+    font-size: 9px; /* MODIFIED: Tiny label */
+  }
+  
+  .shop-icon {
+    font-size: 16px; /* MODIFIED: Smaller icon */
   }
 }
+
+@media (max-width: 480px) {
+  .shop-switcher-trigger {
+    min-width: 100px; 
+    padding: 4px 6px; 
+    font-size: 11px; 
+  }
+  
+  .shop-switcher-dropdown {
+    min-width: 240px; /* MODIFIED: Compact dropdown */
+    left: 0px; /* MODIFIED: More offset for mobile */
+    max-height: 300px; /* ADDED: Limit height on mobile */
+  }
+  
+  .shop-details {
+    gap: 1px; /* ADDED: Minimal gap */
+  }
+  
+  .shop-name {
+    font-size: 11px; /* MODIFIED: Very small text */
+    line-height: 1.1; /* ADDED: Tight line height */
+  }
+  
+  .shop-label {
+    font-size: 8px; /* MODIFIED: Tiny label */
+    margin-top: 1px; /* ADDED: Minimal spacing */
+  }
+  
+  .shop-icon {
+    font-size: 14px; /* MODIFIED: Small icon */
+  }
+  
+  .dropdown-arrow {
+    font-size: 8px; /* MODIFIED: Tiny arrow */
+  }
+  
+  /* Compact dropdown content */
+  .dropdown-header {
+    padding: 8px 12px; /* MODIFIED: Smaller padding */
+    font-size: 11px; /* ADDED: Smaller header text */
+  }
+  
+  .shop-option {
+    padding: 8px 12px; /* MODIFIED: Smaller option padding */
+  }
+  
+  .shop-option-name {
+    font-size: 12px; /* MODIFIED: Smaller option text */
+  }
+  
+  .shop-option-desc {
+    font-size: 10px; /* MODIFIED: Tiny description */
+  }
+  
+  .create-shop-btn {
+    font-size: 11px; /* MODIFIED: Smaller button text */
+    padding: 6px 10px; /* MODIFIED: Smaller button padding */
+  }
+}
+
+@media (max-width: 360px) {
+  .shop-switcher-trigger {
+    min-width: 80px; /* MODIFIED: Ultra compact */
+    padding: 3px 5px; /* MODIFIED: Minimal padding */
+  }
+  
+  .shop-switcher-dropdown {
+    left: -100px; /* MODIFIED: More offset for very small screens */
+    min-width: 220px; /* MODIFIED: Smaller dropdown */
+  }
+  
+  .shop-name {
+    font-size: 10px; /* MODIFIED: Tiny text */
+  }
+  
+  .shop-label {
+    display: none; /* ADDED: Hide label on very small screens */
+  }
+}
+
