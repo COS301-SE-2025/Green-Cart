@@ -160,9 +160,9 @@ export default function Home() {
         <div className="hero-background">
           <div className="hero-overlay"></div>
           <div className="hero-content">
-            <h1 className="hero-title">New in Homeware</h1>
+            <h1 className="hero-title">Welcome to Green Cart</h1>
             <p className="hero-description">
-              Upgrade your home with planet-friendly essentials that blend style, function, and sustainability.
+              Discover eco-friendly products that support your lifestyle and the planet. Fast, local, and sustainable — shopping that makes a difference.
             </p>
           </div>
         </div>

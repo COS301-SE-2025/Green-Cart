@@ -245,46 +245,131 @@
 @media (max-width: 768px) {
   .navbar-container {
     padding: 0 1rem;
+    flex-wrap: nowrap; /* ADDED: Prevent wrapping */
+  }
+  
+  .navbar-left {
+    flex: 0 1 auto; /* MODIFIED: Allow shrinking */
+    min-width: 0; /* ADDED: Allow content to shrink */
+    gap: 8px;
+  }
+  
+  .navbar-center {
+    flex: 1; /* MODIFIED: Take remaining space */
+    min-width: 0; /* ADDED: Allow content to shrink */
+  }
+  
+  .navbar-right {
+    flex: 0 0 auto; /* MODIFIED: Don't grow or shrink */
   }
   
   .retailer-name {
-    font-size: 1.2rem;
+    font-size: 1rem; /* MODIFIED: Smaller on tablets */
+    white-space: nowrap; /* ADDED: Prevent text wrapping */
+    overflow: hidden; /* ADDED: Hide overflow */
+    text-overflow: ellipsis; /* ADDED: Show ellipsis for long names */
+    max-width: 120px; /* ADDED: Limit width */
   }
   
   .css-logo {
-    font-size: 1.4rem;
+    font-size: 1.1rem; /* MODIFIED: Smaller on tablets */
   }
   
   .logout-btn {
-    padding: 0.6rem 1.2rem;
+    padding: 0.6rem 1rem; /* MODIFIED: Smaller padding */
     font-size: 0.85rem;
+  }
+  
+  /* Hide shop switcher on tablets to save space */
+  .shop-switcher-container {
+    display: block; 
   }
 }
 
 @media (max-width: 480px) {
   .navbar-container {
     padding: 0 0.75rem;
-    height: 65px;
-  }
-  
-  .retailer-name {
-    font-size: 1.1rem;
-  }
-  
-  .css-logo {
-    font-size: 1.2rem;
-  }
-  
-  .logout-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
+    height: 60px; /* MODIFIED: Reduced height */
+    gap: 0.25rem; /* ADDED: Very small gap between sections */
   }
   
   .navbar-left {
-    padding-left: 0.5rem;
+    flex: 0 1 auto;
+    min-width: 0;
+    gap: 4px; /* MODIFIED: Very small gap for mobile */
+  }
+  
+  .navbar-center {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
   }
   
   .navbar-right {
-    padding-right: 0.5rem;
+    flex: 0 0 auto;
+  }
+  
+  .retailer-name {
+    display:none;
+  }
+  
+  .css-logo {
+    font-size: 1rem; /* MODIFIED: Much smaller on mobile */
+    gap: 3px; /* MODIFIED: Smaller gap */
+    letter-spacing: 0.3px; /* MODIFIED: Tighter spacing */
+  }
+  
+  .animated-leaf {
+    font-size: 1.1rem; /* MODIFIED: Smaller leaf */
+    margin-left: 1px; /* MODIFIED: Less margin */
+  }
+  
+  .logout-btn {
+    padding: 0.4rem 0.7rem; /* MODIFIED: Much smaller padding */
+    font-size: 0.75rem; /* MODIFIED: Smaller text */
+    white-space: nowrap;
+  }
+  
+  /* Keep shop switcher visible but make it very compact */
+  .shop-switcher-container {
+    display: block; /* MODIFIED: Keep visible on mobile */
+  }
+  
+  .navbar-left .shop-switcher-container {
+    margin-left: 2px; /* MODIFIED: Minimal margin */
+  }
+  
+  /* Reduce swirling leaves on mobile for better performance */
+  .retailer-navbar::before,
+  .retailer-navbar::after,
+  .navbar-container::before,
+  .navbar-container::after {
+    display: none; /* ADDED: Hide animations on mobile */
+  }
+}
+
+@media (max-width: 360px) {
+  .navbar-container {
+    padding: 0 0.5rem;
+    height: 55px; /* MODIFIED: Even smaller height */
+  }
+  
+  .retailer-name {
+    font-size: 0.8rem;
+    max-width: 60px; /* MODIFIED: Very limited width */
+  }
+  
+  .css-logo {
+    font-size: 0.9rem; /* MODIFIED: Tiny on very small screens */
+  }
+  
+  .logout-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+  }
+  
+  .animated-leaf {
+    font-size: 1rem;
   }
 }
