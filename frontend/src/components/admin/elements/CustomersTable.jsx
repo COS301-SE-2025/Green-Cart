@@ -42,7 +42,7 @@ const CustomersTable = ({ customers, onCustomerClick }) => {
                 <th>Type</th>
                 <th>User ID</th>
                 <th>Phone Number</th>
-                <th>Sustainability</th>
+                <th>Carbon Footprint</th>
             </tr>
         </thead>
         <tbody>
