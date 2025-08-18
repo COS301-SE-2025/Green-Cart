@@ -692,7 +692,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                     <div className="form-actions">
                         <button
                             type="button"
-                            className="edit-prod-btn btn-cancel"
+                            className="btn btn-cancel"
                             onClick={onClose}
                             disabled={isSubmitting}
                         >
@@ -700,7 +700,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                         </button>
                         <button
                             type="submit"
-                            className="edit-prod-btn btn-submit"
+                            className="btn btn-submit"
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? (

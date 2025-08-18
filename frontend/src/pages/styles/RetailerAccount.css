@@ -111,15 +111,15 @@
 }
 
 /* Form Groups */
-.ret-acc-form-group {
+.form-group {
   margin-bottom: 1.5rem;
 }
 
-.ret-acc-form-group:last-child {
+.form-group:last-child {
   margin-bottom: 0;
 }
 
-.ret-acc-form-group label {
+.form-group label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
@@ -127,8 +127,8 @@
   font-size: 0.9rem;
 }
 
-.ret-acc-form-group input,
-.ret-acc-form-group textarea {
+.form-group input,
+.form-group textarea {
   width: 100%;
   padding: 0.75rem;
   border: 2px solid #e1e5e9;
@@ -141,14 +141,14 @@
   transition: border-color 0.3s ease;
 }
 
-.ret-acc-form-group input:focus,
-.ret-acc-form-group textarea:focus {
+.form-group input:focus,
+.form-group textarea:focus {
   outline: none;
   border-color: #7BB540;
   box-shadow: 0 0 0 3px rgba(123, 181, 64, 0.1);
 }
 
-.ret-acc-form-group textarea {
+.form-group textarea {
   resize: vertical;
   min-height: 80px;
 }

@@ -34,29 +34,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
   const [metricsLoading, setMetricsLoading] = useState(true);
-  const [adminData, setAdminData] = useState({
-    name: 'Unknown User',
-    email: 'unknown@example.com'
-  });
 
   useEffect(() => {
-    // Load admin data from session storage
-    const loadAdminData = () => {
-      try {
-        const adminInfo = sessionStorage.getItem('adminSession');
-        if (adminInfo) {
-          const parsedAdminData = JSON.parse(adminInfo);
-          setAdminData({
-            name: parsedAdminData.name || 'Admin User',
-            email: parsedAdminData.email || 'admin@example.com'
-          });
-        }
-      } catch (error) {
-        console.error('Error loading admin data from session storage:', error);
-        // Keep default values if error occurs
-      }
-    };
-    loadAdminData();
     loadDashboardData();
   }, []);
 
@@ -233,7 +212,7 @@ const Dashboard = () => {
       {/* Welcome Header */}
       <div className="dashboard-header">
         <div className="dashboard-welcome-section">
-          <h1 className="dashboard-welcome-title">Welcome back, {adminData.name}</h1>
+          <h1 className="dashboard-welcome-title">Welcome back, Matthew</h1>
           <p className="dashboard-welcome-subtitle">Here are today's stats from your online store!</p>
         </div>
       </div>
