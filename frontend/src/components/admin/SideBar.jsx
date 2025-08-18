@@ -10,6 +10,8 @@ import productsIcon from './icons/productsIcon.png';
 import paymentsIcon from './icons/paymentsIcon.png';
 import customersIcon from './icons/customersIcon.png';
 import backIcon from './icons/backIcon.png';
+import settingsIcon from './icons/settingsIcon.png';
+import bellIcon from './icons/bellIcon.png'; // Assuming you have a bell icon for notifications
 import logo from './icons/Green-cart-admin.png';
 // Profile menu icons - you'll need to add these to your icons folder
 import profileIcon from './icons/profileIcon.png';
@@ -18,8 +20,8 @@ import logoutIcon from './icons/logoutIcon.png';
 const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [adminData, setAdminData] = useState({
-    name: 'Admin User',
-    email: 'admin@example.com'
+    name: 'Unknown User',
+    email: 'unknown@example.com'
   });
   
   const navigate = useNavigate();
@@ -33,9 +35,9 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
   ];
 
   const supportItems = [
-    { name: 'Notifications', icon: dashboardIcon, badge: 7 },
-    { name: 'Help & Support', icon: dashboardIcon },
-    { name: 'Settings', icon: dashboardIcon }
+    { name: 'Notifications', icon: bellIcon, badge: 7 },
+    // { name: 'Help & Support', icon: dashboardIcon },
+    { name: 'Settings', icon: settingsIcon }
   ];
 
   // Load admin data from session storage
