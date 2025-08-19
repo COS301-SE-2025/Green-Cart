@@ -1,6 +1,7 @@
 .product {
     width: 100%;
     max-width: 220px;
+    height: 320px;
     background: #fff;
     border-radius: 8px;
     overflow: hidden;
@@ -12,6 +13,7 @@
     font-family: 'Inter', sans-serif;
     margin: 0 auto;
     position: relative; 
+    
 }
 
 .product:hover {
@@ -25,9 +27,8 @@
     background: #f5f5f5;
     height: 200px;
     overflow: hidden;
-    display: flex;
-    /* align-items: center; */
-    /* justify-content: center; */
+    width: 100%;
+
 }
 
 .product-image img {
@@ -37,7 +38,7 @@
     object-fit: cover;
     object-position: center;
     transition: transform 0.3s ease;
-    display: block;
+    /* display: block; */
 }
 
 .product:hover .product-image img {
@@ -75,6 +76,7 @@
     flex-direction: column;
     justify-content: space-between;
     position: relative; /* Important for badge positioning */
+    height: 120px;
 }
 
 .product-details h2 {
@@ -88,6 +90,8 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-height: 2.4rem;
+    min-height: 2.4rem;
 }
 
 .product-details p {
