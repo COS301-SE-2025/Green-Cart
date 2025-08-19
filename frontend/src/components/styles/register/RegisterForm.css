@@ -103,6 +103,7 @@
   margin-bottom: 1.5rem; /* Reduced */
   line-height: 1.1;
   text-align: center;
+  letter-spacing: -0.025em;
 }
 
 @media (max-width: 768px) {
@@ -189,27 +190,12 @@
 
 .register-form-input:focus {
   outline: none;
-  border-bottom-color: rgb(255, 255, 255);
-  transform: scaleX(1);
-  transform-origin: center;
-  transition: transform 0.3s ease;
-}
-
-.form-input::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: 100%;
-  background-color: white;
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 0.3s ease;
-}
-
-.form-input:focus::after {
-  transform: scaleX(1);
+  border-color: #7BB540;
+  background-color: #ffffff;
+  box-shadow: 
+    0 0 0 4px rgba(123, 181, 64, 0.1),
+    0 4px 12px rgba(123, 181, 64, 0.15);
+  transform: translateY(-1px);
 }
 
 /* FIXED: Better floating label animation */
@@ -276,8 +262,18 @@
 }
 
 .sign-up-button:hover, .create-account-button:hover {
-  background-color: white;
+  background: linear-gradient(135deg, #6ba031 0%, #5a8c28 100%);
+  transform: translateY(-3px);
+  box-shadow: 
+    0 12px 30px rgba(123, 181, 64, 0.4),
+    0 6px 16px rgba(123, 181, 64, 0.3);
+}
+
+.sign-up-button:active, .create-account-button:active {
   transform: translateY(-1px);
+  box-shadow: 
+    0 6px 20px rgba(123, 181, 64, 0.3),
+    0 3px 10px rgba(123, 181, 64, 0.2);
 }
 
 .signin-link {
@@ -298,13 +294,19 @@
 }
 
 .signin-link-text {
-  color: white;
-  text-decoration: underline;
-  cursor: pointer;
+  color: #7BB540 !important;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
 }
 
 .signin-link-text:hover {
-  text-decoration: none;
+  color: #6ba031 !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  background-color: rgba(123, 181, 64, 0.05);
 }
 
 .divider {
@@ -325,14 +327,15 @@
   content: '';
   flex: 1;
   height: 1px;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: #e5e7eb;
 }
 
 .divider span {
-  color: white;
+  color: #6b7280 !important;
   padding: 0 1rem;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   background-color: transparent;
+  font-weight: 500;
 }
 
 .google-signup-button {
@@ -362,8 +365,10 @@
 }
 
 .google-signup-button:hover {
-  background-color: white;
+  background-color: #f9fafb;
+  border-color: #d1d5db;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .google-icon {
@@ -394,7 +399,7 @@
 }
 
 .terms-link {
-  color: white;
+  color: #7BB540 !important;
   text-decoration: underline;
 }
 

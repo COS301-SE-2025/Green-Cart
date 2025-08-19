@@ -10,6 +10,7 @@ import EditProduct from '../components/retailer/EditProduct';
 export default function ViewRetailerProduct() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [user, setUser] = useState(null);
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [editModalOpen, setEditModalOpen] = useState(false);
@@ -56,6 +57,7 @@ export default function ViewRetailerProduct() {
             if (retailerData) {
                 userData = JSON.parse(retailerData);
                 console.log('Using retailer user data for product fetch');
+                setUser(userData);
             } else {
                 const fallbackData = localStorage.getItem('userData');
                 if (fallbackData) {
@@ -117,7 +119,8 @@ export default function ViewRetailerProduct() {
                                typeof productData.units_sold === 'number' ? productData.units_sold : 0,
                     revenue: typeof result.revenue === 'number' ? result.revenue : 
                             typeof productData.revenue === 'number' ? productData.revenue : 0,
-                    quantity: productData.stock_quantity || productData.quantity || 0
+                    quantity: productData.stock_quantity || productData.data.quantity || 0,
+                    category: productData.category_name || ":)" 
                 });
                 
                 setImageErrors(new Set());
@@ -408,6 +411,7 @@ export default function ViewRetailerProduct() {
                         onClose={() => setEditModalOpen(false)}
                         product={product}
                         onProductUpdated={handleProductUpdate}
+                        retailerId={user.id}
                     />
                 </div>
             </div>

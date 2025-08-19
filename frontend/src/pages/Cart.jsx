@@ -11,6 +11,7 @@ export default function Cart() {
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [selectedInitiative, setSelectedInitiative] = useState("");
   const [refresh, setRefresh] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("userData"));
@@ -170,7 +171,7 @@ export default function Cart() {
 
           <div className="cart-items-list">
             {cartItems.map((item, i) => (
-              <div key={item.id} className="cart-item-row">
+              <div key={item.id} className={loading ? "cart-item-row-loading" : "cart-item-row"}>
                 <div className="product-details">
                   <img
                     src={item.images[0]}
@@ -181,25 +182,37 @@ export default function Cart() {
                     <h4>{item.data.name}</h4>
                     <p className="product-brand">{item.data.brand || 'Green Cart'}</p>
                     <button
-                      onClick={() => remove_From_Cart(userId.id,item.data.id)}
-                      className="remove-btn"
+                      className={loading ? "remove-btn-loading" : "remove-btn"}
+                      onClick={async () => {
+                        setLoading(true);
+                        await remove_From_Cart(userId.id,item.data.id);
+                        setLoading(false);
+                      }}
                     >
                       Remove
                     </button>
                   </div>
                 </div>
 
-                <div className="quantity-controls">
+                <div className={loading ? "quantity-controls-loading": "quantity-controls"}>
                   <button
-                    className="quantity-btn"
-                    onClick={() => add_To_Cart(userId.id,item.data.id, -1, item.quantity <= 1)}
+                    className={loading ? "quantity-btn-loading": "quantity-btn"}
+                    onClick={async () => {
+                      setLoading(true);
+                      await add_To_Cart(userId.id,item.data.id, -1, item.quantity <= 1);
+                      setLoading(false);
+                    }}
                   >
                     −
                   </button>
                   <span className="quantity-display">{item.quantity}</span>
                   <button
-                    className="quantity-btn"
-                    onClick={() => add_To_Cart(userId.id,item.data.id, 1)}
+                    className={loading ? "quantity-btn-loading" : "quantity-btn"}
+                    onClick={async () => {
+                      setLoading(true);
+                      await add_To_Cart(userId.id,item.data.id, 1);
+                      setLoading(false);
+                    }}
                   >
                     +
                   </button>
