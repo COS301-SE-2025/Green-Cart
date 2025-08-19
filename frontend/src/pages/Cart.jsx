@@ -376,7 +376,7 @@ export default function Cart() {
           <div className="donation-modal" onClick={(e) => e.stopPropagation()}>
             <h3>Improve Your EcoMeter Score</h3>
             <div className="current-ecometer">
-              <span>Current EcoMeter: </span>
+              <span className="current-ecometer-label">Current EcoMeter: </span>
               <span className="current-score" style={{ color: getEcoMeterColor(baseEcoMeter) }}>
                 {baseEcoMeter}/100 - {getEcoMeterLevel(baseEcoMeter)}
               </span>

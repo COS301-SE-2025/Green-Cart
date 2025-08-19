@@ -567,12 +567,18 @@
 }
 
 .current-ecometer {
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; */
   padding: 15px;
   border-radius: 8px;
   margin: 15px 0;
   text-align: center;
   border-left: 4px solid #4CAF50;
+}
+
+.current-ecometer-label{
+  font-weight: 600;
+  font-size: 18px;
+  color: #2E7D32;
 }
 
 .current-score {
