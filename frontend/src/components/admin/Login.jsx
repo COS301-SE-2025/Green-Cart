@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import '../styles/admin/Login.css';
@@ -14,13 +14,30 @@ const Login = () => {
     e.preventDefault();
     try {
       const result = await adminSignin(email, password);
+      
+      // Store admin session
+      sessionStorage.setItem('adminSession', JSON.stringify({
+        user_id: result.user_id,
+        name: result.name,
+        email: result.email,
+        role: result.role
+      }));
+
       toast.success('Admin login successful!');
-      navigate("/Admin");
+      navigate('/admin');
     } catch (err) {
       console.error('Admin login failed:', err.message);
       toast.error(err.message || 'Login failed. Please try again.');
+      sessionStorage.removeItem('adminSession');
     }
   };
+
+  useEffect(() => {
+    const adminSession = sessionStorage.getItem('adminSession');
+    if (adminSession) {
+      navigate('/admin');
+    }
+  }, [navigate]);
 
   return (
     <div className="admin-login-container">

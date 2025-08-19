@@ -26,6 +26,7 @@ import ProtectedRetailerRoute from './components/ProtectedRetailerRoute'; // ✅
 import { SearchProvider } from './components/search/SearchProvider';
 import { CartProvider } from "./components/cart/CartContext";
 import  AdminSignin from './components/admin/Login'; 
+import ProtectedAdminRoute from './ProtectedAdminRoute';
 // APP Will also be used to define the routes for the application
 function App() {
   return (
@@ -115,10 +116,11 @@ function App() {
               </ProtectedRetailerRoute>
             } />
             <Route path="/admin" element={
-              <React.Fragment key="admin-products"> 
-                {/* <Navigation /> */}
-                <Admin />
-              </React.Fragment>
+              <ProtectedAdminRoute>
+                <React.Fragment key="admin-products">
+                  <Admin />
+                </React.Fragment>
+              </ProtectedAdminRoute>
             } />
             <Route path="/admin/login" element={
               <React.Fragment key="admin-login">
