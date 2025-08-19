@@ -22,7 +22,7 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 BASE_URL = os.getenv("BASE_URL", "https://api.greencart-cos301.co.za")
 
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
 def validate_image(file: UploadFile) -> bool:
     """Validate uploaded image file"""

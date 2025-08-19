@@ -11,6 +11,7 @@ export default function Cart() {
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [selectedInitiative, setSelectedInitiative] = useState("");
   const [refresh, setRefresh] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("userData"));
@@ -21,6 +22,9 @@ export default function Cart() {
       } 
     }else navigate("/login");
   }, [refreshCart]);
+
+
+
 
 
   const userId = JSON.parse(localStorage.getItem("userData"));
@@ -37,7 +41,41 @@ export default function Cart() {
 
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + Number(item.data.price) * item.quantity, 0);
-  const shippingCost = shippingOption === "standard" ? 73.99 : shippingOption === "express" ? 149.99 : 0;
+
+    // Ensure shipping option is always valid based on cart total
+  useEffect(() => {
+    if (subtotal < 500 && shippingOption === "free") {
+      setShippingOption("standard");
+    } else if (subtotal >= 500) {
+      setShippingOption("free");
+    }
+  }, [subtotal]); // Run when subtotal changes
+
+  // Apply free shipping if subtotal >= R500, otherwise use selected shipping option
+  const getShippingCost = () => {
+    if (subtotal >= 500) {
+      return 0; // Free shipping for orders over R500
+    }
+    
+    // Prevent free shipping selection if order is under R500
+    if (shippingOption === "free" && subtotal < 500) {
+      setShippingOption("standard"); // Reset to standard if user somehow selected free
+      return 73.99;
+    }
+    
+    switch (shippingOption) {
+      case "standard":
+        return 73.99;
+      case "express":
+        return 149.99;
+      case "free":
+        return 0; // This should only be reached if subtotal >= 500
+      default:
+        return 73.99;
+    }
+  };
+
+  const shippingCost = getShippingCost();
   const totalWithoutDonation = subtotal + shippingCost;
   const finalTotal = totalWithoutDonation + carbonOffsetDonation;
 
@@ -170,7 +208,7 @@ export default function Cart() {
 
           <div className="cart-items-list">
             {cartItems.map((item, i) => (
-              <div key={item.id} className="cart-item-row">
+              <div key={item.id} className={loading ? "cart-item-row-loading" : "cart-item-row"}>
                 <div className="product-details">
                   <img
                     src={item.images[0]}
@@ -181,25 +219,37 @@ export default function Cart() {
                     <h4>{item.data.name}</h4>
                     <p className="product-brand">{item.data.brand || 'Green Cart'}</p>
                     <button
-                      onClick={() => remove_From_Cart(userId.id,item.data.id)}
-                      className="remove-btn"
+                      className={loading ? "remove-btn-loading" : "remove-btn"}
+                      onClick={async () => {
+                        setLoading(true);
+                        await remove_From_Cart(userId.id,item.data.id);
+                        setLoading(false);
+                      }}
                     >
                       Remove
                     </button>
                   </div>
                 </div>
 
-                <div className="quantity-controls">
+                <div className={loading ? "quantity-controls-loading": "quantity-controls"}>
                   <button
-                    className="quantity-btn"
-                    onClick={() => add_To_Cart(userId.id,item.data.id, -1, item.quantity <= 1)}
+                    className={loading ? "quantity-btn-loading": "quantity-btn"}
+                    onClick={async () => {
+                      setLoading(true);
+                      await add_To_Cart(userId.id,item.data.id, -1, item.quantity <= 1);
+                      setLoading(false);
+                    }}
                   >
                     −
                   </button>
                   <span className="quantity-display">{item.quantity}</span>
                   <button
-                    className="quantity-btn"
-                    onClick={() => add_To_Cart(userId.id,item.data.id, 1)}
+                    className={loading ? "quantity-btn-loading" : "quantity-btn"}
+                    onClick={async () => {
+                      setLoading(true);
+                      await add_To_Cart(userId.id,item.data.id, 1);
+                      setLoading(false);
+                    }}
                   >
                     +
                   </button>
@@ -248,23 +298,58 @@ export default function Cart() {
             <label htmlFor="shipping">Shipping</label>
             <select
               id="shipping"
-              value={shippingOption}
-              onChange={(e) => setShippingOption(e.target.value)}
+              value={subtotal >= 500 ? "free" : shippingOption}
+              onChange={(e) => {
+                // Only allow changing shipping if order is under R500
+                if (subtotal < 500) {
+                  setShippingOption(e.target.value);
+                }
+              }}
               className="shipping-select"
+              disabled={subtotal >= 500} // Disable if free shipping applies
             >
-              <option value="standard">Standard</option>
-              <option value="express">Express</option>
-              <option value="free">Free (Orders over R500)</option>
+              <option value="standard">Standard (R73.99)</option>
+              <option value="express">Express (R149.99)</option>
+              {/* Only show free option if qualified */}
+              {subtotal >= 500 ? (
+                <option value="free">Free Shipping Applied! 🎉</option>
+              ) : (
+                <option value="free" disabled style={{ color: '#ccc' }}>
+                  Free Shipping (Unlock at R500)
+                </option>
+              )}
             </select>
             <div className="shipping-cost">
               {shippingCost > 0 ? 
                 shippingCost.toLocaleString("en-ZA", {
                   style: "currency",
                   currency: "ZAR",
-                }) : "Free"
+                }) : (
+                  <span style={{ color: '#4CAF50', fontWeight: 'bold' }}>
+                    Free! 🎉
+                  </span>
+                )
               }
-            </div>
           </div>
+            
+            {/* Show free shipping notification */}
+            {subtotal >= 500 && (
+              <div className="free-shipping-notice">
+                🎉 Congratulations! You qualify for free shipping!
+              </div>
+            )}
+          
+          
+          {/* Show how much more needed for free shipping */}
+          {subtotal < 500 && (
+            <div className="free-shipping-progress">
+              Add {(500 - subtotal).toLocaleString("en-ZA", {
+                style: "currency",
+                currency: "ZAR",
+              })} more for free shipping!
+            </div>
+          )}
+        </div>
 
           <div className="ecometer-section">
             <div className="ecometer-header">
@@ -363,7 +448,7 @@ export default function Cart() {
           <div className="donation-modal" onClick={(e) => e.stopPropagation()}>
             <h3>Improve Your EcoMeter Score</h3>
             <div className="current-ecometer">
-              <span>Current EcoMeter: </span>
+              <span className="current-ecometer-label">Current EcoMeter: </span>
               <span className="current-score" style={{ color: getEcoMeterColor(baseEcoMeter) }}>
                 {baseEcoMeter}/100 - {getEcoMeterLevel(baseEcoMeter)}
               </span>

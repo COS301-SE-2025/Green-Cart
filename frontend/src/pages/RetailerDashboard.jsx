@@ -186,9 +186,7 @@ export default function RetailerDashboard() {
     const handleProductUpdated = (updatedProduct) => {
         setDashboardData(prev => ({
             ...prev,
-            products: prev.products.map(product =>
-                product.id === updatedProduct.id ? updatedProduct : product
-            )
+            products: updatedProduct
         }));
 
         handleCloseEditProduct();
@@ -310,6 +308,7 @@ export default function RetailerDashboard() {
                 onClose={handleCloseEditProduct}
                 onProductUpdated={handleProductUpdated}
                 product={selectedProduct}
+                retailerId={user.id}
             />
         </div>
         </div>

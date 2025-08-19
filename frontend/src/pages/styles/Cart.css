@@ -70,6 +70,15 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
+.cart-item-row-loading {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 20px;
+  align-items: center;
+  padding: 25px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
 .product-cart-details {
   display: flex;
   align-items: center;
@@ -108,6 +117,17 @@
   transition: color 0.3s ease;
 }
 
+.remove-btn-loading {
+  background: none;
+  border: none;
+  color: #dc3545;
+  font-size: 14px;
+  cursor: wait;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
 .remove-btn:hover {
   color: #c82333;
 }
@@ -115,6 +135,17 @@
 .quantity-controls {
   display: flex;
   align-items: center;
+  gap: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 8px;
+  width: fit-content;
+}
+
+.quantity-controls-loading {
+  display: flex;
+  align-items: center;
+  cursor: wait;
   gap: 10px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
@@ -131,6 +162,21 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  font-size: 18px;
+  color: #666;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.quantity-btn-loading {
+  background: none;
+  border: none;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: wait;
   font-size: 18px;
   color: #666;
   border-radius: 4px;
@@ -234,6 +280,90 @@
   text-align: right;
   font-weight: 600;
   color: #2E2E2E;
+}
+
+/* Free shipping notifications */
+.free-shipping-notice {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 10px;
+  text-align: center;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.free-shipping-progress {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Disabled shipping select when free shipping applies */
+.shipping-select:disabled {
+  background-color: #f3f4f6;
+  color: #4CAF50;
+  font-weight: 600;
+  cursor: not-allowed;
+}
+
+/* Animation for free shipping notice */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Disabled shipping options */
+.shipping-select option:disabled {
+  color: #ccc !important;
+  background-color: #f5f5f5 !important;
+  font-style: italic;
+}
+
+/* Better visual feedback for unavailable options */
+.shipping-select option[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Enhanced free shipping progress styling */
+.free-shipping-progress {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  padding: 8px 12px; /* Increased padding */
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 8px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.free-shipping-progress::before {
+  content: '🚚';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+}
+
+.free-shipping-progress {
+  padding-left: 30px; /* Make room for truck icon */
 }
 
 .green-points-section {
@@ -390,6 +520,14 @@
     padding: 20px 0;
     text-align: left;
   }
+
+  .cart-item-row-loading {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 20px 0;
+    text-align: left;
+    cursor: wait;
+  }
   
   .product-details {
     grid-column: 1;
@@ -513,12 +651,18 @@
 }
 
 .current-ecometer {
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; */
   padding: 15px;
   border-radius: 8px;
   margin: 15px 0;
   text-align: center;
   border-left: 4px solid #4CAF50;
+}
+
+.current-ecometer-label{
+  font-weight: 600;
+  font-size: 18px;
+  color: #2E7D32;
 }
 
 .current-score {

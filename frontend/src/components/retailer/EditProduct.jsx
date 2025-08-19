@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 import { API_BASE_URL } from '../../config/api.js';
+import { fileSize } from '../../config/image_upload.js';
 import '../styles/retailer/EditProduct.css';
 
-export default function EditProduct({ isOpen, onClose, onProductUpdated, product }) {
+export default function EditProduct({ isOpen, onClose, onProductUpdated, product, retailerId }) {
+    console.log("On edit modal OPEN:",product);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -118,7 +120,8 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                 name: product.name || '',
                 description: product.description || '',
                 price: product.price?.toString() || '',
-                category: product.category || '',
+                category: product.category || null,
+                category_id: product.category_id,
                 brand: product.brand || '',
                 quantity: product.stock?.toString() || product.quantity?.toString() || '',
                 sustainability: {
@@ -162,6 +165,9 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                 [name]: ''
             }));
         }
+
+        validateForm();
+    
     };
 
     const handleSustainabilityChange = (field, value) => {
@@ -194,7 +200,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
         // Validate file types and sizes
         const validFiles = [];
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const maxSize = fileSize; // 10MB
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         
         for (const file of newFiles) {
@@ -203,7 +209,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                 continue;
             }
             if (file.size > maxSize) {
-                toast.error(`${file.name} is too large. Maximum size is 5MB`);
+                toast.error(`${file.name} is too large. Maximum size is ${maxSize / (1024 * 1024)}MB`);
                 continue;
             }
             validFiles.push(file);
@@ -269,7 +275,12 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!validateForm()) return;
+        if (!validateForm()) {
+            Object.keys(errors).forEach(key => {
+                toast.error(errors[key] === '' ? `Please fix the ${key} field` : errors[key]);
+            });
+            return;
+        }
         setIsSubmitting(true);
         
         console.log('Edit form submission started:', {
@@ -279,100 +290,65 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
             imagesModified
         });
         
-        try {
-            // If images were modified, use S3 endpoint with FormData
-            if (imagesModified && imageFiles.length > 0) {
-                // Use S3-enabled endpoint for image updates
-                const formDataSubmit = new FormData();
-                
-                // Add product data
-                formDataSubmit.append('name', formData.name);
-                formDataSubmit.append('description', formData.description);
-                formDataSubmit.append('price', formData.price);
-                formDataSubmit.append('category_id', getCategoryId(formData.category));
-                formDataSubmit.append('retailer_id', product.retailer_id);
-                formDataSubmit.append('stock_quantity', formData.quantity);
-                
-                // Add sustainability ratings
-                formDataSubmit.append('energy_efficiency', formData.sustainability.energyEfficiency);
-                formDataSubmit.append('carbon_footprint', formData.sustainability.carbonFootprint);
-                formDataSubmit.append('recyclability', formData.sustainability.recyclability);
-                formDataSubmit.append('durability', formData.sustainability.durability);
-                formDataSubmit.append('material_sustainability', formData.sustainability.materialSustainability);
-                
-                // Add existing images URLs to preserve them
-                existingImages.forEach(imageUrl => {
-                    formDataSubmit.append('existing_images', imageUrl);
-                });
-                
-                // Add new image files for S3 upload
-                imageFiles.forEach((file, index) => {
-                    console.log(`Adding new image ${index + 1}: ${file.name}`);
-                    formDataSubmit.append('images', file);
-                });
-                
-                console.log('Using S3 endpoint for product update with new images');
-                const response = await fetch(`${API_BASE_URL}/product-images/products/${product.id}`, {
-                    method: 'PUT',
-                    body: formDataSubmit
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    console.error('S3 update error:', error);
-                    throw new Error(error.detail || 'Failed to update product with S3 images');
-                }
-                
-                const result = await response.json();
-                console.log('Product updated successfully with S3 images:', result);
-                
-            } else {
-                // Use regular JSON endpoint for non-image updates
-                const payload = {
-                    name: formData.name,
-                    description: formData.description,
-                    price: parseFloat(formData.price),
-                    quantity: parseInt(formData.quantity),
-                    brand: formData.brand,
-                    category_id: product.category_id || getCategoryId(formData.category),
-                    retailer_id: product.retailer_id,
-                    sustainability: formData.sustainability
-                };
-                
-                // If images were modified but no new files (only removals), include existing images
-                if (imagesModified) {
-                    payload.images = existingImages;
-                }
-                
-                console.log('Using JSON endpoint for product update without new images');
-                const response = await fetch(`${API_BASE_URL}/retailer/products/${product.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    console.error('Update failed:', response.status, errorData);
-                    const errorMessage = errorData.detail || `Failed to update product (Status: ${response.status})`;
-                    throw new Error(errorMessage);
-                }
+        try {                // Use S3-enabled endpoint for image updates
+            const formDataSubmit = new FormData();
+            
+            // Add product data
+            formDataSubmit.append('name', formData.name);
+            formDataSubmit.append('description', formData.description);
+            formDataSubmit.append('price', formData.price);
+            formDataSubmit.append('brand', formData.brand);
+            formDataSubmit.append('category_id', getCategoryId(formData.category));
+            formDataSubmit.append('retailer_id', product.retailer_id);
+            formDataSubmit.append('stock_quantity', formData.quantity);
+            
+            // Add sustainability ratings
+            formDataSubmit.append('energy_efficiency', formData.sustainability.energyEfficiency);
+            formDataSubmit.append('carbon_footprint', formData.sustainability.carbonFootprint);
+            formDataSubmit.append('recyclability', formData.sustainability.recyclability);
+            formDataSubmit.append('durability', formData.sustainability.durability);
+            formDataSubmit.append('material_sustainability', formData.sustainability.materialSustainability);
+            
+            // Add existing images URLs to preserve them
+            existingImages.forEach(imageUrl => {
+                formDataSubmit.append('existing_images', imageUrl);
+            });
+            
+            // Add new image files for S3 upload
+            imageFiles.forEach((file, index) => {
+                console.log(`Adding new image ${index + 1}: ${file.name}`);
+                formDataSubmit.append('images', file);
+            });
+            
+            console.log('Using S3 endpoint for product update with new images');
+            const response = await fetch(`${API_BASE_URL}/product-images/products/${product.id}`, {
+                method: 'PUT',
+                body: formDataSubmit
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                console.error('S3 update error:', error);
+                toast.error('Failed to update product data');
+                throw new Error(error.detail || 'Failed to update product with S3 images');
             }
-
+            
+            const result = await response.json();
+            console.log('Product updated successfully with S3 images:', result);
             toast.success('Product updated successfully!');
             
             if (onProductUpdated) {
                 // Fetch updated product data
                 try {
-                    const updatedProductRes = await fetch(`${API_BASE_URL}/products/FetchProduct`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ product_id: product.id })
+                    const updatedProductRes = await fetch(`${API_BASE_URL}/retailer/products/${retailerId}`, {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
                     });
-                    
+
                     if (updatedProductRes.ok) {
                         const updatedProduct = await updatedProductRes.json();
                         onProductUpdated(updatedProduct.data);
+                        console.log('Updated product data:', updatedProduct.data);
                     }
                 } catch (error) {
                     console.error('Error fetching updated product:', error);
@@ -510,7 +486,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                     <select
                                         id="edit-category"
                                         name="category"
-                                        value={formData.category}
+                                        value={formData.category || categories[formData.category_id-1]}
                                         onChange={handleInputChange}
                                         className={errors.category ? 'error' : 'select'}
                                     >

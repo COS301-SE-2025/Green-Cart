@@ -64,10 +64,7 @@ export default function StatsOverview({ stats }) {
         {
             key: 'totalRevenue',
             title: 'Total Revenue',
-            value: stats.totalRevenue.toLocaleString("en-ZA", {
-                style: "currency",
-                currency: "ZAR"
-            }),
+            value: stats.totalRevenue,
             icon: '💰',
             color: '#22c55e'
         },
