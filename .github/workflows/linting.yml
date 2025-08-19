@@ -38,15 +38,15 @@ jobs:
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
-        working-directory: ./frontend
         with:
           node-version: '18'
           cache: 'npm'
+        working-directory: ./frontend
 
       - name: Install frontend dependencies
-        working-directory: ./frontend
         run: npm ci
+        working-directory: ./frontend
 
       - name: Run ESLint linting
-        working-directory: ./frontend
         run: npm run lint
+        working-directory: ./frontend
