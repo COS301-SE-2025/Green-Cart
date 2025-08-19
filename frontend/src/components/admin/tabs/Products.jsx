@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getAllProducts, getUnverifiedProducts, getProductStats, verifyProduct } from '../../../admin-services/adminProductService';
-import ProductVerification from '../ProductVerification';
+import { getAllProducts, getUnverifiedProducts, getProductStats, verifyProduct } from '../../../admin-services/adminService';
+import ProductVerification from '../elements/ProductVerification';
 import toast from 'react-hot-toast';
 import '../../styles/admin/tabs/Products.css';
 
