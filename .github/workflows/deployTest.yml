@@ -1,4 +1,4 @@
-name: Deploy Frontend and Backend Test
+name: AWS Deployment
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
 jobs:
   frontend-deploy:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
