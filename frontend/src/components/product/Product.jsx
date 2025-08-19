@@ -32,7 +32,7 @@ export default function Product({ product, image, product_rating}) {
     return (
         // when clicked, redirect to the product details page
         <div className="product" onClick={viewProduct}>
-            <div className="product-image">
+            <div className="product-card-image">
                 <img src={image} alt={product.name} />
                 {/* Stock status badge */}
                 <div className={`product-badge stock-badge ${product.in_stock ? 'badge-in-stock' : 'badge-out-of-stock'}`}>

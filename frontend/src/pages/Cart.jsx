@@ -209,15 +209,15 @@ export default function Cart() {
           <div className="cart-items-list">
             {cartItems.map((item, i) => (
               <div key={item.id} className={loading ? "cart-item-row-loading" : "cart-item-row"}>
-                <div className="product-details">
+                <div className="product-cart-details">
                   <img
                     src={item.images[0]}
                     alt={item.data.name}
-                    className="product-image"
+                    className="product-cart-image"
                   />
-                  <div className="product-info">
+                  <div className="product-cart-info">
                     <h4>{item.data.name}</h4>
-                    <p className="product-brand">{item.data.brand || 'Green Cart'}</p>
+                    <p className="product-cart-brand">{item.data.brand || 'Green Cart'}</p>
                     <button
                       className={loading ? "remove-btn-loading" : "remove-btn"}
                       onClick={async () => {
