@@ -29,23 +29,23 @@ jobs:
       - name: Run Flake8 linting
         run: flake8 .
         working-directory: ./app
+        
+frontend-lint:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-  frontend-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
+    - name: Install frontend dependencies
+      run: npm ci
+      working-directory: ./frontend
 
-      - name: Install frontend dependencies
-        run: npm ci
-        working-directory: ./frontend
-
-      - name: Run ESLint linting
-        run: npm run lint
-        working-directory: ./frontend
+    - name: Run ESLint linting
+      run: npm run lint
+      working-directory: ./frontend
