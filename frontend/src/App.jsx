@@ -115,7 +115,7 @@ function App() {
                 <RetailerProducts />
               </ProtectedRetailerRoute>
             } />
-            <Route path="/Admin" element={
+            <Route path="/admin" element={
               <React.Fragment key="admin-products">
                 {(() => {
                   const session = typeof window !== 'undefined' ? sessionStorage.getItem('adminSession') : null;
