@@ -13,6 +13,7 @@ import './styles/RetailerDashboard.css';
 
 export default function RetailerDashboard() {
     const navigate = useNavigate();
+    let reload = false;
     const [user, setUser] = useState(null);
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -157,20 +158,51 @@ export default function RetailerDashboard() {
         };
 
         loadDashboard();
-    }, [navigate]);
+    }, [navigate, reload]);
 
     const handleOpenAddProduct = () => setIsAddProductModalOpen(true);
     const handleCloseAddProduct = () => setIsAddProductModalOpen(false);
 
-    const handleProductAdded = (newProduct) => {
-        setDashboardData(prev => ({
-            ...prev,
-            products: [newProduct, ...prev.products],
-            stats: {
-                ...prev.stats,
-                activeProducts: prev.stats.activeProducts + 1
-            }
-        }));
+    const handleProductAdded = async (newProduct) => {
+        const [metricsResponse, productsResponse] = await Promise.all([
+                    fetch(`${API_BASE_URL}/retailer/metrics/${user.id}`),
+                    fetch(`${API_BASE_URL}/retailer/products/${user.id}`)
+                ]);
+
+                console.log("API Response Status:", {
+                    metrics: metricsResponse.status,
+                    products: productsResponse.status
+                });
+
+                const [metricsData, productsData] = await Promise.all([
+                    metricsResponse.json(),
+                    productsResponse.json()
+                ]);
+
+                console.log("API Response Data:", { metricsData, productsData });
+
+                // Step 5: Transform and set dashboard data
+                const metrics = metricsData.data || {};
+                const products = productsData.data || [];
+
+                const dashboardData = {
+                    stats: {
+                        totalRevenue: metrics.total_revenue || 0,
+                        totalProductsSold: metrics.total_units_sold || 0,
+                        activeProducts: metrics.total_products || 0,
+                        totalOrders: 0,
+                        avgSustainability: metrics.avg_sustainability_rating || 0,
+                        availability: metrics.availability || 0
+                    },
+                    products: products,
+                    salesData: (metrics.monthly_revenue || []).map(m => ({
+                        month: m.month,
+                        sales: m.revenue
+                    }))
+                };
+
+                console.log("Final dashboard data:", dashboardData);
+                setDashboardData(dashboardData);
     };
 
     const handleEditProduct = (product) => {

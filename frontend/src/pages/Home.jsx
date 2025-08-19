@@ -24,7 +24,7 @@ export default function Home() {
     try {
       const api = "someKey"; // Replace with your actual API key
       const fromItem = 0;
-      const count = 40;
+      const count = 100;
 
       const apiFilters = {};
       if(filters.category) {
