@@ -123,6 +123,14 @@
   margin-bottom: 0;
 }
 
+.add-product-label {
+  font-size: 1rem;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  display: block;
+
+}
+
 .add-product-form-group .add-product-input,
 .add-product-form-group .add-product-textarea,
 .add-product-form-group .add-product-select {
