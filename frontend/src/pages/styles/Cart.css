@@ -282,6 +282,90 @@
   color: #2E2E2E;
 }
 
+/* Free shipping notifications */
+.free-shipping-notice {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 10px;
+  text-align: center;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.free-shipping-progress {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Disabled shipping select when free shipping applies */
+.shipping-select:disabled {
+  background-color: #f3f4f6;
+  color: #4CAF50;
+  font-weight: 600;
+  cursor: not-allowed;
+}
+
+/* Animation for free shipping notice */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Disabled shipping options */
+.shipping-select option:disabled {
+  color: #ccc !important;
+  background-color: #f5f5f5 !important;
+  font-style: italic;
+}
+
+/* Better visual feedback for unavailable options */
+.shipping-select option[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Enhanced free shipping progress styling */
+.free-shipping-progress {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  padding: 8px 12px; /* Increased padding */
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 8px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.free-shipping-progress::before {
+  content: '🚚';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+}
+
+.free-shipping-progress {
+  padding-left: 30px; /* Make room for truck icon */
+}
+
 .green-points-section {
   color: #2E2E2E;
   margin: 20px 0;

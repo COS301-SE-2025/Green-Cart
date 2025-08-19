@@ -24,6 +24,9 @@ export default function Cart() {
   }, [refreshCart]);
 
 
+
+
+
   const userId = JSON.parse(localStorage.getItem("userData"));
 
   if(!userId) {
@@ -38,7 +41,41 @@ export default function Cart() {
 
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + Number(item.data.price) * item.quantity, 0);
-  const shippingCost = shippingOption === "standard" ? 73.99 : shippingOption === "express" ? 149.99 : 0;
+
+    // Ensure shipping option is always valid based on cart total
+  useEffect(() => {
+    if (subtotal < 500 && shippingOption === "free") {
+      setShippingOption("standard");
+    } else if (subtotal >= 500) {
+      setShippingOption("free");
+    }
+  }, [subtotal]); // Run when subtotal changes
+
+  // Apply free shipping if subtotal >= R500, otherwise use selected shipping option
+  const getShippingCost = () => {
+    if (subtotal >= 500) {
+      return 0; // Free shipping for orders over R500
+    }
+    
+    // Prevent free shipping selection if order is under R500
+    if (shippingOption === "free" && subtotal < 500) {
+      setShippingOption("standard"); // Reset to standard if user somehow selected free
+      return 73.99;
+    }
+    
+    switch (shippingOption) {
+      case "standard":
+        return 73.99;
+      case "express":
+        return 149.99;
+      case "free":
+        return 0; // This should only be reached if subtotal >= 500
+      default:
+        return 73.99;
+    }
+  };
+
+  const shippingCost = getShippingCost();
   const totalWithoutDonation = subtotal + shippingCost;
   const finalTotal = totalWithoutDonation + carbonOffsetDonation;
 
@@ -261,23 +298,58 @@ export default function Cart() {
             <label htmlFor="shipping">Shipping</label>
             <select
               id="shipping"
-              value={shippingOption}
-              onChange={(e) => setShippingOption(e.target.value)}
+              value={subtotal >= 500 ? "free" : shippingOption}
+              onChange={(e) => {
+                // Only allow changing shipping if order is under R500
+                if (subtotal < 500) {
+                  setShippingOption(e.target.value);
+                }
+              }}
               className="shipping-select"
+              disabled={subtotal >= 500} // Disable if free shipping applies
             >
-              <option value="standard">Standard</option>
-              <option value="express">Express</option>
-              <option value="free">Free (Orders over R500)</option>
+              <option value="standard">Standard (R73.99)</option>
+              <option value="express">Express (R149.99)</option>
+              {/* Only show free option if qualified */}
+              {subtotal >= 500 ? (
+                <option value="free">Free Shipping Applied! 🎉</option>
+              ) : (
+                <option value="free" disabled style={{ color: '#ccc' }}>
+                  Free Shipping (Unlock at R500)
+                </option>
+              )}
             </select>
             <div className="shipping-cost">
               {shippingCost > 0 ? 
                 shippingCost.toLocaleString("en-ZA", {
                   style: "currency",
                   currency: "ZAR",
-                }) : "Free"
+                }) : (
+                  <span style={{ color: '#4CAF50', fontWeight: 'bold' }}>
+                    Free! 🎉
+                  </span>
+                )
               }
-            </div>
           </div>
+            
+            {/* Show free shipping notification */}
+            {subtotal >= 500 && (
+              <div className="free-shipping-notice">
+                🎉 Congratulations! You qualify for free shipping!
+              </div>
+            )}
+          
+          
+          {/* Show how much more needed for free shipping */}
+          {subtotal < 500 && (
+            <div className="free-shipping-progress">
+              Add {(500 - subtotal).toLocaleString("en-ZA", {
+                style: "currency",
+                currency: "ZAR",
+              })} more for free shipping!
+            </div>
+          )}
+        </div>
 
           <div className="ecometer-section">
             <div className="ecometer-header">
