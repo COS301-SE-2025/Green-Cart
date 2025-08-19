@@ -22,6 +22,7 @@ s3_service = S3Service()
 async def create_product_with_images(
     name: str = Form(...),
     description: str = Form(...),
+    brand: Optional[str] = Form(...),
     price: float = Form(...),
     category_id: int = Form(...),
     retailer_id: Optional[int] = Form(None),
@@ -104,6 +105,7 @@ Material sustainability: {material_sustainability}
         new_product = Product(
             name=name,
             description=description,
+            brand=brand if brand else None,
             price=Decimal(str(price)),
             quantity=stock_quantity,
             category_id=category_id,
