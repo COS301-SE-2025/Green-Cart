@@ -227,7 +227,6 @@
 }
 
 .vp-product-header {
-  /* margin-bottom: 1.5rem; */
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -236,12 +235,13 @@
 
 .vp-product-header h1 {
   font-size: 1.4rem;
-  margin: 0 0 0.5rem;
+  /* margin: 0 0 0.5rem; */
   color: #222;
   line-height: 1.2;
   word-wrap: break-word; /* ADDED: Handle long titles */
   overflow-wrap: break-word; /* ADDED: Better word breaking */
   hyphens: auto; /* ADDED: Allow hyphenation */
+  flex: 1;
 }
 
 .vp-product-brand {
@@ -253,11 +253,12 @@
 /* Verification Status Styles */
 .vp-verification-status {
   /* margin-top: 1rem; */
-  width: 20%;
+  /* width: 20%; */
+
 }
 
 .vp-verification-badge {
-  display: inline-flex;
+  /* display: inline-flex; */
   align-items: center;
   gap: 6px;
   padding: 6px 12px;

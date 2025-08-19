@@ -64,7 +64,7 @@ export default function OrderCard({ order, onViewDetails, onCancelOrder }) {
                             {order.items.length} {order.items.length === 1 ? 'item' : 'items'}
                         </div>
                     ) || (
-                        <div className="order-items-count">No items</div>
+                        <div className="order-items-count"></div>
                     )}
                 </div>
 

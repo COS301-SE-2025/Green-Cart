@@ -30,7 +30,7 @@
   display: flex;
   justify-content: flex-end;
   margin-bottom: 1.5rem;
-  margin-top: -0.8rem;
+  margin-top: -3rem;
   width: 100%; /* ADDED: Constrain width */
   box-sizing: border-box; /* ADDED: Include padding in width */
   flex-wrap: wrap; /* ADDED: Allow wrapping on small screens */
@@ -143,19 +143,26 @@
     width: 100%; /* MODIFIED: Use 100% instead of 97% */
     max-width: 100vw; /* ADDED: Prevent viewport overflow */
   }
+
+  .retailer-dashboard-header {
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 1.5rem;
+
+  }
   
   .retailer-dashboard-header h1 {
     font-size: 2rem;
   }
   
   .add-product {
-    flex-direction: column; /* MODIFIED: Stack buttons on mobile */
-    align-items: stretch; /* MODIFIED: Full width buttons */
+    flex-direction: row; 
+    align-items: stretch; 
     gap: 0.75rem;
   }
   
   .add-product-button {
-    width: 100%; /* ADDED: Full width on mobile */
+    margin-top: 1rem;
     font-size: 0.95rem;
   }
 }
@@ -172,5 +179,10 @@
   
   .retailer-dashboard-header p {
     font-size: 1rem;
+  }
+
+  .add-product {
+    justify-content: center;
+    margin-top: 0;
   }
 }
