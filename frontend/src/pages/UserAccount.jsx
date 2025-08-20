@@ -656,9 +656,7 @@ export default function UserAccount() {
 												<div className="carbon-stat-value" style={{ color: getCarbonColor(carbonData.monthlyFootprint) }}>
 													{carbonData.monthlyFootprint}/100
 												</div>
-												<p className="carbon-stat-description">
-													{monthlyChange > 0 ? '📈' : '📉'} {Math.abs(monthlyChange).toFixed(1)}% vs last month
-												</p>
+												
 											</div>
 										</div>
 
