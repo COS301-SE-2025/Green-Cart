@@ -42,7 +42,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | [Architectural diagram](https://drive.google.com/file/d/1mYI8lDBo16F7ZRoeXsa-lPt8taTmcV3O/view?usp=drive_link) | Architectural diagram |
 | [Database Schema](https://github.com/COS301-SE-2025/Green-Cart/blob/documentation/documents/ERD%20diagram.png?raw=true) | Entity relationship model and schema reference |
 | [Project Board](https://github.com/orgs/COS301-SE-2025/projects/198/views/2) | Task management and team progress |
-| [Coding Standards Document](https://docs.google.com/document/d/1-fC7M57fGlySNG3gG15oKwxMuICl8U_LiuiHUZikwbQ/edit?tab=t.0) | Coding Standards Document |
+| [Coding Standards Document](https://drive.google.com/file/d/1oBy16_S3lbmnHuiazgfxtMvLC79CkGZ1/view?usp=drive_link) | Coding Standards Document |
 | [Technical Installation Manual](https://drive.google.com/file/d/16pzCOgkVLdSloA-3NRI789-gfFSZl0CB/view?usp=drive_link) | Technical Installation Manual |
 | [User Manual Document](https://drive.google.com/file/d/1S0qUxzt7XFEvbHPeTef09hMQxGohr4I6/view?usp=drive_link) | User Manual Document |
 | [Deployment diagram](https://drive.google.com/file/d/1q7RqVPBF9ueTYiCGTMpVhl7TiY7Fmik5/view?usp=drive_link) | Deployment diagram |
