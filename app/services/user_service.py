@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 from app.models.address import Address
 from app.schemas.user import UserCreate
-from app.utilities.utils import hash_password
+from app.utilities.utils import hash_password, verify_password
 import uuid
 from datetime import datetime
 
@@ -139,4 +139,20 @@ def set_user_information(request, db: Session):
     }
 
     
-        
+def change_password(request, db:Session):
+    user = db.query(User).filter(User.id == request.user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if verify_password(request.old_password, user.password) is False:
+        raise HTTPException(status_code=400, detail="Old password is incorrect")
+
+    user.password = hash_password(request.new_password)
+    db.commit()
+    db.refresh(user)
+
+    return {
+        "status": 200,
+        "message": "Password changed successfully"
+    }
