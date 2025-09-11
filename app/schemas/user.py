@@ -56,3 +56,12 @@ class SetUserInformationRequest(BaseModel):
 class SetUserInformationResponse(BaseModel):
     status: int
     message: str
+
+class ChangeUserPasswordRequest(BaseModel):
+    user_id: str
+    old_password: str
+    new_password: str
+
+class ChangeUserPasswordResponse(BaseModel):
+    status: int
+    message: str

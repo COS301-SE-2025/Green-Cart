@@ -14,3 +14,7 @@ def getUserInformation(user_id: str, db: Session = Depends(get_db)):
 @router.patch('/setUserInformation', response_model=SetUserInformationResponse, summary="Set User Information")
 def setUserInformation(request: SetUserInformationRequest, db: Session = Depends(get_db)):
     return set_user_information(request, db)
+
+@router.post('/changePassword', response_model=SetUserInformationResponse, summary="Change User Password")
+def changeUserPassword(request: SetUserInformationRequest, db: Session = Depends(get_db)):
+    return set_user_information(request, db)
