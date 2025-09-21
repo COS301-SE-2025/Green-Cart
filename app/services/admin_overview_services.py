@@ -70,8 +70,6 @@ def get_orders_list(db: Session):
             "address": user_address,
             "state": order.state
         })
-        
-        print("\n\n\n\n" + str(orders_list) + "\n\n\n\n")
 
     return {
         "status": 200,
