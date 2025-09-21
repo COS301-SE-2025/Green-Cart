@@ -13,3 +13,17 @@ class AdminLoginResponse(BaseModel):
     name: str | None = None
     email: EmailStr
     role: str
+
+class AdminOrderOverviewRequest(BaseModel):
+    time: int
+
+class AdminOrderOverviewResponse(BaseModel):
+    status: int
+    message: str
+    total_orders: int
+    total_pending: int
+    total_ready: int
+    total_transit: int
+    total_delivered: int
+    total_cancelled: int
+    monthly_comparison: float

@@ -1,14 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import Highcharts from 'highcharts';
+import { getApiUrl, getLocalApiUrl } from '../../../config/api';
 
 const OrderStatsCards = () => {
-  const [orderPeriod, setOrderPeriod] = useState('Week');
-  const [revenuePeriod, setRevenuePeriod] = useState('Last Month');
+  const [orderPeriod, setOrderPeriod] = useState('Day');
+  const [revenuePeriod, setRevenuePeriod] = useState('Month');
   const [showOrderDropdown, setShowOrderDropdown] = useState(false);
   const [showRevenueDropdown, setShowRevenueDropdown] = useState(false);
+  const [pending, setPending] = useState(0);
+  const [ready, setReady] = useState(0);
+  const [inTransit, setInTransit] = useState(0);
+  const [delivered, setDelivered] = useState(0);
+  const [cancelled, setCancelled] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [monthly, setMonthly] = useState(0.0);
 
   const orderPeriods = ['Day', 'Week', 'Month', 'Year'];
   const revenuePeriods = ['Day', 'Week', 'Month', 'Year'];
+
+  const populateOrdersOverview = async (period) => {
+    const apiUrl = getLocalApiUrl();
+    const response = await fetch(`${apiUrl}/admin/orders/overview`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({'time': period })
+    }).then(res => res.json());
+
+	if (response) {
+	  setPending(response.total_pending || 0);
+	  setReady(response.total_ready_for_delivery || 0);
+	  setInTransit(response.total_in_transit || 0);
+	  setDelivered(response.total_delivered || 0);
+	  setCancelled(response.total_cancelled || 0);
+	  setTotal(response.total_orders || 0);
+	  setMonthly(response.monthly_comparison * 100 || 0.0);
+	}
+
+  }
+
+  useEffect(() => {
+	populateOrdersOverview(orderPeriods.findIndex(p => p === orderPeriod) + 1);
+  }, [orderPeriod]);
 
   useEffect(() => {
     // Order Overview Chart
@@ -23,7 +55,7 @@ const OrderStatsCards = () => {
       title: { text: null },
       legend: { enabled: false },
       xAxis: {
-        categories: ['Active', 'Pending', 'Delivery', 'Delivered'],
+        categories: ['Pending', 'Ready for Delivery', 'In Transit', 'Delivered', 'Cancelled'],
         labels: { enabled: false },
         lineWidth: 0,
         tickLength: 0
@@ -43,15 +75,22 @@ const OrderStatsCards = () => {
       },
       series: [{
         data: [
-          { y: 123, color: '#8b5cf6' },
-          { y: 157, color: '#f97316' },
-          { y: 530, color: '#10b981' },
-          { y: 1710, color: '#06b6d4' }
+          { y: pending, color: '#f97316' },
+          { y: ready, color: '#8b5cf6' },
+          { y: inTransit, color: '#10b981' },
+          { y: delivered, color: '#06b6d4' },
+          { y: cancelled, color: 'rgb(212, 6, 6)' }
         ]
       }],
       credits: { enabled: false }
     });
 
+    return () => {
+      if (orderChart) orderChart.destroy();
+    };
+  }, [pending, ready, inTransit, delivered, cancelled]);
+
+  useEffect(() => {
     // Revenue Chart (Donut)
     const revenueChart = Highcharts.chart('revenue-chart', {
       chart: {
@@ -79,7 +118,6 @@ const OrderStatsCards = () => {
     });
 
     return () => {
-      if (orderChart) orderChart.destroy();
       if (revenueChart) revenueChart.destroy();
     };
   }, [orderPeriod, revenuePeriod]);
@@ -131,11 +169,11 @@ const OrderStatsCards = () => {
         <div className="adm-ord-stats-content">
           <div className="adm-ord-stats-value-row">
             <div className="adm-ord-stats-main">
-              <div className="adm-ord-stats-label">Total Order</div>
-              <div className="adm-ord-stats-value">2,520</div>
+              <div className="adm-ord-stats-label">Total Orders</div>
+              <div className="adm-ord-stats-value">{total}</div>
               <div className="adm-ord-stats-change">
-                <span className="adm-ord-change positive">+10.5%</span>
-                <span className="adm-ord-comparison">Compared to last week</span>
+                <span className={`adm-ord-change ${monthly > 0 ? 'positive' : 'negative'}`}>{monthly}%</span>
+                <span className="adm-ord-comparison">Compared to last month</span>
               </div>
             </div>
             <div className="adm-ord-chart-container">
@@ -147,20 +185,24 @@ const OrderStatsCards = () => {
         {/* Order breakdown */}
         <div className="adm-ord-breakdown">
           <div className="adm-ord-breakdown-item">
-            <span className="adm-ord-breakdown-label">Active Order</span>
-            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #8b5cf6', paddingLeft: '6px'}}>123</span>
+            <span className="adm-ord-breakdown-label">Pending</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #f97316', paddingLeft: '6px'}}>{pending}</span>
           </div>
           <div className="adm-ord-breakdown-item">
-            <span className="adm-ord-breakdown-label">Pending Order</span>
-            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #f97316', paddingLeft: '6px'}}>157</span>
+            <span className="adm-ord-breakdown-label">Ready for Delivery</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #8b5cf6', paddingLeft: '6px'}}>{ready}</span>
           </div>
           <div className="adm-ord-breakdown-item">
-            <span className="adm-ord-breakdown-label">On Delivery</span>
-            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #10b981', paddingLeft: '6px'}}>530</span>
+            <span className="adm-ord-breakdown-label">In Transit</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #10b981', paddingLeft: '6px'}}>{inTransit}</span>
           </div>
           <div className="adm-ord-breakdown-item">
             <span className="adm-ord-breakdown-label">Delivered</span>
-            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #06b6d4', paddingLeft: '6px'}}>1710</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #06b6d4', paddingLeft: '6px'}}>{delivered}</span>
+          </div>
+          <div className="adm-ord-breakdown-item">
+            <span className="adm-ord-breakdown-label">Cancelled</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid rgb(212, 6, 6)', paddingLeft: '6px'}}>{cancelled}</span>
           </div>
         </div>
       </div>
