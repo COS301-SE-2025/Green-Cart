@@ -3,11 +3,11 @@ import React from 'react';
 const OrdersTable = ({ orders }) => {
   const getStatusColor = (status) => {
     const colors = {
-      'Pending': '#f59e0b',
-      'Shipping': '#3b82f6',
-      'Delivered': '#10b981',
-      'Returned': '#ef4444',
-      'Canceled': '#6b7280'
+      'Preparing Order': '#f59e0b',
+      'Ready for Delivery': '#3b82f6',
+      'In Transit': '#10b981',
+      'Delivered': '#ef4444',
+      'Cancelled': '#6b7280'
     };
     return colors[status] || '#6b7280';
   };
@@ -27,18 +27,18 @@ const OrdersTable = ({ orders }) => {
         <tbody>
           {orders.map((order, index) => (
             <tr key={index}>
-              <td className="adm-ord-order-id">{order.orderId}</td>
-              <td className="adm-ord-customer">{order.customer}</td>
+              <td className="adm-ord-order-id">{order.order_id}</td>
+              <td className="adm-ord-customer">{order.user_email}</td>
               <td className="adm-ord-date">{order.date}</td>
               <td className="adm-ord-address">{order.address}</td>
               <td>
                 <span 
                   className="adm-ord-status"
                   style={{ 
-                    color: getStatusColor(order.status)
+                    color: getStatusColor(order.state)
                   }}
                 >
-                  {order.status}
+                  {order.state}
                 </span>
               </td>
             </tr>

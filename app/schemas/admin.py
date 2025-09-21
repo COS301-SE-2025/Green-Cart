@@ -1,4 +1,7 @@
+from datetime import datetime
 from pydantic import BaseModel, EmailStr
+
+
 
 
 class AdminLogin(BaseModel):
@@ -27,3 +30,16 @@ class AdminOrderOverviewResponse(BaseModel):
     total_delivered: int
     total_cancelled: int
     monthly_comparison: float
+
+class AdminOrderList(BaseModel):
+    order_id: int
+    user_id: str
+    user_email: EmailStr
+    date: datetime
+    address: str
+    state: str
+
+class AdminOrderListResponse(BaseModel):
+    status: int
+    message: str
+    orders: list[AdminOrderList]

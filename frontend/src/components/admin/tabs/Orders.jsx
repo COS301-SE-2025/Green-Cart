@@ -1,92 +1,89 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import GenericPagination from '../elements/GenericPagination';
 import OrderStatsCards from '../elements/OrdersStatsCard';
 import OrdersTable from '../elements/OrdersTable';
 import '../../styles/admin/tabs/Orders.css';
+import { getApiUrl, getLocalApiUrl } from '../../../config/api';
 
 import exportIcon from '../icons/exportIcon.png';
 
 const Orders = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedView, setSelectedView] = useState('table');
-  const [orderFilter, setOrderFilter] = useState('On Delivery');
-  const [searchTerm, setSearchTerm] = useState('');
+	const [currentPage, setCurrentPage] = useState(1);
+	const [ totalOrders, setTotalOrders] = useState(0);
+	const [selectedView, setSelectedView] = useState([]);
+	const [orderFilter, setOrderFilter] = useState('On Delivery');
+	const [searchTerm, setSearchTerm] = useState('');
+	const [orders, setOrders] = useState([]);
 
-  // Mock data - you would replace this with actual data
-  const orders = [
-    {
-      orderId: '#0014ABCD',
-      customer: 'Theresa',
-      date: '17 May 2025',
-      address: '32 Danmondi → 82 Subidbaz',
-      status: 'Pending'
-    },
-    {
-      orderId: '#0013ABGS',
-      customer: 'Devon',
-      date: '18 May 2025',
-      address: '21 Savar → 24 New Market',
-      status: 'Shipping'
-    },
-    {
-      orderId: '#0016ABLL',
-      customer: 'Cameron',
-      date: '18 May 2025',
-      address: 'Devtakhum → Dhaka 1120',
-      status: 'Delivered'
-    },
-    {
-      orderId: '#0018ABAA',
-      customer: 'Darlene',
-      date: '17 May 2025',
-      address: '42 Dulukahpa → 82 Subidbaz',
-      status: 'Returned'
-    },
-    {
-      orderId: '#0013ABGG',
-      customer: 'Darlene',
-      date: '14 May 2025',
-      address: '64 Handipas → 212 Laksam',
-      status: 'Shipping'
-    }
-  ];
+	useEffect(() => {
+		const fetchOrders = async () => {
+			try {
+				const apiUrl = getLocalApiUrl();
+				const response = await fetch(`${apiUrl}/admin/orders/list`);
+				const data = await response.json();
+				if (response.ok) {
+					setOrders(data.orders); // <-- update state!
+					setTotalOrders(data.orders.length);
 
-  const totalPages = Math.ceil(orders.length / 10);
-  const itemsPerPage = 10;
+					if (totalOrders < 10) {
+						setSelectedView(data.orders);
+					} else {
+						setSelectedView(data.orders.slice(0, 10));
+					}
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+				} else {
+					console.error('Error fetching orders:', data.message);
+				}
+			} catch (error) {
+				console.error('Error fetching orders:', error);
+			}
+		};
 
-  const handleExport = () => {
-    console.log('Export orders');
-  };
+		fetchOrders();
+	}, []);
 
-  const orderTabs = ['On Delivery', 'Pending', 'Shipping', 'Delivered', 'Canceled', 'Returned'];
+	useEffect(() => {
+		const startIdx = (currentPage - 1) * 10;
+		const endIdx = currentPage * 10;
+		setSelectedView(orders.slice(startIdx, endIdx));
+	}, [orders, currentPage]);
 
-  return (
-    <div className="adm-ord-container">
-      {/* Header */}
-      <div className="adm-ord-header">
-        <h1 className="adm-ord-title">Orders</h1>
-        <div className="adm-ord-header-actions">
-          <button className="adm-ord-export-btn" onClick={handleExport}>
-            {/* <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+	const totalPages = Math.ceil(totalOrders / 10);
+	const itemsPerPage = 10;
+
+	const handlePageChange = (page) => {
+		setCurrentPage(page);
+	};
+
+	const handleExport = () => {
+		console.log('Export orders');
+	};
+
+	const orderTabs = ['On Delivery', 'Pending', 'Shipping', 'Delivered', 'Canceled', 'Returned'];
+
+	return (
+		<div className="adm-ord-container">
+			{/* Header */}
+			<div className="adm-ord-header">
+				<h1 className="adm-ord-title">Orders</h1>
+				<div className="adm-ord-header-actions">
+					<button className="adm-ord-export-btn" onClick={handleExport}>
+						{/* <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2"/>
               <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2"/>
               <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
             </svg> */}
-            <img src={exportIcon} alt="Export" className="adm-ord-export-icon" />
-            Export
-          </button>
-        </div>
-      </div>
+						<img src={exportIcon} alt="Export" className="adm-ord-export-icon" />
+						Export
+					</button>
+				</div>
+			</div>
 
-      {/* Stats Cards */}
-      <OrderStatsCards />
+			{/* Stats Cards */}
+			<OrderStatsCards />
 
-      {/* Order Tabs */}
-      <div className="adm-ord-tabs">
+			{/* Order Tabs */}
+			{/* <div className="adm-ord-tabs">
         {orderTabs.map((tab) => (
           <button
             key={tab}
@@ -96,55 +93,55 @@ const Orders = () => {
             {tab}
           </button>
         ))}
-      </div>
+      </div> */}
 
-      {/* Search and Controls */}
-      <div className="adm-ord-search-and-controls">
-        <div className="adm-ord-search-container">
-          <div className="adm-ord-search-wrapper">
-            <svg className="adm-ord-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
-              <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
-            </svg>
-            <input
-              type="text"
-              className="adm-ord-search-input"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </div>
+			{/* Search and Controls */}
+			<div className="adm-ord-search-and-controls">
+				<div className="adm-ord-search-container">
+					<div className="adm-ord-search-wrapper">
+						<svg className="adm-ord-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+							<circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
+							<path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2" />
+						</svg>
+						<input
+							type="text"
+							className="adm-ord-search-input"
+							placeholder="Search..."
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+						/>
+					</div>
+				</div>
 
-        <div className="adm-ord-control-buttons">
-          <button className="adm-ord-filter-btn">
-            Filter by
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2"/>
-            </svg>
-          </button>
-          <button className="adm-ord-sort-btn">
-            Sort by
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+				<div className="adm-ord-control-buttons">
+					<button className="adm-ord-filter-btn">
+						Filter by
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+							<path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" />
+						</svg>
+					</button>
+					<button className="adm-ord-sort-btn">
+						Sort by
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+							<path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" />
+						</svg>
+					</button>
+				</div>
+			</div>
 
-      {/* Table */}
-      <OrdersTable orders={orders} />
+			{/* Table */}
+			<OrdersTable orders={selectedView} />
 
-      {/* Pagination */}
-      <GenericPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        totalItems={orders.length}
-        itemsPerPage={itemsPerPage}
-      />
-    </div>
-  );
+			{/* Pagination */}
+			<GenericPagination
+				currentPage={currentPage}
+				totalPages={totalPages}
+				onPageChange={handlePageChange}
+				totalItems={orders.length}
+				itemsPerPage={itemsPerPage}
+			/>
+		</div>
+	);
 };
 
 export default Orders;
