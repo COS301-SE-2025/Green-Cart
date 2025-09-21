@@ -17,6 +17,7 @@ from app.routes import donation
 from app.routes import retailer_user
 from app.routes import retailer_metrics
 from app.routes import retailer_products
+from app.routes import admin_orders
 
 # Routers – admin/aws and images
 from app.routes import admin_metrics
@@ -79,6 +80,7 @@ app.include_router(donation.router)
 app.include_router(retailer_metrics.router)
 app.include_router(retailer_user.router)
 app.include_router(retailer_products.router)
+app.include_router(admin_orders.router)
 
 # Admin/AWS/image related
 app.include_router(admin_metrics.router)
