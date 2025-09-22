@@ -4,7 +4,7 @@ import { getApiUrl, getLocalApiUrl } from '../../../config/api';
 
 const OrderStatsCards = () => {
   const [orderPeriod, setOrderPeriod] = useState('Day');
-  const [revenuePeriod, setRevenuePeriod] = useState('Month');
+  const [revenuePeriod, setRevenuePeriod] = useState('Day');
   const [showOrderDropdown, setShowOrderDropdown] = useState(false);
   const [showRevenueDropdown, setShowRevenueDropdown] = useState(false);
   const [pending, setPending] = useState(0);
@@ -14,9 +14,26 @@ const OrderStatsCards = () => {
   const [cancelled, setCancelled] = useState(0);
   const [total, setTotal] = useState(0);
   const [monthly, setMonthly] = useState(0.0);
+  const [totalRevenue, setTotalRevenue] = useState(0.0);
+  const [totalLoss, setTotalLoss] = useState(0.0);
+  const [monthlyChange, setMonthlyChange] = useState(0.0);
 
   const orderPeriods = ['Day', 'Week', 'Month', 'Year'];
   const revenuePeriods = ['Day', 'Week', 'Month', 'Year'];
+
+  const populateOrdersRevenue = async (period) => {
+    const apiUrl = getLocalApiUrl();
+    const response = await fetch(`${apiUrl}/admin/orders/revenue/${period}`).then(res => res.json());
+    
+    if(response){
+      setTotalRevenue(response.total_revenue || 0);
+      setTotalLoss(response.lost_revenue || 0);
+      setMonthlyChange(response.monthly_comparison * 100 || 0.0);
+    }
+
+
+
+  }
 
   const populateOrdersOverview = async (period) => {
     const apiUrl = getLocalApiUrl();
@@ -40,7 +57,8 @@ const OrderStatsCards = () => {
 
   useEffect(() => {
 	populateOrdersOverview(orderPeriods.findIndex(p => p === orderPeriod) + 1);
-  }, [orderPeriod]);
+  populateOrdersRevenue(revenuePeriods.findIndex(p => p === revenuePeriod) +1);
+  }, [orderPeriod, revenuePeriod]);
 
   useEffect(() => {
     // Order Overview Chart
@@ -110,8 +128,8 @@ const OrderStatsCards = () => {
       },
       series: [{
         data: [
-          { name: 'Online', y: 74, color: '#8b5cf6' },
-          { name: 'Cash', y: 42, color: '#f97316' }
+          { name: 'Revenue', y: totalRevenue, color: '#8b5cf6' },
+          { name: 'Lost Revenue from Cancelled Orders', y: totalLoss, color: 'red' }
         ]
       }],
       credits: { enabled: false }
@@ -120,7 +138,7 @@ const OrderStatsCards = () => {
     return () => {
       if (revenueChart) revenueChart.destroy();
     };
-  }, [orderPeriod, revenuePeriod]);
+  }, [totalRevenue, totalLoss]);
 
   const handleOrderPeriodChange = (period) => {
     setOrderPeriod(period);
@@ -243,10 +261,10 @@ const OrderStatsCards = () => {
           <div className="adm-ord-stats-value-row">
             <div className="adm-ord-stats-main">
               <div className="adm-ord-stats-label">Total Revenue</div>
-              <div className="adm-ord-stats-value">$116K</div>
+              <div className="adm-ord-stats-value">R{totalRevenue}</div>
               <div className="adm-ord-stats-change">
-                <span className="adm-ord-change negative">-7.2%</span>
-                <span className="adm-ord-comparison">Compared to last week</span>
+                <span className={`adm-ord-change ${monthlyChange > 0 ? 'positive' : 'negative'}`}>{monthlyChange}%</span>
+                <span className="adm-ord-comparison">Compared to last month</span>
               </div>
             </div>
             <div className="adm-ord-chart-container">
@@ -258,12 +276,12 @@ const OrderStatsCards = () => {
         {/* Revenue breakdown */}
         <div className="adm-ord-breakdown">
           <div className="adm-ord-breakdown-item">
-            <span className="adm-ord-breakdown-label">Online</span>
-            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #8b5cf6', paddingLeft: '6px'}}>$74K</span>
+            <span className="adm-ord-breakdown-label">Revenue</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #8b5cf6', paddingLeft: '6px'}}>R{totalRevenue}</span>
           </div>
           <div className="adm-ord-breakdown-item">
-            <span className="adm-ord-breakdown-label">Cash</span>
-            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #f97316', paddingLeft: '6px'}}>$42K</span>
+            <span className="adm-ord-breakdown-label">Lost Revenue from Cancelled Orders</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid red', paddingLeft: '6px'}}>R{totalLoss}</span>
           </div>
         </div>
       </div>
