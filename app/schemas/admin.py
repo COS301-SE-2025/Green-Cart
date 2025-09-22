@@ -43,3 +43,9 @@ class AdminOrderListResponse(BaseModel):
     status: int
     message: str
     orders: list[AdminOrderList]
+
+class AdminMonthlyOrdersResponse(BaseModel):
+    status: int
+    message: str
+    orders: list[int]
+    months: list[str]
