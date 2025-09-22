@@ -6,7 +6,7 @@ from app.services.retailer_products_services import fetchRetailerProducts, delet
 
 router = APIRouter(prefix="/retailer", tags=["Retailer"])
 
-@router.get("/products/{retailer_id}")
+@router.get("/products/{retailer_id}", operation_id="get_retailer_products_by_id")
 def get_retailer_products(retailer_id: int, db: Session = Depends(get_db)):
     products = fetchRetailerProducts(retailer_id, db)
     return {
@@ -16,11 +16,11 @@ def get_retailer_products(retailer_id: int, db: Session = Depends(get_db)):
             products
     }
 
-@router.delete("/products/{product_id}")
+@router.delete("/products/{product_id}", operation_id="delete_retailer_product_by_id")
 def delete_product(product_id: int, retailer_id: int, db: Session = Depends(get_db)):
     return deleteRetailerProduct(product_id, retailer_id, db)
 
-@router.post("/products", response_model=ProductResponse)
+@router.post("/products", response_model=ProductResponse, operation_id="create_retailer_product")
 async def create_product(product: CreateProductRequest, db: Session = Depends(get_db)):
     try:
         product_data = product.model_dump()
@@ -70,7 +70,7 @@ Full data: {product_data}
             detail=f"An unexpected error occurred while creating the product: {str(e)}"
         )
 
-@router.get("/debug-logs")
+@router.get("/debug-logs", operation_id="get_retailer_debug_logs")
 async def get_debug_logs():
     """Get the latest product creation debug logs - FREE debugging"""
     try:
@@ -82,7 +82,7 @@ async def get_debug_logs():
     except Exception as e:
         return {"error": str(e)}
 
-@router.post("/clear-debug-logs")
+@router.post("/clear-debug-logs", operation_id="clear_retailer_debug_logs")
 async def clear_debug_logs():
     """Clear the debug logs"""
     try:
