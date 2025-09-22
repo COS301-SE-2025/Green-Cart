@@ -262,11 +262,13 @@ def fetchProduct(request, db: Session):
     valid_states = [
         "Preparing Order", "Ready for Delivery", "In Transit", "Delivered"
     ]
-    valid_orders = db.query(Order.id).filter(Order.state.in_(valid_states)).subquery()
-    valid_carts = db.query(Cart.id).filter(Cart.id.in_(db.query(Order.cart_id).filter(Order.state.in_(valid_states)))).subquery()
+    # Build explicit SELECTs to avoid SAWarning about coercing Subquery into select() for IN()
+    from sqlalchemy import select
+    valid_orders_select = select(Order.id).where(Order.state.in_(valid_states))
+    valid_carts_select = select(Cart.id).where(Cart.id.in_(select(Order.cart_id).where(Order.state.in_(valid_states))))
     units_sold = db.query(func.sum(CartItem.quantity)).filter(
         CartItem.product_id == product.id,
-        CartItem.cart_id.in_(valid_carts)
+        CartItem.cart_id.in_(valid_carts_select)
     ).scalar() or 0
 
     # Calculate revenue

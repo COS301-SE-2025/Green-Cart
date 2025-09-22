@@ -1,0 +1,388 @@
+/* Two-Factor Authentication Verification Modal */
+.two-factor-verification-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.two-factor-verification-modal {
+  background: white;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.3),
+    0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: slideInUp 0.4s ease-out;
+  overflow: hidden;
+}
+
+/* Header Section */
+.verification-header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.verification-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.verification-header h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.verification-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+/* Body Section */
+.verification-body {
+  padding: 2rem;
+}
+
+.verification-section {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.verification-section h3 {
+  margin: 0 0 0.75rem 0;
+  color: #111827;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.verification-section p {
+  margin: 0 0 1.5rem 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Code Input Container */
+.code-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.verification-code-input,
+.backup-code-input {
+  width: 100%;
+  max-width: 280px;
+  padding: 1rem 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 4px;
+  font-family: 'Courier New', monospace;
+  transition: all 0.2s ease;
+  background: #f9fafb;
+    color: #1e293b;
+}
+
+.verification-code-input:focus,
+.backup-code-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.verification-code-input::placeholder,
+.backup-code-input::placeholder {
+  color: #d1d5db;
+  letter-spacing: 4px;
+}
+
+.backup-code-input {
+  letter-spacing: 2px;
+  font-size: 1.25rem;
+}
+
+.backup-code-input::placeholder {
+  letter-spacing: 1px;
+  font-size: 1rem;
+}
+
+.input-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Action Buttons */
+.verification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.verify-submit-btn {
+  width: 100%;
+  max-width: 280px;
+  padding: 1rem 2rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+}
+
+.verify-submit-btn:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.verify-submit-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.alternative-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.backup-code-link,
+.cancel-signin-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.backup-code-link:hover:not(:disabled) {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.cancel-signin-btn:hover:not(:disabled) {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.backup-code-link:disabled,
+.cancel-signin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Help Section */
+.help-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.help-links {
+  display: flex;
+  justify-content: center;
+}
+
+.help-link {
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.help-link:hover {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+  text-decoration: underline;
+}
+
+/* Loading Spinner */
+.spinner.small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .two-factor-verification-modal {
+    width: 95%;
+    margin: 1rem;
+  }
+  
+  .verification-header,
+  .verification-body {
+    padding: 1.5rem;
+  }
+  
+  .verification-code-input,
+  .backup-code-input {
+    font-size: 1.25rem;
+    padding: 0.875rem 1rem;
+  }
+  
+  .verification-code-input {
+    letter-spacing: 2px;
+  }
+  
+  .backup-code-input {
+    letter-spacing: 1px;
+    font-size: 1.1rem;
+  }
+  
+  .verify-submit-btn {
+    font-size: 0.95rem;
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .verification-header {
+    padding: 1.25rem;
+  }
+  
+  .verification-body {
+    padding: 1.25rem;
+  }
+  
+  .verification-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .verification-code-input,
+  .backup-code-input {
+    max-width: 100%;
+    font-size: 1.1rem;
+    padding: 0.75rem 1rem;
+  }
+  
+  .verification-code-input {
+    letter-spacing: 1px;
+  }
+  
+  .backup-code-input {
+    letter-spacing: 0.5px;
+    font-size: 1rem;
+  }
+  
+  .alternative-options {
+    gap: 0.5rem;
+  }
+  
+  .backup-code-link,
+  .cancel-signin-btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+/* Focus and Accessibility */
+.verification-code-input:focus,
+.backup-code-input:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.verify-submit-btn:focus {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .verification-header {
+    background: #000;
+    color: #fff;
+  }
+  
+  .verification-code-input,
+  .backup-code-input {
+    border-color: #000;
+    background: #fff;
+  }
+  
+  .verify-submit-btn {
+    background: #000;
+    color: #fff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .two-factor-verification-overlay,
+  .two-factor-verification-modal,
+  .spinner.small {
+    animation: none;
+  }
+  
+  .verify-submit-btn:hover {
+    transform: none;
+  }
+}

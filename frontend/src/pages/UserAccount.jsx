@@ -11,6 +11,9 @@ import RetailerAuthOverlay from "../components/retailer/Auth/RetailerAuthOverlay
 import InteractiveCarbonChart from '../components/charts/InteractiveCarbonChart';
 import carbonGoalsService from '../services/carbonGoalsService';
 
+import ChangePasswordModal from '../components/modals/ChangePasswordModal';
+import TwoFactorModal from '../components/modals/TwoFactorModal';
+
 const status = Object.freeze({
 	Prepare: "Preparing Order",
 	Ready: "Ready for Delivery",
@@ -80,6 +83,12 @@ export default function UserAccount() {
 	const [selectedTimeframe, setSelectedTimeframe] = useState('monthly');
 	const { confirmationState, showConfirmation } = useConfirmation();
 	const [isRetailerOverlayOpen, setIsRetailerOverlayOpen] = useState(false);
+
+	// Add these state variables in the component
+	const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+	const [isTwoFactorModalOpen, setIsTwoFactorModalOpen] = useState(false);
+	const [is2FAEnabled, setIs2FAEnabled] = useState(false); // Track 2FA status
+
 	const [formData, setFormData] = useState({
 		name: '',
 		email: '',
@@ -397,6 +406,89 @@ export default function UserAccount() {
 		);
 	}
 
+
+	//ADDED FOR SECURITY TAB
+	const handleChangePassword = async (passwordData) => {
+  try {
+    // TODO: Replace with actual API call
+    const response = await fetch('/api/users/change-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+        userId: user.id
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to change password');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+const handleEnable2FA = async (twoFactorData) => {
+  try {
+    // TODO: Replace with actual API call
+    const response = await fetch('/api/users/enable-2fa', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        code: twoFactorData.code,
+        secret: twoFactorData.secret,
+        userId: user.id
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to enable 2FA');
+    }
+
+    setIs2FAEnabled(true);
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+const handleDisable2FA = async () => {
+  try {
+    // TODO: Replace with actual API call
+    const response = await fetch('/api/users/disable-2fa', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        userId: user.id
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to disable 2FA');
+    }
+
+    setIs2FAEnabled(false);
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
 	if (!user) {
 		return (
 			<div className="account-container">
@@ -443,12 +535,12 @@ export default function UserAccount() {
 					>
 						🌍 Carbon Footprint
 					</button>
-					<button
+					{/* <button
 						className={`tab-button ${activeTab === 'preferences' ? 'active' : ''}`}
 						onClick={() => setActiveTab('preferences')}
 					>
 						⚙️ Preferences
-					</button>
+					</button> */}
 					<button
 						className={`tab-button ${activeTab === 'security' ? 'active' : ''}`}
 						onClick={() => setActiveTab('security')}
@@ -709,7 +801,7 @@ export default function UserAccount() {
 					)}
 
 					{/* Enhanced Preferences Tab */}
-					{activeTab === 'preferences' && (
+					{/* {activeTab === 'preferences' && (
 						<div className="preferences-section">
 							<div className="section-header">
 								<h2>Notification Preferences</h2>
@@ -810,7 +902,7 @@ export default function UserAccount() {
 								</button>
 							</div>
 						</div>
-					)}
+					)} */}
 
 					{/* Existing Security Tab remains the same */}
 					{activeTab === 'security' && (
@@ -825,12 +917,13 @@ export default function UserAccount() {
 										<h3>Change Password</h3>
 										<p>Update your password to keep your account secure</p>
 									</div>
-									<button className="security-button">
+									<button className="security-button"
+									onClick={() => setIsChangePasswordModalOpen(true)}>
 										Change Password
 									</button>
 								</div>
 
-								<div className="security-item">
+								{/* <div className="security-item">
 									<div className="security-info">
 										<h3>Two-Factor Authentication</h3>
 										<p>Add an extra layer of security to your account</p>
@@ -838,9 +931,27 @@ export default function UserAccount() {
 									<button className="security-button">
 										Enable 2FA
 									</button>
-								</div>
+								</div> */}
 
 								<div className="security-item">
+									<div className="security-info">
+										<h3>Two-Factor Authentication</h3>
+										<p>
+										{is2FAEnabled 
+											? 'Extra security is currently enabled for your account' 
+											: 'Add an extra layer of security to your account'
+										}
+										</p>
+									</div>
+									<button 
+										className={`security-button ${is2FAEnabled ? 'enabled' : ''}`}
+										onClick={() => setIsTwoFactorModalOpen(true)}
+									>
+										{is2FAEnabled ? 'Manage 2FA' : 'Enable 2FA'}
+									</button>
+									</div>
+
+								{/* <div className="security-item">
 									<div className="security-info">
 										<h3>Login History</h3>
 										<p>View recent login activity and manage active sessions</p>
@@ -848,7 +959,7 @@ export default function UserAccount() {
 									<button className="security-button">
 										View History
 									</button>
-								</div>
+								</div> */}
 
 								<div className="danger-zone">
 									<h3>Danger Zone</h3>
@@ -875,6 +986,20 @@ export default function UserAccount() {
 				isOpen={isRetailerOverlayOpen}
 				onClose={() => setIsRetailerOverlayOpen(false)}
 				onSubmit={handleRetailerAuthSubmit}
+			/>
+
+			<ChangePasswordModal
+			isOpen={isChangePasswordModalOpen}
+			onClose={() => setIsChangePasswordModalOpen(false)}
+			onPasswordChange={handleChangePassword}
+			/>
+
+			<TwoFactorModal
+			isOpen={isTwoFactorModalOpen}
+			onClose={() => setIsTwoFactorModalOpen(false)}
+			onEnable2FA={handleEnable2FA}
+			onDisable2FA={handleDisable2FA}
+			is2FAEnabled={is2FAEnabled}
 			/>
 		</div>
 	);
