@@ -129,7 +129,7 @@ const OrderStatsCards = () => {
       series: [{
         data: [
           { name: 'Revenue', y: totalRevenue, color: '#8b5cf6' },
-          { name: 'Lost Revenue', y: totalLoss, color: '#f97316' }
+          { name: 'Lost Revenue from Cancelled Orders', y: totalLoss, color: 'red' }
         ]
       }],
       credits: { enabled: false }
@@ -138,7 +138,7 @@ const OrderStatsCards = () => {
     return () => {
       if (revenueChart) revenueChart.destroy();
     };
-  }, [orderPeriod, revenuePeriod, totalRevenue, totalLoss]);
+  }, [totalRevenue, totalLoss]);
 
   const handleOrderPeriodChange = (period) => {
     setOrderPeriod(period);
@@ -264,7 +264,7 @@ const OrderStatsCards = () => {
               <div className="adm-ord-stats-value">R{totalRevenue}</div>
               <div className="adm-ord-stats-change">
                 <span className={`adm-ord-change ${monthlyChange > 0 ? 'positive' : 'negative'}`}>{monthlyChange}%</span>
-                <span className="adm-ord-comparison">Compared to last week</span>
+                <span className="adm-ord-comparison">Compared to last month</span>
               </div>
             </div>
             <div className="adm-ord-chart-container">
@@ -276,12 +276,12 @@ const OrderStatsCards = () => {
         {/* Revenue breakdown */}
         <div className="adm-ord-breakdown">
           <div className="adm-ord-breakdown-item">
-            <span className="adm-ord-breakdown-label">Online</span>
+            <span className="adm-ord-breakdown-label">Revenue</span>
             <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #8b5cf6', paddingLeft: '6px'}}>R{totalRevenue}</span>
           </div>
           <div className="adm-ord-breakdown-item">
-            <span className="adm-ord-breakdown-label">Cash</span>
-            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid #f97316', paddingLeft: '6px'}}>R{totalLoss}</span>
+            <span className="adm-ord-breakdown-label">Lost Revenue from Cancelled Orders</span>
+            <span className="adm-ord-breakdown-value" style={{borderLeft: '3px solid red', paddingLeft: '6px'}}>R{totalLoss}</span>
           </div>
         </div>
       </div>
