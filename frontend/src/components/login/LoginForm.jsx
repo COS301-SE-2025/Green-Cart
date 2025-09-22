@@ -32,7 +32,7 @@ const handleLoginSubmit = async (e) => {
       }
       
       // Normal login success
-      // completeLogin(result);
+      completeLogin(result);
       
     } catch (error) {
       toast.error(error.message || 'Login failed');
