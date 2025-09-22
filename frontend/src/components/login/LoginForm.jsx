@@ -23,11 +23,11 @@ const handleLoginSubmit = async (e) => {
     
     try {
       const result = await loginUser(email, password);
-       setShow2FAModal(true);
+      
       // Check if 2FA is required
       if (result.requires2FA || result.needs_2fa_verification) {
         setPendingLogin(result);
-       
+        setShow2FAModal(true);
         return;
       }
       
