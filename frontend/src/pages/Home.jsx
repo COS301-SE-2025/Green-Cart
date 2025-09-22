@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Product from '../components/product/Product';
 import SearchBar from '../components/search/SearchBar';
 import FilterSort from '../components/filter/FilterSort';
+import RecommendationsStrip from '../components/mcp/RecommendationsStrip';
 // import { products, images } from '../data/products';
 import { fetchAllProducts } from '../product-services/fetchAllProducts'
 import './styles/Home.css';
@@ -148,6 +149,14 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
+  // For MCP recommendations - easy to switch between real data and mock data
+  const recommended = Array.isArray(products)
+    ? [...products].sort((a, b) => (b.sustainability_rating ?? 0) - (a.sustainability_rating ?? 0)).slice(0, 6)
+    : [];
+
+  // Get user ID for personalized recommendations
+  const userId = JSON.parse(localStorage.getItem('userData'))?.id || null;
+
   return (
     <div className="home">
       {/* Search Section */}
@@ -206,7 +215,17 @@ export default function Home() {
                 {products.length} eco-friendly products available
               </p>
             )}
+
+        
           </div>
+              {/* MCP Recommendations - Easy to toggle between real data and mock data */}
+        {!isLoading && !error && (
+          <RecommendationsStrip 
+            products={recommended} 
+            userId={userId}
+            useMockData={false} // Set to true to use mock data, false for real product data
+          />
+        )}
           
           {error ? (
             <div className="error-message">
