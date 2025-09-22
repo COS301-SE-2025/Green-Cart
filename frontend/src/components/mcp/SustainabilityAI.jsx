@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { mcpMockService } from '../../services/mcpMockService';
+import { mcpService } from '../../services/mcpService';
 import '../styles/mcp/mcp.css';
 
 const getColor = (v) => (v >= 80 ? '#22C55E' : v >= 60 ? '#F59E0B' : v >= 40 ? '#F97316' : '#EF4444');
@@ -16,6 +16,7 @@ export default function SustainabilityAI({
   const [open, setOpen] = useState({ q1: false, q2: false, q3: false });
   const [loading, setLoading] = useState({ q1: false, q2: false, q3: false });
   const [data, setData] = useState({ q1: null, q2: null, q3: null });
+  const [showDetailedBreakdown, setShowDetailedBreakdown] = useState(false);
   
   const score = typeof sustainability?.rating === 'number' ? Math.round(sustainability.rating) : null;
   const stats = Array.isArray(sustainability?.statistics) ? sustainability.statistics : [];
@@ -48,13 +49,13 @@ export default function SustainabilityAI({
 
       switch (questionNum) {
         case 1:
-          result = await mcpMockService.analyzeSustainability(productId, currentUserId);
+          result = await mcpService.analyzeSustainability(productId, currentUserId);
           break;
         case 2:
-          result = await mcpMockService.findAlternatives(productId, currentUserId);
+          result = await mcpService.findAlternatives(productId, currentUserId);
           break;
         case 3:
-          result = await mcpMockService.calculateEcoMeterImpact(productId, currentUserId);
+          result = await mcpService.calculateEcoMeterImpact(productId, currentUserId);
           break;
         default:
           throw new Error('Invalid question number');
@@ -124,10 +125,44 @@ export default function SustainabilityAI({
                   </div>
                 )}
 
+                {/* AI Text Analysis */}
+                {data.q1.analysis.answer && (
+                  <div className="mcp-ai-text">
+                    <div className="mcp-ai-text-label">🤖 AI Analysis:</div>
+                    <div className="mcp-ai-text-content">{data.q1.analysis.answer}</div>
+                  </div>
+                )}
+
                 <div className="mcp-actions">
-                  <button className="mcp-btn ghost">View Detailed Breakdown</button>
+                  <button 
+                    className="mcp-btn ghost" 
+                    onClick={() => setShowDetailedBreakdown(!showDetailedBreakdown)}
+                  >
+                    {showDetailedBreakdown ? 'Hide Detailed Breakdown' : 'View Detailed Breakdown'}
+                  </button>
                   <button className="mcp-btn ghost">Eco Certifications</button>
                 </div>
+
+                {/* Detailed Breakdown */}
+                {showDetailedBreakdown && data.q1.analysis.answer && (
+                  <div className="mcp-detailed-breakdown">
+                    <div className="mcp-breakdown-title">📋 Detailed Sustainability Breakdown</div>
+                    <div className="mcp-breakdown-content">
+                      <p><strong>Full Analysis:</strong></p>
+                      <p>{data.q1.analysis.answer}</p>
+                      
+                      <div className="mcp-breakdown-tips">
+                        <p><strong>💡 Sustainability Tips:</strong></p>
+                        <ul>
+                          <li>Look for products with scores above 70/100 for optimal sustainability</li>
+                          <li>Consider the full lifecycle impact, not just immediate benefits</li>
+                          <li>Check for eco-certifications and sustainable materials</li>
+                          <li>Compare alternatives to find the best environmental choice</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </>
             ) : (
               // Fallback to existing sustainability data
