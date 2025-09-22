@@ -5,6 +5,7 @@ from app.models.address import Address
 from datetime import date
 from datetime import timedelta
 from sqlalchemy import extract
+from calendar import month_name
 
 def get_orders_overview(request, db: Session):
     if request.time == 1:
@@ -76,3 +77,44 @@ def get_orders_list(db: Session):
         "message": "Orders list fetched successfully",
         "orders": orders_list
     }
+
+def get_monthly_orders(period, db: Session):
+    if period == 1:
+        segments = 6
+    elif period == 2:
+        segments = 12
+    else:
+        segments = 24
+
+    today = date.today()
+    
+    month_starts = []
+    for i in range(segments-1, -1, -1):
+        year = today.year
+        month = today.month - i
+        while month <= 0:
+            month += 12
+            year -= 1
+        month_starts.append(date(year, month, 1))
+
+    orders_per_month = []
+    month_names = []
+
+    for i in range(segments):
+        start = month_starts[i]
+        if i < segments - 1:
+            end = month_starts[i + 1]
+        else:
+            end = today
+
+        count = db.query(Order).filter(Order.created_at >= start, Order.created_at < end).count()
+        orders_per_month.append(count)
+        month_names.append(month_name[start.month])
+
+    return {
+        "status": 200,
+        "message": "Monthly orders fetched successfully",
+        "orders": orders_per_month,
+        "months": month_names
+    }
+
