@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import get_db 
-from app.schemas.admin import AdminOrderOverviewRequest, AdminOrderOverviewResponse, AdminOrderListResponse
-from app.services.admin_overview_services import get_orders_overview, get_orders_list
+from app.schemas.admin import AdminOrderOverviewRequest, AdminOrderOverviewResponse, AdminOrderListResponse, AdminMonthlyOrdersResponse
+from app.services.admin_overview_services import get_orders_overview, get_orders_list, get_monthly_orders
 
 router = APIRouter(prefix="/admin/orders", tags=["Admin"])
 
@@ -13,3 +13,7 @@ def admin_orders_overview(request: AdminOrderOverviewRequest, db: Session = Depe
 @router.get("/list", response_model=AdminOrderListResponse)
 def admin_orders_list(db: Session = Depends(get_db)):
     return get_orders_list(db)
+
+@router.get("/monthly/{period}", response_model=AdminMonthlyOrdersResponse)
+def get_monthly_orders_endpoint(period: int, db: Session = Depends(get_db)):
+    return get_monthly_orders(period, db)
