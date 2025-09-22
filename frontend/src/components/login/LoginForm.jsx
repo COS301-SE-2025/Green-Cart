@@ -5,36 +5,85 @@ import '../styles/login/LoginForm.css';
 import { loginUser } from '../../user-services/loginService'; // External function
 import GoogleIcon from '../../assets/icons/googleColored.png'; // Import Google icon
 
+import TwoFactorVerificationModal from '../modals/TwoFactorVerificationModal';
+
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+
+  const [show2FAModal, setShow2FAModal] = useState(false);
+  const [pendingLogin, setPendingLogin] = useState(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    
     try {
       const result = await loginUser(email, password);
-      console.log('Login success:', result);
+       setShow2FAModal(true);
+      // Check if 2FA is required
+      if (result.requires2FA || result.needs_2fa_verification) {
+        setPendingLogin(result);
+       
+        return;
+      }
       
-      // Clear any existing retailer data to prevent conflicts
-      localStorage.removeItem('retailer_user');
-      localStorage.removeItem('retailer_token');
-      localStorage.removeItem('selected_shop');
+      // Normal login success
+      // completeLogin(result);
       
-      // Store user data with correct key
-      localStorage.setItem('userData', JSON.stringify(result));
-      console.log('User data stored:', result);
-      
-      // Dispatch event to update navbar
-      window.dispatchEvent(new Event('authStateChanged'));
-      
-      toast.success('Login successful!');
-      navigate('/Home');
-    } catch (err) {
-      console.error('Login failed:', err.message);
-      toast.error(err.message || 'Login failed. Please try again.');
+    } catch (error) {
+      toast.error(error.message || 'Login failed');
     }
+  };
+
+  const handle2FAVerification = async (code) => {
+    setIsVerifying(true);
+    
+    try {
+      // Call your 2FA verification endpoint
+      const result = await verify2FACode({
+        sessionToken: pendingLogin.sessionToken,
+        code: code
+      });
+      
+      completeLogin(result);
+      setShow2FAModal(false);
+      
+    } catch (error) {
+      toast.error(error.message || 'Invalid verification code');
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleBackupCodeVerification = async (backupCode) => {
+    setIsVerifying(true);
+    
+    try {
+      // Call your backup code verification endpoint
+      const result = await verifyBackupCode({
+        sessionToken: pendingLogin.sessionToken,
+        backupCode: backupCode
+      });
+      
+      completeLogin(result);
+      setShow2FAModal(false);
+      
+    } catch (error) {
+      toast.error(error.message || 'Invalid backup code');
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const completeLogin = (result) => {
+    localStorage.setItem('userData', JSON.stringify(result));
+    window.dispatchEvent(new Event('authStateChanged'));
+    toast.success('Login successful!');
+    navigate('/Home');
   };
 
   const handleGoogleSignIn = () => {
@@ -49,7 +98,7 @@ const LoginForm = () => {
       <div className="login-form-content">
         <h1 className="login-form-title">Sign in</h1>
 
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleLoginSubmit}>
           <div className="login-form-group">
             <input
               id="email"
@@ -127,6 +176,17 @@ const LoginForm = () => {
           </div>
         </form>
       </div>
+       <TwoFactorVerificationModal
+        isOpen={show2FAModal}
+        onClose={() => {
+          setShow2FAModal(false);
+          setPendingLogin(null);
+        }}
+        onVerify={handle2FAVerification}
+        onUseBackupCode={handleBackupCodeVerification}
+        userEmail={email}
+        isLoading={isVerifying}
+      />
     </div>
   );
 };
