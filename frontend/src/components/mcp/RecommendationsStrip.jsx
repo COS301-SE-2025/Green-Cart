@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { mcpService } from '../../services/mcpService';
 import WhyRecommendedModal from './WhyRecommendedModal';
+import UnifiedLoading from './UnifiedLoading'
 import '../styles/mcp/mcp.css';
 
 const tierFromScore = (s) => (s >= 85 ? 'PREMIUM' : s >= 60 ? 'GOOD' : 'BASIC');
@@ -12,6 +13,8 @@ export default function RecommendationsStrip({ products = [], userId = null, use
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [hasLoaded, setHasLoaded] = useState(false);
   
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -24,7 +27,7 @@ export default function RecommendationsStrip({ products = [], userId = null, use
     let isMounted = true;
     
     const loadData = async () => {
-      if (!isMounted) return;
+      if (!isMounted || hasLoaded) return;
       
       console.log('Loading recommendations...');
       setLoading(true);
@@ -44,16 +47,19 @@ export default function RecommendationsStrip({ products = [], userId = null, use
               console.log('No recommendations received');
               setRecommendations([]);
             }
+            setHasLoaded(true);
           }
         } else if (products && products.length > 0) {
           console.log('Using provided products:', products);
           if (isMounted) {
             setRecommendations(products);
+            setHasLoaded(true);
           }
         } else {
           console.log('No data source available');
           if (isMounted) {
             setRecommendations([]);
+            setHasLoaded(true);
           }
         }
       } catch (err) {
@@ -61,6 +67,7 @@ export default function RecommendationsStrip({ products = [], userId = null, use
         if (isMounted) {
           setError('Failed to load recommendations');
           setRecommendations([]);
+          setHasLoaded(true);
         }
       } finally {
         if (isMounted) {
@@ -74,7 +81,7 @@ export default function RecommendationsStrip({ products = [], userId = null, use
     return () => {
       isMounted = false;
     };
-  }, [userId]); // Only depend on userId
+  }, [userId, useApiRecommendations]); // Only depend on userId
 
   console.log('Component state:', { loading, error, recommendations: recommendations?.length, modalOpen });
 
@@ -126,6 +133,37 @@ export default function RecommendationsStrip({ products = [], userId = null, use
     );
   }
 
+  // if (loading) {
+  //   console.log('Rendering unified loading state');
+  //   return (
+  //     <section className="mcp-recs">
+  //       <div className="mcp-recs-header">
+  //         <h3>🌱 Recommended for You</h3>
+  //         <span className="mcp-ai-badge">Powered by AI</span>
+  //       </div>
+        
+  //       <UnifiedLoading type="recommendations" />
+  //     </section>
+  //   );
+  // }
+
+  // if (error) {
+  //   console.log('Rendering error state:', error);
+  //   return (
+  //     <section className="mcp-recs">
+  //       <div className="mcp-error" style={{ padding: '2rem', textAlign: 'center' }}>
+  //         <p>Unable to load recommendations: {error}</p>
+  //         <button 
+  //           className="mcp-btn" 
+  //           onClick={() => window.location.reload()}
+  //         >
+  //           Refresh Page
+  //         </button>
+  //       </div>
+  //     </section>
+  //   );
+  // }
+
   if (error) {
     console.log('Rendering error state:', error);
     return (
@@ -134,9 +172,14 @@ export default function RecommendationsStrip({ products = [], userId = null, use
           <p>Unable to load recommendations: {error}</p>
           <button 
             className="mcp-btn" 
-            onClick={() => window.location.reload()}
+            onClick={() => {
+              setHasLoaded(false); // Reset loaded state
+              setError(null);
+              setLoading(true);
+              window.location.reload();
+            }}
           >
-            Refresh Page
+            Try Again
           </button>
         </div>
       </section>

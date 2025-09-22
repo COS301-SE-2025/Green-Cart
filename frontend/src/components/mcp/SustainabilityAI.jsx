@@ -17,6 +17,8 @@ export default function SustainabilityAI({
   const [loading, setLoading] = useState({ q1: false, q2: false, q3: false });
   const [data, setData] = useState({ q1: null, q2: null, q3: null });
   const [showDetailedBreakdown, setShowDetailedBreakdown] = useState(false);
+  // Track what's been loaded to prevent reloading
+  const [hasLoaded, setHasLoaded] = useState({ q1: false, q2: false, q3: false });
   
   const score = typeof sustainability?.rating === 'number' ? Math.round(sustainability.rating) : null;
   const stats = Array.isArray(sustainability?.statistics) ? sustainability.statistics : [];
@@ -28,45 +30,51 @@ export default function SustainabilityAI({
     return '⚠ BASIC Sustainability Rating';
   }, [score]);
 
-  // Handle question clicks with loading states
+  // Handle question clicks with SMART loading (only load once)
   const handleQuestionClick = async (questionNum) => {
     const questionKey = `q${questionNum}`;
     
-    if (open[questionKey] && data[questionKey]) {
-      // Just toggle if already loaded
-      setOpen(prev => ({ ...prev, [questionKey]: !prev[questionKey] }));
+    // If already open, just toggle closed
+    if (open[questionKey]) {
+      setOpen(prev => ({ ...prev, [questionKey]: false }));
       return;
     }
 
-    // Show loading and fetch data
-    setLoading(prev => ({ ...prev, [questionKey]: true }));
+    // Open the section
     setOpen(prev => ({ ...prev, [questionKey]: true }));
 
-    try {
-      let result;
-      const productId = product?.id || 1;
-      const currentUserId = userId || '1';
+    // Only load data if we haven't loaded it before AND we don't have data
+    if (!hasLoaded[questionKey] && !data[questionKey] && !loading[questionKey]) {
+      setLoading(prev => ({ ...prev, [questionKey]: true }));
 
-      switch (questionNum) {
-        case 1:
-          result = await mcpService.analyzeSustainability(productId, currentUserId);
-          break;
-        case 2:
-          result = await mcpService.findAlternatives(productId, currentUserId);
-          break;
-        case 3:
-          result = await mcpService.calculateEcoMeterImpact(productId, currentUserId);
-          break;
-        default:
-          throw new Error('Invalid question number');
+      try {
+        let result;
+        const productId = product?.id || 1;
+        const currentUserId = userId || '1';
+
+        switch (questionNum) {
+          case 1:
+            result = await mcpService.analyzeSustainability(productId, currentUserId);
+            break;
+          case 2:
+            result = await mcpService.findAlternatives(productId, currentUserId);
+            break;
+          case 3:
+            result = await mcpService.calculateEcoMeterImpact(productId, currentUserId);
+            break;
+          default:
+            throw new Error('Invalid question number');
+        }
+
+        setData(prev => ({ ...prev, [questionKey]: result }));
+        setHasLoaded(prev => ({ ...prev, [questionKey]: true }));
+      } catch (error) {
+        console.error(`Error loading question ${questionNum}:`, error);
+        setData(prev => ({ ...prev, [questionKey]: { error: 'Failed to load data' } }));
+        setHasLoaded(prev => ({ ...prev, [questionKey]: true })); // Mark as loaded even on error
+      } finally {
+        setLoading(prev => ({ ...prev, [questionKey]: false }));
       }
-
-      setData(prev => ({ ...prev, [questionKey]: result }));
-    } catch (error) {
-      console.error(`Error loading question ${questionNum}:`, error);
-      setData(prev => ({ ...prev, [questionKey]: { error: 'Failed to load data' } }));
-    } finally {
-      setLoading(prev => ({ ...prev, [questionKey]: false }));
     }
   };
 
@@ -78,6 +86,8 @@ export default function SustainabilityAI({
         {/* Question 1: Sustainability Analysis */}
         <button className="mcp-qa-item" onClick={() => handleQuestionClick(1)}>
           [1] 📊 How sustainable is this product?
+          {loading.q1 && <span className="mcp-qa-loading">⏳</span>}
+          {hasLoaded.q1 && !loading.q1 && <span className="mcp-qa-loaded">✓</span>}
         </button>
         {open.q1 && (
           <div className="mcp-card">
@@ -85,12 +95,25 @@ export default function SustainabilityAI({
             
             {loading.q1 ? (
               <div className="mcp-loading">
-                <div className="skeleton" style={{ height: '20px', marginBottom: '10px' }}></div>
-                <div className="skeleton" style={{ height: '40px', marginBottom: '10px' }}></div>
-                <div className="skeleton" style={{ height: '60px' }}></div>
+                <div className="mcp-loading-content">
+                  <div className="mcp-loading-spinner"></div>
+                  <span>Analyzing sustainability metrics...</span>
+                </div>
               </div>
             ) : data.q1?.error ? (
-              <div className="mcp-error">Failed to load sustainability analysis</div>
+              <div className="mcp-error">
+                <span>❌ Failed to load sustainability analysis</span>
+                <button 
+                  className="mcp-btn ghost" 
+                  onClick={() => {
+                    setHasLoaded(prev => ({ ...prev, q1: false }));
+                    setData(prev => ({ ...prev, q1: null }));
+                    handleQuestionClick(1);
+                  }}
+                >
+                  Try Again
+                </button>
+              </div>
             ) : data.q1 ? (
               <>
                 <div className="mcp-score-row">
@@ -138,9 +161,8 @@ export default function SustainabilityAI({
                     className="mcp-btn ghost" 
                     onClick={() => setShowDetailedBreakdown(!showDetailedBreakdown)}
                   >
-                    {showDetailedBreakdown ? 'Hide Detailed Breakdown' : 'View Detailed Breakdown'}
+                    {showDetailedBreakdown ? 'Hide Details' : 'View Details'}
                   </button>
-                  <button className="mcp-btn ghost">Eco Certifications</button>
                 </div>
 
                 {/* Detailed Breakdown */}
@@ -197,6 +219,8 @@ export default function SustainabilityAI({
         {/* Question 2: Alternatives */}
         <button className="mcp-qa-item" onClick={() => handleQuestionClick(2)}>
           [2] 🔍 Show me better alternatives
+          {loading.q2 && <span className="mcp-qa-loading">⏳</span>}
+          {hasLoaded.q2 && !loading.q2 && <span className="mcp-qa-loaded">✓</span>}
         </button>
         {open.q2 && (
           <div className="mcp-card">
@@ -204,20 +228,25 @@ export default function SustainabilityAI({
             
             {loading.q2 ? (
               <div className="mcp-loading">
-                <div className="mcp-alt-strip">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="mcp-alt-card">
-                      <div className="skeleton" style={{ aspectRatio: '4/3' }}></div>
-                      <div style={{ padding: '10px' }}>
-                        <div className="skeleton" style={{ height: '15px', marginBottom: '5px' }}></div>
-                        <div className="skeleton" style={{ height: '12px' }}></div>
-                      </div>
-                    </div>
-                  ))}
+                <div className="mcp-loading-content">
+                  <div className="mcp-loading-spinner"></div>
+                  <span>Finding better alternatives...</span>
                 </div>
               </div>
             ) : data.q2?.error ? (
-              <div className="mcp-error">Failed to load alternatives</div>
+              <div className="mcp-error">
+                <span>❌ Failed to load alternatives</span>
+                <button 
+                  className="mcp-btn ghost" 
+                  onClick={() => {
+                    setHasLoaded(prev => ({ ...prev, q2: false }));
+                    setData(prev => ({ ...prev, q2: null }));
+                    handleQuestionClick(2);
+                  }}
+                >
+                  Try Again
+                </button>
+              </div>
             ) : data.q2?.alternatives?.products ? (
               <>
                 <div className="mcp-alt-strip">
@@ -241,9 +270,6 @@ export default function SustainabilityAI({
                     </div>
                   ))}
                 </div>
-                <div className="mcp-actions">
-                  <button className="mcp-btn ghost">View All Alternatives</button>
-                </div>
               </>
             ) : (
               <div className="mcp-empty">
@@ -256,6 +282,8 @@ export default function SustainabilityAI({
         {/* Question 3: Eco-Meter Impact */}
         <button className="mcp-qa-item" onClick={() => handleQuestionClick(3)}>
           [3] 📈 How will this improve my eco-meter?
+          {loading.q3 && <span className="mcp-qa-loading">⏳</span>}
+          {hasLoaded.q3 && !loading.q3 && <span className="mcp-qa-loaded">✓</span>}
         </button>
         {open.q3 && (
           <div className="mcp-card">
@@ -263,12 +291,25 @@ export default function SustainabilityAI({
             
             {loading.q3 ? (
               <div className="mcp-loading">
-                <div className="skeleton" style={{ height: '30px', marginBottom: '15px' }}></div>
-                <div className="skeleton" style={{ height: '80px', marginBottom: '15px' }}></div>
-                <div className="skeleton" style={{ height: '40px' }}></div>
+                <div className="mcp-loading-content">
+                  <div className="mcp-loading-spinner"></div>
+                  <span>Calculating eco-meter impact...</span>
+                </div>
               </div>
             ) : data.q3?.error ? (
-              <div className="mcp-error">Failed to load eco-meter analysis</div>
+              <div className="mcp-error">
+                <span>❌ Failed to load eco-meter analysis</span>
+                <button 
+                  className="mcp-btn ghost" 
+                  onClick={() => {
+                    setHasLoaded(prev => ({ ...prev, q3: false }));
+                    setData(prev => ({ ...prev, q3: null }));
+                    handleQuestionClick(3);
+                  }}
+                >
+                  Try Again
+                </button>
+              </div>
             ) : data.q3?.eco_meter_analysis ? (
               <>
                 <p className="mcp-impact-line">{data.q3.eco_meter_analysis.message}</p>
@@ -286,15 +327,6 @@ export default function SustainabilityAI({
                       {data.q3.eco_meter_analysis.product_rating}/100
                     </span>
                   </div>
-                </div>
-                
-                <div className="mcp-actions">
-                  <button className="mcp-btn primary" onClick={() => onAddToCart?.(product)}>
-                    Add to Cart
-                  </button>
-                  {!data.q3.eco_meter_analysis.will_improve_ecometer && (
-                    <button className="mcp-btn ghost">Find Better Options</button>
-                  )}
                 </div>
               </>
             ) : (
