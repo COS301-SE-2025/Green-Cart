@@ -17,7 +17,7 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
 @router.get("/metrics")
 def get_admin_metrics(db: Session = Depends(get_db)):
     total_users = db.query(User).count()
-    total_retailers = db.query(RetailerInformation).count()
+    total_retailers = db.query(RetailerInformation.user_id).group_by(RetailerInformation.user_id).count()
     total_products = db.query(Product).count()
     
     # Get verified and unverified product counts
