@@ -154,8 +154,8 @@ export default function Home() {
     ? [...products].sort((a, b) => (b.sustainability_rating ?? 0) - (a.sustainability_rating ?? 0)).slice(0, 6)
     : [];
 
-  // Get user ID for personalized recommendations
-  const userId = JSON.parse(localStorage.getItem('userData'))?.id || null;
+  // Get user ID for personalized recommendations  
+  const userId = JSON.parse(localStorage.getItem('userData'))?.id || 'demo-user-123';
 
   return (
     <div className="home">
@@ -221,9 +221,10 @@ export default function Home() {
               {/* MCP Recommendations - Easy to toggle between real data and mock data */}
         {!isLoading && !error && (
           <RecommendationsStrip 
-            products={recommended} 
+            products={[]} 
             userId={userId}
             useMockData={false} // Set to true to use mock data, false for real product data
+            useApiRecommendations={true} // Use the MCP API for recommendations
           />
         )}
           
