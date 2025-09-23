@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import Dropdown from 'react-bootstrap/Dropdown';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import GenericPagination from '../elements/GenericPagination';
 import OrderStatsCards from '../elements/OrdersStatsCard';
 import OrdersTable from '../elements/OrdersTable';
@@ -9,11 +11,25 @@ import exportIcon from '../icons/exportIcon.png';
 
 const Orders = () => {
 	const [currentPage, setCurrentPage] = useState(1);
-	const [ totalOrders, setTotalOrders] = useState(0);
+	const [totalOrders, setTotalOrders] = useState(0);
 	const [selectedView, setSelectedView] = useState([]);
 	const [orderFilter, setOrderFilter] = useState('On Delivery');
 	const [searchTerm, setSearchTerm] = useState('');
 	const [orders, setOrders] = useState([]);
+
+	// Sort and Filter states
+	const [sortBy, setSortBy] = useState('');
+	const [sortOrder, setSortOrder] = useState('asc');
+	const [filters, setFilters] = useState({
+		status: [],
+		dateRange: {
+			start: '',
+			end: ''
+		}
+	});
+	const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+
+	const itemsPerPage = 10;
 
 	useEffect(() => {
 		const fetchOrders = async () => {
@@ -42,14 +58,94 @@ const Orders = () => {
 		fetchOrders();
 	}, []);
 
+	// Filter and search functionality
+	// Filter and search functionality
+	const getFilteredOrders = () => {
+		let filtered = orders.filter(order => {
+			// Search functionality - handle null/undefined values
+			const matchesSearch = !searchTerm || 
+				(order.order_id || '').toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+				(order.user_email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+				(order.address || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+				(order.state || '').toLowerCase().includes(searchTerm.toLowerCase());
+
+			if (!matchesSearch) return false;
+
+			// Status filter
+			if (filters.status.length > 0) {
+				if (!filters.status.includes(order.state)) return false;
+			}
+
+			// Date range filter
+			if (filters.dateRange.start || filters.dateRange.end) {
+				const orderDate = new Date(order.date);
+				const startDate = filters.dateRange.start ? new Date(filters.dateRange.start) : null;
+				const endDate = filters.dateRange.end ? new Date(filters.dateRange.end) : null;
+
+				if (startDate && orderDate < startDate) return false;
+				if (endDate && orderDate > endDate) return false;
+			}
+
+			return true;
+		});
+
+		return filtered;
+	};
+
+	// Sort functionality
+	// Sort functionality
+	const getSortedOrders = (ordersList) => {
+		if (!sortBy) return ordersList;
+
+		return [...ordersList].sort((a, b) => {
+			let aValue, bValue;
+
+			switch (sortBy) {
+				case 'orderId':
+					// Convert to string first, handle null/undefined
+					aValue = (a.order_id || '').toString().toLowerCase();
+					bValue = (b.order_id || '').toString().toLowerCase();
+					break;
+				case 'customer':
+					aValue = (a.user_email || '').toLowerCase();
+					bValue = (b.user_email || '').toLowerCase();
+					break;
+				case 'date':
+					aValue = new Date(a.date || 0);
+					bValue = new Date(b.date || 0);
+					break;
+				case 'status':
+					aValue = (a.state || '').toLowerCase();
+					bValue = (b.state || '').toLowerCase();
+					break;
+				case 'address':
+					aValue = (a.address || '').toLowerCase();
+					bValue = (b.address || '').toLowerCase();
+					break;
+				default:
+					return 0;
+			}
+
+			if (sortBy === 'date') {
+				return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
+			} else {
+				if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+				if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+				return 0;
+			}
+		});
+	};
+
+	const filteredOrders = getSortedOrders(getFilteredOrders());
+
+	// Update pagination based on filtered results
 	useEffect(() => {
 		const startIdx = (currentPage - 1) * 10;
 		const endIdx = currentPage * 10;
 		setSelectedView(orders.slice(startIdx, endIdx));
 	}, [orders, currentPage]);
 
-	const totalPages = Math.ceil(totalOrders / 10);
-	const itemsPerPage = 10;
+	const totalPages = Math.ceil(totalOrders / itemsPerPage);
 
 	const handlePageChange = (page) => {
 		setCurrentPage(page);
@@ -59,7 +155,54 @@ const Orders = () => {
 		console.log('Export orders');
 	};
 
-	const orderTabs = ['On Delivery', 'Pending', 'Shipping', 'Delivered', 'Canceled', 'Returned'];
+	// Sort handlers
+	const handleSort = (field) => {
+		if (sortBy === field) {
+			setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+		} else {
+			setSortBy(field);
+			setSortOrder('asc');
+		}
+		setCurrentPage(1);
+	};
+
+	// Filter handlers
+	const handleStatusFilter = (status) => {
+		const newStatus = filters.status.includes(status)
+			? filters.status.filter(s => s !== status)
+			: [...filters.status, status];
+		
+		setFilters(prev => ({
+			...prev,
+			status: newStatus
+		}));
+		setCurrentPage(1);
+	};
+
+	const handleDateRangeFilter = (field, value) => {
+		setFilters(prev => ({
+			...prev,
+			dateRange: {
+				...prev.dateRange,
+				[field]: value
+			}
+		}));
+		setCurrentPage(1);
+	};
+
+	const clearFilters = () => {
+		setFilters({
+			status: [],
+			dateRange: {
+				start: '',
+				end: ''
+			}
+		});
+		setCurrentPage(1);
+	};
+
+	// Available filter options
+	const statusOptions = ['Preparing Order', 'Ready for Delivery', 'In Transit', 'Delivered', 'Cancelled'];
 
 	return (
 		<div className="adm-ord-container">
@@ -68,11 +211,6 @@ const Orders = () => {
 				<h1 className="adm-ord-title">Orders</h1>
 				<div className="adm-ord-header-actions">
 					<button className="adm-ord-export-btn" onClick={handleExport}>
-						{/* <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2"/>
-              <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2"/>
-              <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
-            </svg> */}
 						<img src={exportIcon} alt="Export" className="adm-ord-export-icon" />
 						Export
 					</button>
@@ -81,19 +219,6 @@ const Orders = () => {
 
 			{/* Stats Cards */}
 			<OrderStatsCards />
-
-			{/* Order Tabs */}
-			{/* <div className="adm-ord-tabs">
-        {orderTabs.map((tab) => (
-          <button
-            key={tab}
-            className={`adm-ord-tab ${orderFilter === tab ? 'active' : ''}`}
-            onClick={() => setOrderFilter(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div> */}
 
 			{/* Search and Controls */}
 			<div className="adm-ord-search-and-controls">
@@ -106,7 +231,7 @@ const Orders = () => {
 						<input
 							type="text"
 							className="adm-ord-search-input"
-							placeholder="Search..."
+							placeholder="Search orders..."
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
 						/>
@@ -114,18 +239,85 @@ const Orders = () => {
 				</div>
 
 				<div className="adm-ord-control-buttons">
-					<button className="adm-ord-filter-btn">
-						Filter by
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-							<path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" />
-						</svg>
-					</button>
-					<button className="adm-ord-sort-btn">
-						Sort by
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-							<path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" />
-						</svg>
-					</button>
+					{/* Filter Dropdown */}
+					<Dropdown show={showFilterDropdown} onToggle={setShowFilterDropdown}>
+						<Dropdown.Toggle 
+							variant="outline-secondary" 
+							id="filter-dropdown"
+							className="adm-ord-filter-btn"
+						>
+							Filter by
+						</Dropdown.Toggle>
+						<Dropdown.Menu className="adm-ord-filter-menu">
+							<div className="filter-section">
+								<h6>Status</h6>
+								{statusOptions.map(status => (
+									<div key={status} className="filter-checkbox">
+										<input
+											type="checkbox"
+											id={`status-${status}`}
+											checked={filters.status.includes(status)}
+											onChange={() => handleStatusFilter(status)}
+										/>
+										<label htmlFor={`status-${status}`}>{status}</label>
+									</div>
+								))}
+							</div>
+
+							<div className="filter-section">
+								<h6>Date Range</h6>
+								<div className="filter-date-range">
+									<input
+										type="date"
+										value={filters.dateRange.start}
+										onChange={(e) => handleDateRangeFilter('start', e.target.value)}
+										placeholder="Start date"
+									/>
+									<span>to</span>
+									<input
+										type="date"
+										value={filters.dateRange.end}
+										onChange={(e) => handleDateRangeFilter('end', e.target.value)}
+										placeholder="End date"
+									/>
+								</div>
+							</div>
+
+							<div className="filter-actions">
+								<button onClick={clearFilters} className="clear-filters-btn">
+									Clear All
+								</button>
+							</div>
+						</Dropdown.Menu>
+					</Dropdown>
+
+					{/* Sort Dropdown */}
+					<Dropdown>
+						<Dropdown.Toggle 
+							variant="outline-secondary" 
+							id="sort-dropdown"
+							className="adm-ord-sort-btn"
+						>
+							Sort by {sortBy && `(${sortBy} ${sortOrder})`}
+						</Dropdown.Toggle>
+						<Dropdown.Menu className="adm-ord-sort-menu">
+							<Dropdown.Item onClick={() => handleSort('orderId')}>
+								Order ID {sortBy === 'orderId' && (sortOrder === 'asc' ? '↑' : '↓')}
+							</Dropdown.Item>
+							<Dropdown.Item onClick={() => handleSort('customer')}>
+								Customer {sortBy === 'customer' && (sortOrder === 'asc' ? '↑' : '↓')}
+							</Dropdown.Item>
+							<Dropdown.Item onClick={() => handleSort('date')}>
+								Date {sortBy === 'date' && (sortOrder === 'asc' ? '↑' : '↓')}
+							</Dropdown.Item>
+							<Dropdown.Item onClick={() => handleSort('status')}>
+								Status {sortBy === 'status' && (sortOrder === 'asc' ? '↑' : '↓')}
+							</Dropdown.Item>
+							<Dropdown.Item onClick={() => handleSort('address')}>
+								Address {sortBy === 'address' && (sortOrder === 'asc' ? '↑' : '↓')}
+							</Dropdown.Item>
+						</Dropdown.Menu>
+					</Dropdown>
 				</div>
 			</div>
 
@@ -137,7 +329,7 @@ const Orders = () => {
 				currentPage={currentPage}
 				totalPages={totalPages}
 				onPageChange={handlePageChange}
-				totalItems={orders.length}
+				totalItems={totalOrders}
 				itemsPerPage={itemsPerPage}
 			/>
 		</div>

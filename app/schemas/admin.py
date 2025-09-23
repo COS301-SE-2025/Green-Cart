@@ -49,3 +49,10 @@ class AdminMonthlyOrdersResponse(BaseModel):
     message: str
     orders: list[int]
     months: list[str]
+
+class AdminRevenueOverviewResponse(BaseModel):
+    status: int
+    message: str
+    total_revenue: float
+    lost_revenue: float
+    monthly_comparison: float

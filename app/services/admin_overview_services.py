@@ -2,10 +2,13 @@ from sqlalchemy.orm import Session
 from app.models.orders import Order
 from app.models.user import User
 from app.models.address import Address
+from app.models.cart_item import CartItem
+from app.models.product import Product
 from datetime import date
 from datetime import timedelta
 from sqlalchemy import extract
 from calendar import month_name
+from decimal import Decimal
 
 def get_orders_overview(request, db: Session):
     if request.time == 1:
@@ -24,21 +27,19 @@ def get_orders_overview(request, db: Session):
     TotalDelivered = db.query(Order).filter(Order.state == 'Delivered', Order.created_at >= time_filter).count()
     TotalCancelled = db.query(Order).filter(Order.state == 'Cancelled', Order.created_at >= time_filter).count()
 
-    today = date.today()
-    first_day_this_month = today.replace(day=1)
-    first_day_last_month = (first_day_this_month - timedelta(days=1)).replace(day=1)
-    last_day_last_month = first_day_this_month - timedelta(days=1)
+    this_month = date.today().month
+    last_month = this_month - 1 if this_month > 1 else 12
 
-    current_month_orders = db.query(Order).filter( Order.created_at >= first_day_this_month, Order.created_at <= today ).count()
+    current_month_orders = db.query(Order).filter(Order.state != 'Cancelled', extract('month', Order.created_at) == this_month).count()
 
-    last_month_orders = db.query(Order).filter( Order.created_at >= first_day_last_month, Order.created_at <= last_day_last_month ).count()
+    last_month_orders = db.query(Order).filter(Order.state != 'Cancelled', extract('month', Order.created_at) == last_month).count()
 
     if last_month_orders == 0:
         percent_change = 1.0 if current_month_orders > 0 else 0.0
     else:
         percent_change = (current_month_orders - last_month_orders) / last_month_orders
 
-    percentage_increase = percent_change
+    percentage_increase = round(percent_change, 2)
     # print("\n\n\n\n" + str(percentage_increase) + "\n\n\n\n")
 
     return {
@@ -118,3 +119,79 @@ def get_monthly_orders(period, db: Session):
         "months": month_names
     }
 
+def get_revenue_overview(period, db: Session):
+    if period == 1:
+        time_filter = date.today()
+    elif period == 2:
+        time_filter = date.today() - timedelta(days=7)
+    elif period == 3:
+        time_filter = date.today() - timedelta(days=30)
+    else:
+        time_filter = date.today() - timedelta(days=365)
+
+    
+    orders = db.query(Order).filter(Order.created_at >= time_filter, Order.state != 'Cancelled').all()
+    lost_orders = db.query(Order).filter(Order.created_at >= time_filter, Order.state == 'Cancelled').all()
+    cart_items = db.query(CartItem).all()
+    products = db.query(Product).all()
+
+    total_revenue = Decimal('0.0')
+    lost_revenue = Decimal('0.0')
+
+    for o in orders:
+        for c in cart_items:
+            if c.cart_id == o.cart_id:
+                for p in products:
+                    if p.id == c.product_id:
+                        total_revenue += p.price * c.quantity
+                        break
+
+    for o in lost_orders:
+        for c in cart_items:
+            if c.cart_id == o.cart_id:
+                for p in products:
+                    if p.id == c.product_id:
+                        lost_revenue += p.price * c.quantity
+                        break
+            
+
+    this_month = date.today().month
+    last_month = this_month - 1 if this_month > 1 else 12
+
+    # These Two
+    current_month_orders = db.query(Order).filter(Order.state != 'Cancelled', extract('month', Order.created_at) == this_month).all()
+    last_month_orders = db.query(Order).filter(Order.state != 'Cancelled', extract('month', Order.created_at) == last_month).all()
+
+    last_month_revenue = Decimal('0.0')
+    this_month_revenue = Decimal('0.0')
+
+    for o in current_month_orders:
+        for c in cart_items:
+            if c.cart_id == o.cart_id:
+                for p in products:
+                    if p.id == c.product_id:
+                        this_month_revenue += p.price * c.quantity
+                        break
+
+    for o in last_month_orders:
+        for c in cart_items:
+            if c.cart_id == o.cart_id:
+                for p in products:
+                    if p.id == c.product_id:
+                        last_month_revenue += p.price * c.quantity
+                        break
+
+    if last_month_revenue == '0.0':
+        percent_change = '1.0' if this_month_revenue > '0.0' else '0.0'
+    else:
+        percent_change = (this_month_revenue - last_month_revenue) / last_month_revenue
+
+    percentage_increase = round(percent_change, 2)
+
+    return {
+        "status": 200,
+        "message": "Revenue overview fetched successfully",
+        "total_revenue": float(total_revenue),
+        "lost_revenue": float(lost_revenue), 
+        "monthly_comparison": float(percentage_increase)
+    }
