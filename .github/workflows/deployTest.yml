@@ -1,7 +1,7 @@
 name: AWS Deployment
 
 on:
-  commit:
+  push:
     branches:
       - main
   workflow_dispatch:
