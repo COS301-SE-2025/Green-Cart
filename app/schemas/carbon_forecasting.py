@@ -58,13 +58,13 @@ class GetUserInsightsRequest(BaseModel):
 
 class UpdateForecastAccuracyRequest(BaseModel):
     forecast_id: int = Field(..., description="Forecast ID to update")
-    actual_emissions: float = Field(..., ge=0, description="Actual measured emissions in kg CO2")
+    actual_sustainability_score: float = Field(..., ge=0, le=100, description="Actual measured sustainability score (0-100)")
     
     class Config:
         schema_extra = {
             "example": {
                 "forecast_id": 123,
-                "actual_emissions": 8.5
+                "actual_sustainability_score": 75.5
             }
         }
 
@@ -75,8 +75,8 @@ class GetForecastHistoryRequest(BaseModel):
 
 # Response Schemas
 class ForecastPrediction(BaseModel):
-    predicted_emissions_kg_co2: float = Field(..., description="Predicted carbon emissions in kg CO2")
-    predicted_reduction_kg_co2: float = Field(..., description="Predicted carbon reduction in kg CO2")
+    predicted_sustainability_score: float = Field(..., ge=0, le=100, description="Predicted sustainability score (0-100)")
+    improvement_potential: float = Field(..., ge=0, le=100, description="Potential improvement in sustainability score")
     confidence_score: float = Field(..., ge=0, le=1, description="Prediction confidence (0-1)")
     trend_direction: TrendDirectionEnum = Field(..., description="Trend direction")
     seasonal_factor: float = Field(..., description="Seasonal adjustment factor")
@@ -99,18 +99,19 @@ class GenerateForecastResponse(BaseModel):
             "example": {
                 "status": "success",
                 "forecast": {
-                    "predicted_emissions_kg_co2": 8.5,
-                    "predicted_reduction_kg_co2": 2.3,
+                    "predicted_sustainability_score": 75.5,
+                    "improvement_potential": 20.0,
                     "confidence_score": 0.85,
                     "trend_direction": "improving",
                     "seasonal_factor": 0.95,
                     "behavioral_score": 0.78,
                     "prediction_factors": {
-                        "ensemble_weights": {"linear": 0.2, "exponential": 0.25, "seasonal": 0.3, "neural": 0.25}
+                        "data_points": 15,
+                        "trend_slope": 0.2
                     },
                     "algorithm_metadata": {
-                        "algorithm": "ensemble",
-                        "model_agreement_score": 0.85
+                        "algorithm": "sustainability_scoring",
+                        "data_quality_score": 0.85
                     }
                 }
             }
@@ -119,22 +120,22 @@ class GenerateForecastResponse(BaseModel):
 class ShoppingPatterns(BaseModel):
     avg_orders_per_week: Optional[float] = Field(None, description="Average orders per week")
     avg_order_value: Optional[float] = Field(None, description="Average order value")
-    avg_carbon_per_order: Optional[float] = Field(None, description="Average carbon per order")
-    eco_consciousness_score: Optional[float] = Field(None, ge=0, le=1, description="Eco-consciousness score")
+    avg_sustainability_score_per_order: Optional[float] = Field(None, ge=0, le=100, description="Average sustainability score per order")
+    eco_consciousness_score: Optional[float] = Field(None, ge=0, le=100, description="Eco-consciousness score (0-100)")
     sustainable_product_ratio: Optional[float] = Field(None, ge=0, le=1, description="Ratio of sustainable products")
-    carbon_trend_30d: Optional[float] = Field(None, description="30-day carbon trend percentage")
+    sustainability_trend_30d: Optional[float] = Field(None, description="30-day sustainability trend percentage")
     goals_achievement_rate: Optional[float] = Field(None, ge=0, le=1, description="Goals achievement rate")
     
 class ImpactMetrics(BaseModel):
-    total_lifetime_emissions: Optional[float] = Field(None, description="Total lifetime emissions")
-    total_lifetime_reduction: Optional[float] = Field(None, description="Total lifetime reduction")
-    carbon_efficiency_score: Optional[float] = Field(None, description="Carbon efficiency score")
+    total_lifetime_sustainability_score: Optional[float] = Field(None, ge=0, le=100, description="Total lifetime sustainability score")
+    total_lifetime_improvement: Optional[float] = Field(None, description="Total lifetime improvement")
+    sustainability_efficiency_score: Optional[float] = Field(None, description="Sustainability score per order")
     percentile_rank: Optional[float] = Field(None, description="Percentile rank among users")
     streak_days: Optional[int] = Field(None, description="Consecutive improvement days")
 
 class LatestForecast(BaseModel):
-    predicted_emissions: float = Field(..., description="Predicted emissions")
-    predicted_reduction: float = Field(..., description="Predicted reduction")
+    predicted_sustainability_score: float = Field(..., ge=0, le=100, description="Predicted sustainability score")
+    improvement_potential: float = Field(..., ge=0, le=100, description="Improvement potential")
     confidence: float = Field(..., description="Confidence score")
     trend: TrendDirectionEnum = Field(..., description="Trend direction")
     created_at: str = Field(..., description="Forecast creation timestamp")
@@ -149,16 +150,16 @@ class GetUserInsightsResponse(BaseModel):
         schema_extra = {
             "example": {
                 "latest_forecast": {
-                    "predicted_emissions": 8.5,
-                    "predicted_reduction": 2.3,
+                    "predicted_sustainability_score": 75.5,
+                    "improvement_potential": 20.0,
                     "confidence": 0.85,
                     "trend": "improving",
                     "created_at": "2025-09-22T10:30:00Z"
                 },
                 "shopping_patterns": {
                     "avg_orders_per_week": 2.5,
-                    "eco_consciousness_score": 0.78,
-                    "carbon_trend_30d": -15.2,
+                    "eco_consciousness_score": 78.0,
+                    "sustainability_trend_30d": 15.2,
                     "goals_achievement_rate": 0.85
                 },
                 "recommendations": [
