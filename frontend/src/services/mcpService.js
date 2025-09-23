@@ -3,7 +3,7 @@
  * Connects frontend MCP components to the actual recommendation endpoints
  */
 
-const API_BASE_URL = 'http://127.0.0.1:8000'; // Update this to match your backend URL
+const API_BASE_URL = 'https://api.greencart-cos301.co.za'; // Update this to match your backend URL
 
 export const mcpService = {
   // Frontend Q1: How sustainable is this product? (Maps to backend Q2)
