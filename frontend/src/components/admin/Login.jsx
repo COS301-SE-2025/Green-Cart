@@ -2,20 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import '../styles/admin/Login.css';
-import AdminIcon from './icons/Green-cart-admin.png'; // Changed to .png
+import AdminIcon from './icons/Green-cart-admin.png'; 
 import { adminSignin } from '../../admin-services/authService';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const result = await adminSignin(email, password);
       
-      // Store admin session
       sessionStorage.setItem('adminSession', JSON.stringify({
         user_id: result.user_id,
         name: result.name,
@@ -29,6 +30,8 @@ const Login = () => {
       console.error('Admin login failed:', err.message);
       toast.error(err.message || 'Login failed. Please try again.');
       sessionStorage.removeItem('adminSession');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,12 +44,12 @@ const Login = () => {
 
   return (
     <div className="admin-login-container">
-        <div className="admin-header">
-            <h1 className="admin-main-title">Admin Portal</h1>
-        </div>
+      <div className="admin-header">
+        <h1 className="admin-main-title">Admin Portal</h1>
+      </div>
       <div className="admin-login-modal">
         <div className="admin-logo-container">
-            <img src={AdminIcon} alt="Admin" className="admin-logo" />
+          <img src={AdminIcon} alt="Admin" className="admin-logo" />
         </div>
         <form className="admin-form" onSubmit={handleSubmit}>
           <div className="admin-form-group">
@@ -75,8 +78,26 @@ const Login = () => {
             <label htmlFor="admin-password" className="admin-form-label">Password</label>
           </div>
 
-          <button type="submit" className="admin-signin-button">
-            SIGN IN
+          <button 
+            type="submit" 
+            className="admin-signin-button"
+            disabled={loading} // prevent double submits
+          >
+            {loading ? (
+              <svg className="circular" viewBox="25 25 50 50">
+                <circle 
+                  className="path" 
+                  cx="50" 
+                  cy="50" 
+                  r="20" 
+                  fill="none" 
+                  strokeWidth="2" 
+                  strokeMiterlimit="10"
+                />
+              </svg>
+            ) : (
+              "Sign in"
+            )}
           </button>
         </form>
       </div>

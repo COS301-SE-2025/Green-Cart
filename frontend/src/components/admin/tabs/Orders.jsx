@@ -11,9 +11,6 @@ import exportIcon from '../icons/exportIcon.png';
 
 const Orders = () => {
 	const [currentPage, setCurrentPage] = useState(1);
-	const [totalOrders, setTotalOrders] = useState(0);
-	const [selectedView, setSelectedView] = useState([]);
-	const [orderFilter, setOrderFilter] = useState('On Delivery');
 	const [searchTerm, setSearchTerm] = useState('');
 	const [orders, setOrders] = useState([]);
 
@@ -38,15 +35,7 @@ const Orders = () => {
 				const response = await fetch(`${apiUrl}/admin/orders/list`);
 				const data = await response.json();
 				if (response.ok) {
-					setOrders(data.orders); // <-- update state!
-					setTotalOrders(data.orders.length);
-
-					if (totalOrders < 10) {
-						setSelectedView(data.orders);
-					} else {
-						setSelectedView(data.orders.slice(0, 10));
-					}
-
+					setOrders(data.orders);
 				} else {
 					console.error('Error fetching orders:', data.message);
 				}
@@ -58,7 +47,6 @@ const Orders = () => {
 		fetchOrders();
 	}, []);
 
-	// Filter and search functionality
 	// Filter and search functionality
 	const getFilteredOrders = () => {
 		let filtered = orders.filter(order => {
@@ -93,7 +81,6 @@ const Orders = () => {
 	};
 
 	// Sort functionality
-	// Sort functionality
 	const getSortedOrders = (ordersList) => {
 		if (!sortBy) return ordersList;
 
@@ -102,7 +89,6 @@ const Orders = () => {
 
 			switch (sortBy) {
 				case 'orderId':
-					// Convert to string first, handle null/undefined
 					aValue = (a.order_id || '').toString().toLowerCase();
 					bValue = (b.order_id || '').toString().toLowerCase();
 					break;
@@ -136,16 +122,18 @@ const Orders = () => {
 		});
 	};
 
+	// Get final filtered and sorted orders
 	const filteredOrders = getSortedOrders(getFilteredOrders());
 
-	// Update pagination based on filtered results
-	useEffect(() => {
-		const startIdx = (currentPage - 1) * 10;
-		const endIdx = currentPage * 10;
-		setSelectedView(orders.slice(startIdx, endIdx));
-	}, [orders, currentPage]);
+	// Calculate pagination based on filtered results
+	const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+	const startIndex = (currentPage - 1) * itemsPerPage;
+	const paginatedOrders = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
 
-	const totalPages = Math.ceil(totalOrders / itemsPerPage);
+	// Reset to page 1 when filters change
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [searchTerm, filters, sortBy, sortOrder]);
 
 	const handlePageChange = (page) => {
 		setCurrentPage(page);
@@ -163,7 +151,6 @@ const Orders = () => {
 			setSortBy(field);
 			setSortOrder('asc');
 		}
-		setCurrentPage(1);
 	};
 
 	// Filter handlers
@@ -176,7 +163,6 @@ const Orders = () => {
 			...prev,
 			status: newStatus
 		}));
-		setCurrentPage(1);
 	};
 
 	const handleDateRangeFilter = (field, value) => {
@@ -187,7 +173,6 @@ const Orders = () => {
 				[field]: value
 			}
 		}));
-		setCurrentPage(1);
 	};
 
 	const clearFilters = () => {
@@ -198,7 +183,9 @@ const Orders = () => {
 				end: ''
 			}
 		});
-		setCurrentPage(1);
+		setSortBy('');
+		setSortOrder('asc');
+		setSearchTerm('');
 	};
 
 	// Available filter options
@@ -322,14 +309,14 @@ const Orders = () => {
 			</div>
 
 			{/* Table */}
-			<OrdersTable orders={selectedView} />
+			<OrdersTable orders={paginatedOrders} />
 
 			{/* Pagination */}
 			<GenericPagination
 				currentPage={currentPage}
 				totalPages={totalPages}
 				onPageChange={handlePageChange}
-				totalItems={totalOrders}
+				totalItems={filteredOrders.length}
 				itemsPerPage={itemsPerPage}
 			/>
 		</div>
