@@ -10,7 +10,7 @@ SQLAlchemy==2.0.43
 psycopg2-binary==2.9.10
 
 # Data processing and scientific computing
-numpy==2.3.3
+numpy==1.26.4
 
 # Authentication and security
 bcrypt==4.3.0
