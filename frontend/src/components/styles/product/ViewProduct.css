@@ -226,6 +226,17 @@
   min-height:0;
 }
 
+/* Ensure MCP AI section is always visible */
+.vp-product-info .mcp-ai {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  margin: 1.5rem 0 !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
 .vp-product-header {
   display: flex;
   flex-direction: row;
@@ -639,6 +650,44 @@
   
   .vp-product-description {
     max-height: 100px; /* MODIFIED: Reduce on smaller screens */
+  }
+}
+
+/* Desktop ViewProduct layout fixes */
+@media (min-width: 769px) {
+  .view-product {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 0.5rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    overflow: visible; /* Changed from hidden to visible */
+    min-height: 600px;
+  }
+  
+  .vp-product-info {
+    max-height: none; /* Remove height constraint on desktop */
+    overflow-y: visible; /* Allow natural scrolling */
+    padding: 2rem;
+    gap: 1rem;
+  }
+  
+  .vp-product-info .mcp-ai {
+    margin: 2rem 0 !important;
+    width: 100% !important;
+    display: block !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .vp-product-info {
+    padding: 2.5rem;
+    gap: 1.5rem;
+  }
+  
+  .vp-product-info .mcp-ai {
+    margin: 2.5rem 0 !important;
   }
 }
 

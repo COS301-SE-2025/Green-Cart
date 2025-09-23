@@ -2,6 +2,7 @@ import React, { useState, useEffect} from "react";
 import "./styles/Cart.css";
 import { useCart } from "../components/cart/CartContext";
 import { useNavigate } from "react-router-dom";
+import EcoMeterSummary from '../components/mcp/EcoMeterSummary';
 
 export default function Cart() {
   const { cartItems, remove_From_Cart, add_To_Cart, refreshCart, cartID } = useCart();
@@ -208,7 +209,7 @@ export default function Cart() {
 
           <div className="cart-items-list">
             {cartItems.map((item, i) => (
-              <div key={item.id} className={loading ? "cart-item-row-loading" : "cart-item-row"}>
+              <div key={i} className={loading ? "cart-item-row-loading" : "cart-item-row"}>
                 <div className="product-cart-details">
                   <img
                     src={item.images[0]}
@@ -283,6 +284,12 @@ export default function Cart() {
         {/* Right Column - Order Summary */}
         <div className="order-summary">
           <h3>Order Summary</h3>
+{/* 
+           <EcoMeterSummary
+            ecoMeter={finalEcoMeter}
+            donation={carbonOffsetDonation}
+            onImprove={() => setShowDonationModal(true)}
+          /> */}
           
           <div className="summary-row">
             <span>{cartItems.length} Items</span>
