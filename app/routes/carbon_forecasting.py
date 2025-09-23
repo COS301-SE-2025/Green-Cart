@@ -67,7 +67,7 @@ async def update_forecast_accuracy_endpoint(
 ):
 
     try:
-        await update_forecast_accuracy(request.forecast_id, request.actual_emissions, db)
+        await update_forecast_accuracy(request.forecast_id, request.actual_sustainability_score, db)
         
         return UpdateForecastAccuracyResponse(
             status="success",
@@ -90,8 +90,8 @@ async def quick_forecast(
         result = await generate_carbon_forecast(user_id, days, db)
         
         return {
-            "predicted_emissions": result["forecast"]["predicted_emissions_kg_co2"],
-            "predicted_reduction": result["forecast"]["predicted_reduction_kg_co2"],
+            "predicted_sustainability_score": result["forecast"]["predicted_sustainability_score"],
+            "improvement_potential": result["forecast"]["improvement_potential"],
             "confidence": result["forecast"]["confidence_score"],
             "trend": result["forecast"]["trend_direction"]
         }
@@ -112,33 +112,74 @@ async def get_user_carbon_score(
             return {"score": 50, "level": "Beginner", "message": "Start shopping to get your score"}
         
         patterns = insights["shopping_patterns"]
+        forecast = insights.get("latest_forecast", {})
         
-        # Calculate composite score
-        eco_score = patterns.get("eco_consciousness_score", 0.5) * 30
-        trend_score = max(0, min(25, 25 + patterns.get("carbon_trend_30d", 0))) 
-        efficiency_score = 25  # Placeholder
-        consistency_score = 20  # Placeholder
+        # Calculate composite score using stricter 0-100 scoring system
+        # Eco consciousness (40% weight) - based on actual sustainability ratings
+        eco_base = patterns.get("eco_consciousness_score", 50)
+        eco_score = (eco_base * 0.4) if eco_base >= 60 else (eco_base * 0.3)  # Penalty for low eco scores
+        
+        # Trend score (25% weight) - more restrictive trend calculation
+        trend_raw = patterns.get("sustainability_trend_30d", 0)
+        if trend_raw > 10:
+            trend_score = 25  # Excellent positive trend
+        elif trend_raw > 5:
+            trend_score = 20  # Good positive trend
+        elif trend_raw > 0:
+            trend_score = 15  # Slight positive trend
+        elif trend_raw >= -5:
+            trend_score = 10  # Stable/slight decline
+        else:
+            trend_score = 5   # Significant decline
+        
+        # Efficiency score (20% weight) - based on order frequency and value
+        avg_orders_per_week = patterns.get("avg_orders_per_week", 0)
+        if avg_orders_per_week > 0:
+            # Reward consistent but not excessive shopping
+            if 1 <= avg_orders_per_week <= 3:
+                efficiency_score = 20  # Optimal frequency
+            elif avg_orders_per_week <= 5:
+                efficiency_score = 15  # Good frequency
+            elif avg_orders_per_week <= 7:
+                efficiency_score = 10  # High frequency
+            else:
+                efficiency_score = 5   # Excessive shopping
+        else:
+            efficiency_score = 0  # No shopping data
+        
+        # Consistency score (15% weight) - based on forecast confidence and achievement rate
+        confidence = forecast.get("confidence", 0)
+        achievement_rate = patterns.get("goals_achievement_rate", 0)
+        consistency_score = (confidence * 7.5) + (achievement_rate * 7.5)  # Both contribute to consistency
         
         total_score = eco_score + trend_score + efficiency_score + consistency_score
         
-        # Determine level
-        if total_score >= 80:
-            level = "Carbon Champion"
-        elif total_score >= 60:
+        # More stringent level thresholds
+        if total_score >= 85:
+            level = "Sustainability Champion"
+        elif total_score >= 70:
             level = "Eco Warrior" 
-        elif total_score >= 40:
+        elif total_score >= 55:
             level = "Green Learner"
-        else:
+        elif total_score >= 35:
             level = "Getting Started"
+        else:
+            level = "Needs Improvement"
         
         return {
             "score": round(total_score, 1),
             "level": level,
             "breakdown": {
                 "eco_consciousness": round(eco_score, 1),
-                "trend_improvement": round(trend_score, 1),
+                "sustainability_trend": round(trend_score, 1),
                 "efficiency": round(efficiency_score, 1),
                 "consistency": round(consistency_score, 1)
+            },
+            "criteria": {
+                "eco_consciousness": "40% - Based on sustainability ratings of purchased products",
+                "sustainability_trend": "25% - 30-day sustainability improvement trend",
+                "efficiency": "20% - Shopping frequency and value optimization", 
+                "consistency": "15% - Goal achievement and forecast reliability"
             }
         }
         
@@ -151,7 +192,7 @@ async def health_check():
 
     return {
         "status": "healthy",
-        "service": "carbon-forecasting-simple",
-        "version": "1.0.0",
+        "service": "sustainability-forecasting",
+        "version": "2.0.0",
         "timestamp": datetime.utcnow().isoformat()
     }
