@@ -195,3 +195,24 @@ def get_revenue_overview(period, db: Session):
         "lost_revenue": float(lost_revenue), 
         "monthly_comparison": float(percentage_increase)
     }
+
+def get_total_revenue(db: Session):
+    orders = db.query(Order).filter(Order.state != 'Cancelled').all()
+    cart_items = db.query(CartItem).all()
+    products = db.query(Product).all()
+
+    total_revenue = Decimal('0.0')
+
+    for o in orders:
+        for c in cart_items:
+            if c.cart_id == o.cart_id:
+                for p in products:
+                    if p.id == c.product_id:
+                        total_revenue += p.price * c.quantity
+                        break
+
+    return {
+        "status": 200,
+        "message": "Total revenue fetched successfully",
+        "total_revenue": float(total_revenue)
+    }
