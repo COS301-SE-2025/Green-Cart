@@ -6,6 +6,7 @@ import '../styles/product/ViewProduct.css';
 import { useCart } from "../cart/CartContext";
 import FootprintTracker from './FootprintTracker';
 import { addToCart } from '../../cart-services/addToCart';
+import SustainabilityAI from '../mcp/SustainabilityAI';
 
 export default function ViewProduct() {
     const { id } = useParams();
@@ -261,6 +262,8 @@ export default function ViewProduct() {
                         <p>{product.description}</p>
                     </div>
 
+                  
+
                     <div className="vp-product-meta">
                     <div className="vp-meta-item" data-type="category">
                         <span className="vp-meta-label">Category:</span>
@@ -302,6 +305,22 @@ export default function ViewProduct() {
                     </button>
                 </div> 
             </div>
+             {/* MCP Sustainability AI - MOVED INSIDE vp-product-info */}
+                    <div className="mcp-ai-container" style={{ 
+                        margin: '1.5rem 0',
+                        width: '100%',
+                        display: 'block',
+                        visibility: 'visible'
+                    }}>
+                        <SustainabilityAI
+                            product={product}
+                            sustainability={sustainability}
+                            alternatives={[]} // Backend will populate this
+                            onAddToCart={() => handleAddToCart()}
+                            currentEcoMeter={65} // Backend will provide user's current eco-meter
+                            userId={JSON.parse(localStorage.getItem('userData'))?.id || null}
+                        />
+                    </div>
            <div>
                     <FootprintTracker sustainability={sustainability} />
             </div>

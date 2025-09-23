@@ -18,6 +18,13 @@ jobs:
         id: branch
         run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
       - name: Install dependencies
         run: cd frontend && npm install
 
@@ -231,6 +238,7 @@ jobs:
             AWS_REGION=${{ secrets.AWS_REGION }}
             AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
             BASE_URL=https://api.greencart-cos301.co.za
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
             EOF
             
             echo "=== Building Docker Image ==="

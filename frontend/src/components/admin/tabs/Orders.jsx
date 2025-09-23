@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import GenericPagination from '../elements/GenericPagination';
 import OrderStatsCards from '../elements/OrdersStatsCard';
 import OrdersTable from '../elements/OrdersTable';
+import AdminOrderDetailsModal from '../modals/AdminOrderDetailsModal';
+import toast from 'react-hot-toast';
 import '../../styles/admin/tabs/Orders.css';
 import { getApiUrl, getLocalApiUrl } from '../../../config/api';
 
@@ -14,6 +16,8 @@ const Orders = () => {
 	const [orderFilter, setOrderFilter] = useState('On Delivery');
 	const [searchTerm, setSearchTerm] = useState('');
 	const [orders, setOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
 	useEffect(() => {
 		const fetchOrders = async () => {
@@ -58,6 +62,39 @@ const Orders = () => {
 	const handleExport = () => {
 		console.log('Export orders');
 	};
+
+   const handleOrderClick = (order) => {
+    setSelectedOrder(order);
+    setIsOrderModalOpen(true);
+  };
+
+  const handleCloseOrderModal = () => {
+    setIsOrderModalOpen(false);
+    setSelectedOrder(null);
+  };
+
+  const handleUpdateOrderState = async (orderId, newState) => {
+    try {
+      // TODO: Replace with actual API call
+      // await updateOrderState(orderId, newState);
+      
+      // Mock update - update local state
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.orderId === orderId 
+            ? { ...order, status: newState }
+            : order
+        )
+      );
+
+      console.log(`Updating order ${orderId} to state: ${newState}`);
+      toast.success(`Order ${orderId} updated to ${newState}`);
+      
+    } catch (error) {
+      console.error('Error updating order state:', error);
+      throw new Error('Failed to update order state');
+    }
+  };
 
 	const orderTabs = ['On Delivery', 'Pending', 'Shipping', 'Delivered', 'Canceled', 'Returned'];
 
@@ -130,18 +167,26 @@ const Orders = () => {
 			</div>
 
 			{/* Table */}
-			<OrdersTable orders={selectedView} />
+			<OrdersTable orders={selectedView} onOrderClick={handleOrderClick}/>
 
-			{/* Pagination */}
-			<GenericPagination
-				currentPage={currentPage}
-				totalPages={totalPages}
-				onPageChange={handlePageChange}
-				totalItems={orders.length}
-				itemsPerPage={itemsPerPage}
-			/>
-		</div>
-	);
+      {/* Pagination */}
+      <GenericPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        totalItems={orders.length}
+        itemsPerPage={itemsPerPage}
+      />
+
+       {/* Order Details Modal */}
+      <AdminOrderDetailsModal
+        isOpen={isOrderModalOpen}
+        onClose={handleCloseOrderModal}
+        order={selectedOrder}
+        onUpdateOrderState={handleUpdateOrderState}
+      />
+    </div>
+  );
 };
 
 export default Orders;
