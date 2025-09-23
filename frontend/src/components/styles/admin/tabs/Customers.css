@@ -959,7 +959,7 @@ background-color: #1f2937;
  display: flex;
  align-items: center;
  justify-content: center;
- z-index: 1000;
+ z-index: 1060; /* Higher than Bootstrap dropdown z-index (1050) */
 }
 
 .adm-cus-modal-content {
@@ -970,6 +970,7 @@ background-color: #1f2937;
  max-height: 80vh;
  overflow-y: auto;
  position: relative;
+ z-index: 1061; /* Ensure modal content is above overlay */
 }
 
 .adm-cus-modal-header {

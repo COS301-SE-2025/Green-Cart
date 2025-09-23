@@ -1,7 +1,21 @@
 import logging
+import os
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
+# Load environment variables from .env file - load as early as possible
+env_path = Path(__file__).parent.parent / '.env'
+load_dotenv(dotenv_path=env_path, verbose=True)
+
+# Validate critical environment variables
+openai_key = os.getenv('OPENAI_API_KEY')
+if openai_key and openai_key != 'your-openai-api-key-here':
+    print("OpenAI API key loaded successfully from environment variables")
+else:
+    print("OpenAI API key not found or using default value. Please check your .env file.")
 
 # Core models (ensures SQLAlchemy metadata is loaded)
 import app.models  # noqa
@@ -17,6 +31,7 @@ from app.routes import donation
 from app.routes import retailer_user
 from app.routes import retailer_metrics
 from app.routes import retailer_products
+from app.routes import carbon_forecasting
 from app.routes import admin_orders
 
 # Routers – admin/aws and images
@@ -29,6 +44,9 @@ from app.routes import images
 from app.routes import admin_fix_images
 from app.routes import admin_database
 from app.routes import product_with_images  # AWS S3 product+images endpoint
+
+# MCP Recommendation Engine
+from app.routes import recommendations
 
 # Optional routers from integration branch (guarded so app won’t break if missing)
 try:
@@ -92,6 +110,10 @@ app.include_router(images.router)
 app.include_router(admin_fix_images.router)
 app.include_router(admin_database.router)
 app.include_router(product_with_images.router)
+app.include_router(carbon_forecasting.router, prefix="/api")
+
+# MCP Recommendation Engine
+app.include_router(recommendations.recommendation_router)
 
 # Optional integrations
 if admin_stock:
@@ -100,4 +122,6 @@ if carbon_goals:
     app.include_router(carbon_goals.router, prefix="/api", tags=["Carbon Goals"])
 
 # Static mount for any locally stored uploads (kept for compatibility)
-app.mount("/static", StaticFiles(directory="uploads"), name="static")
+uploads_dir = Path(__file__).parent.parent / "uploads"
+uploads_dir.mkdir(exist_ok=True)  # Create directory if it doesn't exist
+app.mount("/static", StaticFiles(directory=str(uploads_dir)), name="static")
