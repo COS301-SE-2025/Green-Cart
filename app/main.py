@@ -31,6 +31,7 @@ from app.routes import donation
 from app.routes import retailer_user
 from app.routes import retailer_metrics
 from app.routes import retailer_products
+from app.routes import carbon_forecasting
 
 # Routers – admin/aws and images
 from app.routes import admin_metrics
@@ -107,6 +108,7 @@ app.include_router(images.router)
 app.include_router(admin_fix_images.router)
 app.include_router(admin_database.router)
 app.include_router(product_with_images.router)
+app.include_router(carbon_forecasting.router, prefix="/api")
 
 # MCP Recommendation Engine
 app.include_router(recommendations.recommendation_router)

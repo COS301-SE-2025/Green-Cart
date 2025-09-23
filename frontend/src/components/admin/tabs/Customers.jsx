@@ -1,6 +1,7 @@
 // Customers.jsx
 import React, { useState, useEffect } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../styles/admin/tabs/Customers.css';
 import CustomerCard from '../elements/CustomerCard';
 import CustomerStatsCard from '../elements/CustomerStatsCard';
@@ -352,9 +353,9 @@ const Customers = () => {
         
         <div className="adm-cus-control-buttons">
           {/* Filter Dropdown */}
-          <Dropdown show={showFilterDropdown} onToggle={setShowFilterDropdown}>
+          <Dropdown show={showFilterDropdown} onToggle={(isOpen) => setShowFilterDropdown(isOpen)} autoClose={true}>
             <Dropdown.Toggle 
-              variant="outline-secondary" 
+              variant="outline-primary"
               id="filter-dropdown"
               className="adm-cus-filter-btn"
             >

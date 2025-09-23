@@ -13,6 +13,7 @@ import carbonGoalsService from '../services/carbonGoalsService';
 
 import ChangePasswordModal from '../components/modals/ChangePasswordModal';
 import TwoFactorModal from '../components/modals/TwoFactorModal';
+import forecastingService from '../services/forecastingService';
 
 const status = Object.freeze({
 	Prepare: "Preparing Order",
@@ -83,6 +84,14 @@ export default function UserAccount() {
 	const [selectedTimeframe, setSelectedTimeframe] = useState('monthly');
 	const { confirmationState, showConfirmation } = useConfirmation();
 	const [isRetailerOverlayOpen, setIsRetailerOverlayOpen] = useState(false);
+	
+	// Forecasting state
+	const [forecastData, setForecastData] = useState(null);
+	const [isLoadingForecast, setIsLoadingForecast] = useState(false);
+	const [forecastHorizon, setForecastHorizon] = useState(30);
+	const [userInsights, setUserInsights] = useState(null);
+	const [userScore, setUserScore] = useState(null);
+	
 
 	// Add these state variables in the component
 	const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
@@ -165,6 +174,7 @@ export default function UserAccount() {
 
 			// Load carbon data when user loads
 			loadCarbonData(parsedUser.id);
+			loadForecastingData(parsedUser.id);
 			loadUserInfo();
 		} else {
 			navigate('/login');
@@ -188,6 +198,52 @@ export default function UserAccount() {
 			toast.error('Failed to load carbon data. Using sample data.');
 		} finally {
 			setIsLoadingCarbonData(false);
+		}
+	};
+
+	// Function to load forecasting data from backend
+	const loadForecastingData = async (userId) => {
+		setIsLoadingForecast(true);
+		try {
+			console.log('Loading forecasting data for user:', userId);
+			
+			// Load forecast, insights, and user score in parallel
+			const [forecastResult, insightsResult, scoreResult] = await Promise.all([
+				forecastingService.generateForecast(userId, forecastHorizon),
+				forecastingService.getUserInsights(userId),
+				forecastingService.getUserScore(userId)
+			]);
+			
+			console.log('Received forecast data:', forecastResult);
+			console.log('Received insights data:', insightsResult);
+			console.log('Received score data:', scoreResult);
+			
+			setForecastData(forecastResult);
+			setUserInsights(insightsResult);
+			setUserScore(scoreResult);
+		} catch (error) {
+			console.error('Error loading forecasting data:', error);
+			toast.error('Failed to load forecasting data. Please try again later.');
+		} finally {
+			setIsLoadingForecast(false);
+		}
+	};
+
+	// Function to refresh forecast with new horizon
+	const refreshForecast = async (newHorizon) => {
+		if (!user) return;
+		
+		setForecastHorizon(newHorizon);
+		setIsLoadingForecast(true);
+		
+		try {
+			const forecastResult = await forecastingService.generateForecast(user.id, newHorizon);
+			setForecastData(forecastResult);
+		} catch (error) {
+			console.error('Error refreshing forecast:', error);
+			toast.error('Failed to refresh forecast.');
+		} finally {
+			setIsLoadingForecast(false);
 		}
 	};
 
@@ -535,7 +591,13 @@ const handleDisable2FA = async () => {
 					>
 						🌍 Carbon Footprint
 					</button>
-					{/* <button
+					<button
+						className={`tab-button ${activeTab === 'forecasting' ? 'active' : ''}`}
+						onClick={() => setActiveTab('forecasting')}
+					>
+						🔮 Sustainability Forecasting
+					</button>
+					{/*<button
 						className={`tab-button ${activeTab === 'preferences' ? 'active' : ''}`}
 						onClick={() => setActiveTab('preferences')}
 					>
@@ -796,6 +858,231 @@ const handleDisable2FA = async () => {
 										Retry
 									</button>
 								</div>
+							)}
+						</div>
+					)}
+
+					{/* NEW: Sustainability Forecasting Tab */}
+					{activeTab === 'forecasting' && (
+						<div className="forecasting-section">
+							<div className="section-header">
+								<h2>🔮 Sustainability Forecasting</h2>
+								<p>AI-powered predictions for your future sustainability performance</p>
+							</div>
+
+							{isLoadingForecast ? (
+								<div className="forecasting-loading">
+									<div className="loading-spinner"></div>
+									<span>Generating your sustainability forecast...</span>
+								</div>
+							) : (
+								<>
+									{/* Forecast Controls */}
+									<div className="forecast-controls">
+										<div className="control-group">
+											<label htmlFor="forecast-horizon">Forecast Horizon:</label>
+											<select
+												id="forecast-horizon"
+												value={forecastHorizon}
+												onChange={(e) => refreshForecast(parseInt(e.target.value))}
+												className="forecast-select"
+											>
+												<option value={7}>1 Week</option>
+												<option value={14}>2 Weeks</option>
+												<option value={30}>1 Month</option>
+												<option value={60}>2 Months</option>
+												<option value={90}>3 Months</option>
+											</select>
+										</div>
+										<button 
+											onClick={() => loadForecastingData(user?.id)}
+											className="refresh-forecast-btn"
+											disabled={isLoadingForecast}
+										>
+											🔄 Refresh Forecast
+										</button>
+									</div>
+
+									{/* User Score Overview */}
+									{userScore && (
+										<div className="user-score-overview">
+											<div className="score-card main-score">
+												<div className="score-icon">🏆</div>
+												<div className="score-content">
+													<h3>Your Sustainability Level</h3>
+													<div className="score-value" style={{ color: getCarbonColor(userScore.score) }}>
+														{userScore.score}/100
+													</div>
+													<div className="score-level">{userScore.level}</div>
+												</div>
+											</div>
+											
+											{userScore.breakdown && (
+												<div className="score-breakdown">
+													<h4>Score Breakdown</h4>
+													<div className="breakdown-items">
+														<div className="breakdown-item">
+															<span>Eco Consciousness:</span>
+															<span>{userScore.breakdown.eco_consciousness}/30</span>
+														</div>
+														<div className="breakdown-item">
+															<span>Sustainability Trend:</span>
+															<span>{userScore.breakdown.sustainability_trend}/25</span>
+														</div>
+														<div className="breakdown-item">
+															<span>Efficiency:</span>
+															<span>{userScore.breakdown.efficiency}/25</span>
+														</div>
+														<div className="breakdown-item">
+															<span>Consistency:</span>
+															<span>{userScore.breakdown.consistency}/20</span>
+														</div>
+													</div>
+												</div>
+											)}
+										</div>
+									)}
+
+									{/* Forecast Results */}
+									{forecastData && forecastData.forecast && (
+										<div className="forecast-results">
+											<h3>📈 Forecast Results ({forecastHorizon} days)</h3>
+											
+											<div className="forecast-cards">
+												<div className="forecast-card">
+													<div className="forecast-icon">🎯</div>
+													<div className="forecast-content">
+														<h4>Predicted Score</h4>
+														<div className="forecast-value" style={{ color: getCarbonColor(forecastData.forecast.predicted_sustainability_score) }}>
+															{forecastData.forecast.predicted_sustainability_score.toFixed(1)}/100
+														</div>
+														<p className="forecast-description">
+															Expected sustainability score in {forecastHorizon} days
+														</p>
+													</div>
+												</div>
+
+												<div className="forecast-card">
+													<div className="forecast-icon">📊</div>
+													<div className="forecast-content">
+														<h4>Improvement Potential</h4>
+														<div className="forecast-value">
+															+{forecastData.forecast.improvement_potential.toFixed(1)}
+														</div>
+														<p className="forecast-description">
+															Potential score improvement possible
+														</p>
+													</div>
+												</div>
+
+												<div className="forecast-card">
+													<div className="forecast-icon">🎲</div>
+													<div className="forecast-content">
+														<h4>Confidence Level</h4>
+														<div className="forecast-value">
+															{(forecastData.forecast.confidence_score * 100).toFixed(0)}%
+														</div>
+														<p className="forecast-description">
+															Forecast accuracy confidence
+														</p>
+													</div>
+												</div>
+
+												<div className="forecast-card">
+													<div className="forecast-icon">📈</div>
+													<div className="forecast-content">
+														<h4>Trend Direction</h4>
+														<div className={`forecast-value trend-${forecastData.forecast.trend_direction}`}>
+															{forecastData.forecast.trend_direction === 'improving' ? '📈 Improving' :
+															 forecastData.forecast.trend_direction === 'declining' ? '📉 Declining' : 
+															 '➡️ Stable'}
+														</div>
+														<p className="forecast-description">
+															Current sustainability trajectory
+														</p>
+													</div>
+												</div>
+											</div>
+
+											{/* Detailed Prediction Factors */}
+											{forecastData.forecast.prediction_factors && (
+												<div className="prediction-factors">
+													<h4>🔍 Prediction Details</h4>
+													<div className="factors-grid">
+														<div className="factor-item">
+															<span>Data Points:</span>
+															<span>{forecastData.forecast.prediction_factors.data_points}</span>
+														</div>
+														<div className="factor-item">
+															<span>Recent Average:</span>
+															<span>{forecastData.forecast.prediction_factors.recent_avg?.toFixed(1)}</span>
+														</div>
+														<div className="factor-item">
+															<span>Behavioral Score:</span>
+															<span>{(forecastData.forecast.behavioral_score * 100).toFixed(0)}%</span>
+														</div>
+														<div className="factor-item">
+															<span>Seasonal Factor:</span>
+															<span>{forecastData.forecast.seasonal_factor?.toFixed(2)}</span>
+														</div>
+													</div>
+												</div>
+											)}
+										</div>
+									)}
+
+									{/* User Insights */}
+									{userInsights && (
+										<div className="user-insights">
+											<h3>💡 Personalized Insights</h3>
+											
+											{userInsights.shopping_patterns && (
+												<div className="insights-section">
+													<h4>🛍️ Shopping Patterns</h4>
+													<div className="insights-grid">
+														<div className="insight-item">
+															<span>Orders per Week:</span>
+															<span>{userInsights.shopping_patterns.avg_orders_per_week?.toFixed(1) || 'N/A'}</span>
+														</div>
+														<div className="insight-item">
+															<span>Eco Consciousness:</span>
+															<span>{userInsights.shopping_patterns.eco_consciousness_score?.toFixed(1) || 'N/A'}/100</span>
+														</div>
+														<div className="insight-item">
+															<span>Goals Achievement:</span>
+															<span>{((userInsights.shopping_patterns.goals_achievement_rate || 0) * 100).toFixed(0)}%</span>
+														</div>
+													</div>
+												</div>
+											)}
+
+											{userInsights.recommendations && userInsights.recommendations.length > 0 && (
+												<div className="recommendations-section">
+													<h4>💡 Recommendations</h4>
+													<ul className="recommendations-list">
+														{userInsights.recommendations.map((recommendation, index) => (
+															<li key={index} className="recommendation-item">
+																{recommendation}
+															</li>
+														))}
+													</ul>
+												</div>
+											)}
+										</div>
+									)}
+
+									{!forecastData && !isLoadingForecast && (
+										<div className="forecast-error">
+											<p>Unable to generate forecast. Please try refreshing or check back later.</p>
+											<button 
+												onClick={() => loadForecastingData(user?.id)}
+												className="retry-forecast-btn"
+											>
+												Try Again
+											</button>
+										</div>
+									)}
+								</>
 							)}
 						</div>
 					)}
