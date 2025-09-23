@@ -17,6 +17,7 @@ from app.routes import donation
 from app.routes import retailer_user
 from app.routes import retailer_metrics
 from app.routes import retailer_products
+from app.routes import carbon_forecasting
 
 # Routers – admin/aws and images
 from app.routes import admin_metrics
@@ -41,12 +42,6 @@ try:
 except Exception as e:  # pragma: no cover
     carbon_goals = None
     logging.getLogger(__name__).warning("Optional router 'carbon_goals' not available: %s", e)
-
-try:
-    from app.routes import carbon_forecasting as carbon_forecasting
-except Exception as e:  # pragma: no cover
-    carbon_forecasting = None
-    logging.getLogger(__name__).warning("Optional router 'carbon_forecasting' not available: %s", e)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -96,14 +91,13 @@ app.include_router(images.router)
 app.include_router(admin_fix_images.router)
 app.include_router(admin_database.router)
 app.include_router(product_with_images.router)
+app.include_router(carbon_forecasting.router, prefix="/api")
 
 # Optional integrations
 if admin_stock:
     app.include_router(admin_stock.router)
 if carbon_goals:
     app.include_router(carbon_goals.router, prefix="/api", tags=["Carbon Goals"])
-if carbon_forecasting:
-    app.include_router(carbon_forecasting.router, prefix="/api", tags=["Carbon Forecasting"])
 
 # Static mount for any locally stored uploads (kept for compatibility)
 app.mount("/static", StaticFiles(directory="uploads"), name="static")
