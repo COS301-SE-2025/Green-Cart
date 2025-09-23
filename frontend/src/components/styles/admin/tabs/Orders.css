@@ -64,6 +64,99 @@
   position: relative;
 }
 
+.adm-ord-stats-card-loading {
+  position: relative;
+  overflow: hidden;
+  background: #dbdcdd;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+}
+
+.adm-ord-loading-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 16px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.adm-ord-custom-loader {
+  position: relative;
+  margin: 0 auto;
+  width: 60px;
+}
+
+.adm-ord-custom-loader:before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+
+/* Orders-specific spinner styles to avoid conflicts */
+.adm-ord-custom-loader .adm-ord-circular {
+  animation: adm-ord-rotate 2s linear infinite;
+  height: 100%;
+  transform-origin: center center;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.adm-ord-custom-loader .adm-ord-path {
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  animation: adm-ord-dash 1.5s ease-in-out infinite, adm-ord-color 6s ease-in-out infinite;
+  stroke-linecap: round;
+  fill: none;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+}
+
+@keyframes adm-ord-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes adm-ord-dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124px;
+  }
+}
+
+@keyframes adm-ord-color {
+  100%,
+  0% {
+    stroke: #1f2937;
+  }
+  40% {
+    stroke: #156231;
+  }
+  66% {
+    stroke: #1f2937;
+  }
+  80%,
+  90% {
+    stroke: #636363;
+  }
+}
+
 .adm-ord-stats-header {
   display: flex;
   justify-content: space-between;
@@ -570,6 +663,15 @@
    align-items: stretch;
    gap: 16px;
  } */
+
+ .adm-ord-custom-loader {
+    width: 50px;
+  }
+  
+  .adm-ord-loading-banner {
+    height: 150px;
+    gap: 12px;
+  }
  
  .adm-ord-control-buttons {
    justify-content: space-between;
@@ -642,6 +744,15 @@
  .adm-ord-stats-value {
    font-size: 28px;
  }
+
+ .adm-ord-custom-loader {
+    width: 40px;
+  }
+  
+  .adm-ord-loading-banner {
+    height: 120px;
+    gap: 10px;
+  }
  
  .adm-ord-breakdown {
    grid-template-columns: 1fr;

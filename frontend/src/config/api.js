@@ -4,7 +4,7 @@
  */
 
 // Production API URL - always use the hosted version
-export const API_BASE_URL = "http://127.0.0.1:8000";
+export const API_BASE_URL = "https://api.greencart-cos301.co.za";
 export const API_LOCAL_URL = "http://127.0.0.1:8000";
 
 // Helper function to get API URL (kept for compatibility)

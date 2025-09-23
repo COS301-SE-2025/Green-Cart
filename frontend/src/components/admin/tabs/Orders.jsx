@@ -205,7 +205,7 @@ const Orders = () => {
 			</div>
 
 			{/* Stats Cards */}
-			<OrderStatsCards />
+			<OrderStatsCards loading={true}/>
 
 			{/* Search and Controls */}
 			<div className="adm-ord-search-and-controls">

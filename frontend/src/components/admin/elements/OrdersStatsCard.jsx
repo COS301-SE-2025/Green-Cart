@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Highcharts from 'highcharts';
 import { getApiUrl, getLocalApiUrl } from '../../../config/api';
 
-const OrderStatsCards = () => {
+const OrderStatsCards = ({ loading = false }) => {
   const [orderPeriod, setOrderPeriod] = useState('Day');
   const [revenuePeriod, setRevenuePeriod] = useState('Day');
   const [showOrderDropdown, setShowOrderDropdown] = useState(false);
@@ -30,9 +30,6 @@ const OrderStatsCards = () => {
       setTotalLoss(response.lost_revenue || 0);
       setMonthlyChange(response.monthly_comparison * 100 || 0.0);
     }
-
-
-
   }
 
   const populateOrdersOverview = async (period) => {
@@ -43,102 +40,107 @@ const OrderStatsCards = () => {
       body: JSON.stringify({'time': period })
     }).then(res => res.json());
 
-	if (response) {
-	  setPending(response.total_pending || 0);
-	  setReady(response.total_ready_for_delivery || 0);
-	  setInTransit(response.total_in_transit || 0);
-	  setDelivered(response.total_delivered || 0);
-	  setCancelled(response.total_cancelled || 0);
-	  setTotal(response.total_orders || 0);
-	  setMonthly(response.monthly_comparison * 100 || 0.0);
-	}
-
+    if (response) {
+      setPending(response.total_pending || 0);
+      setReady(response.total_ready_for_delivery || 0);
+      setInTransit(response.total_in_transit || 0);
+      setDelivered(response.total_delivered || 0);
+      setCancelled(response.total_cancelled || 0);
+      setTotal(response.total_orders || 0);
+      setMonthly(response.monthly_comparison * 100 || 0.0);
+    }
   }
 
   useEffect(() => {
-	populateOrdersOverview(orderPeriods.findIndex(p => p === orderPeriod) + 1);
-  populateOrdersRevenue(revenuePeriods.findIndex(p => p === revenuePeriod) +1);
-  }, [orderPeriod, revenuePeriod]);
+    if (!loading) {
+      populateOrdersOverview(orderPeriods.findIndex(p => p === orderPeriod) + 1);
+      populateOrdersRevenue(revenuePeriods.findIndex(p => p === revenuePeriod) + 1);
+    }
+  }, [orderPeriod, revenuePeriod, loading]);
 
   useEffect(() => {
-    // Order Overview Chart
-    const orderChart = Highcharts.chart('order-chart', {
-      chart: {
-        type: 'column',
-        backgroundColor: 'transparent',
-        height: 80,
-        margin: [0, 0, 0, 0],
-        spacing: [0, 0, 0, 0]
-      },
-      title: { text: null },
-      legend: { enabled: false },
-      xAxis: {
-        categories: ['Pending', 'Ready for Delivery', 'In Transit', 'Delivered', 'Cancelled'],
-        labels: { enabled: false },
-        lineWidth: 0,
-        tickLength: 0
-      },
-      yAxis: {
+    if (!loading) {
+      // Order Overview Chart
+      const orderChart = Highcharts.chart('order-chart', {
+        chart: {
+          type: 'column',
+          backgroundColor: 'transparent',
+          height: 80,
+          margin: [0, 0, 0, 0],
+          spacing: [0, 0, 0, 0]
+        },
         title: { text: null },
-        labels: { enabled: false },
-        gridLineWidth: 0
-      },
-      plotOptions: {
-        column: {
-          pointPadding: 0.1,
-          groupPadding: 0.1,
-          borderWidth: 0,
-          borderRadius: 2
-        }
-      },
-      series: [{
-        data: [
-          { y: pending, color: '#f97316' },
-          { y: ready, color: '#8b5cf6' },
-          { y: inTransit, color: '#10b981' },
-          { y: delivered, color: '#06b6d4' },
-          { y: cancelled, color: 'rgb(212, 6, 6)' }
-        ]
-      }],
-      credits: { enabled: false }
-    });
+        legend: { enabled: false },
+        xAxis: {
+          categories: ['Pending', 'Ready for Delivery', 'In Transit', 'Delivered', 'Cancelled'],
+          labels: { enabled: false },
+          lineWidth: 0,
+          tickLength: 0
+        },
+        yAxis: {
+          title: { text: null },
+          labels: { enabled: false },
+          gridLineWidth: 0
+        },
+        plotOptions: {
+          column: {
+            pointPadding: 0.1,
+            groupPadding: 0.1,
+            borderWidth: 0,
+            borderRadius: 2
+          }
+        },
+        series: [{
+          data: [
+            { y: pending, color: '#f97316' },
+            { y: ready, color: '#8b5cf6' },
+            { y: inTransit, color: '#10b981' },
+            { y: delivered, color: '#06b6d4' },
+            { y: cancelled, color: 'rgb(212, 6, 6)' }
+          ]
+        }],
+        credits: { enabled: false }
+      });
 
-    return () => {
-      if (orderChart) orderChart.destroy();
-    };
-  }, [pending, ready, inTransit, delivered, cancelled]);
+      return () => {
+        if (orderChart) orderChart.destroy();
+      };
+    }
+  }, [pending, ready, inTransit, delivered, cancelled, loading]);
 
   useEffect(() => {
-    // Revenue Chart (Donut)
-    const revenueChart = Highcharts.chart('revenue-chart', {
-      chart: {
-        type: 'pie',
-        backgroundColor: 'transparent',
-        height: 120,
-        margin: [0, 0, 0, 0]
-      },
-      title: { text: null },
-      legend: { enabled: false },
-      plotOptions: {
-        pie: {
-          innerSize: '60%',
-          dataLabels: { enabled: false },
-          borderWidth: 0
-        }
-      },
-      series: [{
-        data: [
-          { name: 'Revenue', y: totalRevenue, color: '#8b5cf6' },
-          { name: 'Lost Revenue from Cancelled Orders', y: totalLoss, color: 'red' }
-        ]
-      }],
-      credits: { enabled: false }
-    });
+    if (!loading) {
+      // Revenue Chart (Donut)
+      const revenueChart = Highcharts.chart('revenue-chart', {
+        chart: {
+          type: 'pie',
+          backgroundColor: 'transparent',
+          height: 120,
+          margin: [0, 0, 0, 0]
+        },
+        title: { text: null },
+        legend: { enabled: false },
+        plotOptions: {
+          pie: {
+            innerSize: '60%',
+            dataLabels: { enabled: false },
+            borderWidth: 0
+          }
+        },
+        series: [{
+          data: [
+            { name: 'Revenue', y: totalRevenue, color: '#8b5cf6' },
+            { name: 'Lost Revenue from Cancelled Orders', y: totalLoss, color: 'red' }
+          ]
+        }],
+        credits: { enabled: false }
+      });
 
-    return () => {
-      if (revenueChart) revenueChart.destroy();
-    };
-  }, [totalRevenue, totalLoss]);
+      return () => {
+        if (revenueChart) revenueChart.destroy();
+      };
+    }
+  }, [totalRevenue, totalLoss, loading]);
 
   const handleOrderPeriodChange = (period) => {
     setOrderPeriod(period);
@@ -149,6 +151,33 @@ const OrderStatsCards = () => {
     setRevenuePeriod(period);
     setShowRevenueDropdown(false);
   };
+
+  if (loading) {
+    return (
+      <div className="adm-ord-stats-grid">
+        {Array.from({ length: 2 }).map((_, index) => (
+          <div key={index} className="adm-ord-stats-card adm-ord-stats-card-loading">
+            <div className="adm-ord-loading-banner">
+              <div className="adm-ord-custom-loader">
+                <svg className="adm-ord-circular" viewBox="25 25 50 50">
+                  <circle 
+                    className="adm-ord-path" 
+                    cx="50" 
+                    cy="50" 
+                    r="20" 
+                    fill="none" 
+                    strokeWidth="2" 
+                    strokeMiterlimit="10"
+                  />
+                </svg>
+              </div>
+              <span>Loading...</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="adm-ord-stats-grid">
