@@ -56,3 +56,8 @@ class AdminRevenueOverviewResponse(BaseModel):
     total_revenue: float
     lost_revenue: float
     monthly_comparison: float
+
+class AdminTotalRevenueResponse(BaseModel):
+    status: int
+    message: str
+    total_revenue: float
