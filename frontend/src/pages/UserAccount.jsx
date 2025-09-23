@@ -10,7 +10,7 @@ import './styles/UserAccount.css';
 import RetailerAuthOverlay from "../components/retailer/Auth/RetailerAuthOverlay";
 import InteractiveCarbonChart from '../components/charts/InteractiveCarbonChart';
 import carbonGoalsService from '../services/carbonGoalsService';
-
+import { getApiUrl, getLocalApiUrl } from '../config/api';
 import ChangePasswordModal from '../components/modals/ChangePasswordModal';
 import TwoFactorModal from '../components/modals/TwoFactorModal';
 import forecastingService from '../services/forecastingService';
@@ -466,17 +466,17 @@ export default function UserAccount() {
 	//ADDED FOR SECURITY TAB
 	const handleChangePassword = async (passwordData) => {
   try {
-    // TODO: Replace with actual API call
-    const response = await fetch('/api/users/change-password', {
+    const apiUrl = getLocalApiUrl();
+    const response = await fetch(`${apiUrl}/users/changePassword`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
       body: JSON.stringify({
-        currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword,
-        userId: user.id
+        old_password: passwordData.currentPassword,
+        new_password: passwordData.newPassword,
+        user_id: user.id
       })
     });
 
