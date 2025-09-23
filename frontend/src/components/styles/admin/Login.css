@@ -114,14 +114,22 @@
   margin-top: 1rem;
   transition: background-color 0.2s ease;
   letter-spacing: 0.5px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
 }
 
-.circular {
+.adm-login-circular {
   width: 22px;
   height: 22px;
   animation: rotate 2s linear infinite;
+  display: block;
+  position: relative;
 }
-.path {
+
+.adm-login-path {
   stroke: white;
   stroke-dasharray: 90,150;
   stroke-dashoffset: 0;

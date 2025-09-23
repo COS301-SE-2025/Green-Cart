@@ -84,9 +84,9 @@ const Login = () => {
             disabled={loading} // prevent double submits
           >
             {loading ? (
-              <svg className="circular" viewBox="25 25 50 50">
+              <svg className="adm-login-circular" viewBox="25 25 50 50">
                 <circle 
-                  className="path" 
+                  className="adm-login-path" 
                   cx="50" 
                   cy="50" 
                   r="20" 
