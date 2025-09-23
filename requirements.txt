@@ -1,4 +1,4 @@
-# Core FastAPI and web server dependencies
+# Core FastAPI
 fastapi==0.117.1
 uvicorn==0.34.2
 python-dotenv==1.1.1
