@@ -36,7 +36,7 @@ const Splash = () => {
             <Link
               key={item.name}
               to={item.path}
-              className="nav-link"
+              className="splash-nav-link"
               style={{ animationDelay: `${(index + 1) * 150}ms` }}
             >
               {item.name}
