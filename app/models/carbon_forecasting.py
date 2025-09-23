@@ -4,16 +4,16 @@ from sqlalchemy.orm import relationship
 from app.db.database import Base
 
 class CarbonForecast(Base):
-    """Ultra-intelligent carbon footprint forecasting model"""
+    """Sustainability scoring and forecasting model"""
     __tablename__ = "carbon_forecasts"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     forecast_type = Column(Enum("daily", "weekly", "monthly", "quarterly", "yearly", name="forecast_type"), nullable=False)
     
-    # Prediction data
-    predicted_carbon_reduction = Column(Float, nullable=False)  # kg CO2 reduction
-    predicted_emissions = Column(Float, nullable=False)  # kg CO2 total emissions
+    # Prediction data (0-100 scoring system)
+    predicted_sustainability_score = Column(Float, nullable=False)  # 0-100 sustainability score
+    improvement_potential = Column(Float, nullable=False)  # 0-100 potential improvement
     confidence_score = Column(Float, nullable=False)  # 0-1 confidence
     
     # Temporal data
@@ -36,12 +36,12 @@ class CarbonForecast(Base):
     user = relationship("User")
 
 class CarbonForecastAccuracy(Base):
-    """Track accuracy of our predictions for continuous learning"""
+    """Track accuracy of our sustainability score predictions for continuous learning"""
     __tablename__ = "carbon_forecast_accuracy"
 
     id = Column(Integer, primary_key=True, index=True)
     forecast_id = Column(Integer, ForeignKey("carbon_forecasts.id", ondelete="CASCADE"), nullable=False)
-    actual_emissions = Column(Float)  # Actual measured emissions
+    actual_sustainability_score = Column(Float)  # Actual measured sustainability score (0-100)
     accuracy_percentage = Column(Float)  # How accurate was our prediction
     error_magnitude = Column(Float)  # Absolute error
     error_direction = Column(Enum("over_predicted", "under_predicted", "exact", name="error_direction"))
@@ -61,10 +61,10 @@ class UserShoppingPattern(Base):
     # Shopping frequency patterns
     avg_orders_per_week = Column(Float)
     avg_order_value = Column(Float)
-    avg_carbon_per_order = Column(Float)
+    avg_sustainability_score_per_order = Column(Float)  # Average sustainability score (0-100) per order
     
     # Behavioral metrics
-    eco_consciousness_score = Column(Float)  # 0-1 how much they care about sustainability
+    eco_consciousness_score = Column(Float)  # 0-100 how much they care about sustainability
     price_sensitivity = Column(Float)  # 0-1 how much price affects decisions
     brand_loyalty_score = Column(Float)  # 0-1 brand consistency
     
@@ -75,13 +75,13 @@ class UserShoppingPattern(Base):
     seasonal_spending_pattern = Column(JSON)  # Monthly spending variations
     
     # Trend analysis
-    carbon_trend_30d = Column(Float)  # % change in carbon footprint last 30 days
-    carbon_trend_90d = Column(Float)  # % change in carbon footprint last 90 days
-    carbon_trend_365d = Column(Float)  # % change in carbon footprint last year
+    sustainability_trend_30d = Column(Float)  # % change in sustainability score last 30 days
+    sustainability_trend_90d = Column(Float)  # % change in sustainability score last 90 days
+    sustainability_trend_365d = Column(Float)  # % change in sustainability score last year
     
     # Goal achievement
-    goals_achievement_rate = Column(Float)  # % of carbon goals achieved
-    improvement_velocity = Column(Float)  # Rate of improvement in carbon reduction
+    goals_achievement_rate = Column(Float)  # % of sustainability goals achieved
+    improvement_velocity = Column(Float)  # Rate of improvement in sustainability scores
     
     last_calculated = Column(DateTime, server_default=func.now())
     
@@ -89,29 +89,29 @@ class UserShoppingPattern(Base):
     user = relationship("User")
 
 class CarbonImpactMetrics(Base):
-    """Advanced carbon impact tracking and analytics"""
+    """Advanced sustainability impact tracking and analytics"""
     __tablename__ = "carbon_impact_metrics"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     
-    # Carbon metrics
-    total_lifetime_emissions = Column(Float, default=0.0)  # kg CO2
-    total_lifetime_reduction = Column(Float, default=0.0)  # kg CO2 saved
-    carbon_efficiency_score = Column(Float)  # Emissions per dollar spent
+    # Sustainability metrics (0-100 scoring)
+    total_lifetime_sustainability_score = Column(Float, default=50.0)  # Average lifetime sustainability score
+    total_lifetime_improvement = Column(Float, default=0.0)  # Total improvement in sustainability score
+    sustainability_efficiency_score = Column(Float)  # Sustainability score per order
     
     # Comparative analytics
     percentile_rank = Column(Float)  # Where user ranks vs others (0-100)
-    carbon_savings_vs_average = Column(Float)  # kg CO2 vs average user
+    sustainability_score_vs_average = Column(Float)  # Sustainability score vs average user
     
     # Achievement tracking
-    milestones_reached = Column(JSON)  # List of carbon reduction milestones
+    milestones_reached = Column(JSON)  # List of sustainability improvement milestones
     streak_days = Column(Integer, default=0)  # Days of consecutive improvement
-    best_month_reduction = Column(Float)  # Highest monthly reduction achieved
+    best_month_improvement = Column(Float)  # Highest monthly sustainability improvement achieved
     
     # Predictive insights
-    predicted_annual_savings = Column(Float)  # Forecasted yearly savings
-    carbon_neutrality_eta = Column(DateTime)  # Estimated date to reach carbon neutrality
+    predicted_annual_improvement = Column(Float)  # Forecasted yearly improvement
+    sustainability_target_eta = Column(DateTime)  # Estimated date to reach sustainability target
     
     last_updated = Column(DateTime, server_default=func.now(), onupdate=func.now())
     
