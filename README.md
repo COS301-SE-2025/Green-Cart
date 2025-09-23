@@ -1,3 +1,4 @@
+YOLO
 <div align="center">
   <img 
     src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/image_assets/EnigmaX%20prop.png?raw=true" 
