@@ -338,50 +338,7 @@
   font-weight: 500;
 }
 
-.google-signup-button {
-  width: 100%;
-  background-color: #ffffff;
-  color: #374151 !important;
-  padding: 0.875rem 1.5rem; /* Slightly reduced */
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  font-size: 0.9rem; /* Slightly reduced */
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  transition: all 0.3s ease;
-  margin-top: 0.5rem;
-}
 
-@media (max-width: 480px) {
-  .google-signup-button {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.8rem;
-    gap: 0.5rem;
-  }
-}
-
-.google-signup-button:hover {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.google-icon {
-  width: 1.2rem; /* Slightly smaller */
-  height: 1.2rem;
-}
-
-@media (max-width: 480px) {
-  .google-icon {
-    width: 1rem;
-    height: 1rem;
-  }
-}
 
 .terms-text {
   color: #6b7280 !important;
@@ -486,11 +443,6 @@
   .sign-up-button, .create-account-button {
     padding: 0.75rem 1rem;
     font-size: 0.85rem;
-  }
-  
-  .google-signup-button {
-    padding: 0.625rem 1rem;
-    font-size: 0.75rem;
   }
 }
 
