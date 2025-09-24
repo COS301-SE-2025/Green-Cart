@@ -36,9 +36,7 @@ describe('RegisterForm Component', () => {
     renderWithRouter(<RegisterForm />)
     
     expect(screen.getByText('Sign up')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /sign up with google/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /create an account/i })).toBeInTheDocument()
-    expect(screen.getByText('or')).toBeInTheDocument()
   })
 
   it('renders navigation links in initial form', () => {
@@ -55,16 +53,7 @@ describe('RegisterForm Component', () => {
     expect(signInLink).toHaveAttribute('href', '/login')
   })
 
-  it('renders Google signup button with icon', () => {
-    renderWithRouter(<RegisterForm />)
-    
-    const googleButton = screen.getByRole('button', { name: /sign up with google/i })
-    const googleIcon = screen.getByAltText('Google')
-    
-    expect(googleButton).toBeInTheDocument()
-    expect(googleIcon).toBeInTheDocument()
-    expect(googleIcon).toHaveAttribute('src', './src/assets/icons/googleColored.png')
-  })
+
 
   it('transitions to registration form when Create Account is clicked', async () => {
     renderWithRouter(<RegisterForm />)
@@ -200,15 +189,7 @@ describe('RegisterForm Component', () => {
     expect(signup).not.toHaveBeenCalled()
   })
 
-  it('handles Google signup click', () => {
-    renderWithRouter(<RegisterForm />)
-    
-    const googleButton = screen.getByRole('button', { name: /sign up with google/i })
-    
-    fireEvent.click(googleButton)
-    
-    expect(mockConsoleLog).toHaveBeenCalledWith('Google sign up clicked')
-  })
+
 
   it('renders terms and privacy links in registration form', async () => {
     renderWithRouter(<RegisterForm />)
@@ -259,10 +240,8 @@ describe('RegisterForm Component', () => {
   it('has correct button types', async () => {
     renderWithRouter(<RegisterForm />)
     
-    const googleButton = screen.getByRole('button', { name: /sign up with google/i })
     const createAccountButton = screen.getByRole('button', { name: /create an account/i })
     
-    expect(googleButton).toHaveAttribute('type', 'button')
     expect(createAccountButton).toHaveAttribute('type', 'button')
     
     // Switch to registration form

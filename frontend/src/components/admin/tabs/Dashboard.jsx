@@ -234,7 +234,7 @@ const Dashboard = () => {
       <div className="dashboard-header">
         <div className="dashboard-welcome-section">
           <h1 className="dashboard-welcome-title">Welcome back, {adminData.name}</h1>
-          <p className="dashboard-welcome-subtitle">Here are today's stats from your online store!</p>
+          <p className="dashboard-welcome-subtitle">Here are the recent stats from greenCart!</p>
         </div>
       </div>
 

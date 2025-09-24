@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://api.greencart-cos301.co.za";
+import { API_BASE_URL } from "../config/api.js";
 
 export async function loginUser(email, password) {
   const response = await fetch(`${API_BASE_URL}/auth/signin`, {

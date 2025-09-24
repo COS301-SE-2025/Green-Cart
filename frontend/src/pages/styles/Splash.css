@@ -43,7 +43,7 @@
   gap: 2rem;
 }
 
-.nav-link {
+.splash-nav-link {
   color: white;
   text-decoration: none;
   background: none;
@@ -56,11 +56,11 @@
   transform: translateY(-1rem);
 }
 
-.loaded .nav-link {
+.loaded .splash-nav-link {
   animation: slideInFromTop 1s ease-out forwards;
 }
 
-.nav-link:hover {
+.splash-nav-link:hover {
   color: #86efac;
   transform: translateY(-2px);
 }
