@@ -34,7 +34,11 @@ body {
 
 /* Prevent any element from causing horizontal scroll */
 * {
+<<<<<<< HEAD
   /* max-width: 100%; */
+=======
+  max-width: 100%;
+>>>>>>> 190-two-factor-authentication
   box-sizing: border-box;
 }
 

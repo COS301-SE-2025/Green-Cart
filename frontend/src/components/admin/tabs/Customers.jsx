@@ -366,9 +366,9 @@ const Customers = () => {
         
         <div className="adm-cus-control-buttons">
           {/* Filter Dropdown */}
-          <Dropdown show={showFilterDropdown} onToggle={setShowFilterDropdown}>
+          <Dropdown show={showFilterDropdown} onToggle={(isOpen) => setShowFilterDropdown(isOpen)} autoClose={true}>
             <Dropdown.Toggle 
-              variant="outline-secondary" 
+              variant="outline-primary"
               id="filter-dropdown"
               className="adm-cus-filter-btn"
             >

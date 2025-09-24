@@ -891,3 +891,63 @@
    align-items: stretch;
  }
 }
+
+.clickable-order-row {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clickable-order-row:hover {
+  background-color: #f3f4f6 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.clickable-order-row:active {
+  transform: translateY(0);
+}
+
+/* Enhanced status badge styling */
+.adm-ord-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+/* Loading and interaction states */
+.adm-ord-table-container {
+  position: relative;
+}
+
+.adm-ord-table-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* Improved hover effects for better UX */
+.adm-ord-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.adm-ord-table tbody tr:hover {
+  background-color: #f8fafc;
+  border-left: 4px solid #3b82f6;
+}
+
+/* Mobile responsive table clicks */
+@media (max-width: 768px) {
+  .clickable-order-row:hover {
+    transform: none;
+    box-shadow: none;
+    background-color: #f3f4f6;
+  }
+}

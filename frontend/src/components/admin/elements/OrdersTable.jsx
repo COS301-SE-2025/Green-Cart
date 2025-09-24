@@ -1,6 +1,6 @@
 import React from 'react';
 
-const OrdersTable = ({ orders, loading = false }) => {
+const OrdersTable = ({ orders, loading = false, onOrderClick }) => {
   const getStatusColor = (status) => {
     const colors = {
       'Preparing Order': '#f59e0b',
@@ -51,7 +51,11 @@ const OrdersTable = ({ orders, loading = false }) => {
         </thead>
         <tbody>
           {orders.map((order, index) => (
-            <tr key={index}>
+            <tr 
+              key={index} 
+              className="clickable-order-row"
+              onClick={() => onOrderClick && onOrderClick(order)}
+            >
               <td className="adm-ord-order-id">{order.order_id}</td>
               <td className="adm-ord-customer">{order.user_email}</td>
               <td className="adm-ord-date">{order.date}</td>
@@ -60,7 +64,12 @@ const OrdersTable = ({ orders, loading = false }) => {
                 <span 
                   className="adm-ord-status"
                   style={{ 
-                    color: getStatusColor(order.state)
+                    color: getStatusColor(order.state),
+                    //  color: 'white',
+                    padding: '6px 12px',
+                    borderRadius: '20px',
+                    fontSize: '12px',
+                    fontWeight: '500'
                   }}
                 >
                   {order.state}

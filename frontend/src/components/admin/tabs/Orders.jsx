@@ -4,6 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import GenericPagination from '../elements/GenericPagination';
 import OrderStatsCards from '../elements/OrdersStatsCard';
 import OrdersTable from '../elements/OrdersTable';
+import AdminOrderDetailsModal from '../modals/AdminOrderDetailsModal';
+import toast from 'react-hot-toast';
 import '../../styles/admin/tabs/Orders.css';
 import { getApiUrl, getLocalApiUrl } from '../../../config/api';
 
@@ -13,6 +15,7 @@ const Orders = () => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [orders, setOrders] = useState([]);
+<<<<<<< HEAD
 	const [tableLoading, setTableLoading] = useState(true); // Table-specific loading state
 
 	// Sort and Filter states
@@ -28,6 +31,10 @@ const Orders = () => {
 	const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
 	const itemsPerPage = 10;
+=======
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+>>>>>>> 190-two-factor-authentication
 
 	useEffect(() => {
 		const fetchOrders = async () => {
@@ -147,6 +154,7 @@ const Orders = () => {
 		console.log('Export orders');
 	};
 
+<<<<<<< HEAD
 	// Sort handlers
 	const handleSort = (field) => {
 		if (sortBy === field) {
@@ -194,6 +202,42 @@ const Orders = () => {
 
 	// Available filter options
 	const statusOptions = ['Preparing Order', 'Ready for Delivery', 'In Transit', 'Delivered', 'Cancelled'];
+=======
+   const handleOrderClick = (order) => {
+    setSelectedOrder(order);
+    setIsOrderModalOpen(true);
+  };
+
+  const handleCloseOrderModal = () => {
+    setIsOrderModalOpen(false);
+    setSelectedOrder(null);
+  };
+
+  const handleUpdateOrderState = async (orderId, newState) => {
+    try {
+      // TODO: Replace with actual API call
+      // await updateOrderState(orderId, newState);
+      
+      // Mock update - update local state
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.orderId === orderId 
+            ? { ...order, status: newState }
+            : order
+        )
+      );
+
+      console.log(`Updating order ${orderId} to state: ${newState}`);
+      toast.success(`Order ${orderId} updated to ${newState}`);
+      
+    } catch (error) {
+      console.error('Error updating order state:', error);
+      throw new Error('Failed to update order state');
+    }
+  };
+
+	const orderTabs = ['On Delivery', 'Pending', 'Shipping', 'Delivered', 'Canceled', 'Returned'];
+>>>>>>> 190-two-factor-authentication
 
 	return (
 		<div className="adm-ord-container">
@@ -312,6 +356,7 @@ const Orders = () => {
 				</div>
 			</div>
 
+<<<<<<< HEAD
 			{/* Table with loading state */}
 			<OrdersTable orders={paginatedOrders} loading={tableLoading} />
 
@@ -327,6 +372,29 @@ const Orders = () => {
 			)}
 		</div>
 	);
+=======
+			{/* Table */}
+			<OrdersTable orders={selectedView} onOrderClick={handleOrderClick}/>
+
+      {/* Pagination */}
+      <GenericPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        totalItems={orders.length}
+        itemsPerPage={itemsPerPage}
+      />
+
+       {/* Order Details Modal */}
+      <AdminOrderDetailsModal
+        isOpen={isOrderModalOpen}
+        onClose={handleCloseOrderModal}
+        order={selectedOrder}
+        onUpdateOrderState={handleUpdateOrderState}
+      />
+    </div>
+  );
+>>>>>>> 190-two-factor-authentication
 };
 
 export default Orders;
