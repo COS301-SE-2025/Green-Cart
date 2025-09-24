@@ -239,6 +239,9 @@ jobs:
             AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
             BASE_URL=https://api.greencart-cos301.co.za
             OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            # Email Service Configuration
+            AWS_SES_REGION=${{ secrets.AWS_REGION }}
+            FROM_EMAIL=noreply@greencart-cos301.co.za
             EOF
             
             echo "=== Building Docker Image ==="
@@ -296,6 +299,14 @@ jobs:
               echo "External API is working!"
             else
               echo "External API test failed, but backend is running locally"
+            fi
+            
+            # Validate email service configuration
+            echo "Validating email service configuration..."
+            if curl -f -s http://localhost:8000/admin/debug-env | grep -q "AWS_REGION"; then
+              echo "Email service AWS configuration is loaded"
+            else
+              echo "Warning: Email service configuration may not be properly set"
             fi
             
             echo "=== Fixing Database URLs ==="
