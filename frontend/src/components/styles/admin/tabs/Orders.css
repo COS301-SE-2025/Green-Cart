@@ -67,9 +67,9 @@
 .adm-ord-stats-card-loading {
   position: relative;
   overflow: hidden;
-  background: #dbdcdd;
-  border: 1px solid #e5e7eb;
-  color: #6b7280;
+  background: transparent;
+  /* border: 1px solid; */
+  color: white;
 }
 
 .adm-ord-loading-banner {
@@ -79,7 +79,7 @@
   justify-content: center;
   height: 200px;
   gap: 16px;
-  color: #6b7280;
+  color: white;
   font-size: 14px;
 }
 
@@ -335,7 +335,7 @@
 }
 
 .adm-ord-table-loading {
-  background: white;
+  background: transparent;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
