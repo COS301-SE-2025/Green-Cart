@@ -23,8 +23,8 @@ def fetch_order_by_id(request: FetchOrderByIdRequest, db: Session = Depends(get_
     return fetchOrderById(request, db)
 
 @router.post("/createOrder", response_model=CreateOrderResponse)
-def create_order(request: CreateOrderRequest, db: Session = Depends(get_db)):
-    return createOrder(request, db)
+async def create_order(request: CreateOrderRequest, db: Session = Depends(get_db)):
+    return await createOrder(request, db)
 
 @router.patch("/cancelOrder", response_model=CancelledOrderResponse)
 def cancel_order(request: CancelOrderRequest, db: Session = Depends(get_db)):

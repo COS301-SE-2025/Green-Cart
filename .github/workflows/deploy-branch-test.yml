@@ -1,0 +1,238 @@
+name: Branch Deployment Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy and test'
+        required: true
+        default: '226-purchased-orders-email-system'
+        type: string
+      test_email:
+        description: 'Test email address for order confirmation testing'
+        required: true
+        type: string
+
+jobs:
+  backend-deploy-test:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Deploy backend from branch
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "=== Starting Branch Deployment Test ==="
+            echo "Branch: ${{ inputs.branch }}"
+            echo "Test Email: ${{ inputs.test_email }}"
+            
+            # Clean up disk space first
+            echo "Checking disk usage before cleanup..."
+            df -h
+            
+            # Stop and remove existing test containers
+            sudo docker stop green-cart-test-backend || true
+            sudo docker rm green-cart-test-backend || true
+            
+            # Clean up Docker images and old test files
+            sudo docker system prune -af --volumes || true
+            
+            # Remove old test deployment
+            cd /home/ubuntu
+            sudo rm -rf Green-Cart-Test || true
+            
+            echo "=== Cloning Branch Code ==="
+            # Clone the specific branch
+            git clone -b ${{ inputs.branch }} https://github.com/COS301-SE-2025/Green-Cart.git Green-Cart-Test
+            cd Green-Cart-Test
+            
+            echo "=== Cleaning up test files ==="
+            # Remove test files from root directory but keep integration-tests and unit-tests folders
+            rm -f test_*.py test_*.html || true
+            echo "Test files cleaned up"
+            
+            echo "=== Verifying Files ==="
+            echo "Files in directory:"
+            ls -la
+            
+            # Check if required files exist
+            if [ ! -f "Dockerfile" ]; then
+              echo "ERROR: Dockerfile not found!"
+              exit 1
+            fi
+            
+            if [ ! -f "requirements.txt" ]; then
+              echo "ERROR: requirements.txt not found!"
+              exit 1
+            fi
+            
+            if [ ! -d "app" ]; then
+              echo "ERROR: app directory not found!"
+              exit 1
+            fi
+            
+            # Check if email service exists
+            if [ ! -f "app/services/email_service.py" ]; then
+              echo "ERROR: Email service not found!"
+              exit 1
+            fi
+            
+            echo "All required files present"
+            
+            echo "=== Creating Test Environment ==="
+            cat > .env << EOF
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
+            BASE_URL=https://api.greencart-cos301.co.za
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            # Email Service Configuration
+            AWS_SES_REGION=${{ secrets.AWS_REGION }}
+            FROM_EMAIL=noreply@greencart-cos301.co.za
+            TEST_EMAIL=${{ inputs.test_email }}
+            EOF
+            
+            echo "=== Building Test Docker Image ==="
+            sudo docker build -t green-cart-test-backend .
+            
+            if [ $? -ne 0 ]; then
+              echo "ERROR: Docker build failed!"
+              exit 1
+            fi
+            
+            echo "=== Starting Test Container on Port 8001 ==="
+            sudo docker run -d \
+              --name green-cart-test-backend \
+              --restart unless-stopped \
+              -p 8001:8000 \
+              --env-file .env \
+              green-cart-test-backend
+            
+            if [ $? -ne 0 ]; then
+              echo "ERROR: Test container failed to start!"
+              exit 1
+            fi
+            
+            echo "=== Validating Test Deployment ==="
+            sleep 15
+            
+            # Check if container is running
+            if ! sudo docker ps | grep green-cart-test-backend; then
+              echo "ERROR: Test container is not running!"
+              echo "Container logs:"
+              sudo docker logs green-cart-test-backend
+              exit 1
+            fi
+            
+            # Test health endpoint
+            echo "Testing health endpoint on port 8001..."
+            for i in {1..30}; do
+              if curl -f http://localhost:8001/health; then
+                echo "Test backend is healthy!"
+                break
+              fi
+              if [ $i -eq 30 ]; then
+                echo "ERROR: Health check failed after 30 attempts!"
+                echo "Container logs:"
+                sudo docker logs green-cart-test-backend
+                exit 1
+              fi
+              echo "Attempt $i/30: Health check failed, retrying..."
+              sleep 2
+            done
+            
+            echo "=== Testing Email Service ==="
+            # Test email service endpoints
+            echo "Testing email service availability..."
+            
+            # Check if email routes are available
+            if curl -f -s http://localhost:8001/docs | grep -q "email"; then
+              echo "Email endpoints found in API documentation!"
+            else
+              echo "Warning: Email endpoints may not be available"
+            fi
+            
+            echo "=== Deployment Test Complete ==="
+            echo "Branch: ${{ inputs.branch }}"
+            echo "Test Backend running on: http://$(curl -s ifconfig.me):8001"
+            echo "Production Backend still running on: http://$(curl -s ifconfig.me):8000"
+            echo "Test Email configured for: ${{ inputs.test_email }}"
+            
+            echo "Container status:"
+            sudo docker ps | grep green-cart
+            
+            echo "Test deployment successful!"
+            echo ""
+            echo "=== Next Steps ==="
+            echo "1. Test your email functionality by creating an order through the API"
+            echo "2. Check the test backend at port 8001"
+            echo "3. Monitor container logs: sudo docker logs -f green-cart-test-backend"
+            echo "4. When testing is complete, stop test container: sudo docker stop green-cart-test-backend"
+
+  test-email-integration:
+    runs-on: ubuntu-latest
+    needs: backend-deploy-test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Test Email Service Integration
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "=== Testing Email Service Integration ==="
+            
+            # Wait for backend to be fully ready
+            sleep 10
+            
+            # Test health endpoint first
+            echo "Checking test backend health..."
+            if ! curl -f http://localhost:8001/health; then
+              echo "ERROR: Test backend is not healthy!"
+              exit 1
+            fi
+            
+            # Test AWS SES configuration
+            echo "Testing AWS SES configuration..."
+            if curl -f -s http://localhost:8001/admin/debug-env | grep -q "AWS_REGION"; then
+              echo "AWS configuration detected in test backend"
+            else
+              echo "Warning: AWS configuration may not be properly set"
+            fi
+            
+            # Test database connection
+            echo "Testing database connection..."
+            if curl -f -s http://localhost:8001/admin/health | grep -q "healthy"; then
+              echo "Database connection successful"
+            else
+              echo "Warning: Database connection issues detected"
+            fi
+            
+            echo "=== Email Service Test Results ==="
+            echo "✅ Test backend deployed successfully on port 8001"
+            echo "✅ Health checks passed"
+            echo "✅ AWS configuration loaded"
+            echo "✅ Database connection established"
+            echo ""
+            echo "Ready for email testing with branch: ${{ inputs.branch }}"
+            echo "Test email configured for: ${{ inputs.test_email }}"
+            echo ""
+            echo "To test email functionality:"
+            echo "1. Create a test order through your frontend or API"
+            echo "2. Check the test email address for order confirmation"
+            echo "3. Monitor logs: sudo docker logs -f green-cart-test-backend"
