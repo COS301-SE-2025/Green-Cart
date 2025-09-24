@@ -1287,6 +1287,7 @@ const handleDisable2FA = async () => {
 			onEnable2FA={handleEnable2FA}
 			onDisable2FA={handleDisable2FA}
 			is2FAEnabled={is2FAEnabled}
+			userId={user?.id}
 			/>
 		</div>
 	);

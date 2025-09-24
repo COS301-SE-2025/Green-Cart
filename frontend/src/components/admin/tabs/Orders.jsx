@@ -15,7 +15,6 @@ const Orders = () => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [orders, setOrders] = useState([]);
-<<<<<<< HEAD
 	const [tableLoading, setTableLoading] = useState(true); // Table-specific loading state
 
 	// Sort and Filter states
@@ -31,10 +30,8 @@ const Orders = () => {
 	const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
 	const itemsPerPage = 10;
-=======
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
->>>>>>> 190-two-factor-authentication
 
 	useEffect(() => {
 		const fetchOrders = async () => {
@@ -154,7 +151,6 @@ const Orders = () => {
 		console.log('Export orders');
 	};
 
-<<<<<<< HEAD
 	// Sort handlers
 	const handleSort = (field) => {
 		if (sortBy === field) {
@@ -202,7 +198,6 @@ const Orders = () => {
 
 	// Available filter options
 	const statusOptions = ['Preparing Order', 'Ready for Delivery', 'In Transit', 'Delivered', 'Cancelled'];
-=======
    const handleOrderClick = (order) => {
     setSelectedOrder(order);
     setIsOrderModalOpen(true);
@@ -237,7 +232,6 @@ const Orders = () => {
   };
 
 	const orderTabs = ['On Delivery', 'Pending', 'Shipping', 'Delivered', 'Canceled', 'Returned'];
->>>>>>> 190-two-factor-authentication
 
 	return (
 		<div className="adm-ord-container">
@@ -356,9 +350,8 @@ const Orders = () => {
 				</div>
 			</div>
 
-<<<<<<< HEAD
 			{/* Table with loading state */}
-			<OrdersTable orders={paginatedOrders} loading={tableLoading} />
+			<OrdersTable orders={paginatedOrders} onOrderClick={handleOrderClick} loading={tableLoading} />
 
 			{/* Pagination - Hide when loading */}
 			{!tableLoading && (
@@ -372,29 +365,6 @@ const Orders = () => {
 			)}
 		</div>
 	);
-=======
-			{/* Table */}
-			<OrdersTable orders={selectedView} onOrderClick={handleOrderClick}/>
-
-      {/* Pagination */}
-      <GenericPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        totalItems={orders.length}
-        itemsPerPage={itemsPerPage}
-      />
-
-       {/* Order Details Modal */}
-      <AdminOrderDetailsModal
-        isOpen={isOrderModalOpen}
-        onClose={handleCloseOrderModal}
-        order={selectedOrder}
-        onUpdateOrderState={handleUpdateOrderState}
-      />
-    </div>
-  );
->>>>>>> 190-two-factor-authentication
 };
 
 export default Orders;
