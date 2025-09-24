@@ -61,3 +61,11 @@ class AdminTotalRevenueResponse(BaseModel):
     status: int
     message: str
     total_revenue: float
+
+class SetOrderStateResponse(BaseModel):
+    status: int
+    message: str
+
+class SetOrderStateRequest(BaseModel):
+    order_id: int
+    state: str
