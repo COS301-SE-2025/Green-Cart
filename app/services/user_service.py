@@ -7,6 +7,10 @@ from app.schemas.user import UserCreate
 from app.utilities.utils import hash_password, verify_password
 import uuid
 from datetime import datetime
+import pyotp
+import qrcode
+import base64
+import io
 
 def create_user(db: Session, user: UserCreate):
     new_user = User(
@@ -156,3 +160,74 @@ def change_password(request, db:Session):
         "status": 200,
         "message": "Password changed successfully"
     }
+
+def mfa_setup(user_id: str, db: Session):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if user.secret is None or user.secret == "":
+        secret = pyotp.random_base32()
+        uri = pyotp.totp.TOTP(secret).provisioning_uri(name=user.email, issuer_name="GreenCart")
+        
+        user.secret = secret
+        db.commit()
+        db.refresh(user)
+    else:
+        uri = pyotp.totp.TOTP(user.secret).provisioning_uri(name=user.email, issuer_name="GreenCart")
+
+    qr = qrcode.QRCode(box_size=10, border=4)
+    qr.add_data(uri)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    qr_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+
+
+
+    return {
+        "status": 200,
+        "message": "MFA enabled successfully",
+        "qr_code": qr_base64,
+        "secret": user.secret
+    }
+
+def is_MFA(email, db: Session):
+    user = db.query(User).filter(User.email == email).first()
+
+    if user.secret is None or user.secret == "":
+        return {
+            'status': 200,
+            'message': 'Success',
+            'enabled': False
+        }
+    
+    else:
+        return {
+            'status': 200,
+            'message': 'Success',
+            'enabled': True
+        }
+    
+def disable_MFA(user_id, db:Session):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if user.secret is None or user.secret == "":
+        return {
+            'status': 200,
+            'message': 'Success'
+        }
+    else:
+        if user.secret is not None or user.secret != "":
+            user.secret = None
+            db.commit()
+            db.refresh(user)
+
+            return {
+                'status': 200,
+                'message': 'Success'
+            }

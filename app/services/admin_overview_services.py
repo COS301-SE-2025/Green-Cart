@@ -216,3 +216,19 @@ def get_total_revenue(db: Session):
         "message": "Total revenue fetched successfully",
         "total_revenue": float(total_revenue)
     }
+
+def change_order_state(request, db : Session):
+    order_id = request.order_id
+    state = request.state
+
+    order = db.query(Order).filter(Order.id == order_id).first()
+
+    order.state = state
+
+    db.commit()
+    db.refresh(order)
+
+    return {
+        'status': 200,
+        'message': 'Order state set successfully'
+    }

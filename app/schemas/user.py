@@ -65,3 +65,18 @@ class ChangeUserPasswordRequest(BaseModel):
 class ChangeUserPasswordResponse(BaseModel):
     status: int
     message: str
+
+class setupMFAResponse(BaseModel):
+    status: int
+    message: str
+    qr_code: str
+    secret: str
+
+class isMFASetupResponse(BaseModel):
+    status: int
+    message: str
+    enabled: bool
+
+class disableMFAResponse(BaseModel):
+    status: int
+    message: str

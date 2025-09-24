@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import get_db 
-from app.schemas.admin import AdminOrderOverviewRequest, AdminOrderOverviewResponse, AdminOrderListResponse, AdminMonthlyOrdersResponse, AdminRevenueOverviewResponse, AdminTotalRevenueResponse
-from app.services.admin_overview_services import get_orders_overview, get_orders_list, get_monthly_orders, get_revenue_overview, get_total_revenue
+from app.schemas.admin import AdminOrderOverviewRequest, AdminOrderOverviewResponse, AdminOrderListResponse, AdminMonthlyOrdersResponse, AdminRevenueOverviewResponse, AdminTotalRevenueResponse, SetOrderStateResponse, SetOrderStateRequest
+from app.services.admin_overview_services import get_orders_overview, get_orders_list, get_monthly_orders, get_revenue_overview, get_total_revenue, change_order_state
 
 router = APIRouter(prefix="/admin/orders", tags=["Admin"])
 
@@ -25,3 +25,7 @@ def get_revenue_overview_endpoint(period: int, db: Session = Depends(get_db)):
 @router.get("/total_revenue", response_model=AdminTotalRevenueResponse)
 def get_total_revenue_endpoint(db: Session = Depends(get_db)):
     return get_total_revenue(db)
+
+@router.post('/setOrderState', response_model=SetOrderStateResponse)
+def set_order_state(request: SetOrderStateRequest, db:Session = Depends(get_db)):
+    return change_order_state(request, db)
