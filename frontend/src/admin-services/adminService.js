@@ -65,52 +65,7 @@ export const getOrdersMetrics = async () => {
 /**
  * Get all unverified products
  */
-export const getUnverifiedProducts = async () => {
-    try {
-        const response = await fetch(`${API_BASE_URL}/products/unverified`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.detail || "Failed to fetch unverified products");
-        }
-
-        return data;
-    } catch (error) {
-        console.error("Error fetching unverified products:", error);
-        throw error;
-    }
-};
-
-/**
- * Get a specific unverified product by ID
- */
-export const getUnverifiedProduct = async (productId) => {
-    try {
-        const response = await fetch(`${API_BASE_URL}/products/unverified/${productId}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.detail || "Failed to fetch unverified product");
-        }
-
-        return data;
-    } catch (error) {
-        console.error("Error fetching unverified product:", error);
-        throw error;
-    }
-};
 
 /**
  * Verify a product by ID
