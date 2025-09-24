@@ -15,6 +15,7 @@ class UserResponse(BaseModel):
     id: str
     name: str
     email: str
+    requires2FA: bool
     created_at: Optional[datetime] = None
 
     class Config:
