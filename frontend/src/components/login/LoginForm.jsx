@@ -11,6 +11,7 @@ import TwoFactorVerificationModal from '../modals/TwoFactorVerificationModal';
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [userData, setUserData] = useState(null);
   const [id, setID] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -31,6 +32,7 @@ const handleLoginSubmit = async (e) => {
       if (result.requires2FA) {
         setID(result.id);
         setPendingLogin(result);
+        setUserData(result);
         setShow2FAModal(true);
         return;
       }
@@ -65,7 +67,8 @@ const handleLoginSubmit = async (e) => {
 
         return res.json();
       }).then(data => {
-        completeLogin(data);
+        console.log(data);
+        completeLogin(userData);
         setShow2FAModal(false);
       })
     } catch (error) {
