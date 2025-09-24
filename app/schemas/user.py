@@ -15,6 +15,7 @@ class UserResponse(BaseModel):
     id: str
     name: str
     email: str
+    requires2FA: bool
     created_at: Optional[datetime] = None
 
     class Config:
@@ -80,3 +81,12 @@ class isMFASetupResponse(BaseModel):
 class disableMFAResponse(BaseModel):
     status: int
     message: str
+
+class verifyMFARequest(BaseModel):
+    user_id: str
+    code: str
+
+class verifyMFAResponse(BaseModel):
+    status: int
+    message: str
+    valid: bool

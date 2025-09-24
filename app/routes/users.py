@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.schemas.user import UserInformationResponse, SetUserInformationRequest, SetUserInformationResponse, ChangeUserPasswordRequest, ChangeUserPasswordResponse, setupMFAResponse, isMFASetupResponse, disableMFAResponse
-from app.services.user_service import get_user_information, set_user_information, change_password, mfa_setup, is_MFA, disable_MFA
+from app.schemas.user import UserInformationResponse, SetUserInformationRequest, SetUserInformationResponse, ChangeUserPasswordRequest, ChangeUserPasswordResponse, setupMFAResponse, isMFASetupResponse, disableMFAResponse, verifyMFARequest, verifyMFAResponse
+from app.services.user_service import get_user_information, set_user_information, change_password, mfa_setup, is_MFA, disable_MFA, verify_2fa_code
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -30,3 +30,7 @@ def isMFA(email: str, db : Session = Depends(get_db)):
 @router.get('/disableMFA/{user_id}', response_model=disableMFAResponse)
 def disableMFA(user_id: str, db : Session = Depends(get_db)):
     return disable_MFA(user_id, db)
+
+@router.post('/verifyMFA', response_model=verifyMFAResponse)
+def verifyMFA(request: verifyMFARequest, db : Session = Depends(get_db)):
+    return verify_2fa_code(request.user_id, request.code, db)

@@ -1,4 +1,3 @@
-
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.models.user import User
@@ -231,3 +230,14 @@ def disable_MFA(user_id, db:Session):
                 'status': 200,
                 'message': 'Success'
             }
+
+def verify_2fa_code(user_id: str, code: str, db: Session):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user or not user.secret:
+        raise HTTPException(status_code=404, detail="User or secret not found")
+
+    totp = pyotp.TOTP(user.secret)
+    if totp.verify(code):
+        return {"status": 200, "message": "2FA code is valid", 'valid': True}
+    else:
+        raise HTTPException(status_code=401, detail="Invalid 2FA code")
