@@ -81,3 +81,12 @@ class isMFASetupResponse(BaseModel):
 class disableMFAResponse(BaseModel):
     status: int
     message: str
+
+class verifyMFARequest(BaseModel):
+    user_id: str
+    code: str
+
+class verifyMFAResponse(BaseModel):
+    status: int
+    message: str
+    valid: bool
