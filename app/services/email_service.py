@@ -12,9 +12,16 @@ logger = logging.getLogger(__name__)
 class EmailService:
     def __init__(self):
         self.ses_client = None
-        self.from_email = os.getenv('SES_FROM_EMAIL', 'noreply@greencart-cos301.co.za')
+        self.from_email = os.getenv('FROM_EMAIL', os.getenv('SES_FROM_EMAIL', 'noreply@greencart-cos301.co.za'))
         self.from_name = os.getenv('SES_FROM_NAME', 'Green Cart')
-        self.region = os.getenv('AWS_SES_REGION', 'us-east-1')
+        self.region = os.getenv('AWS_SES_REGION', os.getenv('AWS_REGION', 'us-east-1'))
+        
+        # Debug logging
+        logger.info(f"Email service initialization:")
+        logger.info(f"FROM_EMAIL: {self.from_email}")
+        logger.info(f"AWS_REGION: {self.region}")
+        logger.info(f"AWS_ACCESS_KEY_ID: {'SET' if os.getenv('AWS_ACCESS_KEY_ID') else 'NOT SET'}")
+        logger.info(f"AWS_SECRET_ACCESS_KEY: {'SET' if os.getenv('AWS_SECRET_ACCESS_KEY') else 'NOT SET'}")
         
         try:
             self.ses_client = boto3.client(
@@ -26,6 +33,8 @@ class EmailService:
             logger.info("SES client initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize SES client: {e}")
+            import traceback
+            logger.error(f"SES initialization traceback: {traceback.format_exc()}")
     
     async def send_order_confirmation(
         self, 
@@ -34,8 +43,19 @@ class EmailService:
         order_data: Dict
     ) -> bool:
         """Send comprehensive order confirmation email with product details and images"""
+        logger.info(f"Starting send_order_confirmation")
+        logger.info(f"Customer email: {customer_email}")
+        logger.info(f"Customer name: {customer_name}")
+        logger.info(f"Order data keys: {list(order_data.keys()) if order_data else 'None'}")
+        logger.info(f"SES client available: {self.ses_client is not None}")
+        
+        if not self.ses_client:
+            logger.error("SES client not initialized - cannot send email")
+            return False
+            
         try:
             subject = f"🌱 Green Cart Order Confirmation - #{order_data.get('order_id', 'N/A')}"
+            logger.info(f"Email subject: {subject}")
             
             # Enhanced HTML template with product images and detailed information
             html_template = """
@@ -604,6 +624,13 @@ class EmailService:
         text_body: str
     ) -> bool:
         """Send email via SES"""
+        logger.info(f"_send_email called with:")
+        logger.info(f"to_email: {to_email}")
+        logger.info(f"subject: {subject}")
+        logger.info(f"from_email: {self.from_email}")
+        logger.info(f"from_name: {self.from_name}")
+        logger.info(f"region: {self.region}")
+        
         if not self.ses_client:
             logger.error("SES client not initialized")
             return False
@@ -636,10 +663,15 @@ class EmailService:
             return True
             
         except ClientError as e:
-            logger.error(f"SES error: {e.response['Error']['Message']}")
+            logger.error(f"SES ClientError: {e.response['Error']['Message']}")
+            logger.error(f"SES Error Code: {e.response['Error']['Code']}")
+            import traceback
+            logger.error(f"SES ClientError traceback: {traceback.format_exc()}")
             return False
         except Exception as e:
             logger.error(f"Unexpected error sending email: {e}")
+            import traceback
+            logger.error(f"Email error traceback: {traceback.format_exc()}")
             return False
 
 # Create singleton instance

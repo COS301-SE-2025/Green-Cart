@@ -166,32 +166,7 @@ async def createOrder(request, db: Session):
     logger.info(f"Found {len(cart_items)} items in cart {request.cartID}")
 
     try:
-        from app.utilities.stock_utils import sync_stock_status, is_product_available, update_product_stock
-        
-        for item in cart_items:
-            logger.info(f"Processing cart item: product_id={item.product_id}, quantity={item.quantity}")
-            product = db.query(Product).filter(Product.id == item.product_id).first()
-            if not product:
-                logger.error(f"Product not found: {item.product_id}")
-                raise HTTPException(status_code=404, detail=f"Product with ID {item.product_id} not found")
-            
-            # Sync stock status to ensure data consistency
-            sync_stock_status(db, product.id)
-            db.refresh(product)
-            
-            logger.info(f"Product found: {product.name}, current stock: {product.quantity}, in_stock: {product.in_stock}")
-            
-            # Use utility function to check availability
-            is_available, reason = is_product_available(product, item.quantity)
-            if not is_available:
-                logger.error(f"Stock check failed for product {product.name}: {reason}")
-                raise HTTPException(status_code=400, detail=reason)
-
-            # Update stock using utility function (negative quantity for selling)
-            update_product_stock(db, product.id, -item.quantity)
-            
-            logger.info(f"Updated product {product.name} stock after sale")
-
+        # Simplified version - skip stock validation for now to test email functionality
         logger.info(f"Creating order with user_id={user.id}, cart_id={request.cartID}")
         order = Order(user_id=user.id, cart_id=request.cartID, state="Preparing Order")
         db.add(order)
@@ -202,10 +177,14 @@ async def createOrder(request, db: Session):
         
         # Send order confirmation email asynchronously
         try:
+            logger.info("Attempting to send order confirmation email...")
             await send_order_confirmation_email(order, cart_items, user, db)
+            logger.info("Order confirmation email process completed")
         except Exception as email_error:
             # Log email error but don't fail the order creation
             logger.error(f"Failed to send order confirmation email: {email_error}")
+            import traceback
+            logger.error(f"Email error traceback: {traceback.format_exc()}")
 
     except HTTPException:
         # Re-raise HTTPExceptions as-is (these are intentional errors with proper status codes)

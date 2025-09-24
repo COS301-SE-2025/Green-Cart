@@ -1,33 +1,44 @@
 # Email System Testing Guide
 
-## Quick Testing After Deployment
+## Simple Testing Process
 
-Once you merge your `226-purchased-orders-email-system` branch to `main`, the deployment will automatically include your email service.
-
-### 1. Merge and Deploy
+### 1. Merge Your Branch to Main
 ```bash
-# Switch to main branch
-git checkout main
+# Make sure you're on your email branch
+git checkout 226-purchased-orders-email-system
 
-# Merge your email system branch
+# Commit any remaining changes
+git add .
+git commit -m "Complete email service integration"
+
+# Switch to main and merge
+git checkout main
+git pull origin main
 git merge 226-purchased-orders-email-system
 
-# Push to trigger deployment
+# Push to main (this will trigger deployment)
 git push origin main
 ```
 
-### 2. Wait for Deployment
-- Monitor at: https://github.com/COS301-SE-2025/Green-Cart/actions
-- Deployment takes ~10-15 minutes
+### 2. Monitor Deployment
+- Go to: https://github.com/COS301-SE-2025/Green-Cart/actions
+- Wait for the "AWS Deployment" workflow to complete (~10-15 minutes)
 - Look for green checkmarks ✅
 
-### 3. Test Email Functionality
+### 3. Test Email System
 
-#### Option A: Frontend Testing
-1. Go to your deployed frontend
-2. Create a user account (if needed)
-3. Add products to cart
-4. Complete checkout process
+#### Step 1: Create a Test Account
+- Go to your deployed frontend
+- Register a new user account
+- Make sure to use a real email address you can access
+
+#### Step 2: Add Products to Cart
+- Browse products and add some to your cart
+- Make sure the cart has items before checkout
+
+#### Step 3: Create Order and Test Email
+- Proceed to checkout
+- Complete the order process
 5. Check your email for order confirmation
 
 #### Option B: API Testing
