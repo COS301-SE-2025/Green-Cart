@@ -21,7 +21,7 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
     { name: 'Dashboard', icon: dashboardIcon },
     { name: 'Orders', icon: ordersIcon },
     { name: 'Products', icon: productsIcon },
-    { name: 'Payments', icon: paymentsIcon },
+    // { name: 'Payments', icon: paymentsIcon },
     { name: 'Customers', icon: customersIcon }
   ];
 
@@ -120,18 +120,18 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
               </div>
             ))}
           </nav>
+
+          {/* Red Logout Button */}
+          <div className="sidebar-logout">
+            <button 
+              className="logout-btn" 
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
         </>
       )}
-
-      {/* Red Logout Button */}
-      <div className="sidebar-logout">
-        <button 
-          className="logout-btn" 
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
-      </div>
     </div>
   );
 };

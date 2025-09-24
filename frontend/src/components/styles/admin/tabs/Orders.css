@@ -450,7 +450,7 @@
 .adm-ord-filter-menu,
 .adm-ord-sort-menu {
   background: #1f2937;
-  border: 1px solid #e5e7eb;
+  /* border: 1px solid #e5e7eb; */
   border-radius: 0px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 12px;
