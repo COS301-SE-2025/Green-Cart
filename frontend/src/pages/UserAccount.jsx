@@ -145,7 +145,7 @@ export default function UserAccount() {
 					const userInformation = await fetchUserInformation(parsedUser.id);
 					console.log(userInformation);
 
-					setFormData({
+					const userData = {
 						name: userInformation.user.name || '',
 						email: userInformation.user.email || '',
 						phone: userInformation.user.telephone || 'Not Set',
@@ -161,9 +161,10 @@ export default function UserAccount() {
 							carbonGoalNotifications: parsedUser.preferences?.carbonGoalNotifications ?? true,
 							sustainabilityTips: parsedUser.preferences?.sustainabilityTips ?? true
 						}
-					});
+					};
 
-					setUpdateData(formData);
+					setFormData(userData);
+					setUpdateData(userData);
 
 				} catch (error) {
 					console.error(error);
@@ -287,20 +288,24 @@ export default function UserAccount() {
 			localStorage.setItem('user', JSON.stringify(updatedUser));
 			setUser(updatedUser);
 
-
+			// Update the backup data to reflect the saved changes
+			setUpdateData({ ...formData });
 			setIsEditing(false);
 			toast.success('Profile updated successfully!');
-			setUpdateData(formData);
 		} catch (error) {
 			toast.error((error.message || 'Please try again.'));
-			setFormData(updateData);
+			// Restore form data to the last saved state on error
+			setFormData({ ...updateData });
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
 	const handleCancelEdit = () => {
-		setFormData(updateData);
+		// Restore form data to the last saved state
+		if (updateData && Object.keys(updateData).length > 0) {
+			setFormData({ ...updateData });
+		}
 		setIsEditing(false);
 	};
 
@@ -344,9 +349,25 @@ export default function UserAccount() {
 			console.log('Confirmation result:', confirmed);
 
 			if (confirmed) {
-				localStorage.removeItem('user');
-				localStorage.removeItem('token');
-				navigate('/');
+				// Clear all possible authentication data (consistent with Navigation component)
+				localStorage.removeItem("userData");
+				localStorage.removeItem("retailerData");
+				localStorage.removeItem("user"); // legacy key
+				localStorage.removeItem("token"); // legacy key
+				localStorage.removeItem("access_token");
+				localStorage.removeItem("auth_token");
+				localStorage.removeItem("retailer_user");
+				localStorage.removeItem("retailer_token");
+				localStorage.removeItem("selected_shop");
+				
+				// Dispatch auth state change event for components listening
+				window.dispatchEvent(new Event('authStateChanged'));
+				
+				// Show success message
+				toast.success('Logged out successfully');
+				
+				// Navigate to home/splash page
+				navigate('/', { replace: true });
 			}
 		} catch (error) {
 			console.error('Error with confirmation:', error);
