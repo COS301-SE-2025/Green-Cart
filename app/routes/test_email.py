@@ -78,12 +78,9 @@ async def test_email_quick():
     """Quick email test to sknaidoo1405@gmail.com"""
     try:
         logger.info("Quick email test to sknaidoo1405@gmail.com")
-<<<<<<< HEAD
-=======
         logger.info(f"Email service initialized: {email_service.ses_client is not None}")
         logger.info(f"From email: {email_service.from_email}")
         logger.info(f"Region: {email_service.region}")
->>>>>>> 226-purchased-orders-email-system
         
         # Create sample order data for testing
         test_order_data = {
@@ -115,31 +112,21 @@ async def test_email_quick():
         }
         
         # Send test email
-<<<<<<< HEAD
-=======
         logger.info("About to call email_service.send_order_confirmation")
->>>>>>> 226-purchased-orders-email-system
         email_sent = await email_service.send_order_confirmation(
             customer_email="sknaidoo1405@gmail.com",
             customer_name="Shayden Naidoo",
             order_data=test_order_data
         )
-<<<<<<< HEAD
-=======
         logger.info(f"Email sent result: {email_sent}")
->>>>>>> 226-purchased-orders-email-system
         
         return {
             "status": 200 if email_sent else 500,
             "message": f"Quick test email {'sent successfully' if email_sent else 'failed'} to sknaidoo1405@gmail.com",
             "email_service_initialized": email_service.ses_client is not None,
             "from_email": email_service.from_email,
-<<<<<<< HEAD
-            "region": email_service.region
-=======
             "region": email_service.region,
             "email_sent": email_sent
->>>>>>> 226-purchased-orders-email-system
         }
             
     except Exception as e:
@@ -148,63 +135,21 @@ async def test_email_quick():
         logger.error(f"Quick test email traceback: {traceback.format_exc()}")
         return {
             "status": 500,
-<<<<<<< HEAD
-            "message": f"Quick test email failed: {str(e)}",
-            "error_details": str(e)
-        }
-        
-        # Send test email
-        email_sent = await email_service.send_order_confirmation(
-            customer_email=request.email,
-            customer_name=request.name,
-            order_data=test_order_data
-        )
-        
-        if email_sent:
-            return {
-                "status": 200,
-                "message": f"Test email sent successfully to {request.email}",
-                "email_service_initialized": email_service.ses_client is not None,
-                "from_email": email_service.from_email,
-                "region": email_service.region
-            }
-        else:
-            return {
-                "status": 500,
-                "message": "Failed to send test email",
-                "email_service_initialized": email_service.ses_client is not None,
-                "from_email": email_service.from_email,
-                "region": email_service.region
-            }
-            
-    except Exception as e:
-        logger.error(f"Test email error: {e}")
-        raise HTTPException(status_code=500, detail=f"Test email failed: {str(e)}")
-=======
             "message": f"Quick test email failed to sknaidoo1405@gmail.com: {str(e)}",
             "email_service_initialized": email_service.ses_client is not None,
             "from_email": email_service.from_email,
             "region": email_service.region,
             "error": str(e)
         }
->>>>>>> 226-purchased-orders-email-system
 
 @router.get("/email-config")
 async def get_email_config():
     """Get email service configuration for debugging"""
-<<<<<<< HEAD
-    return {
-=======
     config = {
->>>>>>> 226-purchased-orders-email-system
         "from_email": email_service.from_email,
         "from_name": email_service.from_name,
         "region": email_service.region,
         "ses_client_initialized": email_service.ses_client is not None,
-<<<<<<< HEAD
-        "aws_access_key_set": bool(email_service.ses_client._client_config.access_key if email_service.ses_client else False)
-    }
-=======
     }
     
     # Check verified identities if SES client is available
@@ -305,4 +250,3 @@ async def get_ses_status():
             "message": str(e),
             "ses_client_initialized": email_service.ses_client is not None
         }
->>>>>>> 226-purchased-orders-email-system
