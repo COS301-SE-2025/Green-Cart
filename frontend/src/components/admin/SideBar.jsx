@@ -76,7 +76,7 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
             </div>
           </div>
 
-          <div className="admin-search-bar">
+          {/* <div className="admin-search-bar">
             <div className="search-input-container">
               <svg 
                 className="search-icon" 
@@ -90,7 +90,7 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
               </svg>
               <input type="text" placeholder="Search" />
             </div>
-          </div>
+          </div> */}
 
           <nav className="sidebar-nav">
             {navigationItems.map((item, index) => (

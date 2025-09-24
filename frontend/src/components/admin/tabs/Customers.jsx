@@ -332,10 +332,10 @@ const Customers = () => {
       <div className="adm-cus-header">
         <h1 className="adm-cus-title">Customers</h1>
         <div className="adm-cus-header-actions">
-          <button className="adm-cus-export-btn">
+          {/* <button className="adm-cus-export-btn">
             <img src={exportIcon} alt="Export" className="adm-cus-export-icon" />
             Export
-          </button>
+          </button> */}
         </div>
       </div>
 

@@ -248,10 +248,10 @@ const Orders = () => {
 			<div className="adm-ord-header">
 				<h1 className="adm-ord-title">Orders</h1>
 				<div className="adm-ord-header-actions">
-					<button className="adm-ord-export-btn" onClick={handleExport}>
+					{/* <button className="adm-ord-export-btn" onClick={handleExport}>
 						<img src={exportIcon} alt="Export" className="adm-ord-export-icon" />
 						Export
-					</button>
+					</button> */}
 				</div>
 			</div>
 
