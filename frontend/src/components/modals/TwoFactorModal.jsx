@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import '../styles/modals/TwoFactorModal.css';
 
-const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabled }) => {
+const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabled, userId }) => {
   const [step, setStep] = useState(1); // 1: Setup, 2: QR Code, 3: Verify Code
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   const [backupCodes, setBackupCodes] = useState([]);
@@ -20,20 +20,48 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
   }, [isOpen, is2FAEnabled]);
 
   const generateQRCode = async () => {
+    if (!userId) {
+      toast.error('User ID is required');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Mock QR code generation - replace with actual API call
-      const mockQRData = {
-        qrCode: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
-        secret: 'JBSWY3DPEHPK3PXP',
-        backupCodes: ['12345678', '87654321', '11223344', '55667788', '99887766']
-      };
+      const response = await fetch(`http://localhost:8000/users/setupMFA/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          // Add authentication headers if needed
+          // 'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       
-      setQrCodeUrl(mockQRData.qrCode);
-      setSecretKey(mockQRData.secret);
-      setBackupCodes(mockQRData.backupCodes);
+      // Handle the response structure based on the API documentation
+      if (data.status === 'success' || data.qr_code) {
+        // If qr_code is base64 encoded, ensure it has the proper data URL prefix
+        const qrCodeData = data.qr_code.startsWith('data:image/')
+          ? data.qr_code
+          : `data:image/png;base64,${data.qr_code}`;
+        
+        setQrCodeUrl(qrCodeData);
+        setSecretKey(data.secret);
+        
+        // If the API returns backup codes, use them; otherwise generate some or handle differently
+        if (data.backup_codes) {
+          setBackupCodes(data.backup_codes);
+        }
+      } else {
+        throw new Error(data.message || 'Failed to setup MFA');
+      }
     } catch (error) {
-      toast.error('Failed to generate QR code');
+      console.error('Error generating QR code:', error);
+      toast.error(error.message || 'Failed to generate QR code');
     } finally {
       setIsLoading(false);
     }
@@ -158,7 +186,7 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                   <div className="loading-spinner"></div>
                   <span>Generating QR code...</span>
                 </div>
-              ) : (
+              ) : qrCodeUrl ? (
                 <div className="qr-section">
                   <div className="qr-code-container">
                     <img src={qrCodeUrl} alt="2FA QR Code" className="qr-code" />
@@ -177,13 +205,24 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                     </div>
                   </div>
                 </div>
+              ) : (
+                <div className="error-message">
+                  <p>Failed to load QR code. Please try again.</p>
+                  <button onClick={generateQRCode} className="retry-btn">
+                    Retry
+                  </button>
+                </div>
               )}
 
               <div className="step-actions">
                 <button className="back-btn" onClick={() => setStep(1)}>
                   Back
                 </button>
-                <button className="continue-btn" onClick={() => setStep(5)}>
+                <button 
+                  className="continue-btn" 
+                  onClick={() => setStep(5)}
+                  disabled={!qrCodeUrl}
+                >
                   Next: Verify
                 </button>
               </div>
@@ -243,21 +282,27 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                 if you lose your phone.
               </p>
 
-              <div className="backup-codes-container">
-                <div className="backup-codes">
-                  {backupCodes.map((code, index) => (
-                    <div key={index} className="backup-code">
-                      <code>{code}</code>
-                    </div>
-                  ))}
+              {backupCodes.length > 0 ? (
+                <div className="backup-codes-container">
+                  <div className="backup-codes">
+                    {backupCodes.map((code, index) => (
+                      <div key={index} className="backup-code">
+                        <code>{code}</code>
+                      </div>
+                    ))}
+                  </div>
+                  <button 
+                    className="copy-all-btn"
+                    onClick={() => copyToClipboard(backupCodes.join('\n'))}
+                  >
+                    📋 Copy All Codes
+                  </button>
                 </div>
-                <button 
-                  className="copy-all-btn"
-                  onClick={() => copyToClipboard(backupCodes.join('\n'))}
-                >
-                  📋 Copy All Codes
-                </button>
-              </div>
+              ) : (
+                <div className="no-backup-codes">
+                  <p>No backup codes were generated. You can generate them later in your account settings.</p>
+                </div>
+              )}
 
               <div className="warning-note">
                 <h4>⚠️ Important:</h4>

@@ -278,6 +278,19 @@ const Customers = () => {
           fontSize: '16px',
           color: '#6b7280'
         }}>
+          <div className="adm-ord-table-custom-loader">
+            <svg className="adm-ord-table-circular" viewBox="25 25 50 50">
+              <circle 
+                className="adm-ord-table-path" 
+                cx="50" 
+                cy="50" 
+                r="20" 
+                fill="none" 
+                strokeWidth="2" 
+                strokeMiterlimit="10"
+              />
+            </svg>
+          </div>
           Loading customers...
         </div>
       </div>

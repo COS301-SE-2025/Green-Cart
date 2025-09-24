@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../../config/api.js'; // Ensure this path is correct
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import '../styles/login/LoginForm.css';
@@ -9,6 +10,8 @@ import TwoFactorVerificationModal from '../modals/TwoFactorVerificationModal';
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [userData, setUserData] = useState(null);
+  const [id, setID] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
   const [show2FAModal, setShow2FAModal] = useState(false);
@@ -22,10 +25,13 @@ const handleLoginSubmit = async (e) => {
     
     try {
       const result = await loginUser(email, password);
+      console.log(result);
       
       // Check if 2FA is required
-      if (result.requires2FA || result.needs_2fa_verification) {
+      if (result.requires2FA) {
+        setID(result.id);
         setPendingLogin(result);
+        setUserData(result);
         setShow2FAModal(true);
         return;
       }
@@ -43,14 +49,27 @@ const handleLoginSubmit = async (e) => {
     
     try {
       // Call your 2FA verification endpoint
-      const result = await verify2FACode({
-        sessionToken: pendingLogin.sessionToken,
-        code: code
-      });
-      
-      completeLogin(result);
-      setShow2FAModal(false);
-      
+      const apiURL = API_BASE_URL;
+      const result = await fetch(`${apiURL}/users/verifyMFA`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: id,
+          code: code
+        })
+      }).then(res => {
+        if (!res.ok) {
+          throw new Error('Invalid verification code');
+        }
+
+        return res.json();
+      }).then(data => {
+        console.log(data);
+        completeLogin(userData);
+        setShow2FAModal(false);
+      })
     } catch (error) {
       toast.error(error.message || 'Invalid verification code');
     } finally {
@@ -162,7 +181,7 @@ const handleLoginSubmit = async (e) => {
         }}
         onVerify={handle2FAVerification}
         onUseBackupCode={handleBackupCodeVerification}
-        userEmail={email}
+        userEmail={id}
         isLoading={isVerifying}
       />
     </div>

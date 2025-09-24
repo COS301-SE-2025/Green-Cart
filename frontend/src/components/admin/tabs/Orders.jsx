@@ -1,198 +1,387 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import Dropdown from 'react-bootstrap/Dropdown';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import GenericPagination from '../elements/GenericPagination';
 import OrderStatsCards from '../elements/OrdersStatsCard';
 import OrdersTable from '../elements/OrdersTable';
 import AdminOrderDetailsModal from '../modals/AdminOrderDetailsModal';
 import toast from 'react-hot-toast';
 import '../../styles/admin/tabs/Orders.css';
+import { getApiUrl, getLocalApiUrl } from '../../../config/api';
 
 import exportIcon from '../icons/exportIcon.png';
 
 const Orders = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedView, setSelectedView] = useState('table');
-  const [orderFilter, setOrderFilter] = useState('On Delivery');
-  const [searchTerm, setSearchTerm] = useState('');
+	const [currentPage, setCurrentPage] = useState(1);
+	const [totalOrders, setTotalOrders] = useState(0);
+	const [selectedView, setSelectedView] = useState([]);
+	const [orderFilter, setOrderFilter] = useState('On Delivery');
+	const [searchTerm, setSearchTerm] = useState('');
+	const [orders, setOrders] = useState([]);
+	const [tableLoading, setTableLoading] = useState(true); // Table-specific loading state
 
-  // Modal state
+	// Sort and Filter states
+	const [sortBy, setSortBy] = useState('');
+	const [sortOrder, setSortOrder] = useState('asc');
+	const [filters, setFilters] = useState({
+		status: [],
+		dateRange: {
+			start: '',
+			end: ''
+		}
+	});
+	const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+
+	const itemsPerPage = 10;
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
-  // Mock data - you would replace this with actual data
-  const [orders, setOrders] = useState([
-    {
-      orderId: '#0014ABCD',
-      customer: 'Theresa',
-      date: '17 May 2025',
-      address: '32 Danmondi → 82 Subidbaz',
-      status: 'Pending'
-    },
-    {
-      orderId: '#0013ABGS',
-      customer: 'Devon',
-      date: '18 May 2025',
-      address: '21 Savar → 24 New Market',
-      status: 'Shipping'
-    },
-    {
-      orderId: '#0016ABLL',
-      customer: 'Cameron',
-      date: '18 May 2025',
-      address: 'Devtakhum → Dhaka 1120',
-      status: 'Delivered'
-    },
-    {
-      orderId: '#0018ABAA',
-      customer: 'Darlene',
-      date: '17 May 2025',
-      address: '42 Dulukahpa → 82 Subidbaz',
-      status: 'Returned'
-    },
-    {
-      orderId: '#0013ABGG',
-      customer: 'Darlene',
-      date: '14 May 2025',
-      address: '64 Handipas → 212 Laksam',
-      status: 'Shipping'
-    }
-  ]);
+	useEffect(() => {
+		const fetchOrders = async () => {
+			try {
+				setTableLoading(true); // Set table loading to true when starting fetch
+				const apiUrl = getLocalApiUrl();
+				const response = await fetch(`${apiUrl}/admin/orders/list`);
+				const data = await response.json();
+				if (response.ok) {
+					setOrders(data.orders);
+				} else {
+					console.error('Error fetching orders:', data.message);
+				}
+			} catch (error) {
+				console.error('Error fetching orders:', error);
+			} finally {
+				setTableLoading(false); // Set table loading to false when fetch completes
+			}
+		};
 
-  const totalPages = Math.ceil(orders.length / 10);
-  const itemsPerPage = 10;
+		fetchOrders();
+	}, []);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+	// Filter and search functionality
+	const getFilteredOrders = () => {
+		let filtered = orders.filter(order => {
+			// Search functionality - handle null/undefined values
+			const matchesSearch = !searchTerm || 
+				(order.order_id || '').toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+				(order.user_email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+				(order.address || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+				(order.state || '').toLowerCase().includes(searchTerm.toLowerCase());
 
-  const handleExport = () => {
-    console.log('Export orders');
-  };
+			if (!matchesSearch) return false;
 
-   const handleOrderClick = (order) => {
-    setSelectedOrder(order);
-    setIsOrderModalOpen(true);
-  };
+			// Status filter
+			if (filters.status.length > 0) {
+				if (!filters.status.includes(order.state)) return false;
+			}
 
-  const handleCloseOrderModal = () => {
-    setIsOrderModalOpen(false);
-    setSelectedOrder(null);
-  };
+			// Date range filter
+			if (filters.dateRange.start || filters.dateRange.end) {
+				const orderDate = new Date(order.date);
+				const startDate = filters.dateRange.start ? new Date(filters.dateRange.start) : null;
+				const endDate = filters.dateRange.end ? new Date(filters.dateRange.end) : null;
 
-  const handleUpdateOrderState = async (orderId, newState) => {
-    try {
-      // TODO: Replace with actual API call
-      // await updateOrderState(orderId, newState);
-      
-      // Mock update - update local state
-      setOrders(prevOrders => 
-        prevOrders.map(order => 
-          order.orderId === orderId 
-            ? { ...order, status: newState }
-            : order
-        )
-      );
+				if (startDate && orderDate < startDate) return false;
+				if (endDate && orderDate > endDate) return false;
+			}
 
-      console.log(`Updating order ${orderId} to state: ${newState}`);
-      toast.success(`Order ${orderId} updated to ${newState}`);
-      
-    } catch (error) {
-      console.error('Error updating order state:', error);
-      throw new Error('Failed to update order state');
-    }
-  };
+			return true;
+		});
 
-  const orderTabs = ['On Delivery', 'Pending', 'Shipping', 'Delivered', 'Canceled', 'Returned'];
+		return filtered;
+	};
 
+	// Sort functionality
+	const getSortedOrders = (ordersList) => {
+		if (!sortBy) return ordersList;
 
-  return (
-    <div className="adm-ord-container">
-      {/* Header */}
-      <div className="adm-ord-header">
-        <h1 className="adm-ord-title">Orders</h1>
-        <div className="adm-ord-header-actions">
-          <button className="adm-ord-export-btn" onClick={handleExport}>
-            {/* <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2"/>
-              <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2"/>
-              <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
-            </svg> */}
-            <img src={exportIcon} alt="Export" className="adm-ord-export-icon" />
-            Export
-          </button>
-        </div>
-      </div>
+		return [...ordersList].sort((a, b) => {
+			let aValue, bValue;
 
-      {/* Stats Cards */}
-      <OrderStatsCards />
+			switch (sortBy) {
+				case 'orderId':
+					aValue = (a.order_id || '').toString().toLowerCase();
+					bValue = (b.order_id || '').toString().toLowerCase();
+					break;
+				case 'customer':
+					aValue = (a.user_email || '').toLowerCase();
+					bValue = (b.user_email || '').toLowerCase();
+					break;
+				case 'date':
+					aValue = new Date(a.date || 0);
+					bValue = new Date(b.date || 0);
+					break;
+				case 'status':
+					aValue = (a.state || '').toLowerCase();
+					bValue = (b.state || '').toLowerCase();
+					break;
+				case 'address':
+					aValue = (a.address || '').toLowerCase();
+					bValue = (b.address || '').toLowerCase();
+					break;
+				default:
+					return 0;
+			}
 
-      {/* Order Tabs */}
-      <div className="adm-ord-tabs">
-        {orderTabs.map((tab) => (
-          <button
-            key={tab}
-            className={`adm-ord-tab ${orderFilter === tab ? 'active' : ''}`}
-            onClick={() => setOrderFilter(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+			if (sortBy === 'date') {
+				return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
+			} else {
+				if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+				if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+				return 0;
+			}
+		});
+	};
 
-      {/* Search and Controls */}
-      <div className="adm-ord-search-and-controls">
-        <div className="adm-ord-search-container">
-          <div className="adm-ord-search-wrapper">
-            <svg className="adm-ord-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
-              <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
-            </svg>
-            <input
-              type="text"
-              className="adm-ord-search-input"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </div>
+	// Get final filtered and sorted orders
+	const filteredOrders = getSortedOrders(getFilteredOrders());
 
-        <div className="adm-ord-control-buttons">
-          <button className="adm-ord-filter-btn">
-            Filter by
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2"/>
-            </svg>
-          </button>
-          <button className="adm-ord-sort-btn">
-            Sort by
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+	// Calculate pagination based on filtered results
+	const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+	const startIndex = (currentPage - 1) * itemsPerPage;
+	const paginatedOrders = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
 
-      {/* Table */}
-      <OrdersTable orders={orders} onOrderClick={handleOrderClick}/>
+	// Reset to page 1 when filters change
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [searchTerm, filters, sortBy, sortOrder]);
 
-      {/* Pagination */}
-      <GenericPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        totalItems={orders.length}
-        itemsPerPage={itemsPerPage}
-      />
+	const handlePageChange = (page) => {
+		setCurrentPage(page);
+	};
 
-       {/* Order Details Modal */}
-      <AdminOrderDetailsModal
-        isOpen={isOrderModalOpen}
-        onClose={handleCloseOrderModal}
-        order={selectedOrder}
-        onUpdateOrderState={handleUpdateOrderState}
-      />
-    </div>
-  );
+	const handleExport = () => {
+		console.log('Export orders');
+	};
+
+	// Sort handlers
+	const handleSort = (field) => {
+		if (sortBy === field) {
+			setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+		} else {
+			setSortBy(field);
+			setSortOrder('asc');
+		}
+	};
+
+	// Filter handlers
+	const handleStatusFilter = (status) => {
+		const newStatus = filters.status.includes(status)
+			? filters.status.filter(s => s !== status)
+			: [...filters.status, status];
+		
+		setFilters(prev => ({
+			...prev,
+			status: newStatus
+		}));
+	};
+
+	const handleDateRangeFilter = (field, value) => {
+		setFilters(prev => ({
+			...prev,
+			dateRange: {
+				...prev.dateRange,
+				[field]: value
+			}
+		}));
+	};
+
+	const clearFilters = () => {
+		setFilters({
+			status: [],
+			dateRange: {
+				start: '',
+				end: ''
+			}
+		});
+		setSortBy('');
+		setSortOrder('asc');
+		setSearchTerm('');
+	};
+
+	// Available filter options
+	const statusOptions = ['Preparing Order', 'Ready for Delivery', 'In Transit', 'Delivered', 'Cancelled'];
+	const handleOrderClick = (order) => {
+		setSelectedOrder(order);
+		setIsOrderModalOpen(true);
+	};
+
+	const handleCloseOrderModal = () => {
+		setIsOrderModalOpen(false);
+		setSelectedOrder(null);
+	};
+
+	const handleUpdateOrderState = async (orderId, newState) => {
+		try {
+			const apiURL = getLocalApiUrl();
+			const response = await fetch(`${apiURL}/admin/orders/setOrderState`,{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ 
+					'order_id': orderId,
+					'state': newState
+				 })
+			});
+			
+			setOrders(prevOrders =>
+				prevOrders.map(order =>
+					order.orderId === orderId
+						? { ...order, status: newState }
+						: order
+				)
+			);
+
+			console.log(`Updating order ${orderId} to state: ${newState}`);
+			toast.success(`Order ${orderId} updated to ${newState}`);
+
+		} catch (error) {
+			console.error('Error updating order state:', error);
+			throw new Error('Failed to update order state');
+		}
+	};
+
+	const orderTabs = ['On Delivery', 'Pending', 'Shipping', 'Delivered', 'Canceled', 'Returned'];
+
+	return (
+		<div className="adm-ord-container">
+			{/* Header */}
+			<div className="adm-ord-header">
+				<h1 className="adm-ord-title">Orders</h1>
+				<div className="adm-ord-header-actions">
+					<button className="adm-ord-export-btn" onClick={handleExport}>
+						<img src={exportIcon} alt="Export" className="adm-ord-export-icon" />
+						Export
+					</button>
+				</div>
+			</div>
+
+			{/* Stats Cards - Now manage their own loading independently */}
+			<OrderStatsCards />
+
+			{/* Search and Controls */}
+			<div className="adm-ord-search-and-controls">
+				<div className="adm-ord-search-container">
+					<div className="adm-ord-search-wrapper">
+						<svg className="adm-ord-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+							<circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
+							<path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2" />
+						</svg>
+						<input
+							type="text"
+							className="adm-ord-search-input"
+							placeholder="Search orders..."
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+						/>
+					</div>
+				</div>
+
+				<div className="adm-ord-control-buttons">
+					{/* Filter Dropdown */}
+					<Dropdown show={showFilterDropdown} onToggle={setShowFilterDropdown}>
+						<Dropdown.Toggle 
+							variant="outline-secondary" 
+							id="filter-dropdown"
+							className="adm-ord-filter-btn"
+						>
+							Filter by
+						</Dropdown.Toggle>
+						<Dropdown.Menu className="adm-ord-filter-menu">
+							<div className="filter-section">
+								<h6>Status</h6>
+								{statusOptions.map(status => (
+									<div key={status} className="filter-checkbox">
+										<input
+											type="checkbox"
+											id={`status-${status}`}
+											checked={filters.status.includes(status)}
+											onChange={() => handleStatusFilter(status)}
+										/>
+										<label htmlFor={`status-${status}`}>{status}</label>
+									</div>
+								))}
+							</div>
+
+							<div className="filter-section">
+								<h6>Date Range</h6>
+								<div className="filter-date-range">
+									<input
+										type="date"
+										value={filters.dateRange.start}
+										onChange={(e) => handleDateRangeFilter('start', e.target.value)}
+										placeholder="Start date"
+									/>
+									<span>to</span>
+									<input
+										type="date"
+										value={filters.dateRange.end}
+										onChange={(e) => handleDateRangeFilter('end', e.target.value)}
+										placeholder="End date"
+									/>
+								</div>
+							</div>
+
+							<div className="filter-actions">
+								<button onClick={clearFilters} className="clear-filters-btn">
+									Clear All
+								</button>
+							</div>
+						</Dropdown.Menu>
+					</Dropdown>
+
+					{/* Sort Dropdown */}
+					<Dropdown>
+						<Dropdown.Toggle 
+							variant="outline-secondary" 
+							id="sort-dropdown"
+							className="adm-ord-sort-btn"
+						>
+							Sort by {sortBy && `(${sortBy} ${sortOrder})`}
+						</Dropdown.Toggle>
+						<Dropdown.Menu className="adm-ord-sort-menu">
+							<Dropdown.Item onClick={() => handleSort('orderId')}>
+								Order ID {sortBy === 'orderId' && (sortOrder === 'asc' ? '↑' : '↓')}
+							</Dropdown.Item>
+							<Dropdown.Item onClick={() => handleSort('customer')}>
+								Customer {sortBy === 'customer' && (sortOrder === 'asc' ? '↑' : '↓')}
+							</Dropdown.Item>
+							<Dropdown.Item onClick={() => handleSort('date')}>
+								Date {sortBy === 'date' && (sortOrder === 'asc' ? '↑' : '↓')}
+							</Dropdown.Item>
+							<Dropdown.Item onClick={() => handleSort('status')}>
+								Status {sortBy === 'status' && (sortOrder === 'asc' ? '↑' : '↓')}
+							</Dropdown.Item>
+							<Dropdown.Item onClick={() => handleSort('address')}>
+								Address {sortBy === 'address' && (sortOrder === 'asc' ? '↑' : '↓')}
+							</Dropdown.Item>
+						</Dropdown.Menu>
+					</Dropdown>
+				</div>
+			</div>
+
+			{/* Table with loading state */}
+			<OrdersTable orders={paginatedOrders} onOrderClick={handleOrderClick}  loading={tableLoading} />
+
+			{/* Pagination - Hide when loading */}
+			{!tableLoading && (
+				<GenericPagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={handlePageChange}
+					totalItems={filteredOrders.length}
+					itemsPerPage={itemsPerPage}
+				/>
+			)}
+
+			{/* Order Details Modal */}
+			<AdminOrderDetailsModal
+				isOpen={isOrderModalOpen}
+				onClose={handleCloseOrderModal}
+				order={selectedOrder}
+				onUpdateOrderState={handleUpdateOrderState}
+			/>
+		</div>
+	);
 };
 
 export default Orders;

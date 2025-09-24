@@ -13,6 +13,7 @@ class User(Base):
     date_of_birth = Column(Date, nullable=True)
     country_code = Column(String(4), nullable=True)
     telephone = Column(String(9), nullable=True)
+    secret = Column(Text, nullable=True)  # for 2FAs
 
     orders = relationship("Order", back_populates="user", cascade="all, delete")
     address = relationship("Address", back_populates="user", cascade="all, delete")

@@ -188,6 +188,27 @@
   }
 }
 
+.sidebar-logout {
+  margin: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.logout-btn {
+  background-color: rgb(109, 17, 17);
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 0px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.logout-btn:hover {
+  background-color: darkred;
+}
+
 /* Search bar animation enhancement */
 .sidebar-animating .admin-search-bar {
   animation: searchSlideIn 0.4s ease-out both;
