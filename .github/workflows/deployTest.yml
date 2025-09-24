@@ -242,6 +242,8 @@ jobs:
             # Email Service Configuration
             AWS_SES_REGION=${{ secrets.AWS_REGION }}
             FROM_EMAIL=noreply@greencart-cos301.co.za
+            SES_FROM_NAME=Green Cart
+            TEST_EMAIL=sknaidoo1405@gmail.com
             EOF
             
             echo "=== Building Docker Image ==="

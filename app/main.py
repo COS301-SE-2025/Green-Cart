@@ -47,6 +47,9 @@ from app.routes import product_with_images  # AWS S3 product+images endpoint
 # MCP Recommendation Engine
 from app.routes import recommendations
 
+# Test routes
+from app.routes import test_email
+
 # Optional routers from integration branch (guarded so app won’t break if missing)
 try:
     from app.routes import admin_stock
@@ -112,6 +115,9 @@ app.include_router(carbon_forecasting.router, prefix="/api")
 
 # MCP Recommendation Engine
 app.include_router(recommendations.recommendation_router)
+
+# Test routes
+app.include_router(test_email.router)
 
 # Optional integrations
 if admin_stock:
