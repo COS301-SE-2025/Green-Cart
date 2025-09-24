@@ -23,7 +23,18 @@ def signin(user: UserLogin, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, user.email)
     if not db_user or not verify_password(user.password, db_user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    return db_user
+
+    if db_user.secret is not None and db_user.secret != "":
+        MFA = True
+    else:
+        MFA = False
+
+    return {
+        'id': db_user.id,
+        'name': db_user.name, 
+        'email': db_user.email,
+        'requires2FA': MFA
+    }
 
 # Retailer authentication routes
 @router.post("/retailer/signup", response_model=RetailerResponse)
