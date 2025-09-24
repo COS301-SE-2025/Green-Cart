@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import '../styles/login/LoginForm.css';
 import { loginUser } from '../../user-services/loginService'; // External function
-import GoogleIcon from '../../assets/icons/googleColored.png'; // Import Google icon
 
 import TwoFactorVerificationModal from '../modals/TwoFactorVerificationModal';
 
@@ -105,10 +104,6 @@ const handleLoginSubmit = async (e) => {
     navigate('/Home');
   };
 
-  const handleGoogleSignIn = () => {
-    console.log('Google sign in clicked');
-  };
-
   return (
     <div className="login-form-container">
       <div className="login-form-background"></div>
@@ -169,23 +164,6 @@ const handleLoginSubmit = async (e) => {
               Sign up
             </Link>
           </div>
-
-          <div className="divider">
-            <span>or</span>
-          </div>
-
-          <button
-            type="button"
-            className="google-signin-button"
-            onClick={handleGoogleSignIn}
-          >
-            <img
-              src={GoogleIcon}
-              alt="Google"
-              className="google-icon"
-            />
-            Sign in with Google
-          </button>
 
           <div className="retailer-auth-link">
             Are you a retailer?{' '}

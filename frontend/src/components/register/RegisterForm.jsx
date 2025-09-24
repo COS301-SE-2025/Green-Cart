@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { signup } from '../../user-services/signupService';
 import '../styles/register/RegisterForm.css';
-import GoogleIcon from '../../assets/icons/googleColored.png'; // Import Google icon
 
 const RegisterForm = () => {
   const [showInitialForm, setShowInitialForm] = useState(true);
@@ -70,13 +69,6 @@ const RegisterForm = () => {
 
         {showInitialForm ? (
           <div className="register-form">
-            <button type="button" className="google-signup-button" onClick={() => console.log('Google sign up clicked')}>
-              <img src={GoogleIcon} alt="Google" className="google-icon" />
-              Sign up with Google
-            </button>
-
-            <div className="divider"><span>or</span> </div>
-
             <button type="button" className="create-account-button" onClick={handleCreateAccount}>
               Create an Account
             </button>

@@ -67,16 +67,7 @@ describe('LoginForm Component', () => {
     expect(signUpLink).toHaveAttribute('href', '/Register')
   })
 
-  it('renders Google sign-in button', () => {
-    renderWithRouter(<LoginForm />)
-    
-    const googleButton = screen.getByRole('button', { name: /sign in with google/i })
-    const googleIcon = screen.getByAltText('Google')
-    
-    expect(googleButton).toBeInTheDocument()
-    expect(googleIcon).toBeInTheDocument()
-    expect(googleIcon).toHaveAttribute('src', '/src/assets/icons/googleColored.png')
-  })
+
 
   it('updates input values when typing', () => {
     renderWithRouter(<LoginForm />)
