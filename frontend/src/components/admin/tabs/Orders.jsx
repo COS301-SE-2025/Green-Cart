@@ -11,13 +11,13 @@ import exportIcon from '../icons/exportIcon.png';
 
 const Orders = () => {
 	const [currentPage, setCurrentPage] = useState(1);
-	const [ totalOrders, setTotalOrders] = useState(0);
+	const [totalOrders, setTotalOrders] = useState(0);
 	const [selectedView, setSelectedView] = useState([]);
 	const [orderFilter, setOrderFilter] = useState('On Delivery');
 	const [searchTerm, setSearchTerm] = useState('');
 	const [orders, setOrders] = useState([]);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+	const [selectedOrder, setSelectedOrder] = useState(null);
+	const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
 	useEffect(() => {
 		const fetchOrders = async () => {
@@ -63,38 +63,44 @@ const Orders = () => {
 		console.log('Export orders');
 	};
 
-   const handleOrderClick = (order) => {
-    setSelectedOrder(order);
-    setIsOrderModalOpen(true);
-  };
+	const handleOrderClick = (order) => {
+		setSelectedOrder(order);
+		setIsOrderModalOpen(true);
+	};
 
-  const handleCloseOrderModal = () => {
-    setIsOrderModalOpen(false);
-    setSelectedOrder(null);
-  };
+	const handleCloseOrderModal = () => {
+		setIsOrderModalOpen(false);
+		setSelectedOrder(null);
+	};
 
-  const handleUpdateOrderState = async (orderId, newState) => {
-    try {
-      // TODO: Replace with actual API call
-      // await updateOrderState(orderId, newState);
-      
-      // Mock update - update local state
-      setOrders(prevOrders => 
-        prevOrders.map(order => 
-          order.orderId === orderId 
-            ? { ...order, status: newState }
-            : order
-        )
-      );
+	const handleUpdateOrderState = async (orderId, newState) => {
+		try {
+			const apiURL = getLocalApiUrl();
+			const response = await fetch(`${apiURL}/admin/orders/setOrderState`,{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ 
+					'order_id': orderId,
+					'state': newState
+				 })
+			});
+			
+			setOrders(prevOrders =>
+				prevOrders.map(order =>
+					order.orderId === orderId
+						? { ...order, status: newState }
+						: order
+				)
+			);
 
-      console.log(`Updating order ${orderId} to state: ${newState}`);
-      toast.success(`Order ${orderId} updated to ${newState}`);
-      
-    } catch (error) {
-      console.error('Error updating order state:', error);
-      throw new Error('Failed to update order state');
-    }
-  };
+			console.log(`Updating order ${orderId} to state: ${newState}`);
+			toast.success(`Order ${orderId} updated to ${newState}`);
+
+		} catch (error) {
+			console.error('Error updating order state:', error);
+			throw new Error('Failed to update order state');
+		}
+	};
 
 	const orderTabs = ['On Delivery', 'Pending', 'Shipping', 'Delivered', 'Canceled', 'Returned'];
 
@@ -167,26 +173,26 @@ const Orders = () => {
 			</div>
 
 			{/* Table */}
-			<OrdersTable orders={selectedView} onOrderClick={handleOrderClick}/>
+			<OrdersTable orders={selectedView} onOrderClick={handleOrderClick} />
 
-      {/* Pagination */}
-      <GenericPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        totalItems={orders.length}
-        itemsPerPage={itemsPerPage}
-      />
+			{/* Pagination */}
+			<GenericPagination
+				currentPage={currentPage}
+				totalPages={totalPages}
+				onPageChange={handlePageChange}
+				totalItems={orders.length}
+				itemsPerPage={itemsPerPage}
+			/>
 
-       {/* Order Details Modal */}
-      <AdminOrderDetailsModal
-        isOpen={isOrderModalOpen}
-        onClose={handleCloseOrderModal}
-        order={selectedOrder}
-        onUpdateOrderState={handleUpdateOrderState}
-      />
-    </div>
-  );
+			{/* Order Details Modal */}
+			<AdminOrderDetailsModal
+				isOpen={isOrderModalOpen}
+				onClose={handleCloseOrderModal}
+				order={selectedOrder}
+				onUpdateOrderState={handleUpdateOrderState}
+			/>
+		</div>
+	);
 };
 
 export default Orders;
