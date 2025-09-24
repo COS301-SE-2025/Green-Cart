@@ -1,6 +1,6 @@
 import React from 'react';
 
-const OrdersTable = ({ orders }) => {
+const OrdersTable = ({ orders, loading = false }) => {
   const getStatusColor = (status) => {
     const colors = {
       'Preparing Order': '#f59e0b',
@@ -11,6 +11,31 @@ const OrdersTable = ({ orders }) => {
     };
     return colors[status] || '#6b7280';
   };
+
+  if (loading) {
+    return (
+      <div className="adm-ord-table-container">
+        <div className="adm-ord-table-loading">
+          <div className="adm-ord-table-loading-banner">
+            <div className="adm-ord-table-custom-loader">
+              <svg className="adm-ord-table-circular" viewBox="25 25 50 50">
+                <circle 
+                  className="adm-ord-table-path" 
+                  cx="50" 
+                  cy="50" 
+                  r="20" 
+                  fill="none" 
+                  strokeWidth="2" 
+                  strokeMiterlimit="10"
+                />
+              </svg>
+            </div>
+            <span>Loading orders table...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="adm-ord-table-container">

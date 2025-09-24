@@ -13,7 +13,7 @@ const Orders = () => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [orders, setOrders] = useState([]);
-	const [loading, setLoading] = useState(true); // Add loading state
+	const [tableLoading, setTableLoading] = useState(true); // Table-specific loading state
 
 	// Sort and Filter states
 	const [sortBy, setSortBy] = useState('');
@@ -32,7 +32,7 @@ const Orders = () => {
 	useEffect(() => {
 		const fetchOrders = async () => {
 			try {
-				setLoading(true); // Set loading to true when starting fetch
+				setTableLoading(true); // Set table loading to true when starting fetch
 				const apiUrl = getLocalApiUrl();
 				const response = await fetch(`${apiUrl}/admin/orders/list`);
 				const data = await response.json();
@@ -44,7 +44,7 @@ const Orders = () => {
 			} catch (error) {
 				console.error('Error fetching orders:', error);
 			} finally {
-				setLoading(false); // Set loading to false when fetch completes
+				setTableLoading(false); // Set table loading to false when fetch completes
 			}
 		};
 
@@ -208,8 +208,8 @@ const Orders = () => {
 				</div>
 			</div>
 
-			{/* Stats Cards - Pass dynamic loading state */}
-			<OrderStatsCards loading={loading}/>
+			{/* Stats Cards - Now manage their own loading independently */}
+			<OrderStatsCards />
 
 			{/* Search and Controls */}
 			<div className="adm-ord-search-and-controls">
@@ -312,17 +312,19 @@ const Orders = () => {
 				</div>
 			</div>
 
-			{/* Table */}
-			<OrdersTable orders={paginatedOrders} />
+			{/* Table with loading state */}
+			<OrdersTable orders={paginatedOrders} loading={tableLoading} />
 
-			{/* Pagination */}
-			<GenericPagination
-				currentPage={currentPage}
-				totalPages={totalPages}
-				onPageChange={handlePageChange}
-				totalItems={filteredOrders.length}
-				itemsPerPage={itemsPerPage}
-			/>
+			{/* Pagination - Hide when loading */}
+			{!tableLoading && (
+				<GenericPagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={handlePageChange}
+					totalItems={filteredOrders.length}
+					itemsPerPage={itemsPerPage}
+				/>
+			)}
 		</div>
 	);
 };

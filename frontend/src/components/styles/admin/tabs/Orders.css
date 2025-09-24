@@ -334,6 +334,101 @@
   padding-right: 8px;
 }
 
+.adm-ord-table-loading {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  margin-bottom: 24px;
+  min-height: 200px;
+}
+
+.adm-ord-table-loading-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 250px;
+  gap: 16px;
+  color: #6b7280;
+  font-size: 14px;
+  background: white;
+}
+
+.adm-ord-table-custom-loader {
+  position: relative;
+  margin: 0 auto;
+  width: 60px;
+}
+
+.adm-ord-table-custom-loader:before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+
+.adm-ord-table-custom-loader .adm-ord-table-circular {
+  animation: adm-ord-table-rotate 2s linear infinite;
+  height: 100%;
+  transform-origin: center center;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.adm-ord-table-custom-loader .adm-ord-table-path {
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  animation: adm-ord-table-dash 1.5s ease-in-out infinite, adm-ord-table-color 6s ease-in-out infinite;
+  stroke-linecap: round;
+  fill: none;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+}
+
+@keyframes adm-ord-table-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes adm-ord-table-dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124px;
+  }
+}
+
+@keyframes adm-ord-table-color {
+  100%,
+  0% {
+    stroke: #1f2937;
+  }
+  40% {
+    stroke: #156231;
+  }
+  66% {
+    stroke: #1f2937;
+  }
+  80%,
+  90% {
+    stroke: #636363;
+  }
+}
+
 /* Order Tabs */
 .adm-ord-tabs {
   display: flex;
@@ -652,6 +747,15 @@
    padding: 16px;
  }
 
+ .adm-ord-table-custom-loader {
+    width: 50px;
+  }
+  
+  .adm-ord-table-loading-banner {
+    height: 200px;
+    gap: 12px;
+  }
+
  .adm-ord-search-and-controls {
    flex-direction: column;
    align-items: stretch;
@@ -740,6 +844,15 @@
  .adm-ord-control-buttons {
    flex-wrap: wrap;
  }
+
+ .adm-ord-table-custom-loader {
+    width: 40px;
+  }
+  
+  .adm-ord-table-loading-banner {
+    height: 150px;
+    gap: 10px;
+  }
  
  .adm-ord-stats-value {
    font-size: 28px;
