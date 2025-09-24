@@ -14,8 +14,8 @@ const AdminOrderDetailsModal = ({
 
   // FIXED: Update selectedState when order changes
   useEffect(() => {
-    if (order?.status) {
-      setSelectedState(order.status);
+    if (order?.state) {
+      setSelectedState(order.state);
     }
   }, [order]);
 
@@ -65,17 +65,13 @@ const AdminOrderDetailsModal = ({
       'Ready for Delivery': '📦',
       'In Transit': '🚚',
       'Delivered': '✅',
-      'Cancelled': '❌',
-      'Pending': '⏳',
-      'Shipping': '🚚',
-      'Returned': '↩️',
-      'Canceled': '❌'
+      'Cancelled': '❌'
     };
     return icons[state] || '📋';
   };
 
   const handleUpdateState = async () => {
-    if (!selectedState || selectedState === order.status) {
+    if (!selectedState || selectedState === order.state) {
       toast.error('Please select a different state');
       return;
     }
@@ -85,8 +81,7 @@ const AdminOrderDetailsModal = ({
       // Convert display state to backend state if needed
       const backendState = getBackendState(selectedState);
       
-      await onUpdateOrderState(order.orderId, backendState);
-      toast.success(`Order state updated to ${selectedState}`);
+      await onUpdateOrderState(order.order_id, backendState);
       onClose();
     } catch (error) {
       toast.error(error.message || 'Failed to update order state');
@@ -110,7 +105,7 @@ const AdminOrderDetailsModal = ({
         <div className="admin-order-modal-header">
           <div className="order-modal-title-section">
             <h2>Order Details</h2>
-            <span className="order-modal-id">{order.orderId}</span>
+            <span className="order-modal-id">{order.order_id}</span>
           </div>
           <button className="order-modal-close" onClick={handleClose}>×</button>
         </div>
@@ -122,11 +117,11 @@ const AdminOrderDetailsModal = ({
             <div className="order-modal-info-grid">
               <div className="order-modal-info-item">
                 <span className="order-modal-label">Order ID:</span>
-                <span className="order-modal-value">{order.orderId}</span>
+                <span className="order-modal-value">{order.order_id}</span>
               </div>
               <div className="order-modal-info-item">
                 <span className="order-modal-label">Customer:</span>
-                <span className="order-modal-value">{order.customer}</span>
+                <span className="order-modal-value">{order.user_email}</span>
               </div>
               <div className="order-modal-info-item">
                 <span className="order-modal-label">Order Date:</span>
@@ -141,18 +136,18 @@ const AdminOrderDetailsModal = ({
                 <span 
                   className="order-modal-status-badge"
                   style={{ 
-                    backgroundColor: getStateColor(order.status),
+                    backgroundColor: getStateColor(order.state),
                     color: 'white'
                   }}
                 >
-                  {getStateIcon(order.status)} {order.status}
+                  {getStateIcon(order.state)} {order.state}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Order Items (Mock data - replace with actual items) */}
-          <div className="order-modal-section">
+          {/* <div className="order-modal-section">
             <h3 className="order-modal-section-title">Order Items</h3>
             <div className="order-modal-items">
               <div className="order-modal-item">
@@ -174,7 +169,7 @@ const AdminOrderDetailsModal = ({
                 <span className="order-total-value">R97.48</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Order State Management */}
           <div className="order-modal-section">
@@ -231,7 +226,7 @@ const AdminOrderDetailsModal = ({
                 <button 
                   className="order-state-update-btn"
                   onClick={handleUpdateState}
-                  disabled={isUpdating || selectedState === order.status}
+                  disabled={isUpdating || selectedState === order.state}
                 >
                   {isUpdating ? (
                     <>
@@ -257,28 +252,28 @@ const AdminOrderDetailsModal = ({
                   <span className="timeline-date">{order.date}</span>
                 </div>
               </div>
-              <div className={`timeline-item ${['Preparing Order', 'Ready for Delivery', 'In Transit', 'Delivered'].includes(order.status) ? 'completed' : ''}`}>
+              <div className={`timeline-item ${['Preparing Order', 'Ready for Delivery', 'In Transit', 'Delivered'].includes(order.state) ? 'completed' : ''}`}>
                 <div className="timeline-dot"></div>
                 <div className="timeline-content">
                   <span className="timeline-title">Order Confirmed</span>
                   <span className="timeline-date">Processing...</span>
                 </div>
               </div>
-              <div className={`timeline-item ${['In Transit', 'Delivered'].includes(order.status) ? 'completed' : ''}`}>
+              <div className={`timeline-item ${['In Transit', 'Delivered'].includes(order.state) ? 'completed' : ''}`}>
                 <div className="timeline-dot"></div>
                 <div className="timeline-content">
                   <span className="timeline-title">In Transit</span>
                   <span className="timeline-date">
-                    {order.status === 'In Transit' ? 'En route' : 'Pending'}
+                    {order.state === 'In Transit' ? 'En route' : 'Pending'}
                   </span>
                 </div>
               </div>
-              <div className={`timeline-item ${order.status === 'Delivered' ? 'completed' : ''}`}>
+              <div className={`timeline-item ${order.state === 'Delivered' ? 'completed' : ''}`}>
                 <div className="timeline-dot"></div>
                 <div className="timeline-content">
                   <span className="timeline-title">Delivered</span>
                   <span className="timeline-date">
-                    {order.status === 'Delivered' ? 'Completed' : 'Pending'}
+                    {order.state === 'Delivered' ? 'Completed' : 'Pending'}
                   </span>
                 </div>
               </div>

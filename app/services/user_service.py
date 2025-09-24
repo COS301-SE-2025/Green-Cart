@@ -195,3 +195,39 @@ def mfa_setup(user_id: str, db: Session):
         "qr_code": qr_base64,
         "secret": user.secret
     }
+
+def is_MFA(email, db: Session):
+    user = db.query(User).filter(User.email == email).first()
+
+    if user.secret is None or user.secret == "":
+        return {
+            'status': 200,
+            'message': 'Success',
+            'enabled': False
+        }
+    
+    else:
+        return {
+            'status': 200,
+            'message': 'Success',
+            'enabled': True
+        }
+    
+def disable_MFA(user_id, db:Session):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if user.secret is None or user.secret == "":
+        return {
+            'status': 200,
+            'message': 'Success'
+        }
+    else:
+        if user.secret is not None or user.secret != "":
+            user.secret = None
+            db.commit()
+            db.refresh(user)
+
+            return {
+                'status': 200,
+                'message': 'Success'
+            }

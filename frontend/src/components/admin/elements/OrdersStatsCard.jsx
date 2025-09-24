@@ -55,8 +55,8 @@ const OrderStatsCards = () => {
 
       if (response) {
         setPending(response.total_pending || 0);
-        setReady(response.total_ready_for_delivery || 0);
-        setInTransit(response.total_in_transit || 0);
+        setReady(response.total_ready || 0);
+        setInTransit(response.total_transit || 0);
         setDelivered(response.total_delivered || 0);
         setCancelled(response.total_cancelled || 0);
         setTotal(response.total_orders || 0);
