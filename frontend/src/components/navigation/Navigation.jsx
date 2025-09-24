@@ -115,6 +115,8 @@ export default function Navigation() {
         localStorage.removeItem("retailerData");
         localStorage.removeItem("user"); // legacy key
         localStorage.removeItem("token"); // legacy key
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("auth_token");
         localStorage.removeItem("retailer_user");
         localStorage.removeItem("retailer_token");
         localStorage.removeItem("selected_shop");
