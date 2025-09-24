@@ -487,7 +487,7 @@ export default function UserAccount() {
 	//ADDED FOR SECURITY TAB
 	const handleChangePassword = async (passwordData) => {
   try {
-    const apiUrl = getLocalApiUrl();
+    const apiUrl = getApiUrl();
     const response = await fetch(`${apiUrl}/users/changePassword`, {
       method: 'POST',
       headers: {

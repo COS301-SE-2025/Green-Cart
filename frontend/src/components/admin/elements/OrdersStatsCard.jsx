@@ -28,7 +28,7 @@ const OrderStatsCards = () => {
   const populateOrdersRevenue = async (period) => {
     try {
       setRevenueLoading(true);
-      const apiUrl = getLocalApiUrl();
+      const apiUrl = getApiUrl();
       const response = await fetch(`${apiUrl}/admin/orders/revenue/${period}`).then(res => res.json());
       
       if(response){
@@ -46,7 +46,7 @@ const OrderStatsCards = () => {
   const populateOrdersOverview = async (period) => {
     try {
       setOrderLoading(true);
-      const apiUrl = getLocalApiUrl();
+      const apiUrl = getApiUrl();
       const response = await fetch(`${apiUrl}/admin/orders/overview`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

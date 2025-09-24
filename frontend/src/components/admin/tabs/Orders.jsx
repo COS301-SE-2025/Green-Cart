@@ -40,7 +40,7 @@ const Orders = () => {
 		const fetchOrders = async () => {
 			try {
 				setTableLoading(true); // Set table loading to true when starting fetch
-				const apiUrl = getLocalApiUrl();
+				const apiUrl = getApiUrl();
 				const response = await fetch(`${apiUrl}/admin/orders/list`);
 				const data = await response.json();
 				if (response.ok) {
@@ -213,7 +213,7 @@ const Orders = () => {
 
 	const handleUpdateOrderState = async (orderId, newState) => {
 		try {
-			const apiURL = getLocalApiUrl();
+			const apiURL = getApiUrl();
 			const response = await fetch(`${apiURL}/admin/orders/setOrderState`,{
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
