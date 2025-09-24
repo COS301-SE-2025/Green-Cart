@@ -106,7 +106,7 @@ const DashboardMetricsChart = ({ adminMetrics, loading = false }) => {
           },
           chartOptions: {
             xAxis: {
-              categories: ['03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16'],
+              categories: adminMetrics.monthly_orders.map(item => item.month),
               labels: {
                 style: {
                   fontSize: '10px'
@@ -119,17 +119,17 @@ const DashboardMetricsChart = ({ adminMetrics, loading = false }) => {
           condition: {
             maxWidth: 480
           },
-          chartOptions: {
-            xAxis: {
-              categories: ['3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'],
-              labels: {
-                step: 2,
-                style: {
-                  fontSize: '9px'
-                }
-              }
-            }
-          }
+          // chartOptions: {
+          //   xAxis: {
+          //     categories: ['Test', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'],
+          //     labels: {
+          //       step: 2,
+          //       style: {
+          //         fontSize: '9px'
+          //       }
+          //     }
+          //   }
+          // }
         }
       ]
     }
@@ -164,7 +164,7 @@ const DashboardMetricsChart = ({ adminMetrics, loading = false }) => {
         <h3 className="chart-title">Monthly Orders</h3>
         <div className="chart-controls">
           <div className="dropdown-container" ref={exportRef}>
-            <button 
+            {/* <button 
               className="dropdown-btn"
               onClick={() => {
                 setExportDropdown(!exportDropdown);
@@ -172,8 +172,8 @@ const DashboardMetricsChart = ({ adminMetrics, loading = false }) => {
               }}
             >
               Export data <span className="dropdown-arrow">⌄</span>
-            </button>
-            {exportDropdown && (
+            </button> */}
+            {/* {exportDropdown && (
               <div className="dropdown-menu">
                 <div className="dropdown-item" onClick={() => handleExportClick('CSV')}>
                   Export as CSV
@@ -185,9 +185,9 @@ const DashboardMetricsChart = ({ adminMetrics, loading = false }) => {
                   Export as Excel
                 </div>
               </div>
-            )}
+            )} */}
           </div>
-          <div className="dropdown-container" ref={periodRef}>
+          {/* <div className="dropdown-container" ref={periodRef}>
             <button 
               className="dropdown-btn"
               onClick={() => {
@@ -210,7 +210,7 @@ const DashboardMetricsChart = ({ adminMetrics, loading = false }) => {
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
       

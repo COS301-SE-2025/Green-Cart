@@ -16,6 +16,9 @@ export default function RecommendationsStrip({ products = [], userId = null, use
 
   const [hasLoaded, setHasLoaded] = useState(false);
   
+  // Check if user is actually logged in (not using demo user ID)
+  const isUserLoggedIn = userId && userId !== 'demo-user-123' && localStorage.getItem('userData');
+  
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [modalExplanation, setModalExplanation] = useState('');
@@ -29,6 +32,15 @@ export default function RecommendationsStrip({ products = [], userId = null, use
     const loadData = async () => {
       if (!isMounted || hasLoaded) return;
       
+      // Don't load recommendations for non-logged-in users
+      if (!isUserLoggedIn) {
+        if (isMounted) {
+          setLoading(false);
+          setHasLoaded(true);
+        }
+        return;
+      }
+      
       console.log('Loading recommendations...');
       setLoading(true);
       setError(null);
@@ -36,8 +48,7 @@ export default function RecommendationsStrip({ products = [], userId = null, use
       try {
         if (useApiRecommendations && userId) {
           console.log('Fetching API recommendations for user:', userId);
-          const fallbackUserId = userId || 'e1ca2b93-314f-4a71-b6fb-3bb430157b1f';
-          const result = await mcpService.getRecommendations(fallbackUserId, 6);
+          const result = await mcpService.getRecommendations(userId, 6);
           
           if (isMounted) {
             if (Array.isArray(result) && result.length > 0) {
@@ -81,9 +92,43 @@ export default function RecommendationsStrip({ products = [], userId = null, use
     return () => {
       isMounted = false;
     };
-  }, [userId, useApiRecommendations]); // Only depend on userId
+  }, [userId, useApiRecommendations, isUserLoggedIn]); // Include login state
 
-  console.log('Component state:', { loading, error, recommendations: recommendations?.length, modalOpen });
+  console.log('Component state:', { loading, error, recommendations: recommendations?.length, modalOpen, isUserLoggedIn });
+
+  // Show sign-in message for non-logged-in users
+  if (!isUserLoggedIn) {
+    console.log('Rendering sign-in message for non-logged-in user');
+    return (
+      <section className="mcp-recs">
+        <div className="mcp-recs-header">
+          <h3>🌱 Recommended for You</h3>
+          <span className="mcp-ai-badge">Powered by AI</span>
+        </div>
+        <div className="mcp-signin-message">
+          <div className="mcp-signin-content">
+            <div className="mcp-signin-icon">🔐</div>
+            <h4>Sign in to get personalized recommendations</h4>
+            <p>Get AI-powered product recommendations tailored to your sustainability preferences and shopping history.</p>
+            <div className="mcp-signin-actions">
+              <button 
+                className="mcp-signin-btn mcp-signin-btn-primary"
+                onClick={() => window.location.href = '/Login'}
+              >
+                Sign In
+              </button>
+              <button 
+                className="mcp-signin-btn mcp-signin-btn-secondary"
+                onClick={() => window.location.href = '/Register'}
+              >
+                Create Account
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (loading) {
     console.log('Rendering loading state');

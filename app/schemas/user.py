@@ -15,6 +15,7 @@ class UserResponse(BaseModel):
     id: str
     name: str
     email: str
+    requires2FA: bool
     created_at: Optional[datetime] = None
 
     class Config:
@@ -56,3 +57,36 @@ class SetUserInformationRequest(BaseModel):
 class SetUserInformationResponse(BaseModel):
     status: int
     message: str
+
+class ChangeUserPasswordRequest(BaseModel):
+    user_id: str
+    old_password: str
+    new_password: str
+
+class ChangeUserPasswordResponse(BaseModel):
+    status: int
+    message: str
+
+class setupMFAResponse(BaseModel):
+    status: int
+    message: str
+    qr_code: str
+    secret: str
+
+class isMFASetupResponse(BaseModel):
+    status: int
+    message: str
+    enabled: bool
+
+class disableMFAResponse(BaseModel):
+    status: int
+    message: str
+
+class verifyMFARequest(BaseModel):
+    user_id: str
+    code: str
+
+class verifyMFAResponse(BaseModel):
+    status: int
+    message: str
+    valid: bool

@@ -155,7 +155,8 @@ export default function Home() {
     : [];
 
   // Get user ID for personalized recommendations  
-  const userId = JSON.parse(localStorage.getItem('userData'))?.id || 'demo-user-123';
+  const userData = localStorage.getItem('userData');
+  const userId = userData ? JSON.parse(userData)?.id : 'demo-user-123';
 
   return (
     <div className="home">
