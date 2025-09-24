@@ -107,7 +107,7 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
 
             <div className="nav-divider"></div>
 
-            {supportItems.map((item, index) => (
+            {/* {supportItems.map((item, index) => (
               <div 
                 key={item.name}
                 className={`nav-item ${currentPage === item.name ? 'active' : ''}`}
@@ -118,7 +118,7 @@ const SideBar = ({ isOpen, onToggle, currentPage, onNavigate }) => {
                 <span>{item.name}</span>
                 {item.badge && <span className="notification-badge">{item.badge}</span>}
               </div>
-            ))}
+            ))} */}
           </nav>
 
           {/* Red Logout Button */}

@@ -50,12 +50,6 @@ const Admin = () => {
         return <div className="page-placeholder">Payments Page - Coming Soon</div>;
       case 'Customers':
         return <Customers />;
-      case 'Notifications':
-        return <div className="page-placeholder">Notifications Page - Coming Soon</div>;
-      case 'Help & Support':
-        return <div className="page-placeholder">Help & Support Page - Coming Soon</div>;
-      case 'Settings':
-        return <div className="page-placeholder">Settings Page - Coming Soon</div>;
       default:
         return <Dashboard />;
     }
