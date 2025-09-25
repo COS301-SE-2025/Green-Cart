@@ -37,19 +37,17 @@ jobs:
           
           # Copy index.html to 404.html for S3 static hosting fallback
           cp frontend/dist/index.html frontend/dist/404.html
-      - name: Install AWS CLI and Sync to S3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync to S3
         run: |
-          # Install AWS CLI
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install --update
-          
           # Sync files to S3 with delete flag
           aws s3 sync frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }}/ --delete
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
 
       - name: Configure S3 for SPA routing
         run: |
@@ -232,12 +230,32 @@ jobs:
             EOF
             
             echo "=== Building Docker Image ==="
-            sudo docker build -t green-cart-backend .
+            # Check Docker daemon status
+            sudo docker info || {
+              echo "Docker daemon not running, attempting to start..."
+              sudo systemctl start docker
+              sleep 5
+              sudo docker info
+            }
             
-            if [ $? -ne 0 ]; then
+            # Try to pull base image first to avoid build-time auth issues
+            echo "Pre-pulling base image..."
+            sudo docker pull python:3.11-slim || echo "Warning: Could not pre-pull base image, continuing..."
+            
+            # Build with no-cache to avoid layer caching issues
+            echo "Building Docker image..."
+            sudo docker build --no-cache -t green-cart-backend . || {
               echo "ERROR: Docker build failed!"
-              exit 1
-            fi
+              echo "Docker system information:"
+              sudo docker system df
+              echo "Available images:"
+              sudo docker images
+              echo "Trying to build with cached layers..."
+              sudo docker build -t green-cart-backend . || {
+                echo "ERROR: All Docker build attempts failed!"
+                exit 1
+              }
+            }
             
             echo "=== Starting Container ==="
             sudo docker run -d \
