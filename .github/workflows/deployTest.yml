@@ -37,24 +37,22 @@ jobs:
           
           # Copy index.html to 404.html for S3 static hosting fallback
           cp frontend/dist/index.html frontend/dist/404.html
-      - name: Sync to S3
-        uses: jakejarvis/s3-sync-action@v0.5.1
-        with:
-          args: --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: 'frontend/dist'
-
-      - name: Configure S3 for SPA routing
+      - name: Install AWS CLI and Sync to S3
         run: |
           # Install AWS CLI
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
           sudo ./aws/install --update
           
+          # Sync files to S3 with delete flag
+          aws s3 sync frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }}/ --delete
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      - name: Configure S3 for SPA routing
+        run: |
           # Configure S3 bucket for static website hosting with error document
           aws s3 website s3://${{ secrets.AWS_S3_BUCKET }} \
             --index-document index.html \
