@@ -230,19 +230,19 @@ jobs:
             BASE_URL=https://api.greencart-cos301.co.za
             EOF
             
-            echo "=== Installing Python and Dependencies Directly ==="
-            # Install Python 3.11 and pip if not present
+            echo "=== Installing Python and Dependencies ==="
+            # Install Python 3.12 (default on Ubuntu 24.04) and required packages
             sudo apt-get update
-            sudo apt-get install -y python3.11 python3.11-pip python3.11-venv python3.11-dev
+            sudo apt-get install -y python3 python3-pip python3-venv python3-full python3-dev build-essential
             
-            # Create a virtual environment
-            python3.11 -m venv venv
+            # Create a virtual environment using system Python (3.12)
+            python3 -m venv venv
             source venv/bin/activate
             
-            # Upgrade pip
+            # Upgrade pip in virtual environment
             pip install --upgrade pip
             
-            # Install requirements
+            # Install requirements in virtual environment
             pip install -r requirements.txt
             
             echo "=== Creating systemd service for backend ==="
