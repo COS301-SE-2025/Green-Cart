@@ -44,10 +44,40 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Sync to S3
+      - name: Sync to S3 with proper content types
         run: |
-          # Sync files to S3 with delete flag
-          aws s3 sync frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }}/ --delete
+          # Sync files to S3 with delete flag and set content types during sync
+          aws s3 sync frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }}/ \
+            --delete \
+            --cache-control "public, max-age=31536000" \
+            --metadata-directive REPLACE
+          
+          # Specifically handle CSS files with correct MIME type
+          aws s3 cp frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }}/ \
+            --recursive \
+            --exclude "*" \
+            --include "*.css" \
+            --content-type "text/css" \
+            --cache-control "public, max-age=31536000" \
+            --metadata-directive REPLACE
+            
+          # Handle JS files
+          aws s3 cp frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }}/ \
+            --recursive \
+            --exclude "*" \
+            --include "*.js" \
+            --content-type "application/javascript" \
+            --cache-control "public, max-age=31536000" \
+            --metadata-directive REPLACE
+          
+          # Handle HTML files with no cache
+          aws s3 cp frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }}/ \
+            --recursive \
+            --exclude "*" \
+            --include "*.html" \
+            --content-type "text/html" \
+            --cache-control "no-cache, no-store, must-revalidate" \
+            --metadata-directive REPLACE
 
       - name: Configure S3 for SPA routing
         run: |
@@ -55,22 +85,6 @@ jobs:
           aws s3 website s3://${{ secrets.AWS_S3_BUCKET }} \
             --index-document index.html \
             --error-document 404.html
-          
-          # Set proper MIME types for JavaScript files
-          aws s3 cp s3://${{ secrets.AWS_S3_BUCKET }}/ s3://${{ secrets.AWS_S3_BUCKET }}/ \
-            --recursive \
-            --exclude "*" \
-            --include "*.js" \
-            --content-type "application/javascript" \
-            --metadata-directive REPLACE || true
-          
-          # Set proper MIME types for CSS files  
-          aws s3 cp s3://${{ secrets.AWS_S3_BUCKET }}/ s3://${{ secrets.AWS_S3_BUCKET }}/ \
-            --recursive \
-            --exclude "*" \
-            --include "*.css" \
-            --content-type "text/css" \
-            --metadata-directive REPLACE || true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -143,14 +157,27 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      - name: Invalidate CloudFront
-        uses: chetan/invalidate-cloudfront-action@v2
+      - name: Invalidate CloudFront Cache
+        run: |
+          # Create comprehensive cache invalidation to force CSS refresh
+          echo "Creating CloudFront invalidation to refresh CSS files..."
+          INVALIDATION_ID=$(aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*" "/*.css" "/*.js" "/static/*" \
+            --query 'Invalidation.Id' \
+            --output text)
+          
+          echo "Invalidation created with ID: $INVALIDATION_ID"
+          
+          # Wait for invalidation to complete (optional)
+          echo "Waiting for invalidation to complete..."
+          aws cloudfront wait invalidation-completed \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --id $INVALIDATION_ID || echo "Invalidation is in progress..."
         env:
-          DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
-          PATHS: '/*'
-          AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
 
   backend-deploy:
     runs-on: ubuntu-latest
