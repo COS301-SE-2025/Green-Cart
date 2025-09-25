@@ -172,12 +172,13 @@ jobs:
             echo "Checking disk usage before cleanup..."
             df -h
             
-            # Stop and remove existing containers
-            sudo docker stop green-cart-backend || true
-            sudo docker rm green-cart-backend || true
+            # Stop existing backend service
+            sudo systemctl stop green-cart-backend || true
+            sudo systemctl disable green-cart-backend || true
             
-            # Clean up Docker images and old files
-            sudo docker system prune -af --volumes || true
+            # Clean up old service files
+            sudo rm -f /etc/systemd/system/green-cart-backend.service || true
+            sudo systemctl daemon-reload
             sudo apt-get autoremove -y || true
             sudo apt-get autoclean || true
             
@@ -229,55 +230,72 @@ jobs:
             BASE_URL=https://api.greencart-cos301.co.za
             EOF
             
-            echo "=== Building Docker Image ==="
-            # Check Docker daemon status
-            sudo docker info || {
-              echo "Docker daemon not running, attempting to start..."
-              sudo systemctl start docker
-              sleep 5
-              sudo docker info
-            }
+            echo "=== Installing Python and Dependencies Directly ==="
+            # Install Python 3.11 and pip if not present
+            sudo apt-get update
+            sudo apt-get install -y python3.11 python3.11-pip python3.11-venv python3.11-dev
             
-            # Try to pull base image first to avoid build-time auth issues
-            echo "Pre-pulling base image..."
-            sudo docker pull python:3.11-slim || echo "Warning: Could not pre-pull base image, continuing..."
+            # Create a virtual environment
+            python3.11 -m venv venv
+            source venv/bin/activate
             
-            # Build with no-cache to avoid layer caching issues
-            echo "Building Docker image..."
-            sudo docker build --no-cache -t green-cart-backend . || {
-              echo "ERROR: Docker build failed!"
-              echo "Docker system information:"
-              sudo docker system df
-              echo "Available images:"
-              sudo docker images
-              echo "Trying to build with cached layers..."
-              sudo docker build -t green-cart-backend . || {
-                echo "ERROR: All Docker build attempts failed!"
-                exit 1
-              }
-            }
+            # Upgrade pip
+            pip install --upgrade pip
             
-            echo "=== Starting Container ==="
-            sudo docker run -d \
-              --name green-cart-backend \
-              --restart unless-stopped \
-              -p 8000:8000 \
-              --env-file .env \
-              green-cart-backend
+            # Install requirements
+            pip install -r requirements.txt
             
-            if [ $? -ne 0 ]; then
-              echo "ERROR: Container failed to start!"
+            echo "=== Creating systemd service for backend ==="
+            # Stop existing service if running
+            sudo systemctl stop green-cart-backend || true
+            
+            # Create systemd service file
+            sudo tee /etc/systemd/system/green-cart-backend.service > /dev/null << EOF
+            [Unit]
+            Description=Green Cart Backend API
+            After=network.target
+            
+            [Service]
+            Type=simple
+            User=ubuntu
+            WorkingDirectory=/home/ubuntu/Green-Cart
+            Environment=PATH=/home/ubuntu/Green-Cart/venv/bin
+            EnvironmentFile=/home/ubuntu/Green-Cart/.env
+            ExecStart=/home/ubuntu/Green-Cart/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+            Restart=always
+            RestartSec=10
+            
+            [Install]
+            WantedBy=multi-user.target
+            EOF
+            
+            # Reload systemd and start service
+            sudo systemctl daemon-reload
+            sudo systemctl enable green-cart-backend
+            sudo systemctl start green-cart-backend
+            
+            echo "=== Starting Backend Service ==="
+            # Wait a moment for service to start
+            sleep 5
+            
+            # Check if service is running
+            if ! sudo systemctl is-active --quiet green-cart-backend; then
+              echo "ERROR: Backend service failed to start!"
+              echo "Service status:"
+              sudo systemctl status green-cart-backend
+              echo "Service logs:"
+              sudo journalctl -u green-cart-backend --no-pager -n 50
               exit 1
             fi
             
             echo "=== Validating Deployment ==="
             sleep 10
             
-            # Check if container is running
-            if ! sudo docker ps | grep green-cart-backend; then
-              echo "ERROR: Container is not running!"
-              echo "Container logs:"
-              sudo docker logs green-cart-backend
+            # Check if service is running
+            if ! sudo systemctl is-active --quiet green-cart-backend; then
+              echo "ERROR: Service is not running!"
+              echo "Service logs:"
+              sudo journalctl -u green-cart-backend --no-pager -n 50
               exit 1
             fi
             
@@ -290,8 +308,8 @@ jobs:
               fi
               if [ $i -eq 30 ]; then
                 echo "ERROR: Health check failed after 30 attempts!"
-                echo "Container logs:"
-                sudo docker logs green-cart-backend
+                echo "Service logs:"
+                sudo journalctl -u green-cart-backend --no-pager -n 50
                 exit 1
               fi
               echo "Attempt $i/30: Health check failed, retrying..."
@@ -328,7 +346,7 @@ jobs:
             echo "Final disk usage:"
             df -h
             
-            echo "Container status:"
-            sudo docker ps | grep green-cart-backend
+            echo "Service status:"
+            sudo systemctl status green-cart-backend --no-pager
             
             echo "Backend deployment successful!"
