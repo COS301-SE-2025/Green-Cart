@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../../config/api.js'
 import '../styles/modals/TwoFactorModal.css';
 
 const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabled, userId }) => {
@@ -27,7 +28,7 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
 
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:8000/users/setupMFA/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/users/setupMFA/${userId}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
