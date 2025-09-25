@@ -14,12 +14,16 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Left side: logo + main links */
 .nav__left {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 /* Logo */
@@ -47,10 +51,14 @@
   align-items: center;
   margin: 0;
   padding: 0;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .nav__links--right {
   gap: 0.9rem;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 /* Individual link items */
@@ -77,6 +85,8 @@
 /* Cart icon container */
 .nav__cart {
   position: relative;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* Cart icon itself (SVG/img) */
@@ -172,7 +182,9 @@
   .navigation {
     height: 70px;
     display: flex;
-    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
   }
   
   .nav__logo {
@@ -180,7 +192,7 @@
   }
   
   .nav__logo-image {
-    height: 45px;
+    height: 40px;
   }
   
   .nav__links--left {
@@ -194,17 +206,31 @@
   .nav__links--right .nav__separator {
     display: none; /* Hide separators when links are hidden */
   }
+  
+  .nav__links--right {
+    display: flex;
+    align-items: center;
+  }
 }
 
 @media (max-width: 480px) {
   .navigation {
     padding: 0 1rem;
     height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
   
-  /* Hide logo on very small screens */
+  /* Keep logo visible but smaller on mobile */
   .nav__logo {
-    display: none;
+    display: flex;
+    align-items: center;
+    margin-right: 0.5rem;
+  }
+  
+  .nav__logo-image {
+    height: 35px;
   }
   
   /* Show mobile menu button */
@@ -217,8 +243,8 @@
     position: fixed;
     top: 0;
     left: -100%;
-    /* width: 80%; */
-    width: 60%;
+    width: 80%;
+    max-width: 300px;
     height: 100vh;
     background: white;
     padding: 80px 20px 20px;
@@ -226,7 +252,7 @@
     z-index: 1000;
     box-shadow: 2px 0 10px rgba(0,0,0,0.1);
     display: flex;
-    /* flex-direction: column; */
+    flex-direction: column;
   }
   
   .nav__mobile-menu.active {
