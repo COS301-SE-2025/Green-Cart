@@ -10,7 +10,7 @@ import './styles/UserAccount.css';
 import RetailerAuthOverlay from "../components/retailer/Auth/RetailerAuthOverlay";
 import InteractiveCarbonChart from '../components/charts/InteractiveCarbonChart';
 import carbonGoalsService from '../services/carbonGoalsService';
-import { getApiUrl, getLocalApiUrl } from '../config/api';
+import { getApiUrl, getLocalApiUrl, API_BASE_URL } from '../config/api';
 import ChangePasswordModal from '../components/modals/ChangePasswordModal';
 import TwoFactorModal from '../components/modals/TwoFactorModal';
 import forecastingService from '../services/forecastingService';
@@ -139,6 +139,13 @@ export default function UserAccount() {
 		if (userData) {
 			const parsedUser = JSON.parse(userData);
 			setUser(parsedUser);
+
+			if(parsedUser.requires2FA === true){
+				setIs2FAEnabled(true);
+
+			}else{
+				setIs2FAEnabled(false);
+			}
 
 			const loadUserInfo = async () => {
 				try {
@@ -515,7 +522,7 @@ export default function UserAccount() {
 const handleEnable2FA = async (twoFactorData) => {
   try {
     // TODO: Replace with actual API call
-    const response = await fetch('/api/users/enable-2fa', {
+    const response = await fetch(`${API_BASE_URL}/users/verifyMFA`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -523,13 +530,14 @@ const handleEnable2FA = async (twoFactorData) => {
       },
       body: JSON.stringify({
         code: twoFactorData.code,
-        secret: twoFactorData.secret,
-        userId: user.id
+        user_id: user.id
       })
     });
 
     if (!response.ok) {
       const error = await response.json();
+	  handleDisable2FA();
+	  setIsTwoFactorModalOpen(false);
       throw new Error(error.message || 'Failed to enable 2FA');
     }
 
@@ -543,24 +551,22 @@ const handleEnable2FA = async (twoFactorData) => {
 const handleDisable2FA = async () => {
   try {
     // TODO: Replace with actual API call
-    const response = await fetch('/api/users/disable-2fa', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({
-        userId: user.id
-      })
+	setIsTwoFactorModalOpen(false);
+    const response = await fetch(`${API_BASE_URL}/users/disableMFA/${user.id}`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${localStorage.getItem('token')}`
+		}
     });
-
+	
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to disable 2FA');
+		const error = await response.json();
+		throw new Error(error.message || 'Failed to disable 2FA');
     }
-
-    setIs2FAEnabled(false);
-    return await response.json();
+	
+	setIs2FAEnabled(false);
+    // return await response.json();
   } catch (error) {
     throw error;
   }
