@@ -48,6 +48,101 @@
   background: #374151;
 }
 
+.orders-table-wrapper {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  margin-bottom: 24px;
+  min-height: 250px;
+}
+
+.orders-table-loading-container {
+  width: 100%;
+  height: 250px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: white;
+  position: relative;
+  z-index: 10;
+}
+
+.orders-table-loading-content {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.orders-table-spinner {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+
+.orders-table-spinner-svg {
+  animation: orders-table-rotate 2s linear infinite;
+  height: 100%;
+  width: 100%;
+  transform-origin: center center;
+}
+
+.orders-table-spinner-circle {
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  animation: orders-table-dash 1.5s ease-in-out infinite, orders-table-color 6s ease-in-out infinite;
+  stroke-linecap: round;
+}
+
+.orders-table-loading-text {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+/* Keyframe animations with unique names */
+@keyframes orders-table-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orders-table-dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124px;
+  }
+}
+
+@keyframes orders-table-color {
+  100%,
+  0% {
+    stroke: #1f2937;
+  }
+  40% {
+    stroke: #156231;
+  }
+  66% {
+    stroke: #1f2937;
+  }
+  80%,
+  90% {
+    stroke: #636363;
+  }
+}
+
 /* Stats Cards */
 .adm-ord-stats-grid {
   display: grid;
