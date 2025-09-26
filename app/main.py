@@ -1,244 +1,133 @@
-from fastapi import HTTPException
-from sqlalchemy.orm import Session
-from app.models.user import User
-from app.models.address import Address
-from app.schemas.user import UserCreate
-from app.utilities.utils import hash_password, verify_password
-import uuid
-from datetime import datetime
-import pyotp
-import qrcode
-import base64
-import io
+import logging
+import os
+from pathlib import Path
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 
-def create_user(db: Session, user: UserCreate):
-    new_user = User(
-        id=str(uuid.uuid4()),
-        name=user.name,
-        email=user.email,
-        password=hash_password(user.password),
-        secret=None  # Initialize 2FA secret as None for new users
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+# Load environment variables from .env file - load as early as possible
+env_path = Path(__file__).parent.parent / '.env'
+load_dotenv(dotenv_path=env_path, verbose=True)
 
-def get_user_by_email(db: Session, email: str):
-    return db.query(User).filter(User.email == email).first()
+# Validate critical environment variables
+openai_key = os.getenv('OPENAI_API_KEY')
+if openai_key and openai_key != 'your-openai-api-key-here':
+    print("OpenAI API key loaded successfully from environment variables")
+else:
+    print("OpenAI API key not found or using default value. Please check your .env file.")
 
-def get_user_information(db: Session, user_id: str):
-    user = db.query(User).filter(User.id == user_id).first()
+# Core models (ensures SQLAlchemy metadata is loaded)
+import app.models  # noqa
 
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+# Routers – core
+from app.routes import product
+from app.routes import authentication
+from app.routes import users
+from app.routes import sustainabilityRatings
+from app.routes import cart
+from app.routes import orders
+from app.routes import donation
+from app.routes import retailer_user
+from app.routes import retailer_metrics
+from app.routes import retailer_products
+from app.routes import carbon_forecasting
+from app.routes import admin_orders
 
-    user_dict = user.__dict__.copy()
-    user_dict.pop("password", None)
+# Routers – admin/aws and images
+from app.routes import admin_metrics
+from app.routes import admin_users
+from app.routes import admin_auth
+from app.routes import admin_retailers
+from app.routes import admin_products
+from app.routes import images
+from app.routes import admin_fix_images
+from app.routes import admin_database
+from app.routes import product_with_images  # AWS S3 product+images endpoint
 
-    address = db.query(Address).filter(Address.user_id == user.id).first()
+# MCP Recommendation Engine
+from app.routes import recommendations
 
-    return {
-        "status": 200,
-        "message": "Success",
-        "user": user,
-        "address": address
-    }
+# Test routes
+from app.routes import test_email
 
-def set_user_information(request, db: Session):
-    user = db.query(User).filter(User.id == request.user_id).first()
-    address = db.query(Address).filter(Address.user_id == request.user_id).first()
+# Optional routers from integration branch (guarded so app won’t break if missing)
+try:
+    from app.routes import admin_stock
+except Exception as e:  # pragma: no cover
+    admin_stock = None
+    logging.getLogger(__name__).warning("Optional router 'admin_stock' not available: %s", e)
 
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found : )")
+try:
+    from app.routes import carbon_goals
+except Exception as e:  # pragma: no cover
+    carbon_goals = None
+    logging.getLogger(__name__).warning("Optional router 'carbon_goals' not available: %s", e)
 
-    if not request.name or request.name == "" or request.name == " ":
-        raise HTTPException(status_code=400, detail="Name cannot be empty or whitespace")
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("greencart")
 
-    if len(request.name.split(" ")) < 2:
-        raise HTTPException(status_code=400, detail="Name must contain name and surname")
+app = FastAPI(title="Green Cart API", version="1.2.2")
 
-    if not request.name.replace(" ", "").isalpha():
-        raise HTTPException(status_code=400, detail="Name must contain only letters")
+# Health check
+@app.get("/health")
+async def health_check():
+    logger.info("Health check endpoint called - v1.2.2")
+    return {"status": "healthy", "message": "Backend is running", "version": "1.2.2"}
 
-    if request.name != user.name:
-        user.name = request.name
+# CORS (secure prod origins + local dev)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://www.greencart-cos301.co.za",
+        "https://greencart-cos301.co.za",
+        "http://localhost:3000",
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    if not request.email or request.email.strip() == "":
-        raise HTTPException(status_code=400, detail="Email cannot be empty")
+# Include routers
+app.include_router(product.router)
+app.include_router(authentication.router, prefix="/auth", tags=["Auth"])
+app.include_router(sustainabilityRatings.router)
+app.include_router(cart.router)
+app.include_router(orders.router)
+app.include_router(users.router)
+app.include_router(donation.router)
+app.include_router(retailer_metrics.router)
+app.include_router(retailer_user.router)
+app.include_router(retailer_products.router)
+app.include_router(admin_orders.router)
 
-    if "@" not in request.email or "." not in request.email.split("@")[-1]:
-        raise HTTPException(status_code=400, detail="Invalid email format")
+# Admin/AWS/image related
+app.include_router(admin_metrics.router)
+app.include_router(admin_users.router)
+app.include_router(admin_auth.router)
+app.include_router(admin_retailers.router)
+app.include_router(admin_products.router)
+app.include_router(images.router)
+app.include_router(admin_fix_images.router)
+app.include_router(admin_database.router)
+app.include_router(product_with_images.router)
+app.include_router(carbon_forecasting.router, prefix="/api")
 
-    if request.email != user.email:
-        existing_user = db.query(User).filter(User.email == request.email).first()
-        if existing_user and existing_user.id != user.id:
-            raise HTTPException(status_code=400, detail="Email already in use")
-        user.email = request.email
+# MCP Recommendation Engine
+app.include_router(recommendations.recommendation_router)
 
-    if not request.date_of_birth:
-        raise HTTPException(status_code=400, detail="Date of birth cannot be empty")
+# Test routes
+app.include_router(test_email.router)
 
-    if request.date_of_birth > datetime.now().date():
-        raise HTTPException(status_code=400, detail="Date of birth cannot be in the future")
+# Optional integrations
+if admin_stock:
+    app.include_router(admin_stock.router)
+if carbon_goals:
+    app.include_router(carbon_goals.router, prefix="/api", tags=["Carbon Goals"])
 
-    if request.date_of_birth != user.date_of_birth:
-        user.date_of_birth = request.date_of_birth
-
-    if not request.telephone or request.telephone.strip() == "":
-        raise HTTPException(status_code=400, detail="Telephone cannot be empty")
-    
-    if not request.telephone.isdigit():
-        raise HTTPException(status_code=400, detail="Telephone must contain only digits")
-    
-    if len(request.telephone) != 9:
-        raise HTTPException(status_code=400, detail="Telephone must be 9 digits long (Exclude country code - 0)")
-
-    if request.telephone != user.telephone:
-        user.telephone = request.telephone
-
-    if not request.country_code or request.country_code.strip() == "":
-        raise HTTPException(status_code=400, detail="Country code cannot be empty")
-
-    if request.country_code != user.country_code:
-        user.country_code = request.country_code
-
-    if not request.address or request.address.strip() == "":
-        raise HTTPException(status_code=400, detail="Address cannot be empty")
-
-    if not request.city or request.city.strip() == "":
-        raise HTTPException(status_code=400, detail="City cannot be empty")
-
-    if not request.postal_code or request.postal_code.strip() == "":
-        raise HTTPException(status_code=400, detail="Postal code cannot be empty")
-    
-    if not request.postal_code.isdigit():
-        raise HTTPException(status_code=400, detail="Postal code must contain only digits")
-
-    if not address:
-        address = Address(
-            user_id=request.user_id,
-            address=request.address,
-            city=request.city,
-            postal_code=request.postal_code,
-        )
-
-        db.add(address)
-    else:
-        if request.address != address.address:
-            address.address = request.address
-
-        if request.city != address.city:
-            address.city = request.city
-        
-        if request.postal_code != address.postal_code:
-            address.postal_code = request.postal_code
-
-    db.commit()
-    db.refresh(user)
-    db.refresh(address)
-    return {
-        "status": 200,
-        "message": "User information updated successfully"
-    }
-
-    
-def change_password(request, db:Session):
-    user = db.query(User).filter(User.id == request.user_id).first()
-
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    if verify_password(request.old_password, user.password) is False:
-        raise HTTPException(status_code=400, detail="Old password is incorrect")
-
-    user.password = hash_password(request.new_password)
-    db.commit()
-    db.refresh(user)
-
-    return {
-        "status": 200,
-        "message": "Password changed successfully"
-    }
-
-def mfa_setup(user_id: str, db: Session):
-    user = db.query(User).filter(User.id == user_id).first()
-
-    if user.secret is None or user.secret == "":
-        secret = pyotp.random_base32()
-        uri = pyotp.totp.TOTP(secret).provisioning_uri(name=user.email, issuer_name="GreenCart")
-        
-        user.secret = secret
-        db.commit()
-        db.refresh(user)
-    else:
-        uri = pyotp.totp.TOTP(user.secret).provisioning_uri(name=user.email, issuer_name="GreenCart")
-
-    qr = qrcode.QRCode(box_size=10, border=4)
-    qr.add_data(uri)
-    qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
-
-    buffered = io.BytesIO()
-    img.save(buffered, format="PNG")
-    qr_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
-
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-
-
-
-    return {
-        "status": 200,
-        "message": "MFA enabled successfully",
-        "qr_code": qr_base64,
-        "secret": user.secret
-    }
-
-def is_MFA(email, db: Session):
-    user = db.query(User).filter(User.email == email).first()
-
-    if user.secret is None or user.secret == "":
-        return {
-            'status': 200,
-            'message': 'Success',
-            'enabled': False
-        }
-    
-    else:
-        return {
-            'status': 200,
-            'message': 'Success',
-            'enabled': True
-        }
-    
-def disable_MFA(user_id, db:Session):
-    user = db.query(User).filter(User.id == user_id).first()
-
-    if user.secret is None or user.secret == "":
-        return {
-            'status': 200,
-            'message': 'Success'
-        }
-    else:
-        if user.secret is not None or user.secret != "":
-            user.secret = None
-            db.commit()
-            db.refresh(user)
-
-            return {
-                'status': 200,
-                'message': 'Success'
-            }
-
-def verify_2fa_code(user_id: str, code: str, db: Session):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user or not user.secret:
-        raise HTTPException(status_code=404, detail="User or secret not found")
-
-    totp = pyotp.TOTP(user.secret)
-    if totp.verify(code):
-        return {"status": 200, "message": "2FA code is valid", 'valid': True}
-    else:
-        raise HTTPException(status_code=401, detail="Invalid 2FA code")
+# Static mount for any locally stored uploads (kept for compatibility)
+uploads_dir = Path(__file__).parent.parent / "uploads"
+uploads_dir.mkdir(exist_ok=True)  # Create directory if it doesn't exist
+app.mount("/static", StaticFiles(directory=str(uploads_dir)), name="static")
