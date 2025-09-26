@@ -255,6 +255,7 @@ jobs:
             AWS_REGION=${{ secrets.AWS_REGION }}
             AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
             BASE_URL=https://api.greencart-cos301.co.za
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
             EOF
             
             echo "=== Installing Python and Dependencies ==="
@@ -376,4 +377,5 @@ jobs:
             echo "Service status:"
             sudo systemctl status green-cart-backend --no-pager
             
+
             echo "Backend deployment successful!"
