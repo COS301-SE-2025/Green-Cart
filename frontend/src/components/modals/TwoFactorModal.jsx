@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import '../styles/modals/TwoFactorModal.css';
+import { API_BASE_URL } from '../../config/api.js';
 
 const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabled, userId }) => {
   const [step, setStep] = useState(1); // 1: Setup, 2: QR Code, 3: Verify Code
@@ -43,7 +44,7 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
     setHas2FAStarted(true);
 
     try {
-      const response = await fetch(`http://localhost:8000/users/setupMFA/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/users/setupMFA/${userId}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
