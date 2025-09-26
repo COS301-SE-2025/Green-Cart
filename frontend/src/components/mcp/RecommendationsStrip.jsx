@@ -102,7 +102,7 @@ export default function RecommendationsStrip({ products = [], userId = null, use
     return (
       <section className="mcp-recs">
         <div className="mcp-recs-header">
-          <h3>🌱 Recommended for You</h3>
+          <h3>Recommended for You</h3>
           <span className="mcp-ai-badge">Powered by AI</span>
         </div>
         <div className="mcp-signin-message">
@@ -135,7 +135,7 @@ export default function RecommendationsStrip({ products = [], userId = null, use
     return (
       <section className="mcp-recs">
         <div className="mcp-recs-header">
-          <h3>🌱 Recommended for You</h3>
+          <h3>Recommended for You</h3>
           <span className="mcp-ai-badge">Powered by AI</span>
         </div>
         
@@ -236,7 +236,7 @@ export default function RecommendationsStrip({ products = [], userId = null, use
     return (
       <section className="mcp-recs">
         <div className="mcp-recs-header">
-          <h3>🌱 Recommended for You</h3>
+          <h3>Recommended for You</h3>
           <span className="mcp-ai-badge">Powered by AI</span>
         </div>
         <div className="mcp-recs-grid">
@@ -299,7 +299,7 @@ export default function RecommendationsStrip({ products = [], userId = null, use
       
       <section className="mcp-recs">
       <div className="mcp-recs-header">
-        <h3>🌱 Recommended for You</h3>
+        <h3>Recommended for You</h3>
         <span className="mcp-ai-badge">Powered by AI</span>
       </div>
 
@@ -339,7 +339,7 @@ export default function RecommendationsStrip({ products = [], userId = null, use
               </div>
               <div className="mcp-recs-info">
                 <div className={`mcp-tier-badge ${tierClass(score ?? 0)}`}>
-                  {tier === 'PREMIUM' ? '🔥 PREMIUM' : tier === 'GOOD' ? '✨ GOOD' : '⚠ BASIC'}
+                  {tier === 'PREMIUM' ? ' PREMIUM' : tier === 'GOOD' ? ' GOOD' : 'BASIC'}
                 </div>
                 <h4 className="mcp-recs-name" title={p.name}>{p.name}</h4>
                 <div className="mcp-recs-meta">
