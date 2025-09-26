@@ -85,13 +85,13 @@ export default function SustainabilityAI({
       <div className="mcp-qa">
         {/* Question 1: Sustainability Analysis */}
         <button className="mcp-qa-item" onClick={() => handleQuestionClick(1)}>
-          [1] 📊 How sustainable is this product?
+          1. How sustainable is this product?
           {loading.q1 && <span className="mcp-qa-loading">⏳</span>}
           {hasLoaded.q1 && !loading.q1 && <span className="mcp-qa-loaded">✓</span>}
         </button>
         {open.q1 && (
           <div className="mcp-card">
-            <div className="mcp-card-title">📊 Sustainability Analysis</div>
+            <div className="mcp-card-title">Sustainability Analysis</div>
             
             {loading.q1 ? (
               <div className="mcp-loading">
@@ -102,7 +102,7 @@ export default function SustainabilityAI({
               </div>
             ) : data.q1?.error ? (
               <div className="mcp-error">
-                <span>❌ Failed to load sustainability analysis</span>
+                <span>Failed to load sustainability analysis</span>
                 <button 
                   className="mcp-btn ghost" 
                   onClick={() => {
@@ -151,7 +151,7 @@ export default function SustainabilityAI({
                 {/* AI Text Analysis */}
                 {data.q1.analysis.answer && (
                   <div className="mcp-ai-text">
-                    <div className="mcp-ai-text-label">🤖 AI Analysis:</div>
+                    <div className="mcp-ai-text-label">AI Analysis:</div>
                     <div className="mcp-ai-text-content">{data.q1.analysis.answer}</div>
                   </div>
                 )}
@@ -168,13 +168,13 @@ export default function SustainabilityAI({
                 {/* Detailed Breakdown */}
                 {showDetailedBreakdown && data.q1.analysis.answer && (
                   <div className="mcp-detailed-breakdown">
-                    <div className="mcp-breakdown-title">📋 Detailed Sustainability Breakdown</div>
+                    <div className="mcp-breakdown-title">Detailed Sustainability Breakdown</div>
                     <div className="mcp-breakdown-content">
                       <p><strong>Full Analysis:</strong></p>
                       <p>{data.q1.analysis.answer}</p>
                       
                       <div className="mcp-breakdown-tips">
-                        <p><strong>💡 Sustainability Tips:</strong></p>
+                        <p><strong>Sustainability Tips:</strong></p>
                         <ul>
                           <li>Look for products with scores above 70/100 for optimal sustainability</li>
                           <li>Consider the full lifecycle impact, not just immediate benefits</li>
@@ -218,13 +218,13 @@ export default function SustainabilityAI({
 
         {/* Question 2: Alternatives */}
         <button className="mcp-qa-item" onClick={() => handleQuestionClick(2)}>
-          [2] 🔍 Show me better alternatives
-          {loading.q2 && <span className="mcp-qa-loading">⏳</span>}
+          2. Show me better alternatives
+          {loading.q2 && <span className="mcp-qa-loading"></span>}
           {hasLoaded.q2 && !loading.q2 && <span className="mcp-qa-loaded">✓</span>}
         </button>
         {open.q2 && (
           <div className="mcp-card">
-            <div className="mcp-card-title">🔍 Sustainable Alternatives</div>
+            <div className="mcp-card-title">Sustainable Alternatives</div>
             
             {loading.q2 ? (
               <div className="mcp-loading">
@@ -235,7 +235,7 @@ export default function SustainabilityAI({
               </div>
             ) : data.q2?.error ? (
               <div className="mcp-error">
-                <span>❌ Failed to load alternatives</span>
+                <span>Failed to load alternatives</span>
                 <button 
                   className="mcp-btn ghost" 
                   onClick={() => {
@@ -281,13 +281,13 @@ export default function SustainabilityAI({
 
         {/* Question 3: Eco-Meter Impact */}
         <button className="mcp-qa-item" onClick={() => handleQuestionClick(3)}>
-          [3] 📈 How will this improve my eco-meter?
-          {loading.q3 && <span className="mcp-qa-loading">⏳</span>}
+          3. How will this improve my eco-meter?
+          {loading.q3 && <span className="mcp-qa-loading"></span>}
           {hasLoaded.q3 && !loading.q3 && <span className="mcp-qa-loaded">✓</span>}
         </button>
         {open.q3 && (
           <div className="mcp-card">
-            <div className="mcp-card-title">📈 Eco-Meter Impact</div>
+            <div className="mcp-card-title">Eco-Meter Impact</div>
             
             {loading.q3 ? (
               <div className="mcp-loading">
