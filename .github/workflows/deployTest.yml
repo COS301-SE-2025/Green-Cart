@@ -1,3 +1,4 @@
+
 name: AWS Deployment
 
 on:
@@ -18,13 +19,6 @@ jobs:
         id: branch
         run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
       - name: Install dependencies
         run: cd frontend && npm install
 
@@ -43,45 +37,54 @@ jobs:
           
           # Copy index.html to 404.html for S3 static hosting fallback
           cp frontend/dist/index.html frontend/dist/404.html
-
-      - name: Sync to S3
-        uses: jakejarvis/s3-sync-action@v0.5.1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          args: --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: 'frontend/dist'
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Configure S3 for SPA routing
+      - name: Sync to S3 with proper content types
         run: |
-          # Install AWS CLI
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install --update
+          # Sync files to S3 with delete flag and set content types during sync
+          aws s3 sync frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }}/ \
+            --delete \
+            --cache-control "public, max-age=31536000" \
+            --metadata-directive REPLACE
           
-          # Configure S3 bucket for static website hosting with error document
-          aws s3 website s3://${{ secrets.AWS_S3_BUCKET }} \
-            --index-document index.html \
-            --error-document 404.html
-          
-          # Set proper MIME types for JavaScript files
-          aws s3 cp s3://${{ secrets.AWS_S3_BUCKET }}/ s3://${{ secrets.AWS_S3_BUCKET }}/ \
-            --recursive \
-            --exclude "*" \
-            --include "*.js" \
-            --content-type "application/javascript" \
-            --metadata-directive REPLACE || true
-          
-          # Set proper MIME types for CSS files  
-          aws s3 cp s3://${{ secrets.AWS_S3_BUCKET }}/ s3://${{ secrets.AWS_S3_BUCKET }}/ \
+          # Specifically handle CSS files with correct MIME type
+          aws s3 cp frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }}/ \
             --recursive \
             --exclude "*" \
             --include "*.css" \
             --content-type "text/css" \
-            --metadata-directive REPLACE || true
+            --cache-control "public, max-age=31536000" \
+            --metadata-directive REPLACE
+            
+          # Handle JS files
+          aws s3 cp frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }}/ \
+            --recursive \
+            --exclude "*" \
+            --include "*.js" \
+            --content-type "application/javascript" \
+            --cache-control "public, max-age=31536000" \
+            --metadata-directive REPLACE
+          
+          # Handle HTML files with no cache
+          aws s3 cp frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }}/ \
+            --recursive \
+            --exclude "*" \
+            --include "*.html" \
+            --content-type "text/html" \
+            --cache-control "no-cache, no-store, must-revalidate" \
+            --metadata-directive REPLACE
+
+      - name: Configure S3 for SPA routing
+        run: |
+          # Configure S3 bucket for static website hosting with error document
+          aws s3 website s3://${{ secrets.AWS_S3_BUCKET }} \
+            --index-document index.html \
+            --error-document 404.html
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -154,14 +157,27 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      - name: Invalidate CloudFront
-        uses: chetan/invalidate-cloudfront-action@v2
+      - name: Invalidate CloudFront Cache
+        run: |
+          # Create comprehensive cache invalidation to force CSS refresh
+          echo "Creating CloudFront invalidation to refresh CSS files..."
+          INVALIDATION_ID=$(aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*" "/*.css" "/*.js" "/static/*" \
+            --query 'Invalidation.Id' \
+            --output text)
+          
+          echo "Invalidation created with ID: $INVALIDATION_ID"
+          
+          # Wait for invalidation to complete (optional)
+          echo "Waiting for invalidation to complete..."
+          aws cloudfront wait invalidation-completed \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --id $INVALIDATION_ID || echo "Invalidation is in progress..."
         env:
-          DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
-          PATHS: '/*'
-          AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
 
   backend-deploy:
     runs-on: ubuntu-latest
@@ -183,12 +199,13 @@ jobs:
             echo "Checking disk usage before cleanup..."
             df -h
             
-            # Stop and remove existing containers
-            sudo docker stop green-cart-backend || true
-            sudo docker rm green-cart-backend || true
+            # Stop existing backend service
+            sudo systemctl stop green-cart-backend || true
+            sudo systemctl disable green-cart-backend || true
             
-            # Clean up Docker images and old files
-            sudo docker system prune -af --volumes || true
+            # Clean up old service files
+            sudo rm -f /etc/systemd/system/green-cart-backend.service || true
+            sudo systemctl daemon-reload
             sudo apt-get autoremove -y || true
             sudo apt-get autoclean || true
             
@@ -238,38 +255,74 @@ jobs:
             AWS_REGION=${{ secrets.AWS_REGION }}
             AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
             BASE_URL=https://api.greencart-cos301.co.za
-            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
             EOF
             
-            echo "=== Building Docker Image ==="
-            sudo docker build -t green-cart-backend .
+            echo "=== Installing Python and Dependencies ==="
+            # Install Python 3.12 (default on Ubuntu 24.04) and required packages
+            sudo apt-get update
+            sudo apt-get install -y python3 python3-pip python3-venv python3-full python3-dev build-essential
             
-            if [ $? -ne 0 ]; then
-              echo "ERROR: Docker build failed!"
-              exit 1
-            fi
+            # Create a virtual environment using system Python (3.12)
+            python3 -m venv venv
+            source venv/bin/activate
             
-            echo "=== Starting Container ==="
-            sudo docker run -d \
-              --name green-cart-backend \
-              --restart unless-stopped \
-              -p 8000:8000 \
-              --env-file .env \
-              green-cart-backend
+            # Upgrade pip in virtual environment
+            pip install --upgrade pip
             
-            if [ $? -ne 0 ]; then
-              echo "ERROR: Container failed to start!"
+            # Install requirements in virtual environment
+            pip install -r requirements.txt
+            
+            echo "=== Creating systemd service for backend ==="
+            # Stop existing service if running
+            sudo systemctl stop green-cart-backend || true
+            
+            # Create systemd service file
+            sudo tee /etc/systemd/system/green-cart-backend.service > /dev/null << EOF
+            [Unit]
+            Description=Green Cart Backend API
+            After=network.target
+            
+            [Service]
+            Type=simple
+            User=ubuntu
+            WorkingDirectory=/home/ubuntu/Green-Cart
+            Environment=PATH=/home/ubuntu/Green-Cart/venv/bin
+            EnvironmentFile=/home/ubuntu/Green-Cart/.env
+            ExecStart=/home/ubuntu/Green-Cart/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+            Restart=always
+            RestartSec=10
+            
+            [Install]
+            WantedBy=multi-user.target
+            EOF
+            
+            # Reload systemd and start service
+            sudo systemctl daemon-reload
+            sudo systemctl enable green-cart-backend
+            sudo systemctl start green-cart-backend
+            
+            echo "=== Starting Backend Service ==="
+            # Wait a moment for service to start
+            sleep 5
+            
+            # Check if service is running
+            if ! sudo systemctl is-active --quiet green-cart-backend; then
+              echo "ERROR: Backend service failed to start!"
+              echo "Service status:"
+              sudo systemctl status green-cart-backend
+              echo "Service logs:"
+              sudo journalctl -u green-cart-backend --no-pager -n 50
               exit 1
             fi
             
             echo "=== Validating Deployment ==="
             sleep 10
             
-            # Check if container is running
-            if ! sudo docker ps | grep green-cart-backend; then
-              echo "ERROR: Container is not running!"
-              echo "Container logs:"
-              sudo docker logs green-cart-backend
+            # Check if service is running
+            if ! sudo systemctl is-active --quiet green-cart-backend; then
+              echo "ERROR: Service is not running!"
+              echo "Service logs:"
+              sudo journalctl -u green-cart-backend --no-pager -n 50
               exit 1
             fi
             
@@ -282,8 +335,8 @@ jobs:
               fi
               if [ $i -eq 30 ]; then
                 echo "ERROR: Health check failed after 30 attempts!"
-                echo "Container logs:"
-                sudo docker logs green-cart-backend
+                echo "Service logs:"
+                sudo journalctl -u green-cart-backend --no-pager -n 50
                 exit 1
               fi
               echo "Attempt $i/30: Health check failed, retrying..."
@@ -320,7 +373,7 @@ jobs:
             echo "Final disk usage:"
             df -h
             
-            echo "Container status:"
-            sudo docker ps | grep green-cart-backend
+            echo "Service status:"
+            sudo systemctl status green-cart-backend --no-pager
             
             echo "Backend deployment successful!"
