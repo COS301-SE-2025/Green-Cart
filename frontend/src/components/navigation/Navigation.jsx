@@ -159,8 +159,8 @@ export default function Navigation() {
                     </Link>
 
                     <ul className="nav__links nav__links--left">
-                        <li><Link to="/about">About Us</Link></li>
-                        <li className="nav__separator">|</li>
+                        {/* <li><Link to="/about">About Us</Link></li>
+                        <li className="nav__separator">|</li> */}
                         <li><Link to="/help">Help Center</Link></li>
                     </ul>
                 </div>
@@ -168,13 +168,7 @@ export default function Navigation() {
                 <ul className="nav__links nav__links--right">
                     <li><Link to="/orders">Orders</Link></li>
                     <li className="nav__separator">|</li>
-                    {/* Only show Dashboard link for retailers */}
-                    {/* {isRetailer && (
-                        <>
-                            <li><Link to="/retailer-dashboard">Dashboard</Link></li>
-                            <li className="nav__separator">|</li>
-                        </>
-                    )} */}
+                    
                     <li><Link to="/user-account">My Account</Link></li>
                     <li className="nav__separator">|</li>
                     {/* Show logout only if user is authenticated */}
@@ -216,7 +210,7 @@ export default function Navigation() {
                     <div className={`nav__mobile-menu ${mobileMenuOpen ? 'active' : ''}`}>
                         <ul className="nav__links">
                             <li><Link to="/Home" onClick={handleMobileMenuClick}>Home</Link></li>
-                            <li><Link to="/about" onClick={handleMobileMenuClick}>About Us</Link></li>
+                            {/* <li><Link to="/about" onClick={handleMobileMenuClick}>About Us</Link></li> */}
                             <li><Link to="/help" onClick={handleMobileMenuClick}>Help Center</Link></li>
                             <li><Link to="/orders" onClick={handleMobileMenuClick}>Orders</Link></li>
                             {/* Only show Dashboard link for retailers in mobile menu */}

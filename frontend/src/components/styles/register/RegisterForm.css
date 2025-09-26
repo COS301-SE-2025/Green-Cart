@@ -38,7 +38,8 @@
   width: 100%;
   max-width: 400px; /* Slightly smaller */
   padding: 2.5rem 2rem; /* Reduced padding */
-  background: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.95);
+  background-image: linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(255, 255, 255, 0.95) 100%);
   backdrop-filter: blur(15px);
   border-radius: 20px; /* Smaller radius */
   box-shadow: 

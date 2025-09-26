@@ -2,7 +2,7 @@ import React, { useState, useEffect} from "react";
 import "./styles/Cart.css";
 import { useCart } from "../components/cart/CartContext";
 import { useNavigate } from "react-router-dom";
-import EcoMeterSummary from '../components/mcp/EcoMeterSummary';
+import EcoMeterSummary from '../components/smart/EcoMeterSummary';
 
 export default function Cart() {
   const { cartItems, remove_From_Cart, add_To_Cart, refreshCart, cartID } = useCart();
@@ -180,7 +180,7 @@ export default function Cart() {
           <h2>My Cart</h2>
           <p>Your cart is empty.</p>
           <button 
-            className="continue-shopping-btn"
+            className="btn-primary"
             onClick={() => navigate("/Home")}
           >
             Continue Shopping

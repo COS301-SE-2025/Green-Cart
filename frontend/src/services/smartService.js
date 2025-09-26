@@ -1,49 +1,72 @@
 /**
- * MCP Service Integration with Real Backend API
- * Connects frontend MCP components to the actual recommendation endpoints
+ * Smart Service Integration with Real Backend API
+ * Connects frontend Smart components to the actual recommendation endpoints
  */
+
+import { fetchProduct } from '../product-services/fetchProduct.js';
 
 const API_BASE_URL = 'https://api.greencart-cos301.co.za'; // Update this to match your backend URL
 
-export const mcpService = {
+export const smartService = {
   // Frontend Q1: How sustainable is this product? (Maps to backend Q2)
   async analyzeSustainability(productId, userId) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/recommendations/q2/${userId}/${productId}`, {
+      // First fetch the actual product sustainability data using existing service
+      const productData = await fetchProduct({ product_id: parseInt(productId) });
+      
+      // Then get the OpenAI analysis
+      const analysisResponse = await fetch(`${API_BASE_URL}/api/recommendations/q2/${userId}/${productId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         }
       });
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!analysisResponse.ok) {
+        throw new Error(`Analysis error! status: ${analysisResponse.status}`);
       }
       
-      const data = await response.json();
+      const analysisData = await analysisResponse.json();
+      
+      // Get actual sustainability ratings from product data
+      const sustainabilityStats = productData.sustainability?.statistics || [];
+      
+      // Create detailed ratings array with actual data
+      const detailedRatings = [
+        { id: 1, type: "Carbon Footprint", value: 0 },
+        { id: 2, type: "Recyclability", value: 0 },
+        { id: 3, type: "Durability", value: 0 },
+        { id: 4, type: "Energy Efficiency", value: 0 },
+        { id: 5, type: "Material Sustainability", value: 0 }
+      ];
+
+      // Map actual sustainability data to detailed ratings
+      sustainabilityStats.forEach(stat => {
+        const ratingIndex = detailedRatings.findIndex(dr => dr.type === stat.type);
+        if (ratingIndex !== -1) {
+          detailedRatings[ratingIndex].value = Math.round(stat.value);
+        }
+      });
+
+      // Use the aggregated rating from product data if available, otherwise use analysis rating
+      const overallRating = productData.sustainability?.rating || analysisData.sustainability_rating;
+
       return {
         question_type: "sustainability_analysis",
         product_id: productId,
         user_id: userId,
         analysis: {
-          answer: data.answer,
-          sustainability_rating: data.sustainability_rating,
-          overall_score: Math.round(data.sustainability_rating),
-          eco_level: data.sustainability_rating >= 70 ? "🔥 HIGH Sustainability" : 
-                    data.sustainability_rating >= 40 ? "⚡ MODERATE Sustainability" : 
+          answer: analysisData.answer,
+          sustainability_rating: overallRating,
+          overall_score: Math.round(overallRating),
+          eco_level: overallRating >= 70 ? "🔥 HIGH Sustainability" : 
+                    overallRating >= 40 ? "⚡ MODERATE Sustainability" : 
                     "⚠️ LOW Sustainability",
-          // For now, we'll generate some mock detailed ratings based on the overall score
-          // TODO: Backend could provide breakdown of sustainability components
-          detailed_ratings: [
-            { id: 1, type: "Carbon Footprint", value: Math.max(0, Math.round(data.sustainability_rating + (Math.random() - 0.5) * 20)) },
-            { id: 2, type: "Recyclability", value: Math.max(0, Math.round(data.sustainability_rating + (Math.random() - 0.5) * 20)) },
-            { id: 3, type: "Durability", value: Math.max(0, Math.round(data.sustainability_rating + (Math.random() - 0.5) * 20)) },
-            { id: 4, type: "Energy Efficiency", value: Math.max(0, Math.round(data.sustainability_rating + (Math.random() - 0.5) * 20)) }
-          ]
+          detailed_ratings: detailedRatings
         }
       };
     } catch (error) {
-      console.error('MCP Q2 API Error:', error);
+      console.error('Smart Q2 API Error:', error);
       // Fallback
       return {
         question_type: "sustainability_analysis",
@@ -85,7 +108,7 @@ export const mcpService = {
         }
       };
     } catch (error) {
-      console.error('MCP Q3 API Error:', error);
+      console.error('Smart Q3 API Error:', error);
       // Fallback to empty alternatives
       return {
         question_type: "find_alternatives",
@@ -137,7 +160,7 @@ export const mcpService = {
         }
       };
     } catch (error) {
-      console.error('MCP Q4 API Error:', error);
+      console.error('Smart Q4 API Error:', error);
       // Fallback
       return {
         question_type: "eco_meter_impact",
@@ -178,7 +201,7 @@ export const mcpService = {
         }
       };
     } catch (error) {
-      console.error('MCP Q1 API Error:', error);
+      console.error('Smart Q1 API Error:', error);
       // Fallback to a simple message
       return {
         question_type: "why_recommended",
@@ -208,10 +231,10 @@ export const mcpService = {
       }
       
       const data = await response.json();
-      console.log('Raw MCP API response:', data);
+      console.log('Raw Smart API response:', data);
       console.log('Number of recommendations:', data.data?.length || 0);
       
-      // Transform MCP recommendations to frontend format
+      // Transform Smart recommendations to frontend format
       const recommendations = data.data?.map(item => {
         console.log('Transforming item:', {
           product_id: item.product_id,
@@ -244,13 +267,13 @@ export const mcpService = {
       console.log('Transformed recommendations:', recommendations);
       return recommendations;
     } catch (error) {
-      console.error('MCP Recommendations API Error:', error);
+      console.error('Smart Recommendations API Error:', error);
       // Fallback to empty array
       return [];
     }
   },
 
-  // Health check for MCP service
+  // Health check for Smart service
   async healthCheck() {
     try {
       const response = await fetch(`${API_BASE_URL}/api/recommendations/health`, {
@@ -266,8 +289,8 @@ export const mcpService = {
       
       return await response.json();
     } catch (error) {
-      console.error('MCP Health Check Error:', error);
-      return { status: 'error', message: 'MCP service unavailable' };
+      console.error('Smart Health Check Error:', error);
+      return { status: 'error', message: 'Smart service unavailable' };
     }
   },
 
@@ -287,14 +310,14 @@ export const mcpService = {
       
       return await response.json();
     } catch (error) {
-      console.error('MCP AI Health Check Error:', error);
+      console.error('Smart AI Health Check Error:', error);
       return { status: 'error', message: 'AI service unavailable' };
     }
   }
 };
 
 // Configuration helper
-export const mcpConfig = {
+export const SmartConfig = {
   // Update this to match your backend URL
   setApiBaseUrl(url) {
     API_BASE_URL = url;
@@ -308,4 +331,4 @@ export const mcpConfig = {
   defaultUserId: 'demo-user-123'
 };
 
-export default mcpService;
+export default smartService;

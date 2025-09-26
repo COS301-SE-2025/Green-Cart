@@ -24,9 +24,9 @@ export default function Product({ product, image, product_rating}) {
     };
 
     const getRatingIcon = (rating) => {
-        if (rating >= 70) return '🌿';
-        if (rating >= 50) return '🌱';
-        return '⚠️';
+        if (rating >= 70) return '';
+        if (rating >= 50) return '';
+        return '';
     };
 
     return (

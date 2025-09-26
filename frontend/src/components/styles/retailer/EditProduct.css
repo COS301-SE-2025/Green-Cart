@@ -12,7 +12,7 @@
   backdrop-filter: blur(4px);
 }
 
-.modal-content {
+.edit-product-modal-content {
   background: white;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
@@ -23,7 +23,7 @@
   position: relative;
 }
 
-.modal-header {
+.edit-product-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -35,7 +35,7 @@
   z-index: 10;
 }
 
-.modal-header h2 {
+.edit-product-modal-header h2 {
   font-size: 1.75rem;
   color: #1e293b;
   margin: 0;

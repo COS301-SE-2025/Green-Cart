@@ -1,5 +1,5 @@
 """
-FastAPI Routes for MCP-Compliant Recommendation Engine
+FastAPI Routes for Smart-Compliant Recommendation Engine
 Provides fast algorithmic recommendations with OpenAI-powered sustainability Q&A
 """
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
@@ -15,7 +15,7 @@ from app.db.session import get_db
 from app.services.recommendation_engine import get_recommendation_engine
 from app.services.openai_service import get_openai_service
 from app.services.product_service import fetchProduct
-from app.services.mcp_structures import MCPLogger
+from app.services.smart_structures import SmartLogger
 from app.models.product import Product
 from app.models.product_images import ProductImage
 
@@ -29,13 +29,13 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'your-openai-api-key-here')
 
 # Validate API key is properly configured
 if OPENAI_API_KEY == 'your-openai-api-key-here' or not OPENAI_API_KEY:
-    logger.warning("⚠️  OpenAI API key not properly configured. Please set OPENAI_API_KEY environment variable.")
+    logger.warning("OpenAI API key not properly configured. Please set OPENAI_API_KEY environment variable.")
     logger.warning("OpenAI-powered Q&A features will not work without a valid API key.")
 else:
-    logger.info("✅ OpenAI API key loaded successfully from environment variables")
+    logger.info("OpenAI API key loaded successfully from environment variables")
 
 # Initialize services
-mcp_logger = MCPLogger()
+smart_logger = SmartLogger()
 
 
 @recommendation_router.get("/recommend/{user_id}", operation_id="get_user_recommendations")
@@ -46,14 +46,14 @@ async def get_recommendations(
 ):
     """
     Main recommendation endpoint - Fast algorithmic recommendations (no LLM)
-    Returns exactly 6 MCP-compliant product recommendations as fast as possible
+    Returns exactly 6 Smart-compliant product recommendations as fast as possible
     
     Args:
         user_id: User identifier for personalized recommendations
         limit: Number of recommendations (fixed at 6)
         
     Returns:
-        JSON array of exactly 6 MCP-compliant recommendation contexts
+        JSON array of exactly 6 Smart-compliant recommendation contexts
     """
     start_time = datetime.utcnow()
     
@@ -121,7 +121,7 @@ async def get_recommendations(
                 "user_id": user_id,
                 "count": len(recommendations),
                 "execution_time_seconds": execution_time,
-                "mcp_compliant": True,
+                "Smart_compliant": True,
                 "algorithm_only": True  # No LLM used for recommendations
             }
         }
@@ -204,13 +204,13 @@ async def explain_recommendation(
             "ai_explanations": openai_explanations,
             "combined_insights": {
                 "overall_score": reasoning.final_recommendation_score,
-                "tier": "PREMIUM 🔥" if reasoning.final_recommendation_score >= 8.0 
-                       else "GOOD ✨" if reasoning.final_recommendation_score >= 6.0 
-                       else "BASIC ⚠️",
+                "tier": "PREMIUM" if reasoning.final_recommendation_score >= 8.0 
+                       else "GOOD" if reasoning.final_recommendation_score >= 6.0 
+                       else "BASIC",
                 "confidence_level": reasoning.confidence_level,
                 "key_strengths": reasoning.reasoning_factors
             },
-            "mcp_metadata": {
+            "Smart_metadata": {
                 "version": "1.0",
                 "timestamp": datetime.utcnow().isoformat(),
                 "explanation_type": "comprehensive_recommendation_analysis"
@@ -519,12 +519,12 @@ async def health_check():
     """
     return {
         "status": 200,
-        "message": "MCP Recommendation Engine is healthy",
+        "message": "Smart Recommendation Engine is healthy",
         "timestamp": datetime.utcnow().isoformat(),
         "features": {
             "algorithmic_recommendations": True,
             "openai_sustainability_qa": True,
-            "mcp_compliant": True,
+            "Smart_compliant": True,
             "sub_10_second_response": True
         }
     }

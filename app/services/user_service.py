@@ -16,7 +16,8 @@ def create_user(db: Session, user: UserCreate):
         id=str(uuid.uuid4()),
         name=user.name,
         email=user.email,
-        password=hash_password(user.password)
+        password=hash_password(user.password),
+        secret=None  # Initialize 2FA secret as None for new users
     )
     db.add(new_user)
     db.commit()

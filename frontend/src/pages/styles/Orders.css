@@ -31,16 +31,11 @@
 
 /* .orders-loading, */
 .orders-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  /* min-height: 50vh;
-  text-align: center;
-  background: white;
-  border-radius: 16px;
-  padding: 3rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); */
+      text-align: center;
+    padding: 60px 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .orders-loading-container {
@@ -89,14 +84,16 @@
 }
 
 .orders-error h2 {
-  color: #1e293b;
-  margin-bottom: 1rem;
+    font-size: 32px;
+    color: #2E2E2E;
+    margin-bottom: 20px;
+
 }
 
 .orders-error p {
-  color: #64748b;
-  margin-bottom: 2rem;
-  max-width: 500px;
+      font-size: 18px;
+    color: #666;
+    margin-bottom: 30px;
 }
 
 @keyframes spin {

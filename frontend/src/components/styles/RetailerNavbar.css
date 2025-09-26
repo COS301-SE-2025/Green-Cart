@@ -183,7 +183,7 @@
   position: relative;
 }
 
-.logout-btn {
+.retailer-logout-btn {
   padding: 0.8rem 2rem;
   background: #ef4444;
   color: white;
@@ -197,13 +197,13 @@
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
 
-.logout-btn:hover {
+.retailer-logout-btn:hover {
   background: #dc2626;
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
 }
 
-.logout-btn:active {
+.retailer-logout-btn:active {
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
@@ -236,7 +236,7 @@
     font-size: 1.6rem;
   }
   
-  .logout-btn {
+  .retailer-logout-btn {
     padding: 0.7rem 1.5rem;
     font-size: 0.9rem;
   }
@@ -275,7 +275,7 @@
     font-size: 1.1rem; /* MODIFIED: Smaller on tablets */
   }
   
-  .logout-btn {
+  .retailer-logout-btn {
     padding: 0.6rem 1rem; /* MODIFIED: Smaller padding */
     font-size: 0.85rem;
   }
@@ -325,7 +325,7 @@
     margin-left: 1px; /* MODIFIED: Less margin */
   }
   
-  .logout-btn {
+  .retailer-logout-btn {
     padding: 0.4rem 0.7rem; /* MODIFIED: Much smaller padding */
     font-size: 0.75rem; /* MODIFIED: Smaller text */
     white-space: nowrap;
@@ -364,7 +364,7 @@
     font-size: 0.9rem; /* MODIFIED: Tiny on very small screens */
   }
   
-  .logout-btn {
+  .retailer-logout-btn {
     padding: 0.3rem 0.6rem;
     font-size: 0.7rem;
   }

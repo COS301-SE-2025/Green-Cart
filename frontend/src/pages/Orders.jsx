@@ -120,7 +120,7 @@ export default function Orders() {
         <div className="orders-error">
           <h2>Error Loading Orders</h2>
           <p>{error.message || 'Something went wrong while loading your orders.'}</p>
-          <button className="btn btn-primary" onClick={refreshOrders}>
+          <button className="btn-primary" onClick={refreshOrders}>
             Try Again
           </button>
         </div>

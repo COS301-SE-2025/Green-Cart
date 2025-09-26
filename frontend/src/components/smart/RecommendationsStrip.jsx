@@ -1,0 +1,361 @@
+import React, { useState, useEffect } from 'react';
+import { smartService } from '../../services/smartService';
+import WhyRecommendedModal from './WhyRecommendedModal';
+import UnifiedLoading from './UnifiedLoading'
+import '../styles/smart/smart.css';
+
+const tierFromScore = (s) => (s >= 85 ? 'PREMIUM' : s >= 60 ? 'GOOD' : 'BASIC');
+const tierClass = (s) => (s >= 85 ? 'tier-premium' : s >= 60 ? 'tier-good' : 'tier-basic');
+
+export default function RecommendationsStrip({ products = [], userId = null, useMockData = false, useApiRecommendations = true }) {
+  console.log('RecommendationsStrip render with props:', { products, userId, useMockData, useApiRecommendations });
+  
+  const [recommendations, setRecommendations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [hasLoaded, setHasLoaded] = useState(false);
+  
+  // Check if user is actually logged in (not using demo user ID)
+  const isUserLoggedIn = userId && userId !== 'demo-user-123' && localStorage.getItem('userData');
+  
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalExplanation, setModalExplanation] = useState('');
+  const [modalProductName, setModalProductName] = useState('');
+  const [modalLoading, setModalLoading] = useState(false);
+
+  // Simple useEffect that only runs once or when userId changes
+  useEffect(() => {
+    let isMounted = true;
+    
+    const loadData = async () => {
+      if (!isMounted || hasLoaded) return;
+      
+      // Don't load recommendations for non-logged-in users
+      if (!isUserLoggedIn) {
+        if (isMounted) {
+          setLoading(false);
+          setHasLoaded(true);
+        }
+        return;
+      }
+      
+      console.log('Loading recommendations...');
+      setLoading(true);
+      setError(null);
+      
+      try {
+        if (useApiRecommendations && userId) {
+          console.log('Fetching API recommendations for user:', userId);
+          const result = await smartService.getRecommendations(userId, 6);
+          
+          if (isMounted) {
+            if (Array.isArray(result) && result.length > 0) {
+              console.log('Setting recommendations:', result.length, 'products received');
+              setRecommendations(result);
+            } else {
+              console.log('No recommendations received');
+              setRecommendations([]);
+            }
+            setHasLoaded(true);
+          }
+        } else if (products && products.length > 0) {
+          console.log('Using provided products:', products);
+          if (isMounted) {
+            setRecommendations(products);
+            setHasLoaded(true);
+          }
+        } else {
+          console.log('No data source available');
+          if (isMounted) {
+            setRecommendations([]);
+            setHasLoaded(true);
+          }
+        }
+      } catch (err) {
+        console.error('Error loading recommendations:', err);
+        if (isMounted) {
+          setError('Failed to load recommendations');
+          setRecommendations([]);
+          setHasLoaded(true);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadData();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [userId, useApiRecommendations, isUserLoggedIn]); // Include login state
+
+  console.log('Component state:', { loading, error, recommendations: recommendations?.length, modalOpen, isUserLoggedIn });
+
+  // Show sign-in message for non-logged-in users
+  if (!isUserLoggedIn) {
+    console.log('Rendering sign-in message for non-logged-in user');
+    return (
+      <section className="smart-recs">
+        <div className="smart-recs-header">
+          <h3>🌱 Recommended for You</h3>
+          <span className="smart-ai-badge">Powered by AI</span>
+        </div>
+        <div className="smart-signin-message">
+          <div className="smart-signin-content">
+            <div className="smart-signin-icon">🔐</div>
+            <h4>Sign in to get personalized recommendations</h4>
+            <p>Get AI-powered product recommendations tailored to your sustainability preferences and shopping history.</p>
+            <div className="smart-signin-actions">
+              <button 
+                className="smart-signin-btn smart-signin-btn-primary"
+                onClick={() => window.location.href = '/Login'}
+              >
+                Sign In
+              </button>
+              <button 
+                className="smart-signin-btn smart-signin-btn-secondary"
+                onClick={() => window.location.href = '/Register'}
+              >
+                Create Account
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (loading) {
+    console.log('Rendering loading state');
+    return (
+      <section className="smart-recs">
+        <div className="smart-recs-header">
+          <h3>🌱 Recommended for You</h3>
+          <span className="smart-ai-badge">Powered by AI</span>
+        </div>
+        
+        {/* AI Loading Animation */}
+        <div className="smart-ai-loading">
+          <div className="smart-ai-loading-content">
+            <div className="smart-ai-spinner">
+              <div className="smart-ai-spinner-ring"></div>
+              <div className="smart-ai-spinner-ring"></div>
+              <div className="smart-ai-spinner-ring"></div>
+            </div>
+            <div className="smart-ai-loading-text">
+              <span className="smart-ai-loading-main">Generating your AI Powered Recommendations</span>
+              <div className="smart-ai-loading-dots">
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Skeleton cards for preview */}
+        <div className="smart-recs-grid smart-recs-grid-loading">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="smart-recs-card smart-recs-card-skeleton">
+              <div className="skeleton skeleton-image" style={{ aspectRatio: '4/3' }}></div>
+              <div className="smart-recs-info">
+                <div className="skeleton skeleton-badge" style={{ width: '60px', height: '1.2rem' }}></div>
+                <div className="skeleton skeleton-title" style={{ width: '100%', height: '1rem' }}></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <div className="skeleton skeleton-price" style={{ width: '50px', height: '1rem' }}></div>
+                  <div className="skeleton skeleton-reason" style={{ width: '80px', height: '1rem' }}></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  // if (loading) {
+  //   console.log('Rendering unified loading state');
+  //   return (
+  //     <section className="smart-recs">
+  //       <div className="smart-recs-header">
+  //         <h3>🌱 Recommended for You</h3>
+  //         <span className="smart-ai-badge">Powered by AI</span>
+  //       </div>
+        
+  //       <UnifiedLoading type="recommendations" />
+  //     </section>
+  //   );
+  // }
+
+  // if (error) {
+  //   console.log('Rendering error state:', error);
+  //   return (
+  //     <section className="smart-recs">
+  //       <div className="smart-error" style={{ padding: '2rem', textAlign: 'center' }}>
+  //         <p>Unable to load recommendations: {error}</p>
+  //         <button 
+  //           className="smart-btn" 
+  //           onClick={() => window.location.reload()}
+  //         >
+  //           Refresh Page
+  //         </button>
+  //       </div>
+  //     </section>
+  //   );
+  // }
+
+  if (error) {
+    console.log('Rendering error state:', error);
+    return (
+      <section className="smart-recs">
+        <div className="smart-error" style={{ padding: '2rem', textAlign: 'center' }}>
+          <p>Unable to load recommendations: {error}</p>
+          <button 
+            className="smart-btn" 
+            onClick={() => {
+              setHasLoaded(false); // Reset loaded state
+              setError(null);
+              setLoading(true);
+              window.location.reload();
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  if (!Array.isArray(recommendations) || recommendations.length === 0) {
+    console.log('Rendering empty state');
+    return (
+      <section className="smart-recs">
+        <div className="smart-recs-header">
+          <h3>🌱 Recommended for You</h3>
+          <span className="smart-ai-badge">Powered by AI</span>
+        </div>
+        <div className="smart-recs-grid">
+          <div style={{ textAlign: 'center', padding: '2rem', color: '#666', gridColumn: '1 / -1' }}>
+            <p>No personalized recommendations available right now.</p>
+            <p style={{ fontSize: '0.9em', marginTop: '0.5rem' }}>
+              Browse our products to help us learn your preferences!
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+  
+  console.log('Rendering recommendations:', recommendations.length);
+  
+  const top = recommendations.slice(0, 6);
+
+  const handleWhyRecommended = async (productId, productName, event) => {
+    // Prevent card click when clicking question mark
+    event.stopPropagation();
+    
+    setModalProductName(productName);
+    setModalOpen(true);
+    setModalLoading(true);
+    setModalExplanation('');
+    
+    try {
+      const fallbackUserId = userId || 'e1ca2b93-314f-4a71-b6fb-3bb430157b1f';
+      console.log('Getting explanation for product:', productId, 'user:', fallbackUserId);
+      
+      const result = await smartService.whyRecommended(productId, fallbackUserId);
+      setModalExplanation(result.analysis?.answer || 'This product was recommended based on your preferences and sustainability profile.');
+    } catch (error) {
+      console.error('Error getting recommendation explanation:', error);
+      setModalExplanation('Unable to get explanation at this time. This product was recommended based on your preferences and sustainability profile.');
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setModalExplanation('');
+    setModalProductName('');
+    setModalLoading(false);
+  };
+
+  return (
+    <>
+      {modalOpen && (
+        <WhyRecommendedModal 
+          isOpen={modalOpen}
+          onClose={closeModal}
+          explanation={modalExplanation}
+          productName={modalProductName}
+          isLoading={modalLoading}
+        />
+      )}
+      
+      <section className="smart-recs">
+      <div className="smart-recs-header">
+        <h3>🌱 Recommended for You</h3>
+        <span className="smart-ai-badge">Powered by AI</span>
+      </div>
+
+      <div className="smart-recs-grid">
+        {top.map((p) => {
+          const score = typeof p.sustainability_rating === 'number' ? Math.round(p.sustainability_rating) : null;
+          const price = Number(p.price || 0);
+          const tier = score !== null ? tierFromScore(score) : 'BASIC';
+          
+          return (
+            <div key={p.id} className="smart-recs-card" onClick={() => (window.location.href = `/Product/${p.id}`)}>
+              <div className="smart-recs-image">
+                <img 
+                  src={p.image_url || p.images?.[0] || '/fallback-image.jpg'} 
+                  alt={p.name}
+                  onError={(e) => {
+                    e.target.src = '/fallback-image.jpg';
+                  }}
+                />
+                
+                {/* Why Recommended Question Mark */}
+                <button 
+                  className="why-recommended-btn"
+                  onClick={(e) => handleWhyRecommended(p.id, p.name, e)}
+                  title="Why was this recommended?"
+                  aria-label="Why was this recommended?"
+                >
+                  ?
+                </button>
+                
+                {score !== null && (
+                  <div className="smart-score-pill">
+                    <span className="smart-score-number">{score}</span>
+                    <span className="smart-score-unit">/100</span>
+                  </div>
+                )}
+              </div>
+              <div className="smart-recs-info">
+                <div className={`smart-tier-badge ${tierClass(score ?? 0)}`}>
+                  {tier === 'PREMIUM' ? '🔥 PREMIUM' : tier === 'GOOD' ? '✨ GOOD' : '⚠ BASIC'}
+                </div>
+                <h4 className="smart-recs-name" title={p.name}>{p.name}</h4>
+                <div className="smart-recs-meta">
+                  <span className="smart-recs-price">
+                    {price.toLocaleString('en-ZA', { style: 'currency', currency: 'ZAR' })}
+                  </span>
+                  <span className="smart-recs-reason">
+                    {score !== null ? 'Low carbon footprint' : 'Eco-friendly pick'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+    </>
+  );
+}

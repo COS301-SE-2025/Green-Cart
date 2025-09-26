@@ -405,8 +405,8 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
     return (
         <div className="modal-overlay" onClick={handleClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
+            <div className="edit-product-modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="edit-product-modal-header">
                     <h2>Edit Product</h2>
                     <button className="close-btn" onClick={handleClose} aria-label="Close modal">
                         ×
