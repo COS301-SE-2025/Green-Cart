@@ -14,23 +14,24 @@ const OrdersTable = ({ orders, loading = false, onOrderClick }) => {
 
   if (loading) {
     return (
-      <div className="adm-ord-table-container">
-        <div className="adm-ord-table-loading">
-          <div className="adm-ord-table-loading-banner">
-            <div className="adm-ord-table-custom-loader">
-              <svg className="adm-ord-table-circular" viewBox="25 25 50 50">
+      <div className="orders-table-wrapper">
+        <div className="orders-table-loading-container">
+          <div className="orders-table-loading-content">
+            <div className="orders-table-spinner">
+              <svg className="orders-table-spinner-svg" viewBox="25 25 50 50">
                 <circle 
-                  className="adm-ord-table-path" 
+                  className="orders-table-spinner-circle" 
                   cx="50" 
                   cy="50" 
                   r="20" 
                   fill="none" 
+                  stroke="#1f2937"
                   strokeWidth="2" 
                   strokeMiterlimit="10"
                 />
               </svg>
             </div>
-            <span>Loading orders table...</span>
+            <span className="orders-table-loading-text">Loading orders table...</span>
           </div>
         </div>
       </div>
@@ -65,7 +66,6 @@ const OrdersTable = ({ orders, loading = false, onOrderClick }) => {
                   className="adm-ord-status"
                   style={{ 
                     color: getStatusColor(order.state),
-                    //  color: 'white',
                     padding: '6px 12px',
                     borderRadius: '20px',
                     fontSize: '12px',
