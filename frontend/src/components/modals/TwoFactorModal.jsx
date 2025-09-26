@@ -9,15 +9,29 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
   const [verificationCode, setVerificationCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [secretKey, setSecretKey] = useState('');
+  const [has2FAStarted, setHas2FAStarted] = useState(false);
+
 
   useEffect(() => {
     if (isOpen && !is2FAEnabled) {
       setStep(1);
-      generateQRCode();
+      resetModalState();
+
+      // generateQRCode();
     } else if (isOpen && is2FAEnabled) {
       setStep(4); // Disable 2FA step
+      resetModalState();
     }
   }, [isOpen, is2FAEnabled]);
+
+  const resetModalState = () => {
+    setQrCodeUrl('');
+    setBackupCodes([]);
+    setVerificationCode('');
+    setSecretKey('');
+    setHas2FAStarted(false);
+    setIsLoading(false);
+  }; 
 
   const generateQRCode = async () => {
     if (!userId) {
@@ -26,6 +40,8 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
     }
 
     setIsLoading(true);
+    setHas2FAStarted(true);
+
     try {
       const response = await fetch(`http://localhost:8000/users/setupMFA/${userId}`, {
         method: 'GET',
@@ -62,6 +78,9 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
     } catch (error) {
       console.error('Error generating QR code:', error);
       toast.error(error.message || 'Failed to generate QR code');
+
+      setHas2FAStarted(false);
+      setStep(1);
     } finally {
       setIsLoading(false);
     }
@@ -111,6 +130,29 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
     onClose();
   };
 
+  const handleContinueSetup = async () => {
+    console.log('🔐 User confirmed 2FA setup, generating QR code...');
+    await generateQRCode();
+    if (qrCodeUrl) {
+      setStep(2); // Only proceed to QR code step if generation was successful
+    }
+  };
+
+  const handleBackFromQR = () => {
+    if (has2FAStarted) {
+      // Optionally show confirmation since QR was already generated
+      const shouldGoBack = window.confirm(
+        'Going back will cancel the 2FA setup process. Are you sure?'
+      );
+      if (shouldGoBack) {
+        resetModalState();
+        setStep(1);
+      }
+    } else {
+      setStep(1);
+    }
+  };
+
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     toast.success('Copied to clipboard!');
@@ -122,7 +164,7 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
     <div className="two-factor-modal-overlay" onClick={handleClose}>
       <div className="two-factor-modal" onClick={(e) => e.stopPropagation()}>
         <div className="two-factor-header">
-          <h2>🔐 Two-Factor Authentication</h2>
+          <h2>Two-Factor Authentication</h2>
           <button className="close-button" onClick={handleClose}>×</button>
         </div>
 
@@ -130,7 +172,7 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
           {/* Step 1: Introduction */}
           {step === 1 && (
             <div className="two-factor-step">
-              <div className="step-icon">📱</div>
+              <div className="step-icon"></div>
               <h3>Set Up Two-Factor Authentication</h3>
               <p>
                 Add an extra layer of security to your account by requiring a verification code 
@@ -140,9 +182,9 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
               <div className="benefits-list">
                 <h4>Benefits:</h4>
                 <ul>
-                  <li>✅ Enhanced account security</li>
-                  <li>✅ Protection against unauthorized access</li>
-                  <li>✅ Peace of mind for your personal data</li>
+                  <li> Enhanced account security</li>
+                  <li> Protection against unauthorized access</li>
+                  <li> Peace of mind for your personal data</li>
                 </ul>
               </div>
 
@@ -165,14 +207,25 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                 <button className="cancel-btn" onClick={handleClose}>
                   Cancel
                 </button>
-                <button className="continue-btn" onClick={() => setStep(2)}>
-                  Continue Setup
+                {/* UPDATED: Only generate QR code when user clicks Continue */}
+                <button 
+                  className="continue-btn" 
+                  onClick={handleContinueSetup}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="loading-spinner small"></div>
+                      Setting up...
+                    </>
+                  ) : (
+                    'Continue Setup'
+                  )}
                 </button>
               </div>
             </div>
           )}
 
-          {/* Step 2: QR Code */}
           {step === 2 && (
             <div className="two-factor-step">
               <div className="step-icon">📊</div>
@@ -181,12 +234,7 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                 Open your authenticator app and scan the QR code below, or manually enter the secret key.
               </p>
 
-              {isLoading ? (
-                <div className="qr-loading">
-                  <div className="loading-spinner"></div>
-                  <span>Generating QR code...</span>
-                </div>
-              ) : qrCodeUrl ? (
+              {qrCodeUrl ? (
                 <div className="qr-section">
                   <div className="qr-code-container">
                     <img src={qrCodeUrl} alt="2FA QR Code" className="qr-code" />
@@ -204,26 +252,36 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                       </button>
                     </div>
                   </div>
+
+                  <div className="qr-instructions">
+                    <p><strong>📱 Instructions:</strong></p>
+                    <ol>
+                      <li>Open your authenticator app</li>
+                      <li>Tap "Add account" or "+" button</li>
+                      <li>Scan this QR code or enter the key manually</li>
+                      <li>Your app will display a 6-digit code</li>
+                    </ol>
+                  </div>
                 </div>
               ) : (
                 <div className="error-message">
-                  <p>Failed to load QR code. Please try again.</p>
+                  <p>❌ Failed to load QR code. Please try again.</p>
                   <button onClick={generateQRCode} className="retry-btn">
-                    Retry
+                    🔄 Retry
                   </button>
                 </div>
               )}
 
               <div className="step-actions">
-                <button className="back-btn" onClick={() => setStep(1)}>
-                  Back
+                <button className="back-btn" onClick={handleBackFromQR}>
+                  ← Back
                 </button>
                 <button 
                   className="continue-btn" 
                   onClick={() => setStep(5)}
                   disabled={!qrCodeUrl}
                 >
-                  Next: Verify
+                  Next: Verify Code →
                 </button>
               </div>
             </div>
@@ -246,13 +304,18 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                   placeholder="000000"
                   className="verification-input"
                   maxLength={6}
+                  autoFocus
                 />
-                <span className="input-hint">6-digit code from your app</span>
+                <span className="input-hint">6-digit code from your authenticator app</span>
+              </div>
+
+              <div className="verification-help">
+                <p>💡 <strong>Tip:</strong> The code changes every 30 seconds. If it doesn't work, wait for the next code.</p>
               </div>
 
               <div className="step-actions">
                 <button className="back-btn" onClick={() => setStep(2)}>
-                  Back
+                  ← Back
                 </button>
                 <button 
                   className="verify-btn"
@@ -265,7 +328,7 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                       Verifying...
                     </>
                   ) : (
-                    'Verify & Enable'
+                    'Verify & Enable 2FA'
                   )}
                 </button>
               </div>
@@ -276,10 +339,9 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
           {step === 3 && (
             <div className="two-factor-step">
               <div className="step-icon">🔑</div>
-              <h3>Save Your Backup Codes</h3>
+              <h3>✅ 2FA Enabled Successfully!</h3>
               <p>
-                Store these backup codes in a safe place. You can use them to access your account 
-                if you lose your phone.
+                Your two-factor authentication is now active. Save these backup codes in a safe place.
               </p>
 
               {backupCodes.length > 0 ? (
@@ -300,7 +362,7 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                 </div>
               ) : (
                 <div className="no-backup-codes">
-                  <p>No backup codes were generated. You can generate them later in your account settings.</p>
+                  <p>Backup codes can be generated later in your account settings.</p>
                 </div>
               )}
 
@@ -310,12 +372,13 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                   <li>Each backup code can only be used once</li>
                   <li>Store them securely and don't share them</li>
                   <li>You can generate new codes anytime in your account settings</li>
+                  <li>Use backup codes if you lose access to your authenticator app</li>
                 </ul>
               </div>
 
               <div className="step-actions">
                 <button className="complete-btn" onClick={handleClose}>
-                  Complete Setup
+                  ✅ Complete Setup
                 </button>
               </div>
             </div>
@@ -324,23 +387,35 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
           {/* Step 4: Disable 2FA */}
           {step === 4 && (
             <div className="two-factor-step">
-              <div className="step-icon">🔓</div>
+              <div className="step-icon">⚠️</div>
               <h3>Disable Two-Factor Authentication</h3>
               <p>
                 You currently have 2FA enabled. Disabling it will reduce your account security.
               </p>
 
+              <div className="current-2fa-status">
+                <div className="status-indicator enabled">
+                  <span>🟢 2FA Currently Enabled</span>
+                </div>
+                <p>Your account is protected by two-factor authentication.</p>
+              </div>
+
               <div className="warning-note danger">
-                <h4>⚠️ Warning:</h4>
+                <h4>⚠️ Security Warning:</h4>
                 <p>
                   Disabling two-factor authentication will make your account less secure. 
-                  Are you sure you want to continue?
+                  Without 2FA, anyone with your password can access your account.
                 </p>
+                <ul>
+                  <li>Your account will be more vulnerable to unauthorized access</li>
+                  <li>You'll lose the extra security layer</li>
+                  <li>This action can be reversed by re-enabling 2FA</li>
+                </ul>
               </div>
 
               <div className="step-actions">
                 <button className="cancel-btn" onClick={handleClose}>
-                  Cancel
+                  Keep 2FA Enabled
                 </button>
                 <button 
                   className="disable-btn"
