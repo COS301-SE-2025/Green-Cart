@@ -100,10 +100,10 @@ export default function RecommendationsStrip({ products = [], userId = null, use
   if (!isUserLoggedIn) {
     console.log('Rendering sign-in message for non-logged-in user');
     return (
-      <section className="mcp-recs">
-        <div className="mcp-recs-header">
-          <h3>Recommended for You</h3>
-          <span className="mcp-ai-badge">Powered by AI</span>
+      <section className="smart-recs">
+        <div className="smart-recs-header">
+          <h3>🌱 Recommended for You</h3>
+          <span className="smart-ai-badge">Powered by AI</span>
         </div>
         <div className="smart-signin-message">
           <div className="smart-signin-content">
@@ -133,11 +133,17 @@ export default function RecommendationsStrip({ products = [], userId = null, use
   if (loading) {
     console.log('Rendering loading state');
     return (
-      <section className="mcp-recs">
-        <div className="mcp-recs-header">
-          <h3>Recommended for You</h3>
-          <span className="mcp-ai-badge">Powered by AI</span>
+      <section className="smart-recs">
+        <div className="smart-recs-header">
+          <h3>🌱 Recommended for You</h3>
+          <span className="smart-ai-badge">Powered by AI</span>
         </div>
+        
+        {/* AI Loading Animation */}
+        <div className="smart-ai-loading">
+          <div className="smart-ai-loading-content">
+            <div className="smart-ai-spinner">
+              <div className="smart-ai-spinner-ring"></div>
               <div className="smart-ai-spinner-ring"></div>
               <div className="smart-ai-spinner-ring"></div>
             </div>
@@ -228,10 +234,10 @@ export default function RecommendationsStrip({ products = [], userId = null, use
   if (!Array.isArray(recommendations) || recommendations.length === 0) {
     console.log('Rendering empty state');
     return (
-      <section className="mcp-recs">
-        <div className="mcp-recs-header">
-          <h3>Recommended for You</h3>
-          <span className="mcp-ai-badge">Powered by AI</span>
+      <section className="smart-recs">
+        <div className="smart-recs-header">
+          <h3>🌱 Recommended for You</h3>
+          <span className="smart-ai-badge">Powered by AI</span>
         </div>
         <div className="smart-recs-grid">
           <div style={{ textAlign: 'center', padding: '2rem', color: '#666', gridColumn: '1 / -1' }}>
@@ -291,11 +297,17 @@ export default function RecommendationsStrip({ products = [], userId = null, use
         />
       )}
       
-      <section className="mcp-recs">
-      <div className="mcp-recs-header">
-        <h3>Recommended for You</h3>
-        <span className="mcp-ai-badge">Powered by AI</span>
+      <section className="smart-recs">
+      <div className="smart-recs-header">
+        <h3>🌱 Recommended for You</h3>
+        <span className="smart-ai-badge">Powered by AI</span>
       </div>
+
+      <div className="smart-recs-grid">
+        {top.map((p) => {
+          const score = typeof p.sustainability_rating === 'number' ? Math.round(p.sustainability_rating) : null;
+          const price = Number(p.price || 0);
+          const tier = score !== null ? tierFromScore(score) : 'BASIC';
           
           return (
             <div key={p.id} className="smart-recs-card" onClick={() => (window.location.href = `/Product/${p.id}`)}>
@@ -325,9 +337,9 @@ export default function RecommendationsStrip({ products = [], userId = null, use
                   </div>
                 )}
               </div>
-              <div className="mcp-recs-info">
-                <div className={`mcp-tier-badge ${tierClass(score ?? 0)}`}>
-                  {tier === 'PREMIUM' ? ' PREMIUM' : tier === 'GOOD' ? ' GOOD' : 'BASIC'}
+              <div className="smart-recs-info">
+                <div className={`smart-tier-badge ${tierClass(score ?? 0)}`}>
+                  {tier === 'PREMIUM' ? '🔥 PREMIUM' : tier === 'GOOD' ? '✨ GOOD' : '⚠ BASIC'}
                 </div>
                 <h4 className="smart-recs-name" title={p.name}>{p.name}</h4>
                 <div className="smart-recs-meta">
