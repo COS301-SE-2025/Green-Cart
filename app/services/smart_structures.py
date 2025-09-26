@@ -1,6 +1,6 @@
 """
-Model Context Protocol (MCP) Data Structures for Recommendation Engine
-Using standard Python classes for MCP compliance without Pydantic dependencies
+Smart Recommendation Data Structures for Recommendation Engine
+Using standard Python classes for smart recommendations without Pydantic dependencies
 """
 from enum import Enum
 from typing import Dict, List, Any, Optional
@@ -10,14 +10,14 @@ import json
 
 class RecommendationTier(Enum):
     """Product recommendation tiers with visual indicators"""
-    PREMIUM = "PREMIUM 🔥"
-    GOOD = "GOOD ✨"
-    BASIC = "BASIC ⚠️"
+    PREMIUM = "PREMIUM"
+    GOOD = "GOOD"
+    BASIC = "BASIC"
 
 
 class RecommendationReasoning:
     """
-    MCP-compliant reasoning context for product recommendations
+    Smart reasoning context for product recommendations
     Contains algorithmic scores and contextual data for transparency
     """
     
@@ -40,7 +40,7 @@ class RecommendationReasoning:
         self.timestamp = datetime.utcnow().isoformat()
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to MCP-compliant dictionary format"""
+        """Convert to smart recommendation dictionary format"""
         return {
             "purchase_history_score": self.purchase_history_score,
             "sustainability_score": self.sustainability_score,
@@ -53,13 +53,13 @@ class RecommendationReasoning:
         }
     
     def to_json(self) -> str:
-        """Serialize to JSON for MCP logging"""
+        """Serialize to JSON for Smart logging"""
         return json.dumps(self.to_dict())
 
 
 class RecommendationContext:
     """
-    MCP-compliant context wrapper for product recommendations
+    Smart-compliant context wrapper for product recommendations
     Combines product data with recommendation reasoning and tier assignment
     """
     
@@ -85,15 +85,15 @@ class RecommendationContext:
         self.retailer_name = retailer_name
         self.timestamp = datetime.utcnow().isoformat()
         
-        # MCP metadata
-        self.mcp_version = "1.0"
+        # Smart metadata
+        self.smart_version = "1.0"
         self.context_type = "product_recommendation"
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to MCP-compliant dictionary format"""
+        """Convert to Smart-compliant dictionary format"""
         return {
-            "mcp_metadata": {
-                "version": self.mcp_version,
+            "smart_metadata": {
+                "version": self.smart_version,
                 "context_type": self.context_type,
                 "timestamp": self.timestamp
             },
@@ -109,13 +109,13 @@ class RecommendationContext:
         }
     
     def to_json(self) -> str:
-        """Serialize to JSON for MCP logging and API responses"""
+        """Serialize to JSON for Smart logging and API responses"""
         return json.dumps(self.to_dict())
 
 
 class UserShoppingContext:
     """
-    MCP-compliant user shopping context for personalized recommendations
+    Smart-compliant user shopping context for personalized recommendations
     Tracks user preferences, purchase history patterns, and sustainability choices
     """
     
@@ -138,8 +138,8 @@ class UserShoppingContext:
         self.seasonal_patterns = seasonal_patterns or {}
         self.last_updated = last_updated or datetime.utcnow().isoformat()
         
-        # MCP metadata
-        self.mcp_version = "1.0"
+        # Smart metadata
+        self.smart_version = "1.0"
         self.context_type = "user_shopping_context"
     
     def update_context(self, new_purchase_data: Dict[str, Any]):
@@ -159,10 +159,10 @@ class UserShoppingContext:
         self.last_updated = datetime.utcnow().isoformat()
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to MCP-compliant dictionary format"""
+        """Convert to Smart-compliant dictionary format"""
         return {
-            "mcp_metadata": {
-                "version": self.mcp_version,
+            "smart_metadata": {
+                "version": self.smart_version,
                 "context_type": self.context_type,
                 "last_updated": self.last_updated
             },
@@ -176,38 +176,38 @@ class UserShoppingContext:
         }
     
     def to_json(self) -> str:
-        """Serialize to JSON for MCP logging"""
+        """Serialize to JSON for Smart logging"""
         return json.dumps(self.to_dict())
 
 
-class MCPLogger:
+class SmartLogger:
     """
-    MCP-compliant logging utility for recommendation engine audit trail
+    Smart-compliant logging utility for recommendation engine audit trail
     """
     
-    def __init__(self, log_file: str = "logs/mcp_recommendations.log"):
+    def __init__(self, log_file: str = "logs/smart_recommendations.log"):
         self.log_file = log_file
     
     def log_recommendation_context(self, context: RecommendationContext):
-        """Log recommendation context in MCP format"""
+        """Log recommendation context in Smart format"""
         log_entry = {
             "timestamp": datetime.utcnow().isoformat(),
             "event_type": "recommendation_generated",
-            "mcp_context": context.to_dict()
+            "smart_context": context.to_dict()
         }
         
         try:
             with open(self.log_file, "a", encoding="utf-8") as f:
                 f.write(json.dumps(log_entry) + "\n")
         except Exception as e:
-            print(f"Failed to log MCP context: {e}")
+            print(f"Failed to log Smart context: {e}")
     
     def log_user_context_update(self, context: UserShoppingContext):
-        """Log user context updates in MCP format"""
+        """Log user context updates in Smart format"""
         log_entry = {
             "timestamp": datetime.utcnow().isoformat(),
             "event_type": "user_context_updated",
-            "mcp_context": context.to_dict()
+            "smart_context": context.to_dict()
         }
         
         try:
@@ -225,7 +225,7 @@ class MCPLogger:
             "product_id": product_id,
             "question": question,
             "response": response,
-            "mcp_metadata": {
+            "smart_metadata": {
                 "version": "1.0",
                 "context_type": "openai_sustainability_qa"
             }
@@ -256,10 +256,10 @@ def assign_recommendation_tier(score: float) -> RecommendationTier:
         return RecommendationTier.BASIC
 
 
-def create_mcp_recommendation(product_data: Dict[str, Any], 
+def create_smart_recommendation(product_data: Dict[str, Any], 
                              reasoning: RecommendationReasoning) -> RecommendationContext:
     """
-    Factory function to create MCP-compliant recommendation context
+    Factory function to create Smart-compliant recommendation context
     
     Args:
         product_data: Raw product data from database

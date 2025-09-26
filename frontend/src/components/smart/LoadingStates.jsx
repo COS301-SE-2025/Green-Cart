@@ -1,17 +1,17 @@
 import React from 'react';
-import '../styles/mcp/mcp.css';
+import '../styles/smart/smart.css';
 
 export const RecommendationsSkeleton = () => (
-  <section className="mcp-recs">
-    <div className="mcp-recs-header">
+  <section className="smart-recs">
+    <div className="smart-recs-header">
       <div className="skeleton" style={{ width: '200px', height: '1.5rem' }}></div>
       <div className="skeleton" style={{ width: '80px', height: '1rem' }}></div>
     </div>
-    <div className="mcp-recs-grid">
+    <div className="smart-recs-grid">
       {[...Array(4)].map((_, i) => (
-        <div key={i} className="mcp-recs-card">
+        <div key={i} className="smart-recs-card">
           <div className="skeleton" style={{ aspectRatio: '4/3' }}></div>
-          <div className="mcp-recs-info">
+          <div className="smart-recs-info">
             <div className="skeleton" style={{ width: '60px', height: '1.2rem' }}></div>
             <div className="skeleton" style={{ width: '100%', height: '1rem' }}></div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -26,13 +26,13 @@ export const RecommendationsSkeleton = () => (
 );
 
 export const SustainabilityAISkeleton = () => (
-  <section className="mcp-ai">
-    <div className="mcp-ai-header">
+  <section className="smart-ai">
+    <div className="smart-ai-header">
       <div className="skeleton" style={{ width: '250px', height: '1.2rem' }}></div>
     </div>
-    <div className="mcp-qa">
+    <div className="smart-qa">
       {[...Array(3)].map((_, i) => (
-        <div key={i} className="mcp-qa-item">
+        <div key={i} className="smart-qa-item">
           <div className="skeleton" style={{ width: '300px', height: '1rem' }}></div>
         </div>
       ))}
@@ -40,7 +40,7 @@ export const SustainabilityAISkeleton = () => (
   </section>
 );
 
-// Add skeleton styles to mcp.css
+// Add skeleton styles to smart.css
 export const skeletonStyles = `
 .skeleton {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);

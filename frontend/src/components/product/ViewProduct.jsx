@@ -6,7 +6,7 @@ import '../styles/product/ViewProduct.css';
 import { useCart } from "../cart/CartContext";
 import FootprintTracker from './FootprintTracker';
 import { addToCart } from '../../cart-services/addToCart';
-import SustainabilityAI from '../mcp/SustainabilityAI';
+import SustainabilityAI from '../smart/SustainabilityAI';
 
 export default function ViewProduct() {
     const { id } = useParams();
@@ -305,8 +305,8 @@ export default function ViewProduct() {
                     </button>
                 </div> 
             </div>
-             {/* MCP Sustainability AI - MOVED INSIDE vp-product-info */}
-                    <div className="mcp-ai-container" style={{ 
+             {/* Smart Sustainability AI - MOVED INSIDE vp-product-info */}
+                    <div className="smart-ai-container" style={{ 
                         margin: '1.5rem 0',
                         width: '100%',
                         display: 'block',

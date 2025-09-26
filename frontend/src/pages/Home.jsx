@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Product from '../components/product/Product';
 import SearchBar from '../components/search/SearchBar';
 import FilterSort from '../components/filter/FilterSort';
-import RecommendationsStrip from '../components/mcp/RecommendationsStrip';
+import RecommendationsStrip from '../components/smart/RecommendationsStrip';
 // import { products, images } from '../data/products';
 import { fetchAllProducts } from '../product-services/fetchAllProducts'
 import './styles/Home.css';
@@ -149,7 +149,7 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
-  // For MCP recommendations - easy to switch between real data and mock data
+  // For Smart recommendations - easy to switch between real data and mock data
   const recommended = Array.isArray(products)
     ? [...products].sort((a, b) => (b.sustainability_rating ?? 0) - (a.sustainability_rating ?? 0)).slice(0, 6)
     : [];
@@ -219,13 +219,13 @@ export default function Home() {
 
         
           </div>
-              {/* MCP Recommendations - Easy to toggle between real data and mock data */}
+              {/* Smart Recommendations - Easy to toggle between real data and mock data */}
         {!isLoading && !error && (
           <RecommendationsStrip 
             products={[]} 
             userId={userId}
             useMockData={false} // Set to true to use mock data, false for real product data
-            useApiRecommendations={true} // Use the MCP API for recommendations
+            useApiRecommendations={true} // Use the Smart API for recommendations
           />
         )}
           
