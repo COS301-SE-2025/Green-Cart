@@ -1445,7 +1445,7 @@
 
 /* User Score Card */
 .user-score-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  /* background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); */
   border: 1px solid #e5e7eb;
   border-radius: 16px;
   padding: 2rem;
@@ -1915,6 +1915,7 @@
   font-size: 0.9rem;
   background: white;
   transition: border-color 0.2s ease;
+  color: #1f2937;
 }
 
 .forecast-select:focus {

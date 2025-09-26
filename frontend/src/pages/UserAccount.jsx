@@ -604,19 +604,19 @@ const handleDisable2FA = async () => {
 						className={`tab-button ${activeTab === 'profile' ? 'active' : ''}`}
 						onClick={() => setActiveTab('profile')}
 					>
-						👤 Profile
+						Profile
 					</button>
 					<button
 						className={`tab-button ${activeTab === 'carbon-footprint' ? 'active' : ''}`}
 						onClick={() => setActiveTab('carbon-footprint')}
 					>
-						🌍 Carbon Footprint
+						Carbon Footprint
 					</button>
 					<button
 						className={`tab-button ${activeTab === 'forecasting' ? 'active' : ''}`}
 						onClick={() => setActiveTab('forecasting')}
 					>
-						🔮 Sustainability Forecasting
+						Sustainability Forecasting
 					</button>
 					{/*<button
 						className={`tab-button ${activeTab === 'preferences' ? 'active' : ''}`}
@@ -628,7 +628,7 @@ const handleDisable2FA = async () => {
 						className={`tab-button ${activeTab === 'security' ? 'active' : ''}`}
 						onClick={() => setActiveTab('security')}
 					>
-						🔒 Security
+						Security
 					</button>
 				</div>
 
@@ -644,7 +644,7 @@ const handleDisable2FA = async () => {
 										onClick={() => setIsEditing(true)}
 										className="edit-button"
 									>
-										✏️ Edit Profile
+										Edit Profile
 									</button>
 								) : (
 									<div className="edit-actions">
@@ -653,13 +653,13 @@ const handleDisable2FA = async () => {
 											className="save-button"
 											disabled={isLoading}
 										>
-											💾 Save Changes
+											Save Changes
 										</button>
 										<button
 											onClick={handleCancelEdit}
 											className="cancel-button"
 										>
-											❌ Cancel
+											 Cancel
 										</button>
 									</div>
 								)}
@@ -791,14 +791,14 @@ const handleDisable2FA = async () => {
 							<h2>Your Sustainability Tracker</h2>
 						</div>							{/* Explanation Section */}
 							<div className="carbon-explanation">
-								<h3>🌱 How Your Sustainability Score Works</h3>
+								<h3>How Your Sustainability Score Works</h3>
 								<div className="explanation-content">
 									<p><strong>Your score is calculated from 0-100 based on the sustainability ratings of products you purchase:</strong></p>
 									<ul>
-										<li><span className="score-indicator excellent">85-100</span> Excellent - You're choosing highly sustainable products! 🌟</li>
-										<li><span className="score-indicator good">70-84</span> Good - Great choices with room for improvement 👍</li>
-										<li><span className="score-indicator moderate">50-69</span> Moderate - Consider more eco-friendly alternatives 🔄</li>
-										<li><span className="score-indicator poor">0-49</span> Needs Improvement - Focus on sustainable products 📈</li>
+										<li><span className="score-indicator excellent">85-100</span> Excellent - You're choosing highly sustainable products! </li>
+										<li><span className="score-indicator good">70-84</span> Good - Great choices with room for improvement </li>
+										<li><span className="score-indicator moderate">50-69</span> Moderate - Consider more eco-friendly alternatives </li>
+										<li><span className="score-indicator poor">0-49</span> Needs Improvement - Focus on sustainable products </li>
 									</ul>
 									<p><em>Your monthly score is the average sustainability rating of all products in your orders for that month. Higher scores mean better environmental impact!</em></p>
 								</div>
