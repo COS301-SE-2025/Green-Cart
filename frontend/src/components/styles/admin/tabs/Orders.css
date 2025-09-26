@@ -846,6 +846,18 @@
     width: 50px;
   }
   
+  .orders-table-loading-container {
+    height: 200px;
+  }
+  
+  .orders-table-spinner {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .orders-table-loading-content {
+    gap: 12px;
+  }
   .adm-ord-table-loading-banner {
     height: 200px;
     gap: 12px;
@@ -942,6 +954,19 @@
 
  .adm-ord-table-custom-loader {
     width: 40px;
+  }
+
+  .orders-table-loading-container {
+    height: 150px;
+  }
+  
+  .orders-table-spinner {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .orders-table-loading-content {
+    gap: 10px;
   }
   
   .adm-ord-table-loading-banner {
