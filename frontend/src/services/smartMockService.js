@@ -1,9 +1,9 @@
 /**
- * Mock service for MCP data - makes it easy for backend integration
+ * Mock service for Smart data - makes it easy for backend integration
  * Replace these functions with real API calls when backend is ready
  */
 
-export const mcpMockService = {
+export const SmartMockService = {
   // Question 1: Sustainability Analysis
   async analyzeSustainability(productId, userId) {
     // Simulate API delay
@@ -99,13 +99,13 @@ export const mcpMockService = {
 };
 
 // Easy integration helper - replace with real API calls
-export const integrateMcpAPI = {
+export const integrateSmartAPI = {
   // Backend team can replace these URLs with real endpoints
   endpoints: {
-    sustainability: '/api/mcp/question/1/{productId}/{userId}',
-    alternatives: '/api/mcp/question/2/{productId}/{userId}',
-    ecoMeter: '/api/mcp/question/3/{productId}/{userId}',
-    recommendations: '/api/mcp/recommendations/{userId}'
+    sustainability: '/api/Smart/question/1/{productId}/{userId}',
+    alternatives: '/api/Smart/question/2/{productId}/{userId}',
+    ecoMeter: '/api/Smart/question/3/{productId}/{userId}',
+    recommendations: '/api/Smart/recommendations/{userId}'
   },
 
   // Helper to make API calls when backend is ready
@@ -126,7 +126,7 @@ export const integrateMcpAPI = {
       
       return await response.json();
     } catch (error) {
-      console.error('MCP API Error:', error);
+      console.error('Smart API Error:', error);
       throw error;
     }
   }

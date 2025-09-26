@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/mcp/mcp.css';
+import '../styles/smart/smart.css';
 
 export const UnifiedLoading = ({ 
   mainText = "Loading...", 
@@ -36,11 +36,11 @@ export const UnifiedLoading = ({
   const { main, sub } = getLoadingText();
 
   return (
-    <div className="mcp-unified-loading">
-      <div className="mcp-unified-loading-spinner"></div>
-      <div className="mcp-unified-loading-text">
-        <span className="mcp-unified-loading-main">{main}</span>
-        <span className="mcp-unified-loading-sub">{sub}</span>
+    <div className="smart-unified-loading">
+      <div className="smart-unified-loading-spinner"></div>
+      <div className="smart-unified-loading-text">
+        <span className="smart-unified-loading-main">{main}</span>
+        <span className="smart-unified-loading-sub">{sub}</span>
       </div>
     </div>
   );
