@@ -180,7 +180,7 @@ export default function Cart() {
           <h2>My Cart</h2>
           <p>Your cart is empty.</p>
           <button 
-            className="continue-shopping-btn"
+            className="btn-primary"
             onClick={() => navigate("/Home")}
           >
             Continue Shopping
