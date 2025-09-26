@@ -417,6 +417,17 @@
     font-size: 14px;
 }
 
+.readonly-text {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px dashed #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #6b7280;
+    background: #f9fafb;
+    white-space: pre-wrap;
+}
+
 .edit-input {
     width: 100%;
     padding: 12px 16px;

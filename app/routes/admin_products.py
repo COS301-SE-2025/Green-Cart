@@ -129,15 +129,30 @@ def update_product(product_id: int, product_update: ProductUpdateRequest, db: Se
     
     # Update sustainability metrics if provided
     if product_update.sustainability_metrics is not None:
+        # Define the mapping from frontend field names to database type names (same as retailer route)
+        sustainability_mapping = {
+            "energyEfficiency": "Energy Efficiency",
+            "carbonFootprint": "Carbon Footprint", 
+            "recyclability": "Recyclability",
+            "durability": "Durability",
+            "materialSustainability": "Material Sustainability"
+        }
+        
         # Get sustainability type mappings
         sustainability_types = db.query(SustainabilityType).all()
-        type_map = {st.type_name.lower(): st.id for st in sustainability_types}
         
         for metric_name, value in product_update.sustainability_metrics.items():
-            metric_key = metric_name.lower()
-            if metric_key in type_map:
-                type_id = type_map[metric_key]
-                
+            # Use mapping to get correct type name
+            correct_type_name = sustainability_mapping.get(metric_name, metric_name)
+            
+            # Find the sustainability type
+            type_id = None
+            for st in sustainability_types:
+                if st.type_name == correct_type_name:
+                    type_id = st.id
+                    break
+                    
+            if type_id:
                 # Check if rating exists
                 existing_rating = db.query(SustainabilityRating).filter(
                     SustainabilityRating.product_id == product_id,
@@ -159,10 +174,21 @@ def update_product(product_id: int, product_update: ProductUpdateRequest, db: Se
     db.commit()
     db.refresh(product)
     
+    # Get images for this product to include in response
+    images = db.query(ProductImage).filter(
+        ProductImage.product_id == product_id
+    ).all()
+    
+    image_urls = [img.image_url for img in images]
+    
+    # Convert product to dict and add images
+    product_dict = product.__dict__.copy()
+    product_dict['images'] = image_urls
+    
     return {
         "status": 200,
         "message": "Product updated successfully",
-        "data": product
+        "data": product_dict
     }
 
 @router.get("/products/{product_id}/sustainability")
@@ -177,9 +203,20 @@ def get_product_sustainability(product_id: int, db: Session = Depends(get_db)):
         SustainabilityType, SustainabilityRating.type == SustainabilityType.id
     ).filter(SustainabilityRating.product_id == product_id).all()
     
+    # Define the mapping from database type names to frontend keys
+    type_to_key_mapping = {
+        "Energy Efficiency": "energyefficiency",
+        "Carbon Footprint": "carbonfootprint", 
+        "Recyclability": "recyclability",
+        "Durability": "durability",
+        "Material Sustainability": "materialsustainability"
+    }
+    
     sustainability_data = {}
     for rating, type_info in ratings:
-        sustainability_data[type_info.type_name.lower()] = float(rating.value)
+        # Use mapping to get correct frontend key
+        key = type_to_key_mapping.get(type_info.type_name, type_info.type_name.lower().replace(' ', ''))
+        sustainability_data[key] = float(rating.value)
     
     return {
         "status": 200,

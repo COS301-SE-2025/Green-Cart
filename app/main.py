@@ -45,7 +45,7 @@ from app.routes import admin_fix_images
 from app.routes import admin_database
 from app.routes import product_with_images  # AWS S3 product+images endpoint
 
-# MCP Recommendation Engine
+# Smart Recommendation Engine
 from app.routes import recommendations
 
 # Test routes
@@ -84,6 +84,8 @@ app.add_middleware(
         "https://greencart-cos301.co.za",
         "http://localhost:3000",
         "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -115,7 +117,7 @@ app.include_router(admin_database.router)
 app.include_router(product_with_images.router)
 app.include_router(carbon_forecasting.router, prefix="/api")
 
-# MCP Recommendation Engine
+# Smart Recommendation Engine
 app.include_router(recommendations.recommendation_router)
 
 # Test routes

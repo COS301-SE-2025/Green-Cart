@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getUnverifiedProducts, verifyProduct, updateProduct, getProductSustainability } from '../../admin-services/adminProductService';
 import toast from 'react-hot-toast';
 import './ProductVerification.css';
@@ -15,6 +15,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
     const [saving, setSaving] = useState(false);
     const [sustainabilityData, setSustainabilityData] = useState({});
     const [selectedImage, setSelectedImage] = useState(null);
+    
 
     useEffect(() => {
         if (isOpen) {
@@ -27,6 +28,31 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
             setCurrentIndex(0);
         }
     }, [isOpen]);
+
+    // Initialize form data when entering edit mode - only once
+    useEffect(() => {
+        if (isEditing && currentProduct && Object.keys(sustainabilityData).length > 0) {
+            // Only set initial data if form is empty or sustainability not set
+            setEditFormData(prev => {
+                const hasData = prev && (prev.sustainability || prev.price || prev.brand || prev.quantity);
+                if (!hasData) {
+                    return {
+                        brand: currentProduct.brand || '',
+                        price: currentProduct.price || '',
+                        quantity: currentProduct.quantity || '',
+                        sustainability: {
+                            energyEfficiency: sustainabilityData.energyefficiency || 70,
+                            carbonFootprint: sustainabilityData.carbonfootprint || 60,
+                            recyclability: sustainabilityData.recyclability || 20,
+                            durability: sustainabilityData.durability || 90,
+                            materialSustainability: sustainabilityData.materialsustainability || 68
+                        }
+                    };
+                }
+                return prev;
+            });
+        }
+    }, [isEditing, currentProduct, sustainabilityData]);
 
     useEffect(() => {
         const handleEscapeKey = (event) => {
@@ -193,8 +219,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
         }
         
         const newFormData = {
-            name: currentProduct.name || '',
-            description: currentProduct.description || '',
+            // name/description shown read-only while editing
             price: String(currentProduct.price || ''),
             quantity: String(currentProduct.quantity || ''),
             brand: currentProduct.brand || '',
@@ -216,7 +241,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
         setEditFormData({});
     };
 
-    const handleInputChange = (field, value) => {
+    const handleInputChange = useCallback((field, value) => {
         if (field.startsWith('sustainability.')) {
             const sustainabilityField = field.split('.')[1];
             setEditFormData(prev => ({
@@ -232,7 +257,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                 [field]: value
             }));
         }
-    };
+    }, []);
 
     const handleSaveEdit = async () => {
         if (!currentProduct) return;
@@ -240,17 +265,16 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
         setSaving(true);
         try {
             const updateData = {
-                name: editFormData.name.trim(),
-                description: editFormData.description.trim(),
+                // name/description are read-only in the edit form; omit from update
                 price: parseFloat(editFormData.price) || 0,
                 quantity: parseInt(editFormData.quantity) || 0,
-                brand: editFormData.brand.trim(),
+                brand: editFormData.brand?.trim(),
                 sustainability_metrics: {
-                    energyEfficiency: editFormData.sustainability.energyEfficiency,
-                    carbonFootprint: editFormData.sustainability.carbonFootprint,
-                    recyclability: editFormData.sustainability.recyclability,
-                    durability: editFormData.sustainability.durability,
-                    materialSustainability: editFormData.sustainability.materialSustainability
+                    "Energy Efficiency": editFormData.sustainability?.energyEfficiency || 70,
+                    "Carbon Footprint": editFormData.sustainability?.carbonFootprint || 60,
+                    "Recyclability": editFormData.sustainability?.recyclability || 20,
+                    "Durability": editFormData.sustainability?.durability || 90,
+                    "Material Sustainability": editFormData.sustainability?.materialSustainability || 68
                 }
             };
 
@@ -260,14 +284,8 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                 // Update the current product with new data
                 setCurrentProduct(response.data);
                 
-                // Update sustainability data
-                setSustainabilityData({
-                    energyefficiency: editFormData.sustainability.energyEfficiency,
-                    carbonfootprint: editFormData.sustainability.carbonFootprint,
-                    recyclability: editFormData.sustainability.recyclability,
-                    durability: editFormData.sustainability.durability,
-                    materialsustainability: editFormData.sustainability.materialSustainability
-                });
+                // Reload sustainability data from the backend to ensure accuracy
+                await loadSustainabilityData(currentProduct.id);
                 
                 // Update the product in our list as well
                 setAllUnverifiedProducts(prev => 
@@ -315,24 +333,12 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                     <div className="edit-form">
                                         <div className="form-group">
                                             <label>Product Name:</label>
-                                            <input
-                                                type="text"
-                                                value={editFormData.name || ''}
-                                                onChange={(e) => handleInputChange('name', e.target.value)}
-                                                className="edit-input"
-                                                key={`name-${isEditing}-${editFormData.name}`}
-                                            />
+                                            <div className="readonly-text">{currentProduct.name || ''}</div>
                                         </div>
                                         
                                         <div className="form-group">
                                             <label>Description:</label>
-                                            <textarea
-                                                value={editFormData.description || ''}
-                                                onChange={(e) => handleInputChange('description', e.target.value)}
-                                                className="edit-textarea"
-                                                rows="3"
-                                                key={`description-${isEditing}-${editFormData.description}`}
-                                            />
+                                            <div className="readonly-text">{currentProduct.description || ''}</div>
                                         </div>
                                         
                                         <div className="form-row">
@@ -343,7 +349,6 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                                     value={editFormData.brand || ''}
                                                     onChange={(e) => handleInputChange('brand', e.target.value)}
                                                     className="edit-input"
-                                                    key={`brand-${isEditing}-${editFormData.brand}`}
                                                 />
                                             </div>
                                             
@@ -355,7 +360,6 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                                     value={editFormData.price || ''}
                                                     onChange={(e) => handleInputChange('price', e.target.value)}
                                                     className="edit-input"
-                                                    key={`price-${isEditing}-${editFormData.price}`}
                                                 />
                                             </div>
                                             
@@ -366,7 +370,6 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                                     value={editFormData.quantity || ''}
                                                     onChange={(e) => handleInputChange('quantity', e.target.value)}
                                                     className="edit-input"
-                                                    key={`quantity-${isEditing}-${editFormData.quantity}`}
                                                 />
                                             </div>
                                         </div>
@@ -454,6 +457,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                         
                                         <div className="edit-actions">
                                             <button 
+                                                type="button"
                                                 className="cancel-edit-button"
                                                 onClick={handleCancelEdit}
                                                 disabled={saving}
@@ -461,6 +465,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                                 Cancel
                                             </button>
                                             <button 
+                                                type="button"
                                                 className="save-edit-button"
                                                 onClick={handleSaveEdit}
                                                 disabled={saving}
@@ -474,6 +479,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                         <div className="product-header">
                                             <h3>{currentProduct.name}</h3>
                                             <button 
+                                                type="button"
                                                 className="edit-product-button"
                                                 onClick={handleEditProduct}
                                             >
@@ -586,8 +592,12 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                                     className="product-image"
                                                     onClick={() => handleImageClick(imageUrl)}
                                                     onError={(e) => {
+                                                        console.log(`Failed to load image: ${imageUrl}`);
                                                         e.target.onerror = null;
                                                         e.target.src = 'https://via.placeholder.com/200x200/7BB540/FFFFFF?text=No+Image';
+                                                    }}
+                                                    onLoad={() => {
+                                                        console.log(`Successfully loaded image: ${imageUrl}`);
                                                     }}
                                                 />
                                             </div>
@@ -604,6 +614,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
 
                         <div className="verification-actions">
                             <button 
+                                type="button"
                                 className="skip-button"
                                 onClick={handleSkipProduct}
                                 disabled={verifying}
@@ -611,6 +622,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                 Skip
                             </button>
                             <button 
+                                type="button"
                                 className="verify-button"
                                 onClick={handleVerifyProduct}
                                 disabled={verifying}
@@ -630,7 +642,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                     <div className="no-products">
                         <h3>No Products to Verify</h3>
                         <p>All products have been verified!</p>
-                        <button className="close-button-alt" onClick={onClose}>
+                        <button type="button" className="close-button-alt" onClick={onClose}>
                             Close
                         </button>
                     </div>

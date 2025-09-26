@@ -7,7 +7,7 @@ import logging
 from typing import Dict, Any, Optional
 from datetime import datetime
 
-from app.services.mcp_structures import MCPLogger
+from app.services.smart_structures import SmartLogger
 from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
@@ -25,9 +25,9 @@ class OpenAISustainabilityService:
         self.model = "gpt-5-nano"
         self.max_tokens = 256  # Keep responses concise and nano-friendly
         # Note: gpt-5-nano may ignore temperature settings; we won't pass it explicitly
-        self.mcp_logger = MCPLogger()
-        # Initialize async OpenAI client with a sensible timeout
-        self.client = AsyncOpenAI(api_key=self.api_key, timeout=15.0)
+        self.smart_logger = SmartLogger()
+        # Initialize async OpenAI client without timeout restrictions
+        self.client = AsyncOpenAI(api_key=self.api_key)
         # Telemetry for last model actually used (primary or fallback)
         self.last_model_used: Optional[str] = None
     
@@ -79,19 +79,34 @@ class OpenAISustainabilityService:
             except Exception as e:
                 err = str(e)
                 logger.error(f"OpenAI request attempt {attempt + 1} with {primary_model} failed: {err}")
-                # If model access issues occur, try a single-shot fallback model
-                if ("model" in err.lower() or "not found" in err.lower() or "access" in err.lower()) and fallback_model:
+                
+                # Only use fallback for specific model-related errors, not for network/timeout issues
+                should_fallback = (
+                    ("model" in err.lower() and "not found" in err.lower()) or 
+                    ("model" in err.lower() and "unavailable" in err.lower()) or
+                    ("access" in err.lower() and "denied" in err.lower()) or
+                    ("invalid" in err.lower() and "model" in err.lower())
+                )
+                
+                if should_fallback and fallback_model and attempt == 0:  # Only try fallback once, on first attempt
                     try:
+                        logger.info(f"Trying fallback model {fallback_model} due to model-specific error")
                         alt_kwargs = {"model": fallback_model, "messages": messages, "max_tokens": self.max_tokens}
                         alt_resp = await self.client.chat.completions.create(**alt_kwargs)
                         alt_content = (alt_resp.choices[0].message.content or "").strip()
-                        logger.info(f"OpenAI API success via {fallback_model}: {alt_content[:100]}...")
-                        return alt_content
+                        if alt_content:
+                            logger.info(f"OpenAI API success via fallback {fallback_model}: {alt_content[:100]}...")
+                            self.last_model_used = fallback_model
+                            return alt_content
                     except Exception as e2:
-                        logger.error(f"Fallback model {fallback_model} failed: {e2}")
+                        logger.error(f"Fallback model {fallback_model} also failed: {e2}")
                         fallback_model = None
+                
+                # For network/timeout issues, retry with exponential backoff
                 if attempt < max_retries - 1:
-                    await asyncio.sleep(1)  # Brief delay before retry
+                    wait_time = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s
+                    logger.info(f"Retrying in {wait_time} seconds...")
+                    await asyncio.sleep(wait_time)
         
         return None
     
@@ -99,13 +114,20 @@ class OpenAISustainabilityService:
         """
         Build concise product context for OpenAI prompts
         """
+        # Normalize sustainability rating to 0-100 scale
+        raw_sustainability = product_data.get('sustainability_rating', 0)
+        # If the rating is > 10, assume it's already on 0-100 scale, otherwise convert from 0-10
+        sustainability_rating = raw_sustainability if raw_sustainability <= 10 else raw_sustainability
+        # Ensure it doesn't exceed 100
+        sustainability_rating = min(sustainability_rating, 100)
+        
         context_parts = [
             f"Product: {product_data.get('name', 'Unknown')}",
             f"Brand: {product_data.get('brand', 'Unknown')}",
             f"Category: {product_data.get('category_name', 'Unknown')}",
             f"Price: ${product_data.get('price', 0):.2f}",
             f"Retailer: {product_data.get('retailer_name', 'Unknown')}",
-            f"Sustainability Rating: {product_data.get('sustainability_rating', 0):.1f}/100"
+                        f"Sustainability Rating: {min(product_data.get('sustainability_rating', 0), 100.0):.1f}/100"
         ]
         
         if product_data.get('description'):
@@ -151,11 +173,14 @@ Explain in simple terms why this product is a good match for the user."""
         
         # Log the interaction
         question = "Why was this product recommended?"
-        self.mcp_logger.log_openai_interaction(
+        self.smart_logger.log_openai_interaction(
             user_id, product_data.get('id'), question, response or "No response"
         )
         
-        return response or "This product was recommended based on your preferences and its strong sustainability profile."
+        if not response:
+            logger.error(f"OpenAI API failed to provide response for why_recommended - user_id: {user_id}")
+            raise Exception("OpenAI API failed to provide a response")
+        return response
     
     async def sustainability_analysis(self, user_id: str, product_data: Dict[str, Any]) -> str:
         """
@@ -163,7 +188,9 @@ Explain in simple terms why this product is a good match for the user."""
         Provide detailed sustainability analysis
         """
         product_context = self._build_product_context(product_data)
-        sustainability_score = product_data.get('sustainability_rating', 0)
+        # Ensure sustainability score doesn't exceed 100
+        raw_score = product_data.get('sustainability_rating', 0)
+        sustainability_score = min(raw_score, 100.0)
         
         messages = [
             {
@@ -172,7 +199,9 @@ Explain in simple terms why this product is a good match for the user."""
                 IMPORTANT: Treat all sustainability ratings as out of 100.
                 Do NOT mention the EcoMeter, cart averages, or checkout adjustments.
                 Respond concisely (2-3 sentences) and include the numeric score in the form: 'Sustainability score: X.X/100'.
-                Provide a brief heads-up of the sustainability level (High/Moderate/Low) based on the score and one short tip if helpful."""
+                CRITICAL GRAMMAR RULE: Always use lowercase "high", "moderate", or "low" when describing sustainability levels in the middle of sentences. 
+                NEVER write "High sustainability level" - always write "high sustainability level".
+                Example: "This product has a high sustainability level" NOT "This product has a High sustainability level"."""
             },
             {
                 "role": "user",
@@ -184,9 +213,10 @@ The product has a sustainability rating of {sustainability_score:.1f}/100.
 
 Please provide:
 1. A short statement including 'Sustainability score: {sustainability_score:.1f}/100'.
-2. A brief heads-up indicating overall level (High/Moderate/Low) based on the score.
+2. A brief assessment using LOWERCASE "high", "moderate", or "low" when describing the level.
 3. One concise tip to improve or consider (optional).
 
+MANDATORY: Write "high sustainability level" NOT "High sustainability level" in your response.
 Do not mention EcoMeter, cart averages, or checkout adjustments."""
             }
         ]
@@ -195,11 +225,14 @@ Do not mention EcoMeter, cart averages, or checkout adjustments."""
         
         # Log the interaction
         question = "How sustainable is this product?"
-        self.mcp_logger.log_openai_interaction(
+        self.smart_logger.log_openai_interaction(
             user_id, product_data.get('id'), question, response or "No response"
         )
         
-        return response or f"This product has a sustainability rating of {sustainability_score:.1f}/10, indicating {'excellent' if sustainability_score >= 8 else 'good' if sustainability_score >= 6 else 'moderate'} environmental performance."
+        if not response:
+            logger.error(f"OpenAI API failed to provide response for sustainability_analysis - user_id: {user_id}")
+            raise Exception("OpenAI API failed to provide a response")
+        return response
     
     async def suggest_alternatives(self, user_id: str, product_data: Dict[str, Any], 
                                  alternative_products: list = None) -> str:
@@ -242,11 +275,14 @@ Focus on sustainability and value proposition."""
         
         # Log the interaction
         question = "What are alternatives and why is this product better?"
-        self.mcp_logger.log_openai_interaction(
+        self.smart_logger.log_openai_interaction(
             user_id, product_data.get('id'), question, response or "No response"
         )
         
-        return response or "This product offers an excellent balance of sustainability, quality, and value compared to similar alternatives in its category."
+        if not response:
+            logger.error(f"OpenAI API failed to provide response for competitive_analysis - user_id: {user_id}")
+            raise Exception("OpenAI API failed to provide a response")
+        return response
     
     async def ecometer_impact(self, user_id: str, product_data: Dict[str, Any], 
                             current_cart_sustainability: float = 0.0) -> str:
@@ -255,7 +291,9 @@ Focus on sustainability and value proposition."""
         Explain impact on average sustainability rating at checkout
         """
         product_context = self._build_product_context(product_data)
-        product_sustainability = product_data.get('sustainability_rating', 0)
+        # Ensure sustainability score doesn't exceed 100
+        raw_sustainability = product_data.get('sustainability_rating', 0)
+        product_sustainability = min(raw_sustainability, 100.0)
         
         messages = [
             {
@@ -289,11 +327,14 @@ Include only the product score in your answer (e.g., 'product {product_sustainab
         
         # Log the interaction
         question = "How does this product affect the EcoMeter score?"
-        self.mcp_logger.log_openai_interaction(
+        self.smart_logger.log_openai_interaction(
             user_id, product_data.get('id'), question, response or "No response"
         )
         
-        return response or f"Adding this product (sustainability: {product_sustainability:.1f}/10) will {'improve' if product_sustainability > current_cart_sustainability else 'slightly reduce' if product_sustainability < current_cart_sustainability else 'maintain'} your cart's EcoMeter score."
+        if not response:
+            logger.error(f"OpenAI API failed to provide response for cart_impact_analysis - user_id: {user_id}")
+            raise Exception("OpenAI API failed to provide a response")
+        return response
     
     async def get_comprehensive_explanation(self, user_id: str, product_data: Dict[str, Any],
                                           recommendation_reasoning: Dict[str, Any],
