@@ -22,12 +22,12 @@ from app.models.sustainability_ratings import SustainabilityRating
 from app.models.user import User
 from app.services.sustainabilityRatings_service import fetchSustainabilityRatings
 from app.services.product_service import fetchProduct
-from app.services.mcp_structures import (
+from app.services.smart_structures import (
     RecommendationReasoning, 
     RecommendationContext, 
     UserShoppingContext,
-    create_mcp_recommendation,
-    MCPLogger
+    create_smart_recommendation,
+    SmartLogger
 )
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class FastRecommendationEngine:
     
     def __init__(self, db: Session):
         self.db = db
-        self.mcp_logger = MCPLogger()
+        self.smart_logger = SmartLogger()
         
         # Scoring weights - tuned for optimal recommendations
         self.weights = {
@@ -485,7 +485,7 @@ class FastRecommendationEngine:
             
             logger.info(f"Selected {len(selected_products)} products for recommendations")
             
-            # Step 6: Create MCP recommendation contexts efficiently
+            # Step 6: Create Smart recommendation contexts efficiently
             recommendations = []
             for product, reasoning in selected_products:
                 product_data = {
@@ -502,8 +502,8 @@ class FastRecommendationEngine:
                     "retailer_name": "Green Cart"
                 }
                 
-                mcp_recommendation = create_mcp_recommendation(product_data, reasoning)
-                recommendations.append(mcp_recommendation)
+                smart_recommendation = create_smart_recommendation(product_data, reasoning)
+                recommendations.append(smart_recommendation)
             
             total_time = (datetime.utcnow() - start_time).total_seconds()
             logger.info(f"Generated {len(recommendations)} recommendations in {total_time:.2f}s")
@@ -570,8 +570,8 @@ class FastRecommendationEngine:
                     "retailer_name": "Green Cart"
                 }
                 
-                mcp_recommendation = create_mcp_recommendation(product_data, reasoning)
-                recommendations.append(mcp_recommendation)
+                smart_recommendation = create_smart_recommendation(product_data, reasoning)
+                recommendations.append(smart_recommendation)
             
             logger.info(f"Generated {len(recommendations)} additional real product recommendations")
             return recommendations
@@ -609,12 +609,12 @@ class FastRecommendationEngine:
                 recommendation_tier="GOOD"
             )
             
-            return create_mcp_recommendation(product_data, reasoning)
+            return create_smart_recommendation(product_data, reasoning)
             
         except Exception as e:
             logger.error(f"Error creating minimal recommendation: {e}")
             # Return most basic recommendation possible
-            from app.services.mcp_structures import RecommendationContext
+            from app.services.smart_structures import RecommendationContext
             return RecommendationContext(
                 product_id=product_id,
                 score=75.0,
@@ -664,8 +664,8 @@ class FastRecommendationEngine:
                     "retailer_name": "Green Cart"
                 }
                 
-                mcp_recommendation = create_mcp_recommendation(product_data, reasoning)
-                recommendations.append(mcp_recommendation)
+                smart_recommendation = create_smart_recommendation(product_data, reasoning)
+                recommendations.append(smart_recommendation)
             
             # If we don't have enough real products, create minimal ones
             while len(recommendations) < limit:
@@ -695,7 +695,7 @@ class FastRecommendationEngine:
         user_context.update_context(purchase_data)
         
         # Log context update
-        self.mcp_logger.log_user_context_update(user_context)
+        self.smart_logger.log_user_context_update(user_context)
         
         return user_context
 

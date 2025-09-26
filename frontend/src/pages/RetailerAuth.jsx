@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { signupRetailer, signinRetailer, selectShop } from '../user-services/retailerAuthService';
+import { checkUserExists } from '../user-services/userCheckService';
 import './styles/RetailerAuth.css';
 
 const RetailerAuth = () => {
@@ -10,8 +11,7 @@ const RetailerAuth = () => {
     name: '',
     description: '',
     email: '',
-    password: '',
-    confirmPassword: ''
+    password: ''
   });
   const [shops, setShops] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
@@ -41,8 +41,11 @@ const RetailerAuth = () => {
     setIsLoading(true);
 
     try {
-      if (formData.password !== formData.confirmPassword) {
-        toast.error('Passwords do not match');
+      // Check if user exists first
+      const userCheck = await checkUserExists(formData.email);
+      if (!userCheck.exists) {
+        toast.error('You must be a registered user to create a shop. Please sign up as a customer first.');
+        setIsLoading(false);
         return;
       }
 
@@ -83,7 +86,9 @@ const RetailerAuth = () => {
       // Display more specific error messages
       let errorMessage = error.message;
       
-      if (errorMessage.includes("password") && errorMessage.includes("doesn't match")) {
+      if (errorMessage.includes("must be a registered user")) {
+        errorMessage = "You must be a registered user to create a shop. Please sign up as a customer first.";
+      } else if (errorMessage.includes("password") && errorMessage.includes("doesn't match")) {
         errorMessage = "The password you entered doesn't match your existing account. Please use your current password.";
       } else if (errorMessage.includes("422") || errorMessage.includes("validation")) {
         errorMessage = "Please check your input. Make sure all fields are filled correctly.";
@@ -170,8 +175,7 @@ const RetailerAuth = () => {
       name: '',
       description: '',
       email: '',
-      password: '',
-      confirmPassword: ''
+      password: ''
     });
   };
 
@@ -248,7 +252,7 @@ const RetailerAuth = () => {
             </h1>
             <p className="retailer-auth-subtitle">
               {mode === 'signup' 
-                ? 'Set up your retail shop and start selling' 
+                ? 'Set up your retail shop and start selling (requires existing user account)' 
                 : 'Access your retailer dashboard'
               }
             </p>
@@ -310,21 +314,6 @@ const RetailerAuth = () => {
               />
               <label htmlFor="password" className="retailer-auth-form-label">Password</label>
             </div>
-
-            {mode === 'signup' && (
-              <div className="retailer-auth-form-group">
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  required
-                  placeholder=" "
-                  className="retailer-auth-form-input"
-                />
-                <label htmlFor="confirmPassword" className="retailer-auth-form-label">Confirm Password</label>
-              </div>
-            )}
 
             <button 
               type="submit" 

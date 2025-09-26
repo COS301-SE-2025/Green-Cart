@@ -102,3 +102,12 @@ def get_user_shops_endpoint(user_id: str, db: Session = Depends(get_db)):
         "message": "Shops retrieved successfully",
         "shops": shop_list
     }
+
+@router.get("/check-user/{email}")
+def check_user_exists(email: str, db: Session = Depends(get_db)):
+    """Check if a user exists by email"""
+    user = get_user_by_email(db, email)
+    return {
+        "exists": user is not None,
+        "email": email
+    }

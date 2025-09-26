@@ -324,17 +324,6 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                             />
                                         </div>
                                         
-                                        <div className="adm-prod-verif-form-group">
-                                            <label>Description:</label>
-                                            <textarea
-                                                value={editFormData.description || ''}
-                                                onChange={(e) => handleInputChange('description', e.target.value)}
-                                                className="edit-textarea"
-                                                rows="3"
-                                                key={`description-${isEditing}-${editFormData.description}`}
-                                            />
-                                        </div>
-                                        
                                         <div className="form-row">
                                             <div className="adm-prod-verif-form-group">
                                                 <label>Brand:</label>

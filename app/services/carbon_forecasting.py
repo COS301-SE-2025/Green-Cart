@@ -58,7 +58,18 @@ class SimpleCarbonForecastingEngine:
         # Get user data from existing tables
         user_data = await self._gather_user_data(user_id)
         
-        # Generate forecast
+        # Check if user has sufficient data for meaningful forecasting
+        orders = user_data.get("orders", [])
+        
+        # For new users, return baseline forecast
+        if len(orders) == 0:
+            return self._new_user_forecast()
+        
+        # For users with 1-2 orders, provide a simple prediction based on their actual data
+        if len(orders) < 3:
+            return await self._simple_prediction_from_orders(orders, len(orders))
+        
+        # Generate forecast only for users with sufficient purchase history
         forecast = await self._calculate_forecast(user_data, forecast_horizon_days)
         
         return forecast
@@ -110,171 +121,149 @@ class SimpleCarbonForecastingEngine:
         }
     
     async def _calculate_forecast(self, user_data: Dict[str, Any], horizon_days: int) -> ForecastResult:
-        """Calculate robust forecast based on user data with advanced analytics"""
+        """Simple, accurate forecast based on actual behavior: order sustainability averages and goal achievement"""
         
         orders = user_data["orders"]
+        goals = user_data.get("goals", {})
         
-        if len(orders) < 2:
-            return self._default_forecast()
+        if len(orders) < 3:
+            return self._insufficient_data_forecast(len(orders))
         
-        # Enhanced data processing with time-series analysis
-        order_data = []
+        # Step 1: Calculate simple average order sustainability
+        monthly_sustainability = {}
         current_time = datetime.utcnow()
         
         for order in orders:
-            order_val = safe_float_convert(order["order_value"])
             sustainability_val = safe_float_convert(order["avg_sustainability_rating"])
             order_date = order.get("created_at")
             
-            if order_val > 0 and order_date:
-                # Calculate days ago for time-weighted analysis
+            if order_date and sustainability_val > 0:
                 if isinstance(order_date, str):
                     order_datetime = datetime.fromisoformat(order_date.replace('Z', '+00:00'))
                 else:
                     order_datetime = order_date
                 
-                days_ago = (current_time - order_datetime).days
+                month_key = f"{order_datetime.year}-{order_datetime.month:02d}"
                 
-                # Calculate comprehensive sustainability metrics
-                sustainability_score = self._calculate_enhanced_sustainability_score(
-                    order_val, sustainability_val, order.get("item_count", 1)
-                )
+                # Convert sustainability rating to 0-100 scale
+                if sustainability_val <= 5.0:
+                    sustainability_score = sustainability_val * 20
+                elif sustainability_val <= 10.0:
+                    sustainability_score = sustainability_val * 10
+                else:
+                    sustainability_score = min(100.0, sustainability_val)
                 
-                order_data.append({
-                    "value": order_val,
-                    "sustainability_score": sustainability_score,
-                    "days_ago": days_ago,
-                    "weight": self._calculate_time_weight(days_ago)  # More recent orders have higher weight
-                })
+                if month_key not in monthly_sustainability:
+                    monthly_sustainability[month_key] = []
+                monthly_sustainability[month_key].append(sustainability_score)
         
-        if not order_data:
-            return self._default_forecast()
+        if not monthly_sustainability:
+            return self._insufficient_data_forecast(len(orders))
         
-        # Sort by recency (most recent first)
-        order_data.sort(key=lambda x: x["days_ago"])
+        # Step 2: Calculate monthly averages and check goal achievement
+        monthly_averages = {}
+        goal_achievements = {}
         
-        # Advanced trend analysis with multiple time windows
-        recent_scores = [o["sustainability_score"] for o in order_data[:5]]  # Last 5 orders
-        mid_term_scores = [o["sustainability_score"] for o in order_data[:15]]  # Last 15 orders
-        all_scores = [o["sustainability_score"] for o in order_data]
+        for month, scores in monthly_sustainability.items():
+            monthly_avg = np.mean(scores)
+            monthly_averages[month] = monthly_avg
+            
+            # Check if goals were set and met for this month
+            if month in goals:
+                goal_value = float(goals[month])
+                achieved = monthly_avg >= goal_value
+                goal_achievements[month] = {
+                    "goal": goal_value,
+                    "actual": monthly_avg,
+                    "achieved": achieved,
+                    "difference": monthly_avg - goal_value
+                }
         
-        # Multi-timeframe trend calculation
-        short_term_trend = self._calculate_weighted_trend(recent_scores, days=7)
-        mid_term_trend = self._calculate_weighted_trend(mid_term_scores, days=30) 
-        long_term_trend = self._calculate_weighted_trend(all_scores, days=90)
+        # Step 3: Simple trend analysis - last 3 months vs previous months
+        recent_months = sorted(monthly_averages.keys())[-3:]
+        older_months = sorted(monthly_averages.keys())[:-3] if len(monthly_averages) > 3 else []
         
-        # Composite trend with different weights for different timeframes
-        composite_trend = (short_term_trend * 0.5) + (mid_term_trend * 0.3) + (long_term_trend * 0.2)
+        recent_avg = np.mean([monthly_averages[m] for m in recent_months])
         
-        # Enhanced prediction with volatility consideration
-        recent_avg = np.mean(recent_scores)
-        volatility = np.std(all_scores) if len(all_scores) > 1 else 0
-        
-        # Apply trend with volatility dampening
-        volatility_factor = max(0.5, 1.0 - (volatility / 50.0))  # High volatility = less trend extrapolation
-        trend_impact = composite_trend * (horizon_days / 30) * volatility_factor
-        
-        # Seasonal and behavioral adjustments
-        seasonal_factor = self._get_enhanced_seasonal_factor()
-        behavioral_pattern = self._analyze_behavioral_patterns(order_data)
-        
-        # Final prediction with bounds
-        base_prediction = recent_avg + trend_impact
-        seasonal_adjustment = base_prediction * seasonal_factor
-        behavioral_adjustment = seasonal_adjustment * behavioral_pattern["consistency_factor"]
-        
-        predicted_score = max(10.0, min(100.0, behavioral_adjustment))
-        
-        # Enhanced improvement potential calculation
-        user_max_score = max(all_scores) if all_scores else 60.0
-        theoretical_max = 100.0
-        current_performance = recent_avg
-        
-        # Calculate realistic improvement potential based on historical performance
-        historical_improvement_rate = user_max_score - np.mean(all_scores)
-        realistic_potential = min(
-            theoretical_max - predicted_score,
-            historical_improvement_rate * 1.5  # 50% more than historical best improvement
-        )
-        improvement_potential = max(0.0, realistic_potential)
-        
-        # Advanced confidence scoring
-        confidence_factors = {
-            "data_quantity": min(1.0, len(all_scores) / 20),  # More data = higher confidence
-            "data_recency": min(1.0, 30 / (order_data[0]["days_ago"] + 1)),  # Recent data = higher confidence
-            "trend_consistency": max(0.3, 1.0 - abs(short_term_trend - long_term_trend) / 20),
-            "volatility_penalty": max(0.5, 1.0 - volatility / 30),
-            "behavioral_consistency": behavioral_pattern["consistency_score"]
-        }
-        
-        confidence_score = np.mean(list(confidence_factors.values()))
-        
-        # Determine trend direction using valid enum values
-        if composite_trend > 2.0:
-            trend_direction = "improving"  # Very positive trend
-        elif composite_trend > 0.5:
-            trend_direction = "improving"
-        elif composite_trend > -0.5:
-            trend_direction = "stable"
-        elif composite_trend > -2.0:
-            trend_direction = "declining"
+        if older_months:
+            older_avg = np.mean([monthly_averages[m] for m in older_months])
+            trend_change = recent_avg - older_avg
         else:
-            trend_direction = "declining"  # Very negative trend
+            trend_change = 0
         
-        # Add volatility check
-        if volatility > 15:  # High volatility
+        # Step 4: Simple prediction based on recent average and trend
+        predicted_score = recent_avg + (trend_change * 0.3)  # Conservative trend continuation
+        predicted_score = max(0.0, min(100.0, predicted_score))
+        
+        # Step 5: Calculate improvement potential based on goal history
+        if goal_achievements:
+            unmet_goals = [ga for ga in goal_achievements.values() if not ga["achieved"]]
+            if unmet_goals:
+                avg_shortfall = np.mean([abs(ga["difference"]) for ga in unmet_goals])
+                improvement_potential = min(25.0, avg_shortfall)
+            else:
+                improvement_potential = min(10.0, 100.0 - predicted_score)  # Small improvement if goals are met
+        else:
+            improvement_potential = min(15.0, 100.0 - predicted_score)
+        
+        # Step 6: Simple confidence based on data consistency
+        score_variance = np.var(list(monthly_averages.values()))
+        if score_variance < 100:  # Low variance = high confidence
+            confidence = 0.8
+        elif score_variance < 400:  # Medium variance
+            confidence = 0.6
+        else:  # High variance = low confidence
+            confidence = 0.4
+        
+        # Adjust confidence based on data amount
+        confidence *= min(1.0, len(monthly_averages) / 6)  # Need 6 months for full confidence
+        
+        # Step 7: Simple trend direction
+        if trend_change > 5:
+            trend_direction = "improving"
+        elif trend_change < -5:
+            trend_direction = "declining"
+        elif score_variance > 400:
             trend_direction = "volatile"
+        else:
+            trend_direction = "stable"
         
         return ForecastResult(
             predicted_emissions=float(predicted_score),
             predicted_reduction=float(improvement_potential),
-            confidence_score=float(confidence_score),
+            confidence_score=float(confidence),
             trend_direction=trend_direction,
-            seasonal_factor=float(seasonal_factor),
-            behavioral_score=float(behavioral_pattern["consistency_score"]),
+            seasonal_factor=1.0,  # Simplified - no seasonal adjustment
+            behavioral_score=float(min(0.9, 1.0 - score_variance / 1000)),
             prediction_factors={
-                "data_points": len(all_scores),
-                "short_term_trend": float(short_term_trend),
-                "mid_term_trend": float(mid_term_trend),
-                "long_term_trend": float(long_term_trend),
-                "composite_trend": float(composite_trend),
-                "volatility": float(volatility),
+                "monthly_averages": monthly_averages,
+                "goal_achievements": goal_achievements,
                 "recent_avg": float(recent_avg),
-                "confidence_breakdown": confidence_factors
+                "trend_change": float(trend_change),
+                "data_months": len(monthly_averages),
+                "score_variance": float(score_variance)
             },
             algorithm_metadata={
-                "algorithm": "enhanced_multi_timeframe_forecasting",
-                "version": "2.0",
-                "volatility_factor": float(volatility_factor),
-                "behavioral_insights": behavioral_pattern
+                "algorithm": "simple_behavior_analysis",
+                "version": "3.0",
+                "approach": "monthly_sustainability_average_with_goal_tracking"
             }
         )
     
-    def _calculate_enhanced_sustainability_score(self, order_value: float, sustainability_rating: float, item_count: int) -> float:
-        """Enhanced sustainability score calculation with multiple factors"""
-        order_value = safe_float_convert(order_value)
+    def _calculate_simple_sustainability_score(self, sustainability_rating: float) -> float:
+        """Simple sustainability score normalization - just convert to 0-100 scale"""
         sustainability_rating = safe_float_convert(sustainability_rating)
-        item_count = max(1, safe_float_convert(item_count))
         
-        # Base score from sustainability rating
+        if sustainability_rating <= 0:
+            return 0.0
+        
+        # Convert different scales to 0-100
         if sustainability_rating <= 5.0:
-            base_score = sustainability_rating * 20  # Convert 0-5 to 0-100
+            return sustainability_rating * 20  # 0-5 scale to 0-100
+        elif sustainability_rating <= 10.0:
+            return sustainability_rating * 10  # 0-10 scale to 0-100
         else:
-            base_score = sustainability_rating  # Already 0-100
-        
-        # Item diversity factor (more items per order = better planning)
-        diversity_factor = min(1.2, 1.0 + (item_count - 1) * 0.02)  # Small bonus for more items
-        
-        # Order efficiency factor (value per item)
-        avg_item_value = order_value / item_count
-        if avg_item_value > 50:  # Premium items might be more sustainable
-            efficiency_factor = min(1.1, 1.0 + (avg_item_value - 50) * 0.001)
-        else:
-            efficiency_factor = 1.0
-        
-        # Calculate final score
-        final_score = base_score * diversity_factor * efficiency_factor
-        return min(100.0, max(0.0, final_score))
+            return min(100.0, sustainability_rating)  # Already 0-100 or cap at 100
     
     def _calculate_time_weight(self, days_ago: int) -> float:
         """Calculate weight based on recency (exponential decay)"""
@@ -373,22 +362,98 @@ class SimpleCarbonForecastingEngine:
         """Get seasonal adjustment factor (kept for backward compatibility)"""
         return self._get_enhanced_seasonal_factor()
     
-    def _default_forecast(self) -> ForecastResult:
-        """Default forecast for users with insufficient data - more conservative"""
+    def _new_user_forecast(self) -> ForecastResult:
+        """Forecast for completely new users with no purchase history"""
         return ForecastResult(
-            predicted_emissions=55.0,     # More conservative default sustainability score
-            predicted_reduction=15.0,     # Realistic improvement potential for new users
-            confidence_score=0.3,         # Low confidence due to lack of data
-            trend_direction="stable",
+            predicted_emissions=50.0,     # Default middle score - no data to predict otherwise
+            predicted_reduction=20.0,     # Potential for improvement from average baseline
+            confidence_score=0.1,         # Very low confidence - no data
+            trend_direction="stable",     # Use valid enum value instead of "unknown"
             seasonal_factor=1.0,
-            behavioral_score=0.4,         # Lower behavioral score for new users
+            behavioral_score=0.0,         # No behavioral data
             prediction_factors={
-                "note": "Insufficient data - using conservative default estimates",
-                "recommendation": "Make 5+ purchases to get accurate forecasting"
+                "status": "no_data",
+                "message": "No purchase history available for accurate forecasting",
+                "recommendation": "Make your first sustainable purchase to start building your carbon profile",
+                "baseline_explanation": "Using average sustainability score as baseline prediction"
             },
             algorithm_metadata={
-                "algorithm": "default_conservative_scoring",
-                "version": "2.0"
+                "algorithm": "new_user_baseline",
+                "version": "3.0",
+                "data_points": 0
+            }
+        )
+    
+    async def _simple_prediction_from_orders(self, orders: List[Dict], order_count: int) -> ForecastResult:
+        """Simple prediction based on actual order data for users with 1-2 orders"""
+        
+        # Calculate average sustainability from their actual orders
+        sustainability_scores = []
+        for order in orders:
+            sustainability_val = safe_float_convert(order["avg_sustainability_rating"])
+            if sustainability_val > 0:
+                # Convert to 0-100 scale
+                if sustainability_val <= 5.0:
+                    score = sustainability_val * 20
+                elif sustainability_val <= 10.0:
+                    score = sustainability_val * 10
+                else:
+                    score = min(100.0, sustainability_val)
+                sustainability_scores.append(score)
+        
+        if sustainability_scores:
+            # Use their actual average as prediction
+            predicted_score = np.mean(sustainability_scores)
+            # Small improvement potential based on their current performance
+            improvement_potential = min(20.0, 100.0 - predicted_score)
+            confidence = 0.4 if order_count == 2 else 0.25  # Slightly higher confidence with 2 orders
+        else:
+            # Fallback if no valid sustainability data
+            predicted_score = 50.0
+            improvement_potential = 20.0
+            confidence = 0.2
+        
+        return ForecastResult(
+            predicted_emissions=float(predicted_score),
+            predicted_reduction=float(improvement_potential),
+            confidence_score=float(confidence),
+            trend_direction="stable",
+            seasonal_factor=1.0,
+            behavioral_score=0.5,
+            prediction_factors={
+                "status": "early_prediction",
+                "current_orders": order_count,
+                "actual_avg_sustainability": float(predicted_score),
+                "message": f"Prediction based on your {order_count} order(s) with {predicted_score:.1f} average sustainability",
+                "recommendation": f"Make {3 - order_count} more purchase(s) to unlock more accurate trend analysis"
+            },
+            algorithm_metadata={
+                "algorithm": "simple_order_average",
+                "version": "3.0",
+                "data_points": order_count
+            }
+        )
+    
+    def _insufficient_data_forecast(self, order_count: int) -> ForecastResult:
+        """Fallback forecast for edge cases (kept for compatibility)"""
+        return ForecastResult(
+            predicted_emissions=55.0,     # Slightly above average - they're making sustainable purchases
+            predicted_reduction=15.0,     # Conservative improvement potential
+            confidence_score=0.3,         # Low but not zero confidence
+            trend_direction="stable",     # Use valid enum value
+            seasonal_factor=1.0,
+            behavioral_score=0.4,         # Some behavioral data
+            prediction_factors={
+                "status": "limited_data_fallback",
+                "current_orders": order_count,
+                "recommended_orders": 3,
+                "message": f"Fallback prediction - improve with more purchase history",
+                "recommendation": f"Make more purchases to get personalized forecasting"
+            },
+            algorithm_metadata={
+                "algorithm": "limited_data_fallback", 
+                "version": "3.0",
+                "data_points": order_count
             }
         )
 
