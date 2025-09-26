@@ -16,7 +16,17 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     existing = get_user_by_email(db, user.email)
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
-    return create_user(db, user)
+    
+    new_user = create_user(db, user)
+    
+    # Return UserResponse format with requires2FA field
+    return {
+        'id': new_user.id,
+        'name': new_user.name,
+        'email': new_user.email,
+        'requires2FA': False,  # New users don't have 2FA enabled initially
+        'created_at': new_user.created_at
+    }
 
 @router.post("/signin", response_model=UserResponse)
 def signin(user: UserLogin, db: Session = Depends(get_db)):
