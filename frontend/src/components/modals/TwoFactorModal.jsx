@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { API_BASE_URL } from '../../config/api.js'
 import '../styles/modals/TwoFactorModal.css';
-import { API_BASE_URL } from '../../config/api.js';
 
 const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabled, userId }) => {
   const [step, setStep] = useState(1); // 1: Setup, 2: QR Code, 3: Verify Code
