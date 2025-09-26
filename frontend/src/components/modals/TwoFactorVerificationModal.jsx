@@ -55,7 +55,7 @@ const TwoFactorVerificationModal = ({
     <div className="two-factor-verification-overlay" onClick={handleClose}>
       <div className="two-factor-verification-modal" onClick={(e) => e.stopPropagation()}>
         <div className="verification-header">
-          <div className="verification-icon">🔐</div>
+          <div className="verification-icon"></div>
           <h2>Two-Factor Authentication Required</h2>
           <p className="verification-subtitle">
             {userEmail && `Signing in as ${userEmail}`}

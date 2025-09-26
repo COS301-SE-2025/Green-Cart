@@ -47,7 +47,7 @@ const RetailerNavbar = () => {
         <div className="navbar-right">
           <button 
             onClick={handleLogout}
-            className="logout-btn"
+            className="retailer-logout-btn"
             title="Logout"
           >
             Logout

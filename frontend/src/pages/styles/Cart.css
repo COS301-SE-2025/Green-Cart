@@ -4,6 +4,7 @@
   padding: 40px 20px;
   background-color: #f5f5f5;
   min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
 .cart-content {

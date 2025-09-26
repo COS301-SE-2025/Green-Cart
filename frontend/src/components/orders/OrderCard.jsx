@@ -78,7 +78,7 @@ export default function OrderCard({ order, onViewDetails, onCancelOrder }) {
                         // >
                         <div className="sustainability-order-badge">
                             
-                            <span className="sustainability-icon">🌱</span>
+                            {/* <span className="sustainability-icon">🌱</span> */}
                             <span className="sustainability-score">{sustainability.toFixed(1)}</span>
                         </div>
                     )}
@@ -87,13 +87,13 @@ export default function OrderCard({ order, onViewDetails, onCancelOrder }) {
 
             <div className="order-card-actions">
                 <button 
-                    className="btn btn-view"
+                    className="orderCard-btn btn-view"
                     onClick={() => onViewDetails(order)}
                 >
                     View Details
                 </button>
                 <button 
-                    className={`btn btn-cancel ${!canCancel ? 'disabled' : ''}`}
+                    className={`orderCard-btn btn-cancel ${!canCancel ? 'disabled' : ''}`}
                     disabled={!canCancel}
                     onClick={() => onCancelOrder(order)}
                 >
