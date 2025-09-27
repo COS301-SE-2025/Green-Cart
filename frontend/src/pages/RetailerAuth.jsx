@@ -154,7 +154,7 @@ const RetailerAuth = () => {
           // Show MFA modal
           setPendingSigninData(signinResult);
           setShowMFAModal(true);
-          toast.info('Please complete two-factor authentication');
+          toast.success('Please complete two-factor authentication');
         } else {
           // No MFA required, proceed normally
           handleSigninComplete(signinResult);
@@ -202,7 +202,7 @@ const RetailerAuth = () => {
         // Show MFA modal instead of proceeding directly
         setPendingSigninData(result);
         setShowMFAModal(true);
-        toast.info('Please complete two-factor authentication');
+        toast.success('Please complete two-factor authentication');
       } else {
         // No MFA required, proceed with normal signin flow
         handleSigninComplete(result);
