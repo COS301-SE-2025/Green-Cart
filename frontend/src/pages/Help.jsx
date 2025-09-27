@@ -308,18 +308,18 @@ Business Hours: Monday - Friday, 9 AM - 6 PM (SAST)`
           </div>
 
           {/* Contact CTA */}
-          <div className="contact-cta">
+          {/* <div className="contact-cta">
             <h3>Still need help?</h3>
             <p>Our support team is ready to assist you with any questions.</p>
             <div className="contact-buttons">
               <button className="contact-btn primary">
-                <FaComments /> Start Live Chat {/* Replaced 💬 */}
+                <FaComments /> Start Live Chat 
               </button>
               <button className="contact-btn secondary">
-                <FaEnvelope /> Email Support {/* Replaced 📧 */}
+                <FaEnvelope /> Email Support 
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
