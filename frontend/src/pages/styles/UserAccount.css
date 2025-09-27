@@ -2294,3 +2294,623 @@
     text-align: left;
   }
 }
+
+/* ==============================================
+   ENHANCED FORECASTING UI STYLES
+   ============================================== */
+
+/* Enhanced Forecasting Header */
+.forecast-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+}
+
+.forecast-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.forecast-description {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+/* No Orders Message */
+.no-orders-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  border: 2px dashed #d1d5db;
+  margin: 2rem 0;
+}
+
+.no-orders-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.no-orders-message h3 {
+  color: #374151;
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.no-orders-message p {
+  color: #6b7280;
+  margin: 0 0 2rem 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.start-shopping-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.start-shopping-btn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.refresh-forecast-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.refresh-forecast-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+}
+
+.refresh-forecast-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* No Orders Message */
+.no-orders-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  border: 2px dashed #d1d5db;
+  margin: 2rem 0;
+}
+
+.no-orders-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.no-orders-message h3 {
+  color: #374151;
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.no-orders-message p {
+  color: #6b7280;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.start-shopping-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+}
+
+.start-shopping-btn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+/* Enhanced Help Icons - Redesigned */
+.help-icon {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  color: white;
+  margin-right: 8px;
+  margin-left: 0;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+  vertical-align: middle;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.help-icon:hover {
+  transform: translateY(-1px) scale(1.08);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.help-icon:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.help-icon:active {
+  transform: translateY(0) scale(0.95);
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+}
+
+.help-icon.small {
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+  margin-right: 8px;
+  margin-left: 0;
+}
+
+/* Better text contrast and readability */
+.score-breakdown {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  margin-top: 1rem;
+}
+
+.breakdown-title-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0;
+}
+
+.breakdown-title-container h4 {
+  margin: 0;
+  flex-grow: 1;
+}
+
+/* Clickable Labels */
+.clickable-title {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  margin: -0.25rem -0.5rem;
+}
+
+.clickable-title:hover {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  transform: translateX(2px);
+}
+
+.clickable-label {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  padding: 0.5rem;
+  margin: -0.5rem;
+  user-select: none;
+  position: relative;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+}
+
+.clickable-label:hover {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  transform: translateX(2px);
+  text-decoration-color: #3b82f6;
+}
+
+.clickable-label:active {
+  transform: translateX(1px);
+  background: rgba(59, 130, 246, 0.15);
+}
+
+/* Clickable Cards with Glow Effect */
+.clickable-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.clickable-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(59, 130, 246, 0.25), 
+              0 0 0 1px rgba(59, 130, 246, 0.1),
+              0 0 20px rgba(59, 130, 246, 0.15);
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.clickable-card:active {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* Special styling for breakdown items */
+.breakdown-item.clickable-card:hover {
+  transform: translateX(6px) translateY(-2px);
+  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.2), 
+              0 0 0 1px rgba(59, 130, 246, 0.1),
+              0 0 15px rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.breakdown-item.clickable-card:active {
+  transform: translateX(3px) translateY(-1px);
+}
+
+.breakdown-item.clickable-card {
+  border-left: 4px solid #e2e8f0;
+}
+
+.breakdown-item.clickable-card:hover {
+  border-left-color: #3b82f6;
+}
+
+.score-breakdown h4 {
+  color: #1f2937;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.user-score-overview {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  margin-bottom: 2rem;
+}
+
+/* Title containers for better help icon positioning */
+.score-title-container,
+.breakdown-title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.score-title-container h3,
+.breakdown-title-container h4 {
+  margin: 0;
+  flex-grow: 1;
+}
+
+/* Enhanced Breakdown Items - Better Readability */
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.75rem 2rem;
+  background: white;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  min-height: 80px;
+  gap: 2rem;
+}
+
+.breakdown-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+}
+
+.breakdown-label {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  flex-grow: 1;
+}
+
+.breakdown-score {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #059669;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #10b981;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.1);
+  min-width: 100px;
+  text-align: center;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* Prediction Insights */
+.prediction-insights {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  border: 1px solid #e5e7eb;
+}
+
+.prediction-insights h4 {
+  margin: 0 0 1.5rem 0;
+  color: #1f2937;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.insight-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #d1d5db;
+  transition: all 0.3s ease;
+}
+
+.insight-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+}
+
+.insight-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.insight-icon {
+  font-size: 1.5rem;
+  margin-right: 0.75rem;
+}
+
+.insight-title {
+  font-weight: 600;
+  color: #374151;
+  flex-grow: 1;
+}
+
+.insight-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #059669;
+  text-align: center;
+}
+
+.trend-card .insight-value {
+  font-size: 1.2rem;
+}
+
+/* Help Icon Focus States */
+.help-icon:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  transform: scale(1.05);
+}
+
+/* Enhanced Responsive Design */
+@media (max-width: 768px) {
+  .forecast-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .forecast-info h3 {
+    font-size: 1.5rem;
+  }
+  
+  .insights-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 1rem;
+  }
+  
+  .modal-header, .modal-body, .modal-footer {
+    padding: 1rem;
+  }
+  
+  .breakdown-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+  
+  .breakdown-label {
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .clickable-label {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+  
+
+  
+  .no-orders-message {
+    padding: 2rem 1rem;
+  }
+  
+  .no-orders-icon {
+    font-size: 3rem;
+  }
+}
+
+/* Final Text Readability Improvements */
+.forecast-results h3,
+.user-insights h3,
+.prediction-insights h4 {
+  color: #1f2937 !important;
+  font-weight: 700;
+}
+
+.forecast-description,
+.insight-description {
+  color: #4b5563 !important;
+  line-height: 1.6;
+}
+
+/* Ensure high contrast for all text elements */
+.forecasting-section {
+  color: #1f2937;
+}
+
+.forecasting-section p,
+.forecasting-section span {
+  color: #374151;
+}
+
+/* Better contrast for insight cards */
+.insight-card {
+  background: white !important;
+  border: 1px solid #d1d5db;
+}
+
+.insight-card:hover {
+  background: #f9fafb !important;
+}
+
+/* Additional Enhancements */
+.user-insights {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  border: 1px solid #e5e7eb;
+}
+
+.user-insights h3 {
+  display: flex;
+  align-items: center;
+  margin: 0 0 1.5rem 0;
+  color: #1f2937;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.insights-section {
+  margin-bottom: 2rem;
+}
+
+.insights-section h4 {
+  display: flex;
+  align-items: center;
+  margin: 0 0 1rem 0;
+  color: #374151;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.recommendations-section {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #f59e0b;
+}
+
+.recommendations-section h4 {
+  display: flex;
+  align-items: center;
+  margin: 0 0 1rem 0;
+  color: #92400e;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.recommendations-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.recommendation-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.75rem 0;
+  color: #78350f;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.recommendation-item:not(:last-child) {
+  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.recommendation-icon {
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}

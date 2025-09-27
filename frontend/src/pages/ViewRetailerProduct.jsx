@@ -275,10 +275,11 @@ export default function ViewRetailerProduct() {
                         </div>
                         <div className="view-retailer-product-header-right">
                             <button
-                                className="view-retailer-product-edit-button"
+                                className={`view-retailer-product-edit-button ${product.verified ? 'verified-product' : ''}`}
                                 onClick={handleEditProduct}
+                                title={product.verified ? 'Update price and quantity for verified product' : 'Edit this product'}
                             >
-                                Edit Product
+                                {product.verified ? '💰 Update Price & Stock' : 'Edit Product'}
                             </button>
                             {/* <button
                                 className="view-retailer-product-delete-button"
@@ -350,7 +351,19 @@ export default function ViewRetailerProduct() {
                         
                         {/* Details Section - Right Column */}
                         <div className="view-retailer-product-details-section">
-                            <h1 className="view-retailer-product-title">{product.name}</h1>
+                            <div className="view-retailer-product-title-section">
+                                <h1 className="view-retailer-product-title">{product.name}</h1>
+                                {product.verified && (
+                                    <span className="view-retailer-product-verified-badge">
+                                        ✅ Verified
+                                    </span>
+                                )}
+                                {!product.verified && (
+                                    <span className="view-retailer-product-unverified-badge">
+                                        ⏳ Unverified
+                                    </span>
+                                )}
+                            </div>
                             
                             <div className="view-retailer-product-metrics-grid">
                                 <div className="view-retailer-product-metric-item">

@@ -1,0 +1,246 @@
+/* Help Modal Styles - Clean Off-White Design */
+.help-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: modalOverlayFadeIn 0.2s ease-out;
+}
+
+@keyframes modalOverlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.help-modal-container {
+  background: #fdfdfc; /* off-white */
+  border-radius: 20px;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  position: relative;
+  animation: modalSlideUp 0.3s ease-out;
+  transform-origin: center bottom;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.help-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 2rem 1rem 2rem;
+  background: #fdfdfc;
+  color: #000000;
+  position: relative;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.help-modal-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+}
+
+.help-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.help-modal-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.help-modal-title h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #000000;
+}
+
+.help-modal-close {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+}
+
+.help-modal-close:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+  transform: scale(1.05);
+}
+
+.help-modal-close:active {
+  transform: scale(0.95);
+}
+
+.help-modal-body {
+  padding: 2rem;
+  background: #fdfdfc;
+  min-height: 120px;
+  display: flex;
+  align-items: flex-start;
+  color: #000000;
+}
+
+.help-modal-content {
+  width: 100%;
+}
+
+.help-modal-content p {
+  margin: 0 0 1rem 0;
+  line-height: 1.7;
+  color: #000000;
+  font-size: 1rem;
+}
+
+.help-modal-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Style bullet points in content */
+.help-modal-content p:contains("•") {
+  margin-left: 1rem;
+}
+
+.help-modal-footer {
+  padding: 1rem 2rem 2rem 2rem;
+  background: #ffffff; /* pure white footer */
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.help-modal-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.help-modal-button:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+}
+
+.help-modal-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+.help-modal-button svg {
+  transition: transform 0.2s ease;
+}
+
+.help-modal-button:hover svg {
+  transform: translateX(2px);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .help-modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .help-modal-container {
+    max-height: 95vh;
+    border-radius: 16px;
+  }
+
+  .help-modal-header {
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+  }
+
+  .help-modal-title h3 {
+    font-size: 1.125rem;
+  }
+
+  .help-modal-icon {
+    font-size: 1.25rem;
+  }
+
+  .help-modal-close {
+    width: 36px;
+    height: 36px;
+  }
+
+  .help-modal-body {
+    padding: 1.5rem;
+  }
+
+  .help-modal-content p {
+    font-size: 0.95rem;
+  }
+
+  .help-modal-footer {
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
+  }
+
+  .help-modal-button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+/* Accessibility improvements */
+.help-modal-close:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.8);
+  outline-offset: -2px;
+}
+
+.help-modal-button:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}

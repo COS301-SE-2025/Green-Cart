@@ -51,6 +51,8 @@ class SimpleCarbonForecastingEngine:
         user_id: str, 
         forecast_horizon_days: int = 30
     ) -> ForecastResult:
+        # Always use 30 days for forecasting accuracy
+        forecast_horizon_days = 30
         """Generate carbon emissions forecast using existing data"""
         
         logger.info(f"Generating forecast for user {user_id}")
@@ -61,9 +63,9 @@ class SimpleCarbonForecastingEngine:
         # Check if user has sufficient data for meaningful forecasting
         orders = user_data.get("orders", [])
         
-        # For new users, return baseline forecast
+        # For new users with no orders, return no forecast message
         if len(orders) == 0:
-            return self._new_user_forecast()
+            return self._no_orders_forecast()
         
         # For users with 1-2 orders, provide a simple prediction based on their actual data
         if len(orders) < 3:
@@ -379,6 +381,28 @@ class SimpleCarbonForecastingEngine:
             },
             algorithm_metadata={
                 "algorithm": "new_user_baseline",
+                "version": "3.0",
+                "data_points": 0
+            }
+        )
+    
+    def _no_orders_forecast(self) -> ForecastResult:
+        """Return no forecast for users with no orders at all"""
+        return ForecastResult(
+            predicted_emissions=0.0,         # No prediction possible
+            predicted_reduction=0.0,         # No reduction possible without orders
+            confidence_score=0.0,            # Zero confidence
+            trend_direction="unknown",       # Cannot determine trend
+            seasonal_factor=1.0,
+            behavioral_score=0.0,            # No behavioral data
+            prediction_factors={
+                "status": "no_orders",
+                "message": "No forecasting available - make your first purchase to begin tracking your sustainability journey",
+                "recommendation": "Start shopping for sustainable products to unlock personalized forecasting insights",
+                "data_points": 0
+            },
+            algorithm_metadata={
+                "algorithm": "no_orders",
                 "version": "3.0",
                 "data_points": 0
             }

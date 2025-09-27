@@ -114,12 +114,12 @@ async def get_user_carbon_score(
         patterns = insights["shopping_patterns"]
         forecast = insights.get("latest_forecast", {})
         
-        # Calculate composite score using stricter 0-100 scoring system
-        # Eco consciousness (40% weight) - based on actual sustainability ratings
+        # Calculate composite score using accurate 0-100 scoring system
+        # Eco consciousness (30 points max) - based on actual sustainability ratings
         eco_base = patterns.get("eco_consciousness_score", 50)
-        eco_score = (eco_base * 0.4) if eco_base >= 60 else (eco_base * 0.3)  # Penalty for low eco scores
+        eco_score = min(30, (eco_base / 100) * 30)  # Scale to 30 points max
         
-        # Trend score (25% weight) - more restrictive trend calculation
+        # Trend score (25 points max) - sustainability improvement trend
         trend_raw = patterns.get("sustainability_trend_30d", 0)
         if trend_raw > 10:
             trend_score = 25  # Excellent positive trend
@@ -132,25 +132,25 @@ async def get_user_carbon_score(
         else:
             trend_score = 5   # Significant decline
         
-        # Efficiency score (20% weight) - based on order frequency and value
+        # Efficiency score (25 points max) - based on order frequency and value
         avg_orders_per_week = patterns.get("avg_orders_per_week", 0)
         if avg_orders_per_week > 0:
             # Reward consistent but not excessive shopping
             if 1 <= avg_orders_per_week <= 3:
-                efficiency_score = 20  # Optimal frequency
+                efficiency_score = 25  # Optimal frequency
             elif avg_orders_per_week <= 5:
-                efficiency_score = 15  # Good frequency
+                efficiency_score = 20  # Good frequency
             elif avg_orders_per_week <= 7:
-                efficiency_score = 10  # High frequency
+                efficiency_score = 15  # High frequency
             else:
-                efficiency_score = 5   # Excessive shopping
+                efficiency_score = 10   # Excessive shopping
         else:
-            efficiency_score = 0  # No shopping data
+            efficiency_score = 5  # Minimal score for no shopping data
         
-        # Consistency score (15% weight) - based on forecast confidence and achievement rate
+        # Consistency score (20 points max) - based on forecast confidence and achievement rate
         confidence = forecast.get("confidence", 0)
         achievement_rate = patterns.get("goals_achievement_rate", 0)
-        consistency_score = (confidence * 7.5) + (achievement_rate * 7.5)  # Both contribute to consistency
+        consistency_score = min(20, (confidence * 10) + (achievement_rate * 10))  # Both contribute to consistency
         
         total_score = eco_score + trend_score + efficiency_score + consistency_score
         

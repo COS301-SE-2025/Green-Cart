@@ -3,9 +3,11 @@ import { API_BASE_URL } from '../config/api.js';
 
 class ForecastingService {
   /**
-   * Generate a carbon forecast for a user
+   * Generate a carbon forecast for a user (fixed 30-day horizon)
    */
   async generateForecast(userId, horizonDays = 30, algorithm = 'ensemble') {
+    // Always use 30 days as per requirements
+    horizonDays = 30;
     try {
       const response = await fetch(`${API_BASE_URL}/api/carbon-forecasting/generate-forecast`, {
         method: 'POST',

@@ -120,10 +120,10 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                 name: product.name || '',
                 description: product.description || '',
                 price: product.price?.toString() || '',
-                category: product.category || null,
+                category: product.category || (product.category_id ? categories[product.category_id - 1] : ''),
                 category_id: product.category_id,
                 brand: product.brand || '',
-                quantity: product.stock?.toString() || product.quantity?.toString() || '',
+                quantity: product.stock?.toString() || product.quantity?.toString() || product.stock_quantity?.toString() || '',
                 sustainability: {
                     energyEfficiency: 70,
                     carbonFootprint: 60,
@@ -257,12 +257,24 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
     const validateForm = () => {
         const newErrors = {};
-        if (!formData.name.trim()) newErrors.name = 'Product name is required';
-        if (!formData.description.trim()) newErrors.description = 'Description is required';
-        if (!formData.price || parseFloat(formData.price) <= 0) newErrors.price = 'Valid price is required';
-        if (!formData.category) newErrors.category = 'Category is required';
-        if (!formData.brand.trim()) newErrors.brand = 'Brand is required';
-        if (!formData.quantity || parseInt(formData.quantity) < 0) newErrors.quantity = 'Valid quantity is required';
+        
+        if (isVerified) {
+            // For verified products, only validate price and quantity
+            if (!formData.price || parseFloat(formData.price) <= 0) {
+                newErrors.price = 'Valid price is required';
+            }
+            if (!formData.quantity || parseInt(formData.quantity) < 0) {
+                newErrors.quantity = 'Valid quantity is required';
+            }
+        } else {
+            // For non-verified products, validate all fields
+            if (!formData.name.trim()) newErrors.name = 'Product name is required';
+            if (!formData.description.trim()) newErrors.description = 'Description is required';
+            if (!formData.price || parseFloat(formData.price) <= 0) newErrors.price = 'Valid price is required';
+            if (!formData.category) newErrors.category = 'Category is required';
+            if (!formData.brand.trim()) newErrors.brand = 'Brand is required';
+            if (!formData.quantity || parseInt(formData.quantity) < 0) newErrors.quantity = 'Valid quantity is required';
+        }
         
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -285,57 +297,86 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
         
         console.log('Edit form submission started:', {
             productName: formData.name,
+            isVerified: isVerified,
             existingImagesCount: existingImages.length,
             newImageFilesCount: imageFiles.length,
             imagesModified
         });
         
-        try {                // Use S3-enabled endpoint for image updates
-            const formDataSubmit = new FormData();
-            
-            // Add product data
-            formDataSubmit.append('name', formData.name);
-            formDataSubmit.append('description', formData.description);
-            formDataSubmit.append('price', formData.price);
-            formDataSubmit.append('brand', formData.brand);
-            formDataSubmit.append('category_id', getCategoryId(formData.category));
-            formDataSubmit.append('retailer_id', product.retailer_id);
-            formDataSubmit.append('stock_quantity', formData.quantity);
-            
-            // Add sustainability ratings
-            formDataSubmit.append('energy_efficiency', formData.sustainability.energyEfficiency);
-            formDataSubmit.append('carbon_footprint', formData.sustainability.carbonFootprint);
-            formDataSubmit.append('recyclability', formData.sustainability.recyclability);
-            formDataSubmit.append('durability', formData.sustainability.durability);
-            formDataSubmit.append('material_sustainability', formData.sustainability.materialSustainability);
-            
-            // Add existing images URLs to preserve them
-            existingImages.forEach(imageUrl => {
-                formDataSubmit.append('existing_images', imageUrl);
-            });
-            
-            // Add new image files for S3 upload
-            imageFiles.forEach((file, index) => {
-                console.log(`Adding new image ${index + 1}: ${file.name}`);
-                formDataSubmit.append('images', file);
-            });
-            
-            console.log('Using S3 endpoint for product update with new images');
-            const response = await fetch(`${API_BASE_URL}/product-images/products/${product.id}`, {
-                method: 'PUT',
-                body: formDataSubmit
-            });
-            
-            if (!response.ok) {
-                const error = await response.json();
-                console.error('S3 update error:', error);
-                toast.error('Failed to update product data');
-                throw new Error(error.detail || 'Failed to update product with S3 images');
+        try {
+            if (isVerified) {
+                // For verified products, update price and quantity using a simple JSON request
+                const updateData = {
+                    price: parseFloat(formData.price),
+                    stock_quantity: parseInt(formData.quantity)
+                };
+
+                const response = await fetch(`${API_BASE_URL}/retailer/products/${product.id}/price-quantity`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    console.error('Quantity update error:', error);
+                    toast.error('Failed to update product quantity');
+                    throw new Error(error.detail || 'Failed to update product quantity');
+                }
+
+                const result = await response.json();
+                console.log('Product quantity updated successfully:', result);
+                toast.success('Product quantity updated successfully!');
+            } else {
+                // Use S3-enabled endpoint for full product updates (non-verified products)
+                const formDataSubmit = new FormData();
+                
+                // Add product data
+                formDataSubmit.append('name', formData.name);
+                formDataSubmit.append('description', formData.description);
+                formDataSubmit.append('price', formData.price);
+                formDataSubmit.append('brand', formData.brand);
+                formDataSubmit.append('category_id', getCategoryId(formData.category));
+                formDataSubmit.append('retailer_id', product.retailer_id);
+                formDataSubmit.append('stock_quantity', formData.quantity);
+                
+                // Add sustainability ratings
+                formDataSubmit.append('energy_efficiency', formData.sustainability.energyEfficiency);
+                formDataSubmit.append('carbon_footprint', formData.sustainability.carbonFootprint);
+                formDataSubmit.append('recyclability', formData.sustainability.recyclability);
+                formDataSubmit.append('durability', formData.sustainability.durability);
+                formDataSubmit.append('material_sustainability', formData.sustainability.materialSustainability);
+                
+                // Add existing images URLs to preserve them
+                existingImages.forEach(imageUrl => {
+                    formDataSubmit.append('existing_images', imageUrl);
+                });
+                
+                // Add new image files for S3 upload
+                imageFiles.forEach((file, index) => {
+                    console.log(`Adding new image ${index + 1}: ${file.name}`);
+                    formDataSubmit.append('images', file);
+                });
+                
+                console.log('Using S3 endpoint for product update with new images');
+                const response = await fetch(`${API_BASE_URL}/product-images/products/${product.id}`, {
+                    method: 'PUT',
+                    body: formDataSubmit
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    console.error('S3 update error:', error);
+                    toast.error('Failed to update product data');
+                    throw new Error(error.detail || 'Failed to update product with S3 images');
+                }
+                
+                const result = await response.json();
+                console.log('Product updated successfully with S3 images:', result);
+                toast.success('Product updated successfully!');
             }
-            
-            const result = await response.json();
-            console.log('Product updated successfully with S3 images:', result);
-            toast.success('Product updated successfully!');
             
             if (onProductUpdated) {
                 // Fetch updated product data
@@ -400,6 +441,9 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
     if (!isOpen || !product) return null;
 
+    // Check if product is verified - only allow quantity editing
+    const isVerified = product.verified;
+
     const sustainabilityScore = calculateSustainabilityScore();
     const totalImages = existingImages.length + imageFiles.length;
 
@@ -407,11 +451,23 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
         <div className="modal-overlay" onClick={handleClose}>
             <div className="edit-product-modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="edit-product-modal-header">
-                    <h2>Edit Product</h2>
+                    <h2>{isVerified ? 'Update Price & Quantity' : 'Edit Product'}</h2>
                     <button className="close-btn" onClick={handleClose} aria-label="Close modal">
                         ×
                     </button>
                 </div>
+
+                {isVerified && (
+                    <div className="verification-notice">
+                        <div className="verification-notice-content">
+                            <span className="verification-icon">✅</span>
+                            <div className="verification-text">
+                                <strong>Verified Product</strong>
+                                <p>This product has been verified. Only price and stock quantity can be updated to maintain data integrity.</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 <form className="edit-product-form" onSubmit={handleSubmit}>
                     <div className="form-grid">
@@ -429,6 +485,8 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                     onChange={handleInputChange}
                                     placeholder="Enter product name"
                                     className={errors.name ? 'error' : 'input'}
+                                    readOnly={isVerified}
+                                    disabled={isVerified}
                                 />
                                 {errors.name && <span className="edit-product-error-message">{errors.name}</span>}
                             </div>
@@ -443,13 +501,18 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                     placeholder="Describe your product..."
                                     rows="4"
                                     className={errors.description ? 'error' : 'textarea'}
+                                    readOnly={isVerified}
+                                    disabled={isVerified}
                                 />
                                 {errors.description && <span className="edit-product-error-message">{errors.description}</span>}
                             </div>
 
                             <div className="form-row">
-                                <div className="form-group">
-                                    <label htmlFor="edit-price" className='label'>Price (ZAR) *</label>
+                                <div className={`form-group ${isVerified ? 'editable-field' : ''}`}>
+                                    <label htmlFor="edit-price" className='label'>
+                                        Price (ZAR) *
+                                        {isVerified && <span className="editable-indicator">✏️ Editable</span>}
+                                    </label>
                                     <input
                                         type="number"
                                         id="edit-price"
@@ -464,8 +527,11 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                     {errors.price && <span className="edit-product-error-message">{errors.price}</span>}
                                 </div>
 
-                                <div className="form-group">
-                                    <label htmlFor="edit-quantity" className='label'>Stock Quantity *</label>
+                                <div className={`form-group ${isVerified ? 'editable-field' : ''}`}>
+                                    <label htmlFor="edit-quantity" className='label'>
+                                        Stock Quantity *
+                                        {isVerified && <span className="editable-indicator">✏️ Editable</span>}
+                                    </label>
                                     <input
                                         type="number"
                                         id="edit-quantity"
@@ -489,6 +555,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                         value={formData.category || categories[formData.category_id-1]}
                                         onChange={handleInputChange}
                                         className={errors.category ? 'error' : 'select'}
+                                        disabled={isVerified}
                                     >
                                         <option value="">Select category</option>
                                         {categories.map(category => (
@@ -510,6 +577,8 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                         onChange={handleInputChange}
                                         placeholder="Enter brand name"
                                         className={errors.brand ? 'error' : 'input'}
+                                        readOnly={isVerified}
+                                        disabled={isVerified}
                                     />
                                     {errors.brand && <span className="edit-product-error-message">{errors.brand}</span>}
                                 </div>
@@ -518,26 +587,28 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
 
                         {/* Images - S3 Upload Only */}
                         <div className="form-section">
-                            <h3>Product Images (S3 Upload)</h3>
+                            <h3>Product Images {isVerified && <span className="read-only-badge">Read Only</span>}</h3>
                             
                             <div className="form-group">
                                 <label htmlFor="edit-images" className='label'>
-                                    Add More Images (Max 5 total)
+                                    {isVerified ? 'Current Images' : 'Add More Images (Max 5 total)'}
                                     {totalImages > 0 && (
                                         <span className="image-count-badge">
                                             {totalImages}/5 images
                                         </span>
                                     )}
                                 </label>
-                                <input
-                                    type="file"
-                                    id="edit-images"
-                                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                                    multiple
-                                    onChange={handleImageUpload}
-                                    className={errors.images ? 'error' : 'input'}
-                                    disabled={totalImages >= 5}
-                                />
+                                {!isVerified && (
+                                    <input
+                                        type="file"
+                                        id="edit-images"
+                                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                        multiple
+                                        onChange={handleImageUpload}
+                                        className={errors.images ? 'error' : 'input'}
+                                        disabled={totalImages >= 5}
+                                    />
+                                )}
                                 {totalImages >= 5 && (
                                     <p className="upload-hint" style={{color: '#f97316'}}>
                                         You have reached the maximum of 5 images. Remove some to add new ones.
@@ -561,14 +632,16 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                         {existingImages.map((image, index) => (
                                             <div key={`existing-${index}`} className="image-preview">
                                                 <img src={image} alt={`Existing ${index + 1}`} />
-                                                <button
-                                                    type="button"
-                                                    className="remove-image-btn"
-                                                    onClick={() => removeExistingImage(index)}
-                                                    aria-label={`Remove existing image ${index + 1}`}
-                                                >
-                                                    Remove
-                                                </button>
+                                                {!isVerified && (
+                                                    <button
+                                                        type="button"
+                                                        className="remove-image-btn"
+                                                        onClick={() => removeExistingImage(index)}
+                                                        aria-label={`Remove existing image ${index + 1}`}
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                )}
                                                 <span className="image-type-badge">Existing</span>
                                             </div>
                                         ))}
@@ -584,14 +657,16 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                         {imagePreviews.map((preview, index) => (
                                             <div key={`new-${index}`} className="image-preview">
                                                 <img src={preview} alt={`New ${index + 1}`} />
-                                                <button
-                                                    type="button"
-                                                    className="remove-image-btn"
-                                                    onClick={() => removeNewImage(index)}
-                                                    aria-label={`Remove new image ${index + 1}`}
-                                                >
-                                                    Remove
-                                                </button>
+                                                {!isVerified && (
+                                                    <button
+                                                        type="button"
+                                                        className="remove-image-btn"
+                                                        onClick={() => removeNewImage(index)}
+                                                        aria-label={`Remove new image ${index + 1}`}
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                )}
                                                 <span className="image-type-badge new">New</span>
                                             </div>
                                         ))}
@@ -603,7 +678,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                         {/* Sustainability Ratings */}
                         <div className="form-section sustainability-section">
                             <h3>
-                                Sustainability Ratings
+                                Sustainability Ratings {isVerified && <span className="read-only-badge">Verified - Read Only</span>}
                                 <span className="sustainability-score">
                                     Score: {sustainabilityScore}/100
                                 </span>
@@ -660,6 +735,7 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                                                         value={value}
                                                         onChange={(e) => handleSustainabilityChange(key, parseInt(e.target.value))}
                                                         className="dynamic-slider"
+                                                        disabled={isVerified}
                                                     />
                                                     <div 
                                                         className="slider-progress" 
@@ -706,10 +782,10 @@ export default function EditProduct({ isOpen, onClose, onProductUpdated, product
                             {isSubmitting ? (
                                 <>
                                     <div className="loading-spinner small"></div>
-                                    Updating...
+                                    {isVerified ? 'Updating Price & Quantity...' : 'Updating...'}
                                 </>
                             ) : (
-                                'Update Product'
+                                isVerified ? 'Update Price & Quantity' : 'Update Product'
                             )}
                         </button>
                     </div>
