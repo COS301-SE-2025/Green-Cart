@@ -4,6 +4,9 @@ import ProductVerification from '../elements/ProductVerification';
 import toast from 'react-hot-toast';
 import '../../styles/admin/tabs/Products.css';
 
+//icons
+import verificationIcon from '../icons/verificationIcon.png';
+
 const Products = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [selectedImage, setSelectedImage] = useState(null);
@@ -119,6 +122,7 @@ const Products = () => {
             className="verification-button"
             onClick={handleOpenVerificationModal}
           >
+            {<img src={verificationIcon} alt="Verification Icon" className="adm-prod-verification-icon" />}
             Start Verification
           </button>
         </div>

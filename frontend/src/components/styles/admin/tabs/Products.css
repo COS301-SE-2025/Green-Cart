@@ -33,6 +33,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
 }
 
 .verification-button:hover {
@@ -93,8 +95,8 @@
 }
 
 .tab.active {
-  color: #368b55;
-  border-bottom-color: #368b55;
+  color: #1f2937;
+  border-bottom-color: #1f2937;
   font-size: 16px;
 }
 
@@ -148,8 +150,14 @@
   vertical-align: middle;
 }
 
-.products-table tbody tr:hover {
-  background-color: #f9fafb;
+.products-table tbody tr:hover:not(.unverified-row) {
+  background-color: #d1d3d4;
+}
+
+.adm-prod-verification-icon{
+  width: 20px;
+  height: auto;
+  margin-right: 10px;
 }
 
 .admin-product-image {
@@ -287,6 +295,11 @@
   color: #6b7280;
   font-size: 13px;
   line-height: 1.4;
+
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Status Badge */
@@ -331,11 +344,11 @@
 
 /* Unverified Row Styling */
 .unverified-row {
-  background: #fffbeb;
+  background: #c5cfd9;
 }
 
 .unverified-row:hover {
-  background: #fef3c7;
+  background: #798087;
 }
 
 /* No Products Message */

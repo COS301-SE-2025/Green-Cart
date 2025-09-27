@@ -31,30 +31,28 @@
     align-items: center;
     padding: 24px 32px;
     border-bottom: 1px solid #e5e7eb;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    background: #1f2937;
     border-radius: 16px 16px 0 0;
 }
 
 .verification-header h2 {
     margin: 0;
-    color: #111827;
+    color: #ffffff;
     font-size: 24px;
-    font-weight: 700;
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.verification-header h2::before {
-    content: '🔍';
-    font-size: 20px;
+.adm-prod-veri-icon{
+    width: 35px;
+    height: auto;
 }
 
-.verification-header h2 {
-    margin: 0;
-    color: #002102;
-    font-size: 24px;
-    font-weight: 600;
+.verification-header h2::before {
+    /* content: '🔍'; */
+    font-size: 20px;
 }
 
 .verification-modal .close-button {
@@ -371,11 +369,11 @@
 }
 
 .edit-product-button {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    background: #1f2937;
     color: white;
     border: none;
     padding: 8px 16px;
-    border-radius: 8px;
+    border-radius: 1px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -384,17 +382,26 @@
     align-items: center;
     gap: 6px;
     box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+
+    display: flex;
+    align-items: center;
 }
 
-.edit-product-button::before {
+.adm-prod-pen-icon{
+    width: 15px;
+    height: auto;
+    margin-right: 8px;
+}
+
+/* .edit-product-button::before {
     content: '✏️';
     font-size: 12px;
-}
+} */
 
 .edit-product-button:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    background: #3b485b;
+    /* transform: translateY(-1px); */
+    /* box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); */
 }
 
 .edit-form {

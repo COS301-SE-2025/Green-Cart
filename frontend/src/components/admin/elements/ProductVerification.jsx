@@ -3,6 +3,10 @@ import { getUnverifiedProducts, verifyProduct, updateProduct, getProductSustaina
 import toast from 'react-hot-toast';
 import '../../styles/admin/ProductVerification.css';
 
+//icons
+import verificationIcon from '../icons/verificationIcon.png';
+import pencilIcon from '../icons/pencilIcon.png';
+
 const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
     const [currentProduct, setCurrentProduct] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -298,7 +302,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
         <div className="verification-modal-overlay" onClick={handleOverlayClick}>
             <div className="verification-modal">
                 <div className="verification-header">
-                    <h2>Product Verification</h2>
+                    <h2>{<img src={verificationIcon} alt='verification-icon' className='adm-prod-veri-icon'/>}Product Verification</h2>
                     <button className="close-button" onClick={onClose}>×</button>
                 </div>
 
@@ -466,6 +470,7 @@ const ProductVerification = ({ isOpen, onClose, onProductVerified }) => {
                                                 className="edit-product-button"
                                                 onClick={handleEditProduct}
                                             >
+                                                {<img src={pencilIcon} alt='edit-icon' className='adm-prod-pen-icon'/>}
                                                 Edit
                                             </button>
                                         </div>
