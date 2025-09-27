@@ -55,11 +55,11 @@ const TwoFactorVerificationModal = ({
     <div className="two-factor-verification-overlay" onClick={handleClose}>
       <div className="two-factor-verification-modal" onClick={(e) => e.stopPropagation()}>
         <div className="verification-header">
-          <div className="verification-icon"></div>
+          {/* <div className="verification-icon">🔐</div> */}
           <h2>Two-Factor Authentication Required</h2>
-          <p className="verification-subtitle">
-            {userEmail && `Signing in as ${userEmail}`}
-          </p>
+          {/* <p className="verification-subtitle">
+            {userEmail ? `Signing in as ${userEmail}` : 'Please verify your identity'}
+          </p> */}
         </div>
 
         <div className="verification-body">
@@ -84,9 +84,13 @@ const TwoFactorVerificationModal = ({
                   />
                   <span className="input-label">6-digit authentication code</span>
                 </div>
+
+                <div className="code-help">
+                  <p>💡 <strong>Tip:</strong> The code changes every 30 seconds</p>
+                </div>
               </div>
 
-              <div className="verification-actions">
+              <div className="two-factor-verification-actions">
                 <button
                   className="verify-submit-btn"
                   onClick={handleVerifyCode}
@@ -98,25 +102,25 @@ const TwoFactorVerificationModal = ({
                       Verifying...
                     </>
                   ) : (
-                    'Verify & Sign In'
+                    '🔓 Verify & Sign In'
                   )}
                 </button>
 
                 <div className="alternative-options">
-                  <button
+                  {/* <button
                     className="backup-code-link"
                     onClick={() => setShowBackupCode(true)}
                     disabled={isLoading}
                   >
-                    Use backup code instead
-                  </button>
+                    📋 Use backup code instead
+                  </button> */}
                   
                   <button
                     className="cancel-signin-btn"
                     onClick={handleClose}
                     disabled={isLoading}
                   >
-                    Cancel Sign In
+                    ❌ Cancel Sign In
                   </button>
                 </div>
               </div>
@@ -134,13 +138,24 @@ const TwoFactorVerificationModal = ({
                     value={backupCode}
                     onChange={(e) => setBackupCode(e.target.value.replace(/\s/g, '').slice(0, 8))}
                     onKeyPress={handleKeyPress}
-                    placeholder="Enter 8-character backup code"
+                    placeholder="XXXXXXXX"
                     className="backup-code-input"
                     maxLength={8}
                     autoFocus
                     disabled={isLoading}
                   />
                   <span className="input-label">8-character backup code</span>
+                </div>
+
+                <div className="backup-code-help">
+                  <div className="help-note">
+                    <h4>📝 About Backup Codes:</h4>
+                    <ul>
+                      <li>Each backup code can only be used once</li>
+                      <li>You should have received these when setting up 2FA</li>
+                      <li>Keep remaining codes in a safe place</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 
@@ -156,7 +171,7 @@ const TwoFactorVerificationModal = ({
                       Verifying...
                     </>
                   ) : (
-                    'Verify Backup Code'
+                    '🔓 Verify Backup Code'
                   )}
                 </button>
 
@@ -174,20 +189,26 @@ const TwoFactorVerificationModal = ({
                     onClick={handleClose}
                     disabled={isLoading}
                   >
-                    Cancel Sign In
+                    ❌ Cancel Sign In
                   </button>
                 </div>
               </div>
             </>
           )}
 
-          <div className="help-section">
-            <div className="help-links">
-              <a href="/help/2fa" className="help-link">
-                Having trouble? Get help
-              </a>
+          {/* <div className="help-section">
+            <div className="help-info">
+              <h4>🆘 Need Help?</h4>
+              <div className="help-links">
+                <a href="/help/2fa" className="help-link">
+                  📖 2FA Troubleshooting Guide
+                </a>
+                <a href="/contact" className="help-link">
+                  📞 Contact Support
+                </a>
+              </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

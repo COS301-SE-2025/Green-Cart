@@ -15,6 +15,7 @@ import ChangePasswordModal from '../components/modals/ChangePasswordModal';
 import TwoFactorModal from '../components/modals/TwoFactorModal';
 import HelpModal from '../components/modals/HelpModal';
 import forecastingService from '../services/forecastingService';
+import ErrorBoundary from '../components/modals/ErrorBoundary';
 
 const status = Object.freeze({
 	Prepare: "Preparing Order",
@@ -150,48 +151,144 @@ export default function UserAccount() {
 				setIs2FAEnabled(false);
 			}
 
-			const loadUserInfo = async () => {
-				try {
-					const userInformation = await fetchUserInformation(parsedUser.id);
-					console.log(userInformation);
+        const loadUserInfo = async () => {
+            try {
+                // Load user information from backend
+                const userInformation = await fetchUserInformation(parsedUser.id);
+                console.log('User information:', userInformation);
 
-					const userData = {
-						name: userInformation.user.name || '',
-						email: userInformation.user.email || '',
-						phone: userInformation.user.telephone || 'Not Set',
-						countryCode: userInformation.user.country_code || '+27', // Default to SA
-						address: userInformation.address?.address || 'Not Set',
-						city: userInformation.address?.city || 'Not Set',
-						postalCode: userInformation.address?.postal_code || 'Not Set',
-						dateOfBirth: userInformation.user.date_of_birth || '',
-						preferences: {
-							emailNotifications: parsedUser.preferences?.emailNotifications ?? true,
-							smsNotifications: parsedUser.preferences?.smsNotifications ?? false,
-							marketingEmails: parsedUser.preferences?.marketingEmails ?? true,
-							carbonGoalNotifications: parsedUser.preferences?.carbonGoalNotifications ?? true,
-							sustainabilityTips: parsedUser.preferences?.sustainabilityTips ?? true
-						}
-					};
+                // Check if user has 2FA enabled via API
+                try {
+                    const apiUrl = getApiUrl();
+                    const mfaResponse = await fetch(`${apiUrl}/users/isMFA/${parsedUser.email}`);
+                    if (mfaResponse.ok) {
+                        const mfaData = await mfaResponse.json();
+                        setIs2FAEnabled(mfaData.enabled || false);
+                        
+                        // Update localStorage with correct 2FA status
+                        const updatedUserData = { ...parsedUser, requires2FA: mfaData.enabled || false };
+                        localStorage.setItem('userData', JSON.stringify(updatedUserData));
+                        setUser(updatedUserData);
+                    }
+                } catch (mfaError) {
+                    console.error('Error checking 2FA status:', mfaError);
+                    // Fallback to user data
+                    setIs2FAEnabled(parsedUser.requires2FA || false);
+                }
 
-					setFormData(userData);
-					setUpdateData(userData);
+                // Set up user data for forms
+                const userData = {
+                    name: userInformation.user.name || '',
+                    email: userInformation.user.email || '',
+                    phone: userInformation.user.telephone || 'Not Set',
+                    countryCode: userInformation.user.country_code || '+27',
+                    address: userInformation.address?.address || 'Not Set',
+                    city: userInformation.address?.city || 'Not Set',
+                    postalCode: userInformation.address?.postal_code || 'Not Set',
+                    dateOfBirth: userInformation.user.date_of_birth || '',
+                    preferences: {
+                        emailNotifications: parsedUser.preferences?.emailNotifications ?? true,
+                        smsNotifications: parsedUser.preferences?.smsNotifications ?? false,
+                        marketingEmails: parsedUser.preferences?.marketingEmails ?? true,
+                        carbonGoalNotifications: parsedUser.preferences?.carbonGoalNotifications ?? true,
+                        sustainabilityTips: parsedUser.preferences?.sustainabilityTips ?? true
+                    }
+                };
 
-				} catch (error) {
-					console.error(error);
-				} finally {
-					setIsLoading(false);
-				}
-			};
+                setFormData(userData);
+                setUpdateData(userData);
 
-			// Load carbon data when user loads
-			loadCarbonData(parsedUser.id);
-			loadForecastingData(parsedUser.id);
-			loadUserInfo();
-		} else {
-			navigate('/login');
-			setIsLoading(false);
-		}
-	}, [navigate]);
+            } catch (error) {
+                console.error('Error loading user information:', error);
+                toast.error('Failed to load user information');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        // Load carbon data when user loads
+        loadCarbonData(parsedUser.id);
+        loadForecastingData(parsedUser.id);
+        loadUserInfo();
+    } else {
+        navigate('/login');
+        setIsLoading(false);
+    }
+}, [navigate]);
+
+// Fix the 2FA API calls to use your actual backend endpoints
+const handleEnable2FA = async (twoFactorData) => {
+    try {
+        const apiUrl = getApiUrl();
+        const response = await fetch(`${apiUrl}/users/verifyMFA`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                code: twoFactorData.code
+            })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to verify 2FA code');
+        }
+
+        const result = await response.json();
+        
+        if (result.valid) {
+            setIs2FAEnabled(true);
+            
+            // Update localStorage
+            const currentUserData = JSON.parse(localStorage.getItem('userData') || '{}');
+            currentUserData.requires2FA = true;
+            localStorage.setItem('userData', JSON.stringify(currentUserData));
+            setUser(currentUserData);
+            
+            toast.success('Two-Factor Authentication enabled successfully!');
+            return result;
+        } else {
+            throw new Error('Invalid verification code');
+        }
+    } catch (error) {
+        console.error('2FA Enable Error:', error);
+        throw error;
+    }
+};
+
+const handleDisable2FA = async () => {
+    try {
+        const apiUrl = getApiUrl();
+        const response = await fetch(`${apiUrl}/users/disableMFA/${user.id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to disable 2FA');
+        }
+
+        const result = await response.json();
+        setIs2FAEnabled(false);
+        
+        // Update localStorage
+        const currentUserData = JSON.parse(localStorage.getItem('userData') || '{}');
+        currentUserData.requires2FA = false;
+        localStorage.setItem('userData', JSON.stringify(currentUserData));
+        setUser(currentUserData);
+        
+        toast.success('Two-Factor Authentication disabled successfully!');
+        return result;
+    } catch (error) {
+        console.error('2FA Disable Error:', error);
+        throw error;
+    }
+};
 
 	// Function to load carbon data from backend
 	const loadCarbonData = async (userId) => {
@@ -533,58 +630,59 @@ export default function UserAccount() {
   }
 };
 
-const handleEnable2FA = async (twoFactorData) => {
-  try {
-    // TODO: Replace with actual API call
-    const response = await fetch(`${API_BASE_URL}/users/verifyMFA`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({
-        code: twoFactorData.code,
-        user_id: user.id
-      })
-    });
+// const handleEnable2FA = async (twoFactorData) => {
+//   try {
+//     // TODO: Replace with actual API call
+//     const response = await fetch('/api/users/enable-2fa', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'Authorization': `Bearer ${localStorage.getItem('token')}`
+//       },
+//       body: JSON.stringify({
+//         code: twoFactorData.code,
+//         secret: twoFactorData.secret,
+//         userId: user.id
+//       })
+//     });
 
-    if (!response.ok) {
-      const error = await response.json();
-	  handleDisable2FA();
-	  setIsTwoFactorModalOpen(false);
-      throw new Error(error.message || 'Failed to enable 2FA');
-    }
+//     if (!response.ok) {
+//       const error = await response.json();
+//       throw new Error(error.message || 'Failed to enable 2FA');
+//     }
 
-    setIs2FAEnabled(true);
-    return await response.json();
-  } catch (error) {
-    throw error;
-  }
-};
+//     setIs2FAEnabled(true);
+//     return await response.json();
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 
-const handleDisable2FA = async () => {
-  try {
-    // TODO: Replace with actual API call
-	setIsTwoFactorModalOpen(false);
-    const response = await fetch(`${API_BASE_URL}/users/disableMFA/${user.id}`, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${localStorage.getItem('token')}`
-		}
-    });
-	
-    if (!response.ok) {
-		const error = await response.json();
-		throw new Error(error.message || 'Failed to disable 2FA');
-    }
-	
-	setIs2FAEnabled(false);
-    // return await response.json();
-  } catch (error) {
-    throw error;
-  }
-};
+// const handleDisable2FA = async () => {
+//   try {
+//     // TODO: Replace with actual API call
+//     const response = await fetch('/api/users/disable-2fa', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'Authorization': `Bearer ${localStorage.getItem('token')}`
+//       },
+//       body: JSON.stringify({
+//         userId: user.id
+//       })
+//     });
+
+//     if (!response.ok) {
+//       const error = await response.json();
+//       throw new Error(error.message || 'Failed to disable 2FA');
+//     }
+
+//     setIs2FAEnabled(false);
+//     return await response.json();
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 
 	if (!user) {
 		return (
@@ -1345,6 +1443,8 @@ const handleDisable2FA = async () => {
 			onPasswordChange={handleChangePassword}
 			/>
 
+			<ErrorBoundary>
+
 			<TwoFactorModal
 			isOpen={isTwoFactorModalOpen}
 			onClose={() => setIsTwoFactorModalOpen(false)}
@@ -1361,6 +1461,7 @@ const handleDisable2FA = async () => {
 				title={helpModalContent.title}
 				content={helpModalContent.content}
 			/>
+			</ErrorBoundary>
 		</div>
 	);
 }
