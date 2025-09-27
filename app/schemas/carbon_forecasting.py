@@ -22,6 +22,7 @@ class TrendDirectionEnum(str, Enum):
     declining = "declining"
     stable = "stable"
     volatile = "volatile"
+    unknown = "unknown"
 
 class AlgorithmEnum(str, Enum):
     linear_regression = "linear_regression"
