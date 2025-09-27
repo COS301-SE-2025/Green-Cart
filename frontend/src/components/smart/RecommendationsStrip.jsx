@@ -107,7 +107,7 @@ export default function RecommendationsStrip({ products = [], userId = null, use
         </div>
         <div className="smart-signin-message">
           <div className="smart-signin-content">
-            <div className="smart-signin-icon">🔐</div>
+            {/* <div className="smart-signin-icon">🔐</div> */}
             <h4>Sign in to get personalized recommendations</h4>
             <p>Get AI-powered product recommendations tailored to your sustainability preferences and shopping history.</p>
             <div className="smart-signin-actions">
@@ -339,7 +339,7 @@ export default function RecommendationsStrip({ products = [], userId = null, use
               </div>
               <div className="smart-recs-info">
                 <div className={`smart-tier-badge ${tierClass(score ?? 0)}`}>
-                  {tier === 'PREMIUM' ? '🔥 PREMIUM' : tier === 'GOOD' ? '✨ GOOD' : '⚠ BASIC'}
+                  {tier === 'PREMIUM' ? 'PREMIUM' : tier === 'GOOD' ? 'GOOD' : 'BASIC'}
                 </div>
                 <h4 className="smart-recs-name" title={p.name}>{p.name}</h4>
                 <div className="smart-recs-meta">

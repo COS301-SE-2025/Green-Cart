@@ -8,8 +8,7 @@ const RetailerAuthOverlay = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     name: '',
     organisation: '',
-    password: '',
-    confirmPassword: ''
+    password: ''
   });
 
   const handleInputChange = (field, value) => {
@@ -21,10 +20,6 @@ const RetailerAuthOverlay = ({ isOpen, onClose, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (isSignUp && formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
     onSubmit(formData, isSignUp ? 'signup' : 'signin');
   };
 
@@ -33,8 +28,7 @@ const RetailerAuthOverlay = ({ isOpen, onClose, onSubmit }) => {
     setFormData({
       name: '',
       organisation: '',
-      password: '',
-      confirmPassword: ''
+      password: ''
     });
   };
 
@@ -84,21 +78,6 @@ const RetailerAuthOverlay = ({ isOpen, onClose, onSubmit }) => {
             />
             <label htmlFor="password" className='AuthLabel'>Password</label>
           </div>
-
-          {isSignUp && (
-            <div className="form-group">
-              <input
-                id="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                required
-                placeholder=" "
-                className='AuthInput'
-              />
-              <label htmlFor="confirmPassword" className='AuthLabel'>Confirm Password</label>
-            </div>
-          )}
 
           <button type="submit" className="submit-button">
             {isSignUp ? 'Sign Up' : 'Sign In'}

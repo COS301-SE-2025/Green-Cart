@@ -266,9 +266,9 @@ export default function Home() {
             <div className="no-products">
               <h3>No products found</h3>
               <p>Try adjusting your filters or search criteria.</p>
-              <button onClick={() => setFilters({})} className="clear-filters-btn">
+              {/* <button onClick={() => setFilters({})} className="clear-filters-btn">
                 Clear All Filters
-              </button>
+              </button> */}
             </div>
           )}
         </main>

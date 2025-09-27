@@ -4,7 +4,6 @@ import toast from 'react-hot-toast';
 import { signupRetailer, signinRetailer, selectShop } from '../user-services/retailerAuthService';
 import TwoFactorVerificationModal from '../components/modals/TwoFactorVerificationModal';
 import { getApiUrl } from '../config/api'; // Adjust path as needed
-import { checkUserExists } from '../user-services/userCheckService';
 import './styles/RetailerAuth.css';
 
 const RetailerAuth = () => {
@@ -31,11 +30,19 @@ const RetailerAuth = () => {
     document.documentElement.classList.add('retailer-auth-active');
     document.body.classList.add('retailer-auth-active');
     
+    // Check if retailer is already logged in
+    const retailerUser = localStorage.getItem('retailer_user');
+    if (retailerUser) {
+      // Retailer is already logged in, redirect to dashboard
+      navigate('/retailer-dashboard', { replace: true });
+      return;
+    }
+    
     return () => {
       document.documentElement.classList.remove('retailer-auth-active');
       document.body.classList.remove('retailer-auth-active');
     };
-  }, []);
+  }, [navigate]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -129,14 +136,7 @@ const RetailerAuth = () => {
     setIsLoading(true);
 
     try {
-      // Check if user exists first
-      const userCheck = await checkUserExists(formData.email);
-      if (!userCheck.exists) {
-        toast.error('You must be a registered user to create a shop. Please sign up as a customer first.');
-        setIsLoading(false);
-        return;
-      }
-
+      // Create retailer account (service will verify credentials first)
       const result = await signupRetailer(formData);
       toast.success('Shop created successfully!');
       
@@ -154,7 +154,7 @@ const RetailerAuth = () => {
           // Show MFA modal
           setPendingSigninData(signinResult);
           setShowMFAModal(true);
-          toast.info('Please complete two-factor authentication');
+          toast.success('Please complete two-factor authentication');
         } else {
           // No MFA required, proceed normally
           handleSigninComplete(signinResult);
@@ -167,22 +167,8 @@ const RetailerAuth = () => {
       }
       
     } catch (error) {
-      // Display more specific error messages
-      let errorMessage = error.message;
-      
-      if (errorMessage.includes("must be a registered user")) {
-        errorMessage = "You must be a registered user to create a shop. Please sign up as a customer first.";
-      } else if (errorMessage.includes("password") && errorMessage.includes("doesn't match")) {
-        errorMessage = "The password you entered doesn't match your existing account. Please use your current password.";
-      } else if (errorMessage.includes("422") || errorMessage.includes("validation")) {
-        errorMessage = "Please check your input. Make sure all fields are filled correctly.";
-      } else if (errorMessage.includes("already exists") || errorMessage.includes("already registered")) {
-        errorMessage = "An account with this email already exists. Please sign in or try a different email.";
-      } else if (errorMessage.includes("network") || errorMessage.includes("fetch")) {
-        errorMessage = "Network error. Please check your connection and try again.";
-      }
-      
-      toast.error(errorMessage);
+      // Service provides specific error messages, use them directly
+      toast.error(error.message || "Failed to create shop. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -202,7 +188,7 @@ const RetailerAuth = () => {
         // Show MFA modal instead of proceeding directly
         setPendingSigninData(result);
         setShowMFAModal(true);
-        toast.info('Please complete two-factor authentication');
+        toast.success('Please complete two-factor authentication');
       } else {
         // No MFA required, proceed with normal signin flow
         handleSigninComplete(result);
@@ -416,20 +402,7 @@ const RetailerAuth = () => {
             <label htmlFor="password" className="retailer-auth-form-label">Password</label>
           </div>
 
-          {mode === 'signup' && (
-            <div className="retailer-auth-form-group">
-              <input
-                type="password"
-                id="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                required
-                placeholder=" "
-                className="retailer-auth-form-input"
-              />
-              <label htmlFor="confirmPassword" className="retailer-auth-form-label">Confirm Password</label>
-            </div>
-          )}
+
 
           <button 
             type="submit" 

@@ -13,7 +13,9 @@ import carbonGoalsService from '../services/carbonGoalsService';
 import { getApiUrl, getLocalApiUrl, API_BASE_URL } from '../config/api';
 import ChangePasswordModal from '../components/modals/ChangePasswordModal';
 import TwoFactorModal from '../components/modals/TwoFactorModal';
+import HelpModal from '../components/modals/HelpModal';
 import forecastingService from '../services/forecastingService';
+import ErrorBoundary from '../components/modals/ErrorBoundary';
 
 const status = Object.freeze({
 	Prepare: "Preparing Order",
@@ -91,6 +93,8 @@ export default function UserAccount() {
 	const [forecastHorizon, setForecastHorizon] = useState(30);
 	const [userInsights, setUserInsights] = useState(null);
 	const [userScore, setUserScore] = useState(null);
+	const [showHelpModal, setShowHelpModal] = useState(false);
+	const [helpModalContent, setHelpModalContent] = useState({ title: '', content: '' });
 	
 
 	// Add these state variables in the component
@@ -147,48 +151,144 @@ export default function UserAccount() {
 				setIs2FAEnabled(false);
 			}
 
-			const loadUserInfo = async () => {
-				try {
-					const userInformation = await fetchUserInformation(parsedUser.id);
-					console.log(userInformation);
+        const loadUserInfo = async () => {
+            try {
+                // Load user information from backend
+                const userInformation = await fetchUserInformation(parsedUser.id);
+                console.log('User information:', userInformation);
 
-					const userData = {
-						name: userInformation.user.name || '',
-						email: userInformation.user.email || '',
-						phone: userInformation.user.telephone || 'Not Set',
-						countryCode: userInformation.user.country_code || '+27', // Default to SA
-						address: userInformation.address?.address || 'Not Set',
-						city: userInformation.address?.city || 'Not Set',
-						postalCode: userInformation.address?.postal_code || 'Not Set',
-						dateOfBirth: userInformation.user.date_of_birth || '',
-						preferences: {
-							emailNotifications: parsedUser.preferences?.emailNotifications ?? true,
-							smsNotifications: parsedUser.preferences?.smsNotifications ?? false,
-							marketingEmails: parsedUser.preferences?.marketingEmails ?? true,
-							carbonGoalNotifications: parsedUser.preferences?.carbonGoalNotifications ?? true,
-							sustainabilityTips: parsedUser.preferences?.sustainabilityTips ?? true
-						}
-					};
+                // Check if user has 2FA enabled via API
+                try {
+                    const apiUrl = getApiUrl();
+                    const mfaResponse = await fetch(`${apiUrl}/users/isMFA/${parsedUser.email}`);
+                    if (mfaResponse.ok) {
+                        const mfaData = await mfaResponse.json();
+                        setIs2FAEnabled(mfaData.enabled || false);
+                        
+                        // Update localStorage with correct 2FA status
+                        const updatedUserData = { ...parsedUser, requires2FA: mfaData.enabled || false };
+                        localStorage.setItem('userData', JSON.stringify(updatedUserData));
+                        setUser(updatedUserData);
+                    }
+                } catch (mfaError) {
+                    console.error('Error checking 2FA status:', mfaError);
+                    // Fallback to user data
+                    setIs2FAEnabled(parsedUser.requires2FA || false);
+                }
 
-					setFormData(userData);
-					setUpdateData(userData);
+                // Set up user data for forms
+                const userData = {
+                    name: userInformation.user.name || '',
+                    email: userInformation.user.email || '',
+                    phone: userInformation.user.telephone || 'Not Set',
+                    countryCode: userInformation.user.country_code || '+27',
+                    address: userInformation.address?.address || 'Not Set',
+                    city: userInformation.address?.city || 'Not Set',
+                    postalCode: userInformation.address?.postal_code || 'Not Set',
+                    dateOfBirth: userInformation.user.date_of_birth || '',
+                    preferences: {
+                        emailNotifications: parsedUser.preferences?.emailNotifications ?? true,
+                        smsNotifications: parsedUser.preferences?.smsNotifications ?? false,
+                        marketingEmails: parsedUser.preferences?.marketingEmails ?? true,
+                        carbonGoalNotifications: parsedUser.preferences?.carbonGoalNotifications ?? true,
+                        sustainabilityTips: parsedUser.preferences?.sustainabilityTips ?? true
+                    }
+                };
 
-				} catch (error) {
-					console.error(error);
-				} finally {
-					setIsLoading(false);
-				}
-			};
+                setFormData(userData);
+                setUpdateData(userData);
 
-			// Load carbon data when user loads
-			loadCarbonData(parsedUser.id);
-			loadForecastingData(parsedUser.id);
-			loadUserInfo();
-		} else {
-			navigate('/login');
-			setIsLoading(false);
-		}
-	}, [navigate]);
+            } catch (error) {
+                console.error('Error loading user information:', error);
+                toast.error('Failed to load user information');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        // Load carbon data when user loads
+        loadCarbonData(parsedUser.id);
+        loadForecastingData(parsedUser.id);
+        loadUserInfo();
+    } else {
+        navigate('/login');
+        setIsLoading(false);
+    }
+}, [navigate]);
+
+// Fix the 2FA API calls to use your actual backend endpoints
+const handleEnable2FA = async (twoFactorData) => {
+    try {
+        const apiUrl = getApiUrl();
+        const response = await fetch(`${apiUrl}/users/verifyMFA`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                code: twoFactorData.code
+            })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to verify 2FA code');
+        }
+
+        const result = await response.json();
+        
+        if (result.valid) {
+            setIs2FAEnabled(true);
+            
+            // Update localStorage
+            const currentUserData = JSON.parse(localStorage.getItem('userData') || '{}');
+            currentUserData.requires2FA = true;
+            localStorage.setItem('userData', JSON.stringify(currentUserData));
+            setUser(currentUserData);
+            
+            toast.success('Two-Factor Authentication enabled successfully!');
+            return result;
+        } else {
+            throw new Error('Invalid verification code');
+        }
+    } catch (error) {
+        console.error('2FA Enable Error:', error);
+        throw error;
+    }
+};
+
+const handleDisable2FA = async () => {
+    try {
+        const apiUrl = getApiUrl();
+        const response = await fetch(`${apiUrl}/users/disableMFA/${user.id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to disable 2FA');
+        }
+
+        const result = await response.json();
+        setIs2FAEnabled(false);
+        
+        // Update localStorage
+        const currentUserData = JSON.parse(localStorage.getItem('userData') || '{}');
+        currentUserData.requires2FA = false;
+        localStorage.setItem('userData', JSON.stringify(currentUserData));
+        setUser(currentUserData);
+        
+        toast.success('Two-Factor Authentication disabled successfully!');
+        return result;
+    } catch (error) {
+        console.error('2FA Disable Error:', error);
+        throw error;
+    }
+};
 
 	// Function to load carbon data from backend
 	const loadCarbonData = async (userId) => {
@@ -253,6 +353,17 @@ export default function UserAccount() {
 		} finally {
 			setIsLoadingForecast(false);
 		}
+	};
+
+	// Help modal handlers
+	const showHelp = (title, content) => {
+		setHelpModalContent({ title, content });
+		setShowHelpModal(true);
+	};
+
+	const closeHelpModal = () => {
+		setShowHelpModal(false);
+		setHelpModalContent({ title: '', content: '' });
 	};
 
 	// Calculate progress towards yearly goal (only if carbonData exists)
@@ -519,58 +630,59 @@ export default function UserAccount() {
   }
 };
 
-const handleEnable2FA = async (twoFactorData) => {
-  try {
-    // TODO: Replace with actual API call
-    const response = await fetch(`${API_BASE_URL}/users/verifyMFA`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({
-        code: twoFactorData.code,
-        user_id: user.id
-      })
-    });
+// const handleEnable2FA = async (twoFactorData) => {
+//   try {
+//     // TODO: Replace with actual API call
+//     const response = await fetch('/api/users/enable-2fa', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'Authorization': `Bearer ${localStorage.getItem('token')}`
+//       },
+//       body: JSON.stringify({
+//         code: twoFactorData.code,
+//         secret: twoFactorData.secret,
+//         userId: user.id
+//       })
+//     });
 
-    if (!response.ok) {
-      const error = await response.json();
-	  handleDisable2FA();
-	  setIsTwoFactorModalOpen(false);
-      throw new Error(error.message || 'Failed to enable 2FA');
-    }
+//     if (!response.ok) {
+//       const error = await response.json();
+//       throw new Error(error.message || 'Failed to enable 2FA');
+//     }
 
-    setIs2FAEnabled(true);
-    return await response.json();
-  } catch (error) {
-    throw error;
-  }
-};
+//     setIs2FAEnabled(true);
+//     return await response.json();
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 
-const handleDisable2FA = async () => {
-  try {
-    // TODO: Replace with actual API call
-	setIsTwoFactorModalOpen(false);
-    const response = await fetch(`${API_BASE_URL}/users/disableMFA/${user.id}`, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${localStorage.getItem('token')}`
-		}
-    });
-	
-    if (!response.ok) {
-		const error = await response.json();
-		throw new Error(error.message || 'Failed to disable 2FA');
-    }
-	
-	setIs2FAEnabled(false);
-    // return await response.json();
-  } catch (error) {
-    throw error;
-  }
-};
+// const handleDisable2FA = async () => {
+//   try {
+//     // TODO: Replace with actual API call
+//     const response = await fetch('/api/users/disable-2fa', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'Authorization': `Bearer ${localStorage.getItem('token')}`
+//       },
+//       body: JSON.stringify({
+//         userId: user.id
+//       })
+//     });
+
+//     if (!response.ok) {
+//       const error = await response.json();
+//       throw new Error(error.message || 'Failed to disable 2FA');
+//     }
+
+//     setIs2FAEnabled(false);
+//     return await response.json();
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 
 	if (!user) {
 		return (
@@ -892,9 +1004,19 @@ const handleDisable2FA = async () => {
 					{/* NEW: Sustainability Forecasting Tab */}
 					{activeTab === 'forecasting' && (
 						<div className="forecasting-section">
-							<div className="section-header">
-								<h2>🔮 Sustainability Forecasting</h2>
-								<p>AI-powered predictions for your future sustainability performance</p>
+							{/* Enhanced Header */}
+							<div className="forecast-header">
+								<div className="forecast-info">
+									<h3>🔮 Sustainability Forecasting</h3>
+									<p className="forecast-description">AI-powered predictions for your next 30 days of sustainability performance</p>
+								</div>
+								<button 
+									onClick={() => loadForecastingData(user?.id)}
+									className="refresh-forecast-btn"
+									disabled={isLoadingForecast}
+								>
+									{isLoadingForecast ? '⏳ Loading...' : '🔄 Refresh Forecast'}
+								</button>
 							</div>
 
 							{isLoadingForecast ? (
@@ -904,73 +1026,71 @@ const handleDisable2FA = async () => {
 								</div>
 							) : (
 								<>
-									{/* Forecast Controls */}
-									<div className="forecast-controls">
-										<div className="control-group">
-											<label htmlFor="forecast-horizon">Forecast Horizon:</label>
-											<select
-												id="forecast-horizon"
-												value={forecastHorizon}
-												onChange={(e) => refreshForecast(parseInt(e.target.value))}
-												className="forecast-select"
+									{/* Check if user has no orders */}
+									{forecastData && forecastData.forecast && forecastData.forecast.prediction_factors && 
+									 forecastData.forecast.prediction_factors.data_points === 0 ? (
+										<div className="no-orders-message">
+											<div className="no-orders-icon">📦</div>
+											<h3>No Order History Available</h3>
+											<p>We need some purchase data to generate your sustainability forecast. Start shopping with us to see your personalized predictions!</p>
+											<button 
+												onClick={() => window.location.href = '/products'}
+												className="start-shopping-btn"
 											>
-												<option value={7}>1 Week</option>
-												<option value={14}>2 Weeks</option>
-												<option value={30}>1 Month</option>
-												<option value={60}>2 Months</option>
-												<option value={90}>3 Months</option>
-											</select>
+												�️ Start Shopping
+											</button>
 										</div>
-										<button 
-											onClick={() => loadForecastingData(user?.id)}
-											className="refresh-forecast-btn"
-											disabled={isLoadingForecast}
-										>
-											🔄 Refresh Forecast
-										</button>
-									</div>
-
-									{/* User Score Overview */}
-									{userScore && (
-										<div className="user-score-overview">
-											<div className="score-card main-score">
-												<div className="score-icon">🏆</div>
-												<div className="score-content">
-													<h3>Your Sustainability Level</h3>
-													<div className="score-value" style={{ color: getCarbonColor(userScore.score) }}>
-														{userScore.score}/100
-													</div>
-													<div className="score-level">{userScore.level}</div>
-												</div>
-											</div>
-											
-											{userScore.breakdown && (
-												<div className="score-breakdown">
-													<h4>Score Breakdown</h4>
-													<div className="breakdown-items">
-														<div className="breakdown-item">
-															<span>Eco Consciousness:</span>
-															<span>{userScore.breakdown.eco_consciousness}/30</span>
-														</div>
-														<div className="breakdown-item">
-															<span>Sustainability Trend:</span>
-															<span>{userScore.breakdown.sustainability_trend}/25</span>
-														</div>
-														<div className="breakdown-item">
-															<span>Efficiency:</span>
-															<span>{userScore.breakdown.efficiency}/25</span>
-														</div>
-														<div className="breakdown-item">
-															<span>Consistency:</span>
-															<span>{userScore.breakdown.consistency}/20</span>
+									) : (
+										<>
+											{/* Enhanced User Score Overview */}
+											{userScore && (
+												<div className="user-score-overview">
+													<div className="score-card main-score">
+														<div className="score-icon">🏆</div>
+														<div className="score-content">
+															<div className="score-title-container">
+																<h3 className="clickable-title" onClick={() => showHelp('Sustainability Level', 
+																	'Your sustainability level is calculated based on your shopping habits, eco-conscious choices, and consistency in making sustainable decisions. The score ranges from 0-100 points across four key areas.')}>Your Sustainability Level</h3>
+															</div>
+															<div className="score-value" style={{ color: getCarbonColor(userScore.score) }}>
+																{userScore.score}/100
+															</div>
+															<div className="score-level">{userScore.level}</div>
 														</div>
 													</div>
+													
+													{userScore.breakdown && (
+														<div className="score-breakdown">
+															<div className="breakdown-title-container">
+																<h4 className="clickable-title" onClick={() => showHelp('Score Breakdown', 
+																	'Your total sustainability score (100 points) is broken down into four components:\n\n• Eco Consciousness (30 points) - How often you choose sustainable products\n• Sustainability Trend (25 points) - Whether your choices are improving over time\n• Efficiency (25 points) - How well you optimize your carbon footprint\n• Consistency (20 points) - Regular sustainable shopping patterns')}>Score Breakdown</h4>
+															</div>
+															<div className="breakdown-items">
+																<div className="breakdown-item clickable-card" onClick={() => showHelp('Eco Consciousness', 
+																	'Measures how often you choose products with high sustainability ratings. Points are awarded based on the sustainability level of your purchases, with higher-rated products contributing more to your score.')}>
+																	<span className="breakdown-label">Eco Consciousness</span>
+																	<div className="breakdown-score">{userScore.breakdown.eco_consciousness}/30</div>
+																</div>
+																<div className="breakdown-item clickable-card" onClick={() => showHelp('Sustainability Trend', 
+																	'Evaluates whether your sustainability performance is improving, stable, or declining over time. Recent purchases are weighted more heavily to reflect your current trajectory.')}>
+																	<span className="breakdown-label">Sustainability Trend</span>
+																	<div className="breakdown-score">{userScore.breakdown.sustainability_trend}/25</div>
+																</div>
+																<div className="breakdown-item clickable-card" onClick={() => showHelp('Efficiency', 
+																	'Measures how well you optimize your carbon footprint relative to your spending and purchase patterns. Higher efficiency means achieving more value with lower environmental impact.')}>
+																	<span className="breakdown-label">Efficiency</span>
+																	<div className="breakdown-score">{userScore.breakdown.efficiency}/25</div>
+																</div>
+																<div className="breakdown-item clickable-card" onClick={() => showHelp('Consistency', 
+																	'Rewards regular sustainable shopping patterns and consistent eco-friendly choices. Higher consistency indicates reliable commitment to sustainability over time.')}>
+																	<span className="breakdown-label">Consistency</span>
+																	<div className="breakdown-score">{userScore.breakdown.consistency}/20</div>
+																</div>
+															</div>
+														</div>
+													)}
 												</div>
-											)}
-										</div>
-									)}
-
-									{/* Forecast Results */}
+											)}									{/* Forecast Results */}
 									{forecastData && forecastData.forecast && (
 										<div className="forecast-results">
 											<h3>📈 Forecast Results ({forecastHorizon} days)</h3>
@@ -1031,70 +1151,83 @@ const handleDisable2FA = async () => {
 												</div>
 											</div>
 
-											{/* Detailed Prediction Factors */}
-											{forecastData.forecast.prediction_factors && (
-												<div className="prediction-factors">
-													<h4>🔍 Prediction Details</h4>
-													<div className="factors-grid">
-														<div className="factor-item">
-															<span>Data Points:</span>
-															<span>{forecastData.forecast.prediction_factors.data_points}</span>
+											{/* Enhanced Prediction Insights */}
+											<div className="prediction-insights">
+												<h4 className="clickable-title" onClick={() => showHelp('Prediction Analysis', 
+													'Our AI analyzes your shopping patterns, sustainability choices, and behavioral trends to generate accurate predictions. The analysis considers factors like recent purchase patterns, seasonal variations, and goal achievement rates.')}>🔍 Detailed Analysis</h4>
+												<div className="insights-grid">
+													<div className="insight-card clickable-card" onClick={() => showHelp('Improvement Potential', 
+														'Shows how much you could potentially improve your sustainability score through optimized choices. This represents the maximum achievable improvement based on your current shopping patterns.')}>
+														<div className="insight-header">
+															<div className="insight-icon">🎯</div>
+															<div className="insight-title">Improvement Potential</div>
 														</div>
-														<div className="factor-item">
-															<span>Recent Average:</span>
-															<span>{forecastData.forecast.prediction_factors.recent_avg?.toFixed(1)}</span>
+														<div className="insight-value">+{forecastData.forecast.improvement_potential?.toFixed(1) || '0.0'}</div>
+													</div>
+													
+													<div className="insight-card trend-card clickable-card" onClick={() => showHelp('Trend Direction', 
+														'Indicates whether your sustainability performance is improving, stable, or declining based on recent patterns. This helps you understand your progress trajectory.')}>
+														<div className="insight-header">
+															<div className="insight-icon">📊</div>
+															<div className="insight-title">Trend Direction</div>
 														</div>
-														<div className="factor-item">
-															<span>Behavioral Score:</span>
-															<span>{(forecastData.forecast.behavioral_score * 100).toFixed(0)}%</span>
-														</div>
-														<div className="factor-item">
-															<span>Seasonal Factor:</span>
-															<span>{forecastData.forecast.seasonal_factor?.toFixed(2)}</span>
+														<div className="insight-value">
+															{forecastData.forecast.trend_direction === 'improving' ? '📈 Improving' :
+															 forecastData.forecast.trend_direction === 'declining' ? '📉 Declining' : 
+															 '➡️ Stable'}
 														</div>
 													</div>
+													
+													<div className="insight-card clickable-card" onClick={() => showHelp('Confidence Level', 
+														'Indicates how accurate our prediction is likely to be. Higher confidence means more reliable forecasting based on sufficient data and consistent patterns.')}>
+														<div className="insight-header">
+															<div className="insight-icon">🎲</div>
+															<div className="insight-title">Confidence Level</div>
+														</div>
+														<div className="insight-value">{(forecastData.forecast.confidence_score * 100).toFixed(0)}%</div>
+													</div>
 												</div>
-											)}
+											</div>
 										</div>
 									)}
 
-									{/* User Insights */}
+									{/* Enhanced User Insights */}
 									{userInsights && (
 										<div className="user-insights">
-											<h3>💡 Personalized Insights</h3>
+											<h3>💡 Personalized Insights 
+											</h3>
 											
 											{userInsights.shopping_patterns && (
 												<div className="insights-section">
-													<h4>🛍️ Shopping Patterns</h4>
+													<h4>🛍️ Shopping Patterns 
+													</h4>
 													<div className="insights-grid">
-														<div className="insight-item">
-															<span>Orders per Week:</span>
-															<span>{userInsights.shopping_patterns.avg_orders_per_week?.toFixed(1) || 'N/A'}</span>
+														<div className="insight-card">
+															<div className="insight-header">
+																<div className="insight-icon">📦</div>
+																<div className="insight-title">Weekly Orders</div>
+															</div>
+															<div className="insight-value">{userInsights.shopping_patterns.avg_orders_per_week?.toFixed(1) || 'N/A'}</div>
 														</div>
-														<div className="insight-item">
-															<span>Eco Consciousness:</span>
-															<span>{userInsights.shopping_patterns.eco_consciousness_score?.toFixed(1) || 'N/A'}/100</span>
+														<div className="insight-card">
+															<div className="insight-header">
+																<div className="insight-icon">🌱</div>
+																<div className="insight-title">Eco Score</div>
+															</div>
+															<div className="insight-value">{userInsights.shopping_patterns.eco_consciousness_score?.toFixed(1) || 'N/A'}/100</div>
 														</div>
-														<div className="insight-item">
-															<span>Goals Achievement:</span>
-															<span>{((userInsights.shopping_patterns.goals_achievement_rate || 0) * 100).toFixed(0)}%</span>
+														<div className="insight-card">
+															<div className="insight-header">
+																<div className="insight-icon">🎯</div>
+																<div className="insight-title">Goal Achievement</div>
+															</div>
+															<div className="insight-value">{((userInsights.shopping_patterns.goals_achievement_rate || 0) * 100).toFixed(0)}%</div>
 														</div>
 													</div>
 												</div>
 											)}
 
-											{userInsights.recommendations && userInsights.recommendations.length > 0 && (
-												<div className="recommendations-section">
-													<h4>💡 Recommendations</h4>
-													<ul className="recommendations-list">
-														{userInsights.recommendations.map((recommendation, index) => (
-															<li key={index} className="recommendation-item">
-																{recommendation}
-															</li>
-														))}
-													</ul>
-												</div>
-											)}
+											
 										</div>
 									)}
 
@@ -1108,6 +1241,8 @@ const handleDisable2FA = async () => {
 												Try Again
 											</button>
 										</div>
+									)}
+										</>
 									)}
 								</>
 							)}
@@ -1308,6 +1443,8 @@ const handleDisable2FA = async () => {
 			onPasswordChange={handleChangePassword}
 			/>
 
+			<ErrorBoundary>
+
 			<TwoFactorModal
 			isOpen={isTwoFactorModalOpen}
 			onClose={() => setIsTwoFactorModalOpen(false)}
@@ -1316,6 +1453,15 @@ const handleDisable2FA = async () => {
 			is2FAEnabled={is2FAEnabled}
 			userId={user?.id}
 			/>
+
+			{/* Help Modal */}
+			<HelpModal
+				isOpen={showHelpModal}
+				onClose={closeHelpModal}
+				title={helpModalContent.title}
+				content={helpModalContent.content}
+			/>
+			</ErrorBoundary>
 		</div>
 	);
 }

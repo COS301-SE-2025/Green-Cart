@@ -3,8 +3,17 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.schemas.retailer_products import CreateProductRequest, ProductResponse
 from app.services.retailer_products_services import fetchRetailerProducts, deleteRetailerProduct, createRetailerProduct
+from app.models.product import Product
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/retailer", tags=["Retailer"])
+
+class UpdateQuantityRequest(BaseModel):
+    stock_quantity: int
+
+class UpdatePriceQuantityRequest(BaseModel):
+    price: float
+    stock_quantity: int
 
 @router.get("/products/{retailer_id}", operation_id="get_retailer_products_by_id")
 def get_retailer_products(retailer_id: int, db: Session = Depends(get_db)):
@@ -15,6 +24,82 @@ def get_retailer_products(retailer_id: int, db: Session = Depends(get_db)):
         "data":
             products
     }
+
+@router.put("/products/{product_id}/quantity", operation_id="update_product_quantity")
+def update_product_quantity(product_id: int, quantity_update: UpdateQuantityRequest, db: Session = Depends(get_db)):
+    """Update only the quantity/stock of a product - specifically for verified products"""
+    try:
+        # Find the product
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Product not found"
+            )
+        
+        # Update only the quantity
+        product.quantity = quantity_update.stock_quantity
+        product.in_stock = True if quantity_update.stock_quantity > 0 else False
+        
+        db.commit()
+        db.refresh(product)
+        
+        return {
+            "status": 200,
+            "message": "Product quantity updated successfully",
+            "data": {
+                "id": product.id,
+                "name": product.name,
+                "quantity": product.quantity,
+                "in_stock": product.in_stock
+            }
+        }
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update product quantity: {str(e)}"
+        )
+
+@router.put("/products/{product_id}/price-quantity", operation_id="update_product_price_quantity")
+def update_product_price_quantity(product_id: int, update_data: UpdatePriceQuantityRequest, db: Session = Depends(get_db)):
+    """Update both price and quantity of a product - specifically for verified products"""
+    try:
+        # Find the product
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Product not found"
+            )
+        
+        # Update price and quantity
+        product.price = update_data.price
+        product.quantity = update_data.stock_quantity
+        product.in_stock = True if update_data.stock_quantity > 0 else False
+        
+        db.commit()
+        db.refresh(product)
+        
+        return {
+            "status": 200,
+            "message": "Product price and quantity updated successfully",
+            "data": {
+                "id": product.id,
+                "name": product.name,
+                "price": float(product.price),
+                "quantity": product.quantity,
+                "in_stock": product.in_stock
+            }
+        }
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update product price and quantity: {str(e)}"
+        )
 
 @router.delete("/products/{product_id}", operation_id="delete_retailer_product_by_id")
 def delete_product(product_id: int, retailer_id: int, db: Session = Depends(get_db)):

@@ -50,6 +50,7 @@ def fetchRetailerProducts(retailer_id: int, db: Session):
             "brand": product.brand,
             "category_id": product.category_id,
             "retailer_id": product.retailer_id,
+            "verified": product.verified,
             "created_at": product.created_at,
             "image_url": image_url,  # Keep for backwards compatibility
             "images": images,  # Full S3 images array

@@ -192,6 +192,28 @@
   box-shadow: 0 2px 6px rgba(34, 197, 94, 0.25);
 }
 
+.retailer-products-verified-badge {
+  background: rgba(21, 128, 61, 0.95);
+  color: white;
+  padding: 0.2rem 0.4rem;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 6px rgba(21, 128, 61, 0.25);
+}
+
+.retailer-products-unverified-badge {
+  background: rgba(217, 119, 6, 0.95);
+  color: white;
+  padding: 0.2rem 0.4rem;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+}
+
 /* COMPACT PRODUCT INFO */
 .retailer-products-product-info {
   padding: 1rem; /* Reduced from 1.5rem */
@@ -207,6 +229,7 @@
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   min-height: 2.6rem; /* Reduced height */
