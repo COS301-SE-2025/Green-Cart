@@ -3,24 +3,34 @@ import toast from 'react-hot-toast';
 import '../styles/modals/TwoFactorModal.css';
 import { API_BASE_URL } from '../../config/api.js';
 
+import CustomConfirmModal from './Custom2FAConfirmModal';
+
 const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabled, userId }) => {
-  const [step, setStep] = useState(1); // 1: Setup, 2: QR Code, 3: Verify Code
+  const [step, setStep] = useState(1);
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   const [backupCodes, setBackupCodes] = useState([]);
   const [verificationCode, setVerificationCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [secretKey, setSecretKey] = useState('');
-  const [has2FAStarted, setHas2FAStarted] = useState(false);
+  const [setupStarted, setSetupStarted] = useState(false);
+  const [setupCompleted, setSetupCompleted] = useState(false);
 
+  // Custom confirmation modal state
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    type: 'warning'
+  });
 
   useEffect(() => {
-    if (isOpen && !is2FAEnabled) {
-      setStep(1);
-      resetModalState();
-
-      // generateQRCode();
-    } else if (isOpen && is2FAEnabled) {
-      setStep(4); // Disable 2FA step
+    if (isOpen) {
+      if (is2FAEnabled) {
+        setStep(4); // Disable 2FA step
+      } else {
+        setStep(1); // Setup 2FA step
+      }
       resetModalState();
     }
   }, [isOpen, is2FAEnabled]);
@@ -30,26 +40,62 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
     setBackupCodes([]);
     setVerificationCode('');
     setSecretKey('');
-    setHas2FAStarted(false);
+    setSetupStarted(false);
+    setSetupCompleted(false);
     setIsLoading(false);
-  }; 
+    setConfirmModal({ ...confirmModal, isOpen: false });
+  };
+
+  // Custom confirmation helper
+  const showConfirmation = (title, message, onConfirm, type = 'warning') => {
+    setConfirmModal({
+      isOpen: true,
+      title,
+      message,
+      onConfirm: () => {
+        setConfirmModal({ ...confirmModal, isOpen: false });
+        onConfirm();
+      },
+      type
+    });
+  };
+
+  // Clean up incomplete setup using existing disableMFA endpoint
+  const cleanupIncompleteSetup = async () => {
+    if (setupStarted && !setupCompleted && userId) {
+      try {
+        console.log('🧹 Cleaning up incomplete 2FA setup using disableMFA endpoint...');
+        const response = await fetch(`${API_BASE_URL}/users/disableMFA/${userId}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          console.log('✅ Incomplete 2FA setup cleaned up successfully');
+        } else {
+          console.warn('⚠️ Failed to cleanup incomplete 2FA setup');
+        }
+      } catch (error) {
+        console.error('❌ Error cleaning up incomplete 2FA setup:', error);
+      }
+    }
+  };
 
   const generateQRCode = async () => {
     if (!userId) {
       toast.error('User ID is required');
-      return;
+      return false;
     }
 
     setIsLoading(true);
-    setHas2FAStarted(true);
 
     try {
       const response = await fetch(`${API_BASE_URL}/users/setupMFA/${userId}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          // Add authentication headers if needed
-          // 'Authorization': `Bearer ${token}`,
         },
       });
 
@@ -59,37 +105,50 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
 
       const data = await response.json();
       
-      // Handle the response structure based on the API documentation
-      if (data.status === 'success' || data.qr_code) {
-        // If qr_code is base64 encoded, ensure it has the proper data URL prefix
+      if (data.status === 200 && data.qr_code) {
         const qrCodeData = data.qr_code.startsWith('data:image/')
           ? data.qr_code
           : `data:image/png;base64,${data.qr_code}`;
         
         setQrCodeUrl(qrCodeData);
         setSecretKey(data.secret);
+        setSetupStarted(true);
+        setSetupCompleted(false); // Setup is not completed yet
         
-        // If the API returns backup codes, use them; otherwise generate some or handle differently
         if (data.backup_codes) {
           setBackupCodes(data.backup_codes);
         }
+        
+        console.log('🔐 QR Code generated, 2FA setup started (not completed)');
+        return true;
       } else {
         throw new Error(data.message || 'Failed to setup MFA');
       }
     } catch (error) {
       console.error('Error generating QR code:', error);
       toast.error(error.message || 'Failed to generate QR code');
-
-      setHas2FAStarted(false);
-      setStep(1);
+      return false;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleContinueSetup = async () => {
+    console.log('🔐 User confirmed 2FA setup, generating QR code...');
+    const success = await generateQRCode();
+    if (success) {
+      setStep(2);
     }
   };
 
   const handleVerifyCode = async () => {
     if (!verificationCode || verificationCode.length !== 6) {
       toast.error('Please enter a valid 6-digit code');
+      return;
+    }
+
+    if (!setupStarted || !secretKey) {
+      toast.error('Setup incomplete. Please go back and scan the QR code first.');
       return;
     }
 
@@ -100,9 +159,12 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
         secret: secretKey
       });
       
-      toast.success('Two-Factor Authentication enabled successfully!');
-      setStep(3); // Show backup codes
+      // Mark setup as completed - this prevents cleanup
+      setSetupCompleted(true);
+      console.log('✅ 2FA setup completed successfully');
+      setStep(3); // Show success/backup codes
     } catch (error) {
+      console.error('❌ 2FA verification failed:', error);
       toast.error(error.message || 'Invalid verification code');
     } finally {
       setIsLoading(false);
@@ -122,33 +184,44 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
     }
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
+    // If setup was started but not completed, show warning and cleanup
+    if (setupStarted && !setupCompleted && step !== 1) {
+      showConfirmation(
+        '⚠️ Incomplete 2FA Setup',
+        'Your 2FA setup is incomplete!\n\nIf you close now, the setup will be cancelled and you\'ll need to start over.\n\nAre you sure you want to close?',
+        async () => {
+          // Clean up the incomplete setup using existing disableMFA endpoint
+          await cleanupIncompleteSetup();
+          toast.success('2FA setup cancelled and cleaned up');
+          resetModalState();
+          setStep(1);
+          onClose();
+        },
+        'warning'
+      );
+      return;
+    }
+    
+    resetModalState();
     setStep(1);
-    setVerificationCode('');
-    setQrCodeUrl('');
-    setBackupCodes([]);
-    setSecretKey('');
     onClose();
   };
 
-  const handleContinueSetup = async () => {
-    console.log('🔐 User confirmed 2FA setup, generating QR code...');
-    await generateQRCode();
-    if (qrCodeUrl) {
-      setStep(2); // Only proceed to QR code step if generation was successful
-    }
-  };
-
-  const handleBackFromQR = () => {
-    if (has2FAStarted) {
-      // Optionally show confirmation since QR was already generated
-      const shouldGoBack = window.confirm(
-        'Going back will cancel the 2FA setup process. Are you sure?'
+  const handleBackFromQR = async () => {
+    if (setupStarted && !setupCompleted) {
+      showConfirmation(
+        '⚠️ Cancel 2FA Setup',
+        'Going back will cancel the 2FA setup process.\n\nThe QR code will be invalidated and you\'ll need to start over.\n\nAre you sure?',
+        async () => {
+          // Clean up the incomplete setup using existing disableMFA endpoint
+          await cleanupIncompleteSetup();
+          resetModalState();
+          setStep(1);
+          toast.info('2FA setup cancelled');
+        },
+        'warning'
       );
-      if (shouldGoBack) {
-        resetModalState();
-        setStep(1);
-      }
     } else {
       setStep(1);
     }
@@ -173,7 +246,7 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
           {/* Step 1: Introduction */}
           {step === 1 && (
             <div className="two-factor-step">
-              <div className="step-icon"></div>
+              <div className="step-icon">🔐</div>
               <h3>Set Up Two-Factor Authentication</h3>
               <p>
                 Add an extra layer of security to your account by requiring a verification code 
@@ -183,9 +256,9 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
               <div className="benefits-list">
                 <h4>Benefits:</h4>
                 <ul>
-                  <li> Enhanced account security</li>
-                  <li> Protection against unauthorized access</li>
-                  <li> Peace of mind for your personal data</li>
+                  <li>✅ Enhanced account security</li>
+                  <li>✅ Protection against unauthorized access</li>
+                  <li>✅ Peace of mind for your personal data</li>
                 </ul>
               </div>
 
@@ -204,11 +277,18 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                 </div>
               </div>
 
+              <div className="setup-warning">
+                <h4>⚠️ Important:</h4>
+                <p>
+                  Make sure you have an authenticator app installed before proceeding. 
+                  Once you start the setup, you must complete all steps to avoid being locked out.
+                </p>
+              </div>
+
               <div className="step-actions">
                 <button className="cancel-btn" onClick={handleClose}>
                   Cancel
                 </button>
-                {/* UPDATED: Only generate QR code when user clicks Continue */}
                 <button 
                   className="continue-btn" 
                   onClick={handleContinueSetup}
@@ -220,13 +300,14 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                       Setting up...
                     </>
                   ) : (
-                    'Continue Setup'
+                    'I Have Authenticator App - Continue'
                   )}
                 </button>
               </div>
             </div>
           )}
 
+          {/* Step 2: QR Code */}
           {step === 2 && (
             <div className="two-factor-step">
               <div className="step-icon">📊</div>
@@ -234,6 +315,17 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
               <p>
                 Open your authenticator app and scan the QR code below, or manually enter the secret key.
               </p>
+
+              <div className="setup-progress">
+                <div className="progress-indicator">
+                  <span className="progress-step completed">1</span>
+                  <span className="progress-line"></span>
+                  <span className="progress-step active">2</span>
+                  <span className="progress-line"></span>
+                  <span className="progress-step">3</span>
+                </div>
+                <p className="progress-text">Step 2 of 3: Scan QR Code</p>
+              </div>
 
               {qrCodeUrl ? (
                 <div className="qr-section">
@@ -263,11 +355,19 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                       <li>Your app will display a 6-digit code</li>
                     </ol>
                   </div>
+
+                  <div className="critical-warning">
+                    <h4>🚨 IMPORTANT:</h4>
+                    <p>
+                      <strong>You MUST complete the next step!</strong> If you close this window now, 
+                      your account will be partially configured and the setup will be automatically cancelled.
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <div className="error-message">
                   <p>❌ Failed to load QR code. Please try again.</p>
-                  <button onClick={generateQRCode} className="retry-btn">
+                  <button onClick={handleContinueSetup} className="retry-btn">
                     🔄 Retry
                   </button>
                 </div>
@@ -275,7 +375,7 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
 
               <div className="step-actions">
                 <button className="back-btn" onClick={handleBackFromQR}>
-                  ← Back
+                  ← Cancel Setup
                 </button>
                 <button 
                   className="continue-btn" 
@@ -297,6 +397,17 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                 Enter the 6-digit code from your authenticator app to complete the setup.
               </p>
 
+              <div className="setup-progress">
+                <div className="progress-indicator">
+                  <span className="progress-step completed">1</span>
+                  <span className="progress-line"></span>
+                  <span className="progress-step completed">2</span>
+                  <span className="progress-line"></span>
+                  <span className="progress-step active">3</span>
+                </div>
+                <p className="progress-text">Step 3 of 3: Verify Setup</p>
+              </div>
+
               <div className="verification-input-container">
                 <input
                   type="text"
@@ -314,9 +425,17 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                 <p>💡 <strong>Tip:</strong> The code changes every 30 seconds. If it doesn't work, wait for the next code.</p>
               </div>
 
+              <div className="final-warning">
+                <h4>🔒 Final Step:</h4>
+                <p>
+                  This will complete your 2FA setup. Make sure you have access to your authenticator app 
+                  before clicking verify, as you'll need it for future logins.
+                </p>
+              </div>
+
               <div className="step-actions">
                 <button className="back-btn" onClick={() => setStep(2)}>
-                  ← Back
+                  ← Back to QR Code
                 </button>
                 <button 
                   className="verify-btn"
@@ -329,24 +448,28 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                       Verifying...
                     </>
                   ) : (
-                    'Verify & Enable 2FA'
+                    '🔒 Complete 2FA Setup'
                   )}
                 </button>
               </div>
             </div>
           )}
 
-          {/* Step 3: Backup Codes */}
-          {step === 3 && (
+          {/* Step 3: Success - Only shown after successful verification */}
+          {step === 3 && setupCompleted && (
             <div className="two-factor-step">
-              <div className="step-icon">🔑</div>
+              <div className="step-icon">🎉</div>
               <h3>✅ 2FA Enabled Successfully!</h3>
               <p>
-                Your two-factor authentication is now active. Save these backup codes in a safe place.
+                Your two-factor authentication is now active. Your account is now more secure!
               </p>
 
-              {backupCodes.length > 0 ? (
+              {backupCodes.length > 0 && (
                 <div className="backup-codes-container">
+                  <h4>🔑 Backup Codes:</h4>
+                  <p className="backup-codes-warning">
+                    <strong>Save these backup codes in a safe place!</strong> Each can only be used once.
+                  </p>
                   <div className="backup-codes">
                     {backupCodes.map((code, index) => (
                       <div key={index} className="backup-code">
@@ -361,19 +484,14 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
                     📋 Copy All Codes
                   </button>
                 </div>
-              ) : (
-                <div className="no-backup-codes">
-                  <p>Backup codes can be generated later in your account settings.</p>
-                </div>
               )}
 
               <div className="warning-note">
                 <h4>⚠️ Important:</h4>
                 <ul>
-                  <li>Each backup code can only be used once</li>
-                  <li>Store them securely and don't share them</li>
-                  <li>You can generate new codes anytime in your account settings</li>
-                  <li>Use backup codes if you lose access to your authenticator app</li>
+                  <li>Keep backup codes safe - each can only be used once</li>
+                  <li>You'll need your authenticator app to sign in from now on</li>
+                  <li>You can disable 2FA anytime in your security settings</li>
                 </ul>
               </div>
 
@@ -436,7 +554,19 @@ const TwoFactorModal = ({ isOpen, onClose, onEnable2FA, onDisable2FA, is2FAEnabl
             </div>
           )}
         </div>
+        {/* Custom Confirmation Modal */}
+      <CustomConfirmModal
+        isOpen={confirmModal.isOpen}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText="Yes, Continue"
+        cancelText="No, Go Back"
+        type={confirmModal.type}
+      />
       </div>
+      
     </div>
   );
 };
