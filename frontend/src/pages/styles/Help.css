@@ -62,6 +62,8 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 3;
+  color: #666;
+  font-size: 16px;
 }
 
 .help-search-input {
@@ -279,8 +281,9 @@
 }
 
 .quick-link-icon {
-  font-size: 32px;
-  margin-bottom: 12px;
+  font-size: 1.5rem;
+  color: #7BB540;
+  margin-bottom: 0.5rem;
 }
 
 .quick-link-text {
@@ -327,6 +330,9 @@
   cursor: pointer;
   transition: all 0.3s ease;
   min-width: 160px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .contact-btn.primary {
@@ -500,4 +506,9 @@
   .category-content {
     display: block !important;
   }
+}
+
+.help-icon {
+  font-size: 2rem;
+  color: #7BB540;
 }

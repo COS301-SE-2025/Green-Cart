@@ -2,6 +2,21 @@ import React, { useState } from 'react';
 import './styles/Help.css';
 import helpBackgroundImage from '../assets/images/help-green.avif';
 
+import { 
+  FaRocket, 
+  FaQuestionCircle, 
+  FaBook, 
+  FaPhone,
+  FaUser,
+  FaShoppingCart,
+  FaHome,
+  FaBoxOpen,
+  FaComments,
+  FaEnvelope,
+  FaSearch
+} from 'react-icons/fa';
+
+
 const Help = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -9,7 +24,7 @@ const Help = () => {
   const helpContent = {
     'getting-started': {
       title: 'Getting Started',
-      icon: '🚀',
+      icon: <FaRocket className="help-icon" />,
       sections: [
         {
           title: 'Welcome to GreenCart!',
@@ -54,7 +69,7 @@ const Help = () => {
     },
     'faqs': {
       title: 'Frequently Asked Questions',
-      icon: '❓',
+      icon: <FaQuestionCircle className="help-icon" />,
       sections: [
         {
           title: 'Account & Orders',
@@ -93,7 +108,7 @@ A: Currently, we ship within South Africa. International shipping coming soon!`
     },
     'how-to': {
       title: 'How-To Guides',
-      icon: '📖',
+      icon: <FaBook className="help-icon" />,
       sections: [
         {
           title: 'Using Filters & Search',
@@ -134,7 +149,7 @@ A: Currently, we ship within South Africa. International shipping coming soon!`
     },
     'contact': {
       title: 'Contact Support',
-      icon: '📞',
+      icon: <FaPhone className="help-icon" />,
       sections: [
         {
           title: 'Get Help',
@@ -203,9 +218,7 @@ Business Hours: Monday - Friday, 9 AM - 6 PM (SAST)`
           <h1 className="help-title">Help Center</h1>
           <div className="help-search-container">
             <div className="help-search-box">
-              <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <FaSearch className="search-icon" />
               <input 
                 type="text" 
                 placeholder="Search for help..." 
@@ -218,7 +231,7 @@ Business Hours: Monday - Friday, 9 AM - 6 PM (SAST)`
         </div>
       </div>
 
-      {/* Main Content Section */}
+      {/* Main Content */}
       <div className="help-main-content">
         <div className="help-content-wrapper">
           <h2 className="help-main-title">How can we help?</h2>
@@ -236,7 +249,7 @@ Business Hours: Monday - Friday, 9 AM - 6 PM (SAST)`
                 onClick={() => handleCategoryClick(key)}
               >
                 <div className="category-header">
-                  <span className="category-icon">{category.icon}</span>
+                  <span className="category-icon">{category.icon}</span> {/* Now using React Icons */}
                   <div className="category-text">
                     <h3 className="category-title">{category.title}</h3>
                     <p className="category-description">
@@ -271,24 +284,24 @@ Business Hours: Monday - Friday, 9 AM - 6 PM (SAST)`
             ))}
           </div>
 
-          {/* Quick Links Section */}
+          {/* Quick Links with Icons */}
           <div className="quick-links-section">
             <h3 className="quick-links-title">Quick Links</h3>
             <div className="quick-links-grid">
               <a href="/user-account" className="quick-link-card">
-                <span className="quick-link-icon">👤</span>
+                <FaUser className="quick-link-icon" /> {/* Replaced 👤 */}
                 <span className="quick-link-text">My Account</span>
               </a>
               <a href="/orders" className="quick-link-card">
-                <span className="quick-link-icon">📦</span>
+                <FaBoxOpen className="quick-link-icon" /> {/* Replaced 📦 */}
                 <span className="quick-link-text">Track Orders</span>
               </a>
               <a href="/cart" className="quick-link-card">
-                <span className="quick-link-icon">🛒</span>
+                <FaShoppingCart className="quick-link-icon" /> {/* Replaced 🛒 */}
                 <span className="quick-link-text">My Cart</span>
               </a>
               <a href="/Home" className="quick-link-card">
-                <span className="quick-link-icon">🏠</span>
+                <FaHome className="quick-link-icon" /> {/* Replaced 🏠 */}
                 <span className="quick-link-text">Browse Products</span>
               </a>
             </div>
@@ -300,10 +313,10 @@ Business Hours: Monday - Friday, 9 AM - 6 PM (SAST)`
             <p>Our support team is ready to assist you with any questions.</p>
             <div className="contact-buttons">
               <button className="contact-btn primary">
-                💬 Start Live Chat
+                <FaComments /> Start Live Chat {/* Replaced 💬 */}
               </button>
               <button className="contact-btn secondary">
-                📧 Email Support
+                <FaEnvelope /> Email Support {/* Replaced 📧 */}
               </button>
             </div>
           </div>
