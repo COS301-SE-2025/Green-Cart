@@ -24,7 +24,7 @@ const Help = () => {
   const helpContent = {
     'getting-started': {
       title: 'Getting Started',
-      icon: <FaRocket className="help-icon" />,
+      icon: <FaRocket className="hp-help-icon" />,
       sections: [
         {
           title: 'Welcome to GreenCart!',
@@ -69,7 +69,7 @@ const Help = () => {
     },
     'faqs': {
       title: 'Frequently Asked Questions',
-      icon: <FaQuestionCircle className="help-icon" />,
+      icon: <FaQuestionCircle className="hp-help-icon" />,
       sections: [
         {
           title: 'Account & Orders',
@@ -108,7 +108,7 @@ A: Currently, we ship within South Africa. International shipping coming soon!`
     },
     'how-to': {
       title: 'How-To Guides',
-      icon: <FaBook className="help-icon" />,
+      icon: <FaBook className="hp-help-icon" />,
       sections: [
         {
           title: 'Using Filters & Search',
@@ -149,7 +149,7 @@ A: Currently, we ship within South Africa. International shipping coming soon!`
     },
     'contact': {
       title: 'Contact Support',
-      icon: <FaPhone className="help-icon" />,
+      icon: <FaPhone className="hp-help-icon" />,
       sections: [
         {
           title: 'Get Help',
