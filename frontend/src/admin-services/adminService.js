@@ -87,7 +87,55 @@ export const getUnverifiedProducts = async () => {
     }
 };
 
+/**
+ * Get a specific unverified product by ID
+ */
+export const getUnverifiedProduct = async (productId) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/products/unverified/${productId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
 
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Failed to fetch unverified product");
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error fetching unverified product:", error);
+        throw error;
+    }
+};
+
+/**
+ * Verify a product by ID
+ */
+export const verifyProduct = async (productId) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/products/${productId}/verify`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Failed to verify product");
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error verifying product:", error);
+        throw error;
+    }
+};
 
 /**
  * Get the next unverified product for review
