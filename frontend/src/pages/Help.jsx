@@ -236,8 +236,7 @@ Business Hours: Monday - Friday, 9 AM - 6 PM (SAST)`
         <div className="help-content-wrapper">
           <h2 className="help-main-title">How can we help?</h2>
           <p className="help-description">
-            From account settings, permissions and personalisation find everything GreenCart.<br />
-            Have a more specific issue? Ask <span className="terrabot-link">TerraBot</span>.
+            From account settings, Security and Orders find everything GreenCart.<br />
           </p>
 
           {/* Help Categories */}
