@@ -90,7 +90,7 @@ const TwoFactorVerificationModal = ({
                 </div>
               </div>
 
-              <div className="verification-actions">
+              <div className="two-factor-verification-actions">
                 <button
                   className="verify-submit-btn"
                   onClick={handleVerifyCode}
@@ -107,13 +107,13 @@ const TwoFactorVerificationModal = ({
                 </button>
 
                 <div className="alternative-options">
-                  <button
+                  {/* <button
                     className="backup-code-link"
                     onClick={() => setShowBackupCode(true)}
                     disabled={isLoading}
                   >
                     📋 Use backup code instead
-                  </button>
+                  </button> */}
                   
                   <button
                     className="cancel-signin-btn"

@@ -30,7 +30,7 @@
 .verification-header {
   background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
   color: white;
-  padding: 2.5rem 2rem 2rem 2rem;
+  padding: 1.5rem 1rem 1rem 1rem;
   text-align: center;
   position: relative;
 }
@@ -47,37 +47,37 @@
 }
 
 .verification-icon {
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   margin-bottom: 1rem;
   display: block;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
 }
 
 .verification-header h2 {
-  margin: 0 0 0.75rem 0;
-  font-size: 1.6rem;
+  margin: 0 0 0.35rem 0;
+  font-size: 1rem;
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .verification-subtitle {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.5rem;
   opacity: 0.9;
   font-weight: 400;
   background: rgba(255, 255, 255, 0.1);
-  padding: 0.5rem 1rem;
+  padding: 0.2rem 0.8rem;
   border-radius: 20px;
   display: inline-block;
 }
 
 /* Body Section */
 .verification-body {
-  padding: 2.5rem 2rem;
+  padding: 0.5rem 1rem;
 }
 
 .verification-section {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   text-align: center;
 }
 
@@ -89,9 +89,9 @@
 }
 
 .verification-section p {
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1rem 0;
   color: #6b7280;
-  font-size: 1rem;
+  font-size: 0.8rem;
   line-height: 1.6;
 }
 
@@ -100,7 +100,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
   margin: 2rem 0;
 }
 
@@ -108,10 +108,10 @@
 .backup-code-input {
   width: 100%;
   max-width: 320px;
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1rem;
   border: 3px solid #e5e7eb;
   border-radius: 16px;
-  font-size: 1.75rem;
+  font-size: 1.1rem;
   font-weight: 700;
   text-align: center;
   letter-spacing: 6px;
@@ -148,7 +148,7 @@
 }
 
 .input-label {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #6b7280;
   font-weight: 600;
   background: #f1f5f9;
@@ -160,7 +160,7 @@
 /* Help Sections */
 .code-help,
 .backup-code-help {
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   text-align: center;
 }
 
@@ -185,13 +185,13 @@
 .help-note h4 {
   margin: 0 0 0.75rem 0;
   color: #92400e;
-  font-size: 1rem;
+  font-size: 0.7rem;
   font-weight: 600;
 }
 
 .help-note ul {
   margin: 0;
-  padding-left: 1.25rem;
+  padding-left: 1rem;
   color: #78350f;
 }
 
@@ -202,23 +202,23 @@
 }
 
 /* Action Buttons */
-.verification-actions {
+.two-factor-verification-actions {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   align-items: center;
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 .verify-submit-btn {
   width: 100%;
   max-width: 320px;
-  padding: 1.25rem 2rem;
+  padding: 0.5rem 0.8rem;
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: none;
   border-radius: 16px;
-  font-size: 1.1rem;
+  font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
