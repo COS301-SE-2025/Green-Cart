@@ -125,16 +125,16 @@ const Products = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="stats-cards">
-        <div className="stat-card">
+      <div className="adm-prod-stats-cards">
+        <div className="adm-prod-stat-card">
           <div className="stat-number">{stats.totalProducts}</div>
           <div className="stat-label">Total Products</div>
         </div>
-        <div className="stat-card">
+        <div className="adm-prod-stat-card">
           <div className="stat-number">R{stats.totalValue}</div>
           <div className="stat-label">Total Value</div>
         </div>
-        <div className="stat-card">
+        <div className="adm-prod-stat-card">
           <div className="stat-number">{stats.unverifiedCount}</div>
           <div className="stat-label">Unverified Items</div>
         </div>

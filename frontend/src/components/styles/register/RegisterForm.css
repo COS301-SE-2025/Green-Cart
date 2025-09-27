@@ -317,7 +317,7 @@
 }
 
 .signin-link-text {
-  color: #e7e7e7 !important;
+  color: black !important;
   text-decoration: none;
   font-weight: 600;
   transition: all 0.3s ease;
@@ -422,7 +422,7 @@
 }
 
 .terms-link {
-  color: #ffffff !important;
+  color: black !important;
   text-decoration: underline;
 }
 

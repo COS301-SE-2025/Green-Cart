@@ -10,7 +10,7 @@ import './styles/UserAccount.css';
 import RetailerAuthOverlay from "../components/retailer/Auth/RetailerAuthOverlay";
 import InteractiveCarbonChart from '../components/charts/InteractiveCarbonChart';
 import carbonGoalsService from '../services/carbonGoalsService';
-import { getApiUrl, getLocalApiUrl } from '../config/api';
+import { getApiUrl, getLocalApiUrl, API_BASE_URL } from '../config/api';
 import ChangePasswordModal from '../components/modals/ChangePasswordModal';
 import TwoFactorModal from '../components/modals/TwoFactorModal';
 import forecastingService from '../services/forecastingService';
@@ -136,13 +136,17 @@ export default function UserAccount() {
 	});
 
 	useEffect(() => {
-    const userData = localStorage.getItem('userData');
-    if (userData) {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-        
-        // Set 2FA status from user data initially
-        setIs2FAEnabled(parsedUser.requires2FA || false);
+		const userData = localStorage.getItem('userData');
+		if (userData) {
+			const parsedUser = JSON.parse(userData);
+			setUser(parsedUser);
+
+			if(parsedUser.requires2FA === true){
+				setIs2FAEnabled(true);
+
+			}else{
+				setIs2FAEnabled(false);
+			}
 
         const loadUserInfo = async () => {
             try {

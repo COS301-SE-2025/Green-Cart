@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../../config/api.js'
 import '../styles/modals/TwoFactorModal.css';
-import { API_BASE_URL } from '../../config/api.js';
 
 import CustomConfirmModal from './Custom2FAConfirmModal';
 
