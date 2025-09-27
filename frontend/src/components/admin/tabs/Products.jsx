@@ -20,6 +20,7 @@ const Products = () => {
     totalValue: '0.00'
   });
   const [verificationModalOpen, setVerificationModalOpen] = useState(false);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
     loadProductsData();
@@ -31,6 +32,7 @@ const Products = () => {
 
   const loadProductsData = async () => {
     setLoading(true);
+    setStatsLoading(true); // Add this line
     try {
       const [allProductsResponse, statsResponse] = await Promise.all([
         getAllProducts(),
@@ -43,12 +45,14 @@ const Products = () => {
 
       if (statsResponse.status === 200) {
         setStats(statsResponse.data);
+        setStatsLoading(false); // Add this line
       }
     } catch (error) {
       console.error('Error loading products data:', error);
       toast.error('Failed to load products data');
     } finally {
       setLoading(false);
+      setStatsLoading(false); // Add this line as fallback
     }
   };
 
@@ -130,18 +134,81 @@ const Products = () => {
 
       {/* Stats Cards */}
       <div className="adm-prod-stats-cards">
-        <div className="adm-prod-stat-card">
-          <div className="stat-number">{stats.totalProducts}</div>
-          <div className="stat-label">Total Products</div>
-        </div>
-        <div className="adm-prod-stat-card">
-          <div className="stat-number">R{stats.totalValue}</div>
-          <div className="stat-label">Total Value</div>
-        </div>
-        <div className="adm-prod-stat-card">
-          <div className="stat-number">{stats.unverifiedCount}</div>
-          <div className="stat-label">Unverified Items</div>
-        </div>
+        {statsLoading ? (
+          // Loading cards
+          <>
+            <div className="adm-prod-stat-card stat-card-loading">
+              <div className="loading-banner">
+                <div className="custom-loader">
+                  <svg className="circular" viewBox="25 25 50 50">
+                    <circle 
+                      className="path" 
+                      cx="50" 
+                      cy="50" 
+                      r="20" 
+                      fill="none" 
+                      strokeWidth="2" 
+                      strokeMiterlimit="10"
+                    />
+                  </svg>
+                </div>
+                <span>Loading stats...</span>
+              </div>
+            </div>
+            <div className="adm-prod-stat-card stat-card-loading">
+              <div className="loading-banner">
+                <div className="custom-loader">
+                  <svg className="circular" viewBox="25 25 50 50">
+                    <circle 
+                      className="path" 
+                      cx="50" 
+                      cy="50" 
+                      r="20" 
+                      fill="none" 
+                      strokeWidth="2" 
+                      strokeMiterlimit="10"
+                    />
+                  </svg>
+                </div>
+                <span>Loading stats...</span>
+              </div>
+            </div>
+            <div className="adm-prod-stat-card stat-card-loading">
+              <div className="loading-banner">
+                <div className="custom-loader">
+                  <svg className="circular" viewBox="25 25 50 50">
+                    <circle 
+                      className="path" 
+                      cx="50" 
+                      cy="50" 
+                      r="20" 
+                      fill="none" 
+                      strokeWidth="2" 
+                      strokeMiterlimit="10"
+                    />
+                  </svg>
+                </div>
+                <span>Loading stats...</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          // Actual stats cards
+          <>
+            <div className="adm-prod-stat-card">
+              <div className="stat-number">{stats.totalProducts}</div>
+              <div className="stat-label">Total Products</div>
+            </div>
+            <div className="adm-prod-stat-card">
+              <div className="stat-number">R{stats.totalValue}</div>
+              <div className="stat-label">Total Value</div>
+            </div>
+            <div className="adm-prod-stat-card">
+              <div className="stat-number">{stats.unverifiedCount}</div>
+              <div className="stat-label">Unverified Items</div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Tabs */}
@@ -164,8 +231,24 @@ const Products = () => {
       <div className="products-table">
         {loading ? (
           <div className="table-loading">
-            <div className="loading-spinner"></div>
-            <span>Loading products...</span>
+            <div className="adm-prod-table-loading">
+              <div className="loading-banner">
+                <div className="custom-loader">
+                  <svg className="circular" viewBox="25 25 50 50">
+                    <circle 
+                      className="path" 
+                      cx="50" 
+                      cy="50" 
+                      r="20" 
+                      fill="none" 
+                      strokeWidth="2" 
+                      strokeMiterlimit="10"
+                    />
+                  </svg>
+                </div>
+                <span>Loading stats...</span>
+              </div>
+            </div>
           </div>
         ) : (
           <table>
