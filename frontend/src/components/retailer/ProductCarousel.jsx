@@ -79,6 +79,11 @@ export default function ProductCarousel({ products, onEditProduct }) {
                                     <span className="product-carousel-sustainability-badge">
                                         🌱 {product.sustainability_rating ?? 'N/A'}
                                     </span>
+                                    {product.verified ? (
+                                        <span className="product-carousel-verified-badge">✓ Verified</span>
+                                    ) : (
+                                        <span className="product-carousel-unverified-badge">⚠ Unverified</span>
+                                    )}
                                 </div>
                             </div>
                             <div className="product-carousel-info">
@@ -101,10 +106,14 @@ export default function ProductCarousel({ products, onEditProduct }) {
                                 </div>
                                 <div className="product-carousel-actions">
                                     <button
-                                        className="product-carousel-btn-action product-carousel-btn-primary"
+                                        className={`product-carousel-btn-action ${
+                                            product.verified 
+                                                ? 'product-carousel-btn-verified' 
+                                                : 'product-carousel-btn-primary'
+                                        }`}
                                         onClick={() => handleEditClick(product)}
                                     >
-                                        Edit
+                                        {product.verified ? '💰 Update Price & Stock' : 'Edit'}
                                     </button>
                                     <button
                                         className="product-carousel-btn-action product-carousel-btn-secondary"

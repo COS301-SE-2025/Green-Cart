@@ -262,6 +262,11 @@ return (
                           : '🌱 N/A'
                         }
                       </span>
+                      {product.verified ? (
+                        <span className="retailer-products-verified-badge">✓ Verified</span>
+                      ) : (
+                        <span className="retailer-products-unverified-badge">⚠ Unverified</span>
+                      )}
                       {isS3Image && (
                         <span className="retailer-products-s3-badge">S3</span>
                       )}
@@ -308,13 +313,14 @@ return (
                         View Details
                       </button>
                       <button
-                        className="retailer-products-edit-product-button"
+                        className={`retailer-products-edit-product-button ${product.verified ? 'verified-product' : ''}`}
                         onClick={() => { 
                           setSelectedProduct(product); 
                           setEditModalOpen(true); 
                         }}
+                        title={product.verified ? 'Update price and quantity for verified product' : 'Edit this product'}
                       >
-                        Edit Product
+                        {product.verified ? '💰 Update Price & Stock' : 'Edit Product'}
                       </button>
                     </div>
                   </div>

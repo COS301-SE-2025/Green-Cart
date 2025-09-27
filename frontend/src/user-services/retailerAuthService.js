@@ -1,48 +1,40 @@
 import { API_BASE_URL } from '../config/api.js';
 
 export async function signupRetailer(retailerData) {
-  console.log('🔄 Starting retailer signup for:', retailerData.email);
+  console.log('🔄 Starting retailer signup for existing user:', retailerData.email);
   console.log('🌐 Using API URL:', API_BASE_URL);
   
   try {
-    // Step 1: Try to create a regular user account first (if it doesn't exist)
-    let userExists = false;
-    
-    console.log('📝 Step 1: Attempting user signup...');
-    const userResponse = await fetch(`${API_BASE_URL}/auth/signup`, {
+    // Step 1: Verify user credentials by attempting to sign in
+    console.log('🔐 Step 1: Verifying user credentials...');
+    const userSigninResponse = await fetch(`${API_BASE_URL}/auth/signin`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: retailerData.name,
         email: retailerData.email,
         password: retailerData.password
       }),
     });
 
-    console.log('📥 User signup response status:', userResponse.status);
-
-    if (userResponse.status === 400) {
-      // Check if the error is "Email already registered"
-      const userError = await userResponse.json();
-      if (userError.detail && userError.detail.includes("already registered")) {
-        userExists = true;
-        console.log("✅ User already exists, proceeding to retailer conversion...");
-      } else {
-        console.log('❌ User signup failed:', userError.detail);
-        throw new Error(userError.detail || "User account creation failed");
+    if (!userSigninResponse.ok) {
+      const userError = await userSigninResponse.json();
+      console.log('❌ User credential verification failed:', userError);
+      
+      if (userSigninResponse.status === 401) {
+        throw new Error("Invalid email or password. Please check your credentials.");
+      } else if (userSigninResponse.status === 404) {
+        throw new Error("No account found with this email. Please sign up as a customer first.");
       }
-    } else if (!userResponse.ok) {
-      const userError = await userResponse.json();
-      console.log('❌ User signup failed:', userError.detail);
-      throw new Error(userError.detail || "User account creation failed");
-    } else {
-      console.log('✅ User created successfully');
+      
+      throw new Error("Unable to verify your credentials. Please try again.");
     }
 
-    // Step 2: Convert the user to a retailer (whether they existed or were just created)
-    console.log('🏪 Step 2: Attempting retailer conversion...');
+    console.log('✅ User credentials verified successfully');
+
+    // Step 2: Create retailer account for verified user
+    console.log('🏪 Step 2: Creating retailer account...');
     const retailerResponse = await fetch(`${API_BASE_URL}/auth/retailer/signup`, {
       method: "POST",
       headers: {
@@ -64,12 +56,12 @@ export async function signupRetailer(retailerData) {
       
       // Provide specific error messages based on the response
       if (retailerResponse.status === 401) {
-        if (userExists) {
-          throw new Error("The password you entered doesn't match your existing account. Please use your current account password.");
-        } else {
-          throw new Error("Authentication failed. Please check your credentials.");
-        }
+        throw new Error("The password you entered doesn't match your existing account. Please use your current account password.");
       } else if (retailerResponse.status === 400) {
+        const errorDetail = retailerError.detail || "";
+        if (errorDetail.includes("User not found") || errorDetail.includes("not found")) {
+          throw new Error("You must be a registered user to create a shop. Please sign up as a customer first.");
+        }
         throw new Error("Invalid data provided. Please check all fields are filled correctly.");
       } else if (retailerResponse.status === 409) {
         throw new Error("You already have a retailer account with this email. Please sign in instead.");
@@ -84,7 +76,7 @@ export async function signupRetailer(retailerData) {
     // Return result
     return {
       ...retailerResult,
-      message: userExists ? "Existing account converted to retailer successfully" : "Retailer account created successfully"
+      message: "Retailer account created successfully"
     };
     
   } catch (error) {
