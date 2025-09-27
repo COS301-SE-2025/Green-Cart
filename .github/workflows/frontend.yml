@@ -24,8 +24,15 @@ jobs:
           node-version: 18
           cache: npm
 
+      - name: List files for debugging ROOT
+        run: ls -al
+
+      - name: List files for debugging ./FRONTEND
+        run: ls -al
+        working-directory: ./frontend
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         working-directory: ./frontend
 
       - name: Run build
