@@ -1,11 +1,11 @@
 .interactive-carbon-chart {
   background: white;
   border-radius: 16px;
-  padding: 0.9rem;
+  padding: 0.5rem;
   /* border: 1px solid #e5e7eb; */
   /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   /* width: 100%; */
 }
 
@@ -13,8 +13,8 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1.5rem;
-  gap: 2rem;
+  margin-bottom: 0.9rem;
+  gap: 1rem;
 }
 
 .ua-chart-info h3 {
@@ -82,7 +82,7 @@
 }
 
 .ua-chart-container {
-  margin: 1.5rem 0;
+  margin: 0.4rem 0;
   width: 100%;
 }
 
@@ -96,8 +96,8 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: 1.5rem;
-  padding: 1.5rem;
+  margin-top: 1rem;
+  padding: 1rem;
   background: linear-gradient(135deg, #f8fdf8 0%, #f0f9f0 100%);
   border-radius: 12px;
   border: 1px solid #e8f5e8;

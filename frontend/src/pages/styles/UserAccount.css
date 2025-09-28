@@ -201,7 +201,7 @@
 .tab-content {
   background: white;
   border-radius: 12px;
-  padding: 2rem;
+  padding: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   border: 1px solid #e5e7eb;
 }
@@ -629,7 +629,7 @@
   }
 
   .tab-content {
-    padding: 1.5rem;
+    padding: 0.6rem;
   }
 
   .form-row {
@@ -680,7 +680,7 @@
   }
 
   .tab-content {
-    padding: 1rem;
+    padding: 0.6rem;
   }
 
   .account-title h1 {
@@ -913,15 +913,15 @@
 .carbon-chart-section {
   background: white;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 0.4rem;
   border: 1px solid #e5e7eb;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .carbon-chart-section h3 {
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.6rem 0;
   color: #1f2937;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
@@ -1345,7 +1345,7 @@
 .forecasting-section {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 /* Forecast Controls */
@@ -1353,7 +1353,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
+  padding: 1rem;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   border-radius: 12px;
   border: 1px solid #e2e8f0;
@@ -1431,7 +1431,7 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  padding: 3rem;
+  padding: 1.5rem;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -1544,14 +1544,14 @@
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .forecast-results h3 {
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1rem 0;
   color: #1f2937;
-  font-size: 1.3rem;
+  font-size: 1rem;
   font-weight: 700;
 }
 
@@ -1559,7 +1559,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .forecast-card {
@@ -1858,7 +1858,7 @@
    =============================== */
 
 .forecasting-section {
-  padding: 2rem;
+  padding: 1rem;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -1950,18 +1950,18 @@
 .user-score-overview {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .score-card {
   background: white;
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
   transition: transform 0.2s ease;
 }
 
@@ -1976,18 +1976,18 @@
 }
 
 .score-icon {
-  font-size: 3rem;
+  font-size: 2rem;
   opacity: 0.8;
 }
 
 .score-content h3 {
   margin: 0 0 0.5rem 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
 .score-value {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   margin: 0.5rem 0;
 }
@@ -2002,7 +2002,7 @@
 .score-breakdown {
   background: white;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -2610,10 +2610,10 @@
 .user-score-overview {
   background: white;
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid #e5e7eb;
-  margin-bottom: 2rem;
+  margin-bottom: 0.6rem;
 }
 
 /* Title containers for better help icon positioning */
