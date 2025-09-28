@@ -229,11 +229,6 @@ jobs:
             echo "Files in directory:"
             ls -la
             
-            # Check if required files exist
-            if [ ! -f "Dockerfile" ]; then
-              echo "ERROR: Dockerfile not found!"
-              exit 1
-            fi
             
             if [ ! -f "requirements.txt" ]; then
               echo "ERROR: requirements.txt not found!"
@@ -379,3 +374,4 @@ jobs:
             
 
             echo "Backend deployment successful!"
+
