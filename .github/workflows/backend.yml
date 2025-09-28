@@ -1,6 +1,10 @@
 name: Backend Unit Tests
 
 on:
+  push:
+    branches:
+      - main
+      - dev
   pull_request:
     branches:
       - main
@@ -48,3 +52,4 @@ jobs:
           echo "Stopping Uvicorn server..."
           kill $UVICORN_PID
         shell: bash
+
