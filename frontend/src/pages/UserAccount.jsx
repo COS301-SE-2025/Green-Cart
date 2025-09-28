@@ -1410,21 +1410,7 @@ const handleDisable2FA = async () => {
 									</button>
 								</div> */}
 
-								<div className="danger-zone">
-									<h3>Danger Zone</h3>
-									<div className="security-item danger">
-										<div className="security-info">
-											<h4>Delete Account</h4>
-											<p>Permanently delete your account and all associated data</p>
-										</div>
-										<button
-											onClick={handleDeleteAccount}
-											className="delete-button"
-										>
-											Delete Account
-										</button>
-									</div>
-								</div>
+								
 							</div>
 						</div>
 					)}
