@@ -314,20 +314,6 @@ export default function SustainabilityAI({
               <>
                 <p className="smart-impact-line">{data.q3.eco_meter_analysis.message}</p>
                 
-                <div className="smart-impact-grid">
-                  <div className="smart-impact-item">
-                    <span className="smart-impact-k">Current Rating</span>
-                    <span className="smart-impact-v" style={{ color: getColor(data.q3.eco_meter_analysis.current_rating) }}>
-                      {data.q3.eco_meter_analysis.current_rating}/100
-                    </span>
-                  </div>
-                  <div className="smart-impact-item">
-                    <span className="smart-impact-k">This Product</span>
-                    <span className="smart-impact-v" style={{ color: getColor(data.q3.eco_meter_analysis.product_rating) }}>
-                      {data.q3.eco_meter_analysis.product_rating}/100
-                    </span>
-                  </div>
-                </div>
               </>
             ) : (
               <div className="smart-empty">Unable to calculate eco-meter impact</div>
