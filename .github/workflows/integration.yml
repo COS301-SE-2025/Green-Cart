@@ -5,29 +5,31 @@ on:
     branches:
       - main
       - dev
+      - 252-finalised-testing
   pull_request:
     branches:
       - main
       - dev
+      - 252-finalised-testing
 
 jobs:
-  backend_integration_tests:
+  integration_tests:
     runs-on: ubuntu-latest
-
+    
     services:
       postgres:
-        image: postgres:15
+        image: postgres:13
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: greencart
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
 
     steps:
       - name: Checkout code
@@ -41,40 +43,34 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/greencart" >> .env
+          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test_db" >> .env
+          echo "SUPABASE_URL=your_supabase_url" >> .env
+          echo "SUPABASE_ANON_KEY=your_supabase_anon_key" >> .env
 
       - name: Install dependencies
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          pip install pytest httpx
+          pip install pytest httpx psycopg2-binary alembic python-dotenv
 
-      - name: Start Uvicorn server in background
+      - name: Run Alembic migrations
+        run: |
+          source venv/bin/activate
+          alembic upgrade head
+
+      - name: Start Uvicorn server
         run: |
           source venv/bin/activate
           nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 &
-          UVICORN_PID=$!
-          echo $UVICORN_PID > uvicorn.pid
-
-          echo "Waiting for Uvicorn to be ready..."
-          for i in {1..10}; do
-            if curl -s http://localhost:8000/docs > /dev/null; then
-              echo "Uvicorn is up!"
-              break
-            fi
-            echo "Retrying in 2s..."
-            sleep 2
-          done
+          echo $! > uvicorn_pid.txt
+          sleep 10
 
       - name: Run integration tests
         run: |
           source venv/bin/activate
-          PYTHONPATH=$PWD pytest integration-tests/ -v -p no:warnings
+          pytest integration-tests/ -v -p no:warnings --tb=short
 
       - name: Stop Uvicorn server
-        if: always()
         run: |
-          if [ -f uvicorn.pid ]; then
-            kill $(cat uvicorn.pid)
-          fi
+          kill $(cat uvicorn_pid.txt) || echo "Server already stopped"
