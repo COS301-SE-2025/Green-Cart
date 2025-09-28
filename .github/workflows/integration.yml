@@ -5,31 +5,14 @@ on:
     branches:
       - main
       - dev
-      - 252-finalised-testing
   pull_request:
     branches:
       - main
       - dev
-      - 252-finalised-testing
 
 jobs:
   integration_tests:
     runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_db
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - name: Checkout code
@@ -43,21 +26,14 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test_db" >> .env
-          echo "SUPABASE_URL=your_supabase_url" >> .env
-          echo "SUPABASE_ANON_KEY=your_supabase_anon_key" >> .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
 
       - name: Install dependencies
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          pip install pytest httpx psycopg2-binary alembic python-dotenv
-
-      - name: Run Alembic migrations
-        run: |
-          source venv/bin/activate
-          alembic upgrade head
+          pip install pytest httpx psycopg2-binary python-dotenv
 
       - name: Start Uvicorn server
         run: |
