@@ -14,6 +14,21 @@ jobs:
   backend_integration_tests:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: greencart
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -26,39 +41,40 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "DATABASE_URL=postgresql://postgres.httrffbdyhzwfocrwxhr:X4wcx62kVzC0V0u6@aws-0-eu-central-1.pooler.supabase.com:5432/postgres" >> .env
+          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/greencart" >> .env
 
-      - name: Install dependencies and run tests
+      - name: Install dependencies
         run: |
-          echo "Creating virtual environment..."
           python -m venv venv
-
-          echo "Activating virtual environment..."
           source venv/bin/activate
-
-          echo "Installing Python dependencies..."
           pip install -r requirements.txt
-
-          echo "Installing pytest..."
           pip install pytest httpx
 
-          echo "Starting Uvicorn server in background..."
+      - name: Start Uvicorn server in background
+        run: |
+          source venv/bin/activate
           nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           UVICORN_PID=$!
+          echo $UVICORN_PID > uvicorn.pid
 
-          echo "Waiting for Uvicorn to start..."
+          echo "Waiting for Uvicorn to be ready..."
           for i in {1..10}; do
             if curl -s http://localhost:8000/docs > /dev/null; then
               echo "Uvicorn is up!"
               break
             fi
-            echo "Still waiting for Uvicorn..."
+            echo "Retrying in 2s..."
             sleep 2
           done
 
-          echo "Running integration tests..."
+      - name: Run integration tests
+        run: |
+          source venv/bin/activate
           PYTHONPATH=$PWD pytest integration-tests/ -v -p no:warnings
 
-          echo "Stopping Uvicorn server..."
-          kill $UVICORN_PID
-        shell: bash
+      - name: Stop Uvicorn server
+        if: always()
+        run: |
+          if [ -f uvicorn.pid ]; then
+            kill $(cat uvicorn.pid)
+          fi
