@@ -26,8 +26,6 @@ jobs:
           python -m venv venv
 
           echo "Activating virtual environment..."
-          # Activate the virtual environment. Note: 'source' is for bash/zsh,
-          # for GitHub Actions, it's generally safe to use directly.
           source venv/bin/activate
 
           echo "Installing Python dependencies..."
@@ -37,25 +35,16 @@ jobs:
           pip install pytest httpx
 
           echo "Starting Uvicorn server in background..."
-          # Start Uvicorn. We use 'nohup' and '&' to run it in the background
-          # and capture its process ID (PID).
-          # '--host 0.0.0.0' makes it accessible within the container.
-          # We remove '--reload' as it's typically not needed in CI and can cause issues.
           nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 &
-          UVICORN_PID=$! # Store the PID of the Uvicorn process
+          UVICORN_PID=$!
 
           echo "Waiting for Uvicorn to start (5 seconds)..."
-          # Give Uvicorn a moment to fully initialize.
-          # For more robust checks, you could use 'curl' to hit a health endpoint.
           sleep 5
 
           echo "Running backend tests..."
-          # Execute your pytest commands.
-          # The virtual environment is active, so pytest will use installed packages.
-          pytest unit-tests/ -v -W ignore::pydantic.PydanticDeprecatedSince20
+          # Add PYTHONPATH so 'app' package is importable
+          PYTHONPATH=$PWD pytest unit-tests/ -v -W ignore::pydantic.PydanticDeprecatedSince20
 
           echo "Stopping Uvicorn server..."
-          # Kill the Uvicorn process using its stored PID.
           kill $UVICORN_PID
-
         shell: bash
