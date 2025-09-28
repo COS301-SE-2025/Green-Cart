@@ -39,7 +39,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | [Proposal Document](https://www.canva.com/design/DAGlkKZ2Tck/nRnry4uoAMHH9-PVaqgAvA/edit?utm_content=DAGlkKZ2Tck&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) | Project overview and business rationale |
 | [System Requirements Document](https://drive.google.com/file/d/1OTeg3-nEN6adl3venqH7t1sF2RcOjNjl/view?usp=drive_link) | System requirements overview |
 | [Architectural Requirements Document](https://drive.google.com/file/d/1SZjETqqjgVHrQhsVl2mFY23rODRF0T1i/view?usp=drive_link) | Architectural overview |
-| [Architectural diagram](https://drive.google.com/file/d/1mYI8lDBo16F7ZRoeXsa-lPt8taTmcV3O/view?usp=drive_link) | Architectural diagram |
+| [Architectural diagram](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/diagrams/Architectural%20Diagram%20Final.pdf) | Architectural diagram |
 | [Database Schema](https://github.com/COS301-SE-2025/Green-Cart/blob/documentation/documents/ERD%20diagram.png?raw=true) | Entity relationship model and schema reference |
 | [Project Board](https://github.com/orgs/COS301-SE-2025/projects/198/views/2) | Task management and team progress |
 | [Coding Standards Document](https://drive.google.com/file/d/1oBy16_S3lbmnHuiazgfxtMvLC79CkGZ1/view?usp=drive_link) | Coding Standards Document |
@@ -128,3 +128,4 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | ![](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/image_assets/Sam_New.jpeg?raw=true) | **Samvit Prakash**      | Back-end Engineer, Database Engineer and DevOps     | Backend-focused developer with internship experience in scalable architecture and system logic.                | [GitHub](https://github.com/SamvitPrakash-23525119)                                        | [LinkedIn](https://www.linkedin.com/in/samvit-prakash-4b8546298/)                             |
 
 </div>
+
