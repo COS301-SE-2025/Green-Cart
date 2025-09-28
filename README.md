@@ -53,7 +53,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 
 | **Demo** | **Video** | **Slides** | **SRS Document** | **Architectural Document** |
 |---------|-----------|------------|------------------|-----------------------------|
-| Demo 1 | [Watch](https://drive.google.com/file/d/1x923JaubfP_FH0dgEdhZ3O-y96iFVVzO/view) | [Slides](https://www.canva.com/design/DAGoo0NOHOs/MpZHdfQEJuRwyW97PpcBaA/edit?utm_content=DAGoo0NOHOs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) | [System Requirements Document_v1](https://drive.google.com/file/d/1tUEFSQVjV-HfzKvjbx3_98__JOBLFUeK/view?usp=sharing) | [Architectural Requirements Document_v1](https://docs.google.com/document/d/1KUXww-AsuFPJi2uFpKgFf5PEZGdCYqKZ4R21-Tpzqzs/edit?usp=sharing) |
+| Demo 1 | [Watch](https://drive.google.com/file/d/1x923JaubfP_FH0dgEdhZ3O-y96iFVVzO/view) | [Slides](https://www.canva.com/design/DAGoo0NOHOs/MpZHdfQEJuRwyW97PpcBaA/edit?utm_content=DAGoo0NOHOs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) | [System Requirements Document_v1](https://drive.google.com/file/d/1tUEFSQVjV-HfzKvjbx3_98__JOBLFUeK/view?usp=sharing) | [Architectural Requirements Document_v1](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo1/Architectural%20requirements_v1.pdf) |
 | Demo 2 |[Watch](https://drive.google.com/file/d/1JLZhZgI4QhDSkQFlCGH3h51MXt633Cyr/view?usp=sharing)  | [Slides](https://www.canva.com/design/DAGreB5l2ZA/c3Kde60qQsHp7J0Z71a6PA/edit?utm_content=DAGreB5l2ZA&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) |[System Requirements Document_v2](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo2/Requirements%20Specifications%20(2).pdf) | [Architectural Requirements Document_v2](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo2/Architectural%20Requirements%20Document%20Demo%202.pdf)
 | Demo 3 |[Watch](https://drive.google.com/file/d/11YUlrIywMAlr4Ocu9FtwILmfIEuIKkP-/view?usp=sharing)  | [Slides](https://www.canva.com/design/DAGoo0NOHOs/MpZHdfQEJuRwyW97PpcBaA/edit?utm_content=DAGoo0NOHOs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) |[System Requirements Document_v3]() | [Architectural Requirements Document_v3]()
 <h1 align="center">Technologies</h1>
@@ -129,6 +129,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | ![](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/image_assets/Sam_New.jpeg?raw=true) | **Samvit Prakash**      | Back-end Engineer, Database Engineer and DevOps     | Backend-focused developer with internship experience in scalable architecture and system logic.                | [GitHub](https://github.com/SamvitPrakash-23525119)                                        | [LinkedIn](https://www.linkedin.com/in/samvit-prakash-4b8546298/)                             |
 
 </div>
+
 
 
 
