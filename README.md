@@ -36,7 +36,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 
 | **Resource** | **Description** |
 |-------------|-----------------|
-| [Proposal Document](https://www.canva.com/design/DAGlkKZ2Tck/nRnry4uoAMHH9-PVaqgAvA/edit?utm_content=DAGlkKZ2Tck&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) | Project overview and business rationale |
+| [Proposal Document](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/GreenCart%20Proposal.pdf) | Project overview and business rationale |
 | [System Requirements Document](https://drive.google.com/file/d/1OTeg3-nEN6adl3venqH7t1sF2RcOjNjl/view?usp=drive_link) | System requirements overview |
 | [Architectural Requirements Document](https://drive.google.com/file/d/1SZjETqqjgVHrQhsVl2mFY23rODRF0T1i/view?usp=drive_link) | Architectural overview |
 | [Architectural diagram](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/diagrams/Architectural%20Diagram%20Final.pdf) | Architectural diagram |
@@ -128,4 +128,5 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | ![](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/image_assets/Sam_New.jpeg?raw=true) | **Samvit Prakash**      | Back-end Engineer, Database Engineer and DevOps     | Backend-focused developer with internship experience in scalable architecture and system logic.                | [GitHub](https://github.com/SamvitPrakash-23525119)                                        | [LinkedIn](https://www.linkedin.com/in/samvit-prakash-4b8546298/)                             |
 
 </div>
+
 
