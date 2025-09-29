@@ -14,7 +14,7 @@
 ![Version](https://img.shields.io/badge/version-1.3.3-007ACC?style=flat-square&logo=semantic-release&logoColor=white)
 ![GitHub issues](https://img.shields.io/github/issues/COS301-SE-2025/Green-Cart?style=flat-square&color=orange&logo=github)
 ![GitHub PRs](https://img.shields.io/github/issues-pr/COS301-SE-2025/Green-Cart?style=flat-square&color=purple&logo=git)
-![Languages](https://img.shields.io/github/languages/count/COS301-SE-2025/Green-Cart?style=flat-square&color=informational&logo=code)
+![Languages](https://img.shields.io/badge/languages-3-informational?style=flat-square&logo=code)
 ![Last Commit](https://img.shields.io/github/last-commit/COS301-SE-2025/Green-Cart?style=flat-square&color=success&logo=git)
 ![Repo Size](https://img.shields.io/github/repo-size/COS301-SE-2025/Green-Cart?style=flat-square&color=blueviolet&logo=database)
 [![Linting Status](https://img.shields.io/github/actions/workflow/status/COS301-SE-2025/Green-Cart/linting.yml?style=flat-square&label=Linting&logo=githubactions&color=blue)](https://github.com/COS301-SE-2025/Green-Cart/actions/workflows/linting.yml)
@@ -131,6 +131,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | ![](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/image_assets/Sam_New.jpeg?raw=true) | **Samvit Prakash**      | Back-end Engineer, Database Engineer and DevOps     | Backend-focused developer with internship experience in scalable architecture and system logic.                | [GitHub](https://github.com/SamvitPrakash-23525119)                                        | [LinkedIn](https://www.linkedin.com/in/samvit-prakash-4b8546298/)                             |
 
 </div>
+
 
 
 
