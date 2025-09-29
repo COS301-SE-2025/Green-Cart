@@ -43,7 +43,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | [Database Schema](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/ERD%20demo%204.pdf) | Entity relationship model and schema reference |
 | [Project Board](https://github.com/orgs/COS301-SE-2025/projects/198/views/2) | Task management and team progress |
 | [Coding Standards Document](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/Coding%20Standards%20Document_4.pdf) | Coding Standards Document |
-| [Technical Installation Manual](https://drive.google.com/file/d/16pzCOgkVLdSloA-3NRI789-gfFSZl0CB/view?usp=drive_link) | Technical Installation Manual |
+| [Technical Installation Manual](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/Technical%20Installation%20Document%20Demo%204.pdf) | Technical Installation Manual |
 | [User Manual Document](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/User%20Manual%20Demo%204.pdf) | User Manual Document |
 | [Deployment diagram](https://drive.google.com/file/d/1q7RqVPBF9ueTYiCGTMpVhl7TiY7Fmik5/view?usp=drive_link) | Deployment diagram |
 | [Testing Policies](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/Testing%20Policy%20Document.pdf) | Testing Policies |
@@ -130,6 +130,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | ![](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/image_assets/Sam_New.jpeg?raw=true) | **Samvit Prakash**      | Back-end Engineer, Database Engineer and DevOps     | Backend-focused developer with internship experience in scalable architecture and system logic.                | [GitHub](https://github.com/SamvitPrakash-23525119)                                        | [LinkedIn](https://www.linkedin.com/in/samvit-prakash-4b8546298/)                             |
 
 </div>
+
 
 
 
