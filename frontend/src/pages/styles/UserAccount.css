@@ -1971,7 +1971,7 @@
 
 .score-card.main-score {
   grid-column: 1 / -1;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
   color: white;
 }
 
@@ -2305,7 +2305,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
   color: white;
   border-radius: 16px;
   margin-bottom: 2rem;
@@ -2913,4 +2913,5 @@
   margin-right: 0.5rem;
   font-size: 1.1rem;
   flex-shrink: 0;
+
 }
