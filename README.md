@@ -27,21 +27,26 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 
 </p>
 
-<!-- PROMO VIDEO SECTION -->
+<!-- 🎥 PROMO VIDEO SECTION -->
 <div align="center">
   <h3>🎬 Watch the GreenCart Promo (1:22)</h3>
 
-  <a href="https://cos301-se-2025.github.io/Green-Cart/promo.html" target="_blank">
+  <a href="https://cos301-se-2025.github.io/Green-Cart/" target="_blank">
     <img 
-      src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/image_assets/promo_thumbnail.png?raw=true" 
-      alt="Watch the GreenCart Promo"
+      src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/docs/Screenshot%20From%202025-10-22%2000-29-44.png?raw=true" 
+      alt="GreenCart Promo Thumbnail"
       width="720"
-      style="border-radius:12px; box-shadow:0 0 15px rgba(0,0,0,0.3);"
+      style="border-radius:12px;
+             box-shadow:0 0 18px rgba(0,0,0,0.4);
+             transition:transform 0.2s ease-in-out;"
+      onmouseover="this.style.transform='scale(1.02)'"
+      onmouseout="this.style.transform='scale(1)'"
     />
   </a>
 
-  <p><i>Click the image to play the embedded video.</i></p>
+  <p><i>Click the image above to play the embedded promo video.</i></p>
 </div>
+
 
 
 <h1 align="center">Documentation and Resources</h1>
@@ -147,6 +152,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | ![](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/image_assets/Sam_New.jpeg?raw=true) | **Samvit Prakash**      | Back-end Engineer, Database Engineer and DevOps     | Backend-focused developer with internship experience in scalable architecture and system logic.                | [GitHub](https://github.com/SamvitPrakash-23525119)                                        | [LinkedIn](https://www.linkedin.com/in/samvit-prakash-4b8546298/)                             |
 
 </div>
+
 
 
 
