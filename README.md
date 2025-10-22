@@ -80,60 +80,73 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | Demo 4 | [Watch](https://drive.google.com/file/d/1bjRv4OCYaQBgHUA3Bqv7A6qcD4L_UYa5/view) | [Slides](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/GreenCart_Demo4_Slides.pdf) | [System Requirements Document_v4](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/Requirements%20Specifications%20demo%204.pdf) | [Architectural Requirements Document_v4](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/Architectural%20Requirements%20Document%20Demo%204.pdf) | [User Manual_v4](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/User%20Manual%20Demo%204.pdf) | [Technical Installation Manual_v4](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/Technical%20Installation%20Document%20Demo%204.pdf) | [Coding Standards_v4](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/Coding%20Standards%20Document_4.pdf) | [Testing Policy_v4](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/Testing%20Policy%20Document.pdf) | [ERD_v4](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/ERD%20demo%204.pdf) | [Deployment_v4](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/demo4/deployment%20diagram%20demo%204.png) |
 
 <h1 align="center">Technologies</h1>
-<div align="center">
 
-  <p>Frontend</p>
-  <img src="https://skillicons.dev/icons?i=figma,react,vite"/>
+<div align="center" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
 
-  <p>Backend</p>
-  <img src="https://skillicons.dev/icons?i=python"/> 
+  <!-- Frontend -->
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <strong>Frontend:</strong>
+    <img src="https://skillicons.dev/icons?i=figma,react,vite"/>
+  </div>
 
-  <p>API & Security</p>
-  <div style="display: flex; justify-content: center; gap: 10px;">
+  <!-- Backend -->
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <strong>Backend:</strong>
+    <img src="https://skillicons.dev/icons?i=python"/>
+  </div>
+
+  <!-- API & Security -->
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <strong>API & Security:</strong>
     <img src="https://skillicons.dev/icons?i=fastapi" />
     <img 
       src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/image_assets/177059352-fe91dcd5-e17b-4103-88ae-70d6d396cf85.png?raw=true" 
-      width="50" height="50"
-      style="border-radius: 12px; background-color: #222; padding: 6px; box-sizing: border-box;"
+      width="45" height="45"
+      style="border-radius: 10px; background-color: #222; padding: 5px; box-sizing: border-box;"
     />
-    <!-- OpenAPI -->
     <img 
       src="https://raw.githubusercontent.com/COS301-SE-2025/Green-Cart/f9fbd43f4f1b396cd897f8f2e4cb1826a5acd370/assets/icons/openapi-1.svg" 
-      width="50" height="50"
-      style="border-radius: 12px; background-color: #222; padding: 6px; box-sizing: border-box;"
+      width="45" height="45"
+      style="border-radius: 10px; background-color: #222; padding: 5px; box-sizing: border-box;"
     />
   </div>
 
-  <p>Testing</p>
-  <div style="display: flex; justify-content: center; gap: 10px;">
+  <!-- Testing -->
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <strong>Testing:</strong>
     <img src="https://skillicons.dev/icons?i=jest" />
     <img 
       src="https://raw.githubusercontent.com/COS301-SE-2025/Green-Cart/25afb4c7a9feb2f646cb77ad75b9f3f432259b12/documents/pytest.svg" 
-      width="50" height="50"
-      style="background-color: #fff; border-radius: 12px; padding: 6px; box-sizing: border-box;"
+      width="45" height="45"
+      style="background-color: #fff; border-radius: 10px; padding: 5px; box-sizing: border-box;"
     />
   </div>
 
-  <p>Hosting & Deployment</p>
-  <div style="display: flex; justify-content: center; gap: 10px;">
+  <!-- Hosting & Deployment -->
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <strong>Hosting & Deployment:</strong>
     <img src="https://skillicons.dev/icons?i=aws" />
     <img 
       src="https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/supabase.jpg?raw=true" 
-      width="50" height="50"
-      style="background-color: #fff; border-radius: 12px; padding: 6px; box-sizing: border-box;"
+      width="45" height="45"
+      style="background-color: #fff; border-radius: 10px; padding: 5px; box-sizing: border-box;"
     />
+  </div>
+
+  <!-- Database & Versioning -->
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <strong>Database & Versioning:</strong>
+    <img src="https://skillicons.dev/icons?i=postgresql,liquibase"/>
+  </div>
+
+  <!-- CI/CD & Tools -->
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <strong>CI/CD & Tools:</strong>
+    <img src="https://skillicons.dev/icons?i=git,githubactions"/>
   </div>
 
 </div>
 
-
-  <p>Database & Versioning</p>
-  <img src="https://skillicons.dev/icons?i=postgresql,liquibase"/>
-
-  <p>CI/CD & Tools</p>
-  <img src="https://skillicons.dev/icons?i=git,githubactions"/>
-
-</div>
 
 
 
@@ -152,6 +165,7 @@ GreenCart is a purpose-driven e-commerce platform built to promote sustainable c
 | ![](https://github.com/COS301-SE-2025/Green-Cart/blob/main/documents/image_assets/Sam_New.jpeg?raw=true) | **Samvit Prakash**      | Back-end Engineer, Database Engineer and DevOps     | Backend-focused developer with internship experience in scalable architecture and system logic.                | [GitHub](https://github.com/SamvitPrakash-23525119)                                        | [LinkedIn](https://www.linkedin.com/in/samvit-prakash-4b8546298/)                             |
 
 </div>
+
 
 
 
