@@ -177,7 +177,7 @@ async def createOrder(request, db: Session):
 
         for x in products:
             product = db.query(Product).filter(Product.id == x.product_id).first()
-            product.quantity += 1
+            product.quantity -= 1
             db.commit()
             db.refresh(product)
         
