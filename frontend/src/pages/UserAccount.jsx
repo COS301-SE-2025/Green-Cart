@@ -932,7 +932,7 @@ const handleDisable2FA = async () => {
 									{/* Sustainability Stats Overview */}
 									<div className="carbon-overview">
 										<div className="carbon-stat-card">
-											<div className="carbon-stat-icon">�</div>
+											<div className="carbon-stat-icon">📊</div>
 											<div className="carbon-stat-content">
 												<h3>Average Score</h3>
 												<div className="carbon-stat-value" style={{ color: getCarbonColor(carbonData.totalFootprint, 100) }}>
