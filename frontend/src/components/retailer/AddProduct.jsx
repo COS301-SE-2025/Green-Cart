@@ -270,7 +270,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             }
 
             const newProduct = await response.json();
-            console.log('Product created successfully with S3 images:', newProduct);
+            console.log('Product created successfully:', newProduct);
             
             if (onProductAdded) {
                 onProductAdded(newProduct);
@@ -294,7 +294,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
             });
             clearAllImages();
             
-            toast.success('Product added successfully with S3 images!');
+            toast.success('Product added successfully!');
             onClose();
         } catch (error) {
             console.error('Error adding product:', error);
