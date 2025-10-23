@@ -172,6 +172,15 @@ async def createOrder(request, db: Session):
         db.add(order)
         db.commit()
         db.refresh(order)
+
+        products = db.query(CartItem).filter(CartItem.cart_id == order.cart_id).all()
+
+        for x in products:
+            product = db.query(Product).filter(Product.id == x.product_id).first()
+            product.quantity += 1
+            db.commit()
+            db.refresh(product)
+        
         
         logger.info(f"Order created successfully with ID: {order.id}")
         
