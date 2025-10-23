@@ -594,7 +594,7 @@ export default function AddProduct({ isOpen, onClose, onProductAdded }) {
                             {isSubmitting ? (
                                 <>
                                     <div className="loading-spinner small"></div>
-                                    Uploading to S3...
+                                    Uploading Product...
                                 </>
                             ) : (
                                 'Add Product'
